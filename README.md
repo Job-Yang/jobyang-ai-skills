@@ -14,7 +14,12 @@ AI 时代最容易被低估的东西，不是一次回答写得多漂亮，而�
 
 | Skill | 用来做什么 |
 | --- | --- |
+| [vdd](./skills/vdd/) | 面向验证的开发：在说“做完了/没问题”之前先走一遍验证，不乱报喜、不硬挤问题、敢说没问题。 |
 | [haohao-shuohua](./skills/haohao-shuohua/) | 把中文写得更像人说的：保事实、去 AI 味、加中文味、不许造词充深刻。 |
+| [cuihuo](./skills/cuihuo/) | 观点淬硬引擎：把一个技术观点写成平实克制、一节一观点的对外硬文，或提炼成短思考手记。 |
+| [tangshan-style](./skills/tangshan-style/) | 汤山体：把面向未来的想象与推演写成有历史纵深、每句耐嚼的畅想文。 |
+| [feynman-explainer](./skills/feynman-explainer/) | 用费曼技巧把复杂的东西讲透：一条逻辑链层层推导，让外行也能真正理解。 |
+| [sansi-erhouxing](./skills/sansi-erhouxing/) | 三思而后行：改任何成形文档前先通读全文骨架，别只盯一段、别补丁摞补丁。 |
 | [video-reader](./skills/video-reader/) | 把视频转成带时间戳的关键帧和运动时间线，让只能看图的大模型也能判断第几秒发生了什么。 |
 
 ## 为什么要有这个仓库
@@ -56,17 +61,16 @@ Claude Code 的默认用户级目录：
 ├── README.md
 ├── README.en.md
 └── skills/
+    ├── vdd/
     ├── haohao-shuohua/
-    │   ├── SKILL.md
-    │   ├── README.md
-    │   ├── assets/
-    │   └── references/
+    ├── cuihuo/
+    ├── tangshan-style/
+    ├── feynman-explainer/
+    ├── sansi-erhouxing/
     └── video-reader/
-        ├── SKILL.md
-        ├── README.md
-        ├── README.zh-CN.md
-        └── scripts/
 ```
+
+每个技能目录都以 `SKILL.md` 为入口，部分带 `references/`、`scripts/` 或 `assets/`。
 
 ## License
 
