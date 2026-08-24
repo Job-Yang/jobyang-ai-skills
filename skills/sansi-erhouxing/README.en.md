@@ -22,10 +22,13 @@ When the agent edits without reading the whole structure, the damage is predicta
 - "Polishing" fixes sentences while missing structural problems such as misplaced evidence or an incomplete conclusion.
 - The agent keeps editing and re-reading in loops because it never formed a stable view of the whole piece.
 
-Sansi Erhouxing turns three classic engineering ideas into a writing workflow:
+Agents are especially prone to this failure. Their default response is **see one issue, fix one issue**: a review points at one paragraph, so they edit that paragraph; a check reports one hit, so they remove that hit. Each local change may look reasonable, while the accumulated result becomes repetitive, revives decisions that were deliberately removed, and drifts further from the original structure. This Skill turns "think before editing" into an executable pause: inspect the whole piece, map the impact area, and only then decide whether to change it.
+
+Sansi Erhouxing turns four established engineering and writing ideas into a document-editing workflow:
 
 - **Shotgun Surgery**: one local change may require related changes elsewhere, so list the impact area first.
 - **Chesterton's Fence**: before removing or changing something, understand why it is there.
+- **Kent Beck: Make the change easy, then make the easy change**: if the current structure makes a change awkward, do not force in a patch. Adjust the skeleton first, then make the now-simple change.
 - **Outline-First**: build or inspect the skeleton before filling prose.
 
 The operational loop is: **read the whole piece -> list the impact area -> pass three gate questions**. Has this point been changed before? Is the fix riskier than the problem? Will the change break the document skeleton?
