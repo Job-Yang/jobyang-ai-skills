@@ -1,5 +1,7 @@
 # Feynman Explainer · 费曼讲透法
 
+[English](./README.en.md)
+
 把一个复杂的东西，讲到外行也能听懂。
 
 ## 它是干嘛的

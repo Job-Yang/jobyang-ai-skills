@@ -14,12 +14,12 @@ This repository is not a prompt cheat sheet. Each Skill should be a compact piec
 
 | Skill | What it does |
 | --- | --- |
-| [vdd](./skills/vdd/) | Verification-driven development: run a verification pass before claiming "done" or "no problem" — no false optimism, no forced nitpicking, and the confidence to say it's fine. |
-| [haohao-shuohua](./skills/haohao-shuohua/) | Cleans Chinese writing so it sounds like a person wrote it: keeps facts, removes AI flavor, restores Chinese rhythm, and blocks fake profundity. |
-| [cuihuo](./skills/cuihuo/) | An opinion-hardening engine: turn a technical point into a plain, restrained op-ed with one idea per section, or distill it into a short note. |
-| [tangshan-style](./skills/tangshan-style/) | A writing engine for future-facing speculative essays with historical depth and lines worth chewing on. |
-| [feynman-explainer](./skills/feynman-explainer/) | Uses the Feynman technique to truly explain hard things: one reasoning chain, derived step by step, so non-experts actually get it. |
-| [sansi-erhouxing](./skills/sansi-erhouxing/) | Think before you edit: read the whole skeleton of an existing document before changing it, instead of patching one paragraph at a time. |
+| [vdd](./skills/vdd/README.en.md) | Verification-driven development: run a verification pass before claiming "done" or "no problem" — no false optimism, no forced nitpicking, and the confidence to say it's fine. |
+| [haohao-shuohua](./skills/haohao-shuohua/README.en.md) | Cleans Chinese writing so it sounds like a person wrote it: keeps facts, removes AI flavor, restores Chinese rhythm, and blocks fake profundity. |
+| [cuihuo](./skills/cuihuo/README.en.md) | An opinion-hardening engine: turn a technical point into a plain, restrained op-ed with one idea per section, or distill it into a short note. |
+| [tangshan-style](./skills/tangshan-style/README.en.md) | A writing engine for future-facing speculative essays with historical depth and lines worth chewing on. |
+| [feynman-explainer](./skills/feynman-explainer/README.en.md) | Uses the Feynman technique to truly explain hard things: one reasoning chain, derived step by step, so non-experts actually get it. |
+| [sansi-erhouxing](./skills/sansi-erhouxing/README.en.md) | Think before you edit: read the whole skeleton of an existing document before changing it, instead of patching one paragraph at a time. |
 | [video-reader](./skills/video-reader/) | Turns video into timestamped keyframes and a motion timeline, so an image-only LLM can reason about what happened at which second. |
 
 ## Why This Repo Exists
