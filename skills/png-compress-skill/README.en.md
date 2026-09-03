@@ -116,6 +116,7 @@ Automated gates catch obvious failures, not every subjective artifact. Before sh
 - App icons and launch images;
 - large gradients;
 - translucent shadows and glass-like assets;
+- assets with ICC or Display P3 color profiles, checked on a real device after metadata removal;
 - files with the largest absolute or percentage reduction.
 
 ## Dependencies
