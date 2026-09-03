@@ -21,6 +21,7 @@ AI 时代最容易被低估的东西，不是一次回答写得多漂亮，而�
 | [feynman-explainer](./skills/feynman-explainer/) | 用费曼技巧把复杂的东西讲透：一条逻辑链层层推导，让外行也能真正理解。 |
 | [sansi-erhouxing](./skills/sansi-erhouxing/) | 三思而后行：改任何成形文档前先通读全文骨架，别只盯一段、别补丁摞补丁。 |
 | [video-reader](./skills/video-reader/) | 把视频转成带时间戳的关键帧和运动时间线，让只能看图的大模型也能判断第几秒发生了什么。 |
+| [png-compress](./skills/png-compress-skill/) | 在本地批量压缩 App 工程里的 PNG：增量缓存、质量门禁、失败回退，不依赖在线 API。 |
 
 ## 为什么要有这个仓库
 
@@ -67,7 +68,8 @@ Claude Code 的默认用户级目录：
     ├── tangshan-style/
     ├── feynman-explainer/
     ├── sansi-erhouxing/
-    └── video-reader/
+    ├── video-reader/
+    └── png-compress-skill/
 ```
 
 每个技能目录都以 `SKILL.md` 为入口，部分带 `references/`、`scripts/` 或 `assets/`。

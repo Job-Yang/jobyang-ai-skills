@@ -21,6 +21,7 @@ This repository is not a prompt cheat sheet. Each Skill should be a compact piec
 | [feynman-explainer](./skills/feynman-explainer/README.en.md) | Uses the Feynman technique to truly explain hard things: one reasoning chain, derived step by step, so non-experts actually get it. |
 | [sansi-erhouxing](./skills/sansi-erhouxing/README.en.md) | Think before you edit: read the whole skeleton of an existing document before changing it, instead of patching one paragraph at a time. |
 | [video-reader](./skills/video-reader/) | Turns video into timestamped keyframes and a motion timeline, so an image-only LLM can reason about what happened at which second. |
+| [png-compress](./skills/png-compress-skill/README.en.md) | Batch-compresses PNG assets locally with incremental caching, quality gates, and automatic fallback, without an online API. |
 
 ## Why This Repo Exists
 
@@ -67,7 +68,8 @@ Keep each Skill directory intact. Do not copy only `SKILL.md`, because some Skil
     ├── tangshan-style/
     ├── feynman-explainer/
     ├── sansi-erhouxing/
-    └── video-reader/
+    ├── video-reader/
+    └── png-compress-skill/
 ```
 
 Each Skill directory uses `SKILL.md` as its entry point; some also ship `references/`, `scripts/`, or `assets/`.
