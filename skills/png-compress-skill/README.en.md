@@ -47,8 +47,8 @@ By default it skips `.git`, `Pods`, `Carthage`, `build`, `DerivedData`, `node_mo
 Clone the Skill repository and copy the complete directory into your agent's Skills directory:
 
 ```bash
-git clone https://github.com/Job-Yang/jobbyang-ai-skills.git
-cp -R jobbyang-ai-skills/skills/png-compress-skill ~/.claude/skills/png-compress-skill
+git clone https://github.com/Job-Yang/jobyang-ai-skills.git
+cp -R jobyang-ai-skills/skills/png-compress-skill ~/.claude/skills/png-compress-skill
 ```
 
 Then tell the agent:

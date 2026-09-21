@@ -28,8 +28,8 @@
 ## 安装
 
 ```bash
-git clone https://github.com/Job-Yang/jobbyang-ai-skills.git
-cp -R jobbyang-ai-skills/skills/cuihuo ~/.claude/skills/cuihuo
+git clone https://github.com/Job-Yang/jobyang-ai-skills.git
+cp -R jobyang-ai-skills/skills/cuihuo ~/.claude/skills/cuihuo
 ```
 
 ## 结构

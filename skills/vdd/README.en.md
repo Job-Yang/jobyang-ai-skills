@@ -57,8 +57,8 @@ VDD should not only sound right. It should be testable. This Skill is the smalle
 ## Install
 
 ```bash
-git clone https://github.com/Job-Yang/jobbyang-ai-skills.git
-cp -R jobbyang-ai-skills/skills/vdd ~/.claude/skills/vdd
+git clone https://github.com/Job-Yang/jobyang-ai-skills.git
+cp -R jobyang-ai-skills/skills/vdd ~/.claude/skills/vdd
 ```
 
 ## Structure

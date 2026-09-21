@@ -33,8 +33,8 @@ The second rule is restraint: **do not rewrite good sentences just to show work.
 ## Install
 
 ```bash
-git clone https://github.com/Job-Yang/jobbyang-ai-skills.git
-cp -R jobbyang-ai-skills/skills/haohao-shuohua ~/.claude/skills/haohao-shuohua
+git clone https://github.com/Job-Yang/jobyang-ai-skills.git
+cp -R jobyang-ai-skills/skills/haohao-shuohua ~/.claude/skills/haohao-shuohua
 ```
 
 Keep the complete directory. Do not copy only `SKILL.md`, because the Skill relies on the files under `references/`.

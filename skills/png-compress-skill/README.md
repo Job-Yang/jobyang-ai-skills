@@ -47,8 +47,8 @@ oxipng 无损收尾
 克隆技能总仓后，把完整目录复制到 Agent 的 Skills 目录：
 
 ```bash
-git clone https://github.com/Job-Yang/jobbyang-ai-skills.git
-cp -R jobbyang-ai-skills/skills/png-compress-skill ~/.claude/skills/png-compress-skill
+git clone https://github.com/Job-Yang/jobyang-ai-skills.git
+cp -R jobyang-ai-skills/skills/png-compress-skill ~/.claude/skills/png-compress-skill
 ```
 
 之后直接告诉 Agent：

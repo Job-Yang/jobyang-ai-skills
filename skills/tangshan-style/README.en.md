@@ -26,8 +26,8 @@ In one line: Tangshan Style is a **prose engine for speculative futures**. It ma
 ## Install
 
 ```bash
-git clone https://github.com/Job-Yang/jobbyang-ai-skills.git
-cp -R jobbyang-ai-skills/skills/tangshan-style ~/.claude/skills/tangshan-style
+git clone https://github.com/Job-Yang/jobyang-ai-skills.git
+cp -R jobyang-ai-skills/skills/tangshan-style ~/.claude/skills/tangshan-style
 ```
 
 ## Structure

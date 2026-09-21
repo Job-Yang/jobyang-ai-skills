@@ -24,8 +24,8 @@ The result should be something the reader can retell in their own words. Plain l
 ## Install
 
 ```bash
-git clone https://github.com/Job-Yang/jobbyang-ai-skills.git
-cp -R jobbyang-ai-skills/skills/feynman-explainer ~/.claude/skills/feynman-explainer
+git clone https://github.com/Job-Yang/jobyang-ai-skills.git
+cp -R jobyang-ai-skills/skills/feynman-explainer ~/.claude/skills/feynman-explainer
 ```
 
 ## Structure

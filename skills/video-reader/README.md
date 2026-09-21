@@ -18,15 +18,15 @@ This repo *is* a Skill. Choose one of these three installation methods.
 ### Method 1: Clone this Skill index (recommended)
 
 ```bash
-git clone https://github.com/Job-Yang/jobbyang-ai-skills.git
-cp -R jobbyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
+git clone https://github.com/Job-Yang/jobyang-ai-skills.git
+cp -R jobyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
 ```
 
 For other agents, replace the destination with that agent's skills directory.
 
 ### Method 2: Legacy repository
 
-`video-reader` has moved into the `Job-Yang/jobbyang-ai-skills` Skill index. The old repository is kept only as a migration notice.
+`video-reader` has moved into the `Job-Yang/jobyang-ai-skills` Skill index. The old repository is kept only as a migration notice.
 
 ### Method 3: Install manually
 

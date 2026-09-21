@@ -13,20 +13,20 @@
 
 ## 作为技能安装
 
-这个技能现在收在 `Job-Yang/jobbyang-ai-skills` 技能总仓里，有三种安装方式。
+这个技能现在收在 `Job-Yang/jobyang-ai-skills` 技能总仓里，有三种安装方式。
 
 ### 方法一：通过 Git 克隆（推荐）
 
 ```bash
-git clone https://github.com/Job-Yang/jobbyang-ai-skills.git
-cp -R jobbyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
+git clone https://github.com/Job-Yang/jobyang-ai-skills.git
+cp -R jobyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
 ```
 
 其他 Agent 请改成对应的 skills 目录。
 
 ### 方法二：旧仓库
 
-`video-reader` 原仓库后续只保留迁移说明并归档，主维护位置是 `Job-Yang/jobbyang-ai-skills/skills/video-reader`。
+`video-reader` 原仓库后续只保留迁移说明并归档，主维护位置是 `Job-Yang/jobyang-ai-skills/skills/video-reader`。
 
 ### 方法三：手动安装
 

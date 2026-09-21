@@ -36,8 +36,8 @@ Agent 尤其容易犯这个毛病。它的默认反应是**看到一个点就修
 ## 安装
 
 ```bash
-git clone https://github.com/Job-Yang/jobbyang-ai-skills.git
-cp -R jobbyang-ai-skills/skills/sansi-erhouxing ~/.claude/skills/sansi-erhouxing
+git clone https://github.com/Job-Yang/jobyang-ai-skills.git
+cp -R jobyang-ai-skills/skills/sansi-erhouxing ~/.claude/skills/sansi-erhouxing
 ```
 
 ## 结构

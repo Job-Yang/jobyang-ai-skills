@@ -51,8 +51,8 @@ VDD 这套理论光讲道理，别人会问「真有用吗」。这个技能就�
 ## 安装
 
 ```bash
-git clone https://github.com/Job-Yang/jobbyang-ai-skills.git
-cp -R jobbyang-ai-skills/skills/vdd ~/.claude/skills/vdd
+git clone https://github.com/Job-Yang/jobyang-ai-skills.git
+cp -R jobyang-ai-skills/skills/vdd ~/.claude/skills/vdd
 ```
 
 ## 结构

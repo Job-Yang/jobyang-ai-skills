@@ -42,9 +42,9 @@ The Skills in this repository should follow a few rules:
 Clone the repository and copy the Skill directory you need into your agent's Skills directory.
 
 ```bash
-git clone https://github.com/Job-Yang/jobbyang-ai-skills.git
-cp -R jobbyang-ai-skills/skills/haohao-shuohua ~/.claude/skills/haohao-shuohua
-cp -R jobbyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
+git clone https://github.com/Job-Yang/jobyang-ai-skills.git
+cp -R jobyang-ai-skills/skills/haohao-shuohua ~/.claude/skills/haohao-shuohua
+cp -R jobyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
 ```
 
 Claude Code's default user-level directory is:

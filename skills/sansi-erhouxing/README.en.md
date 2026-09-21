@@ -38,8 +38,8 @@ If any gate fails, the correct result is not to force a patch. The right move is
 ## Install
 
 ```bash
-git clone https://github.com/Job-Yang/jobbyang-ai-skills.git
-cp -R jobbyang-ai-skills/skills/sansi-erhouxing ~/.claude/skills/sansi-erhouxing
+git clone https://github.com/Job-Yang/jobyang-ai-skills.git
+cp -R jobyang-ai-skills/skills/sansi-erhouxing ~/.claude/skills/sansi-erhouxing
 ```
 
 ## Structure

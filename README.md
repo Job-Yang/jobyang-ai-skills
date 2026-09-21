@@ -42,9 +42,9 @@ AI 时代最容易被低估的东西，不是一次回答写得多漂亮，而�
 克隆仓库后，把需要的技能目录复制到你的 Agent Skills 目录。
 
 ```bash
-git clone https://github.com/Job-Yang/jobbyang-ai-skills.git
-cp -R jobbyang-ai-skills/skills/haohao-shuohua ~/.claude/skills/haohao-shuohua
-cp -R jobbyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
+git clone https://github.com/Job-Yang/jobyang-ai-skills.git
+cp -R jobyang-ai-skills/skills/haohao-shuohua ~/.claude/skills/haohao-shuohua
+cp -R jobyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
 ```
 
 Claude Code 的默认用户级目录：
