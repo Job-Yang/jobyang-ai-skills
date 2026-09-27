@@ -1,0 +1,100 @@
+{
+  "schema": "design-stage-contract/v1",
+  "projectId": "product-topic",
+  "phase": "direction",
+  "stageBoundaries": {
+    "requirements": {
+      "confirmed": ["R01"],
+      "flexible": ["页面数量与布局"],
+      "deferred": ["具体控件与视觉"],
+      "evidence": ["PRD 已人审"]
+    },
+    "structure": {
+      "confirmed": ["P01 承载 R01"],
+      "flexible": ["区块精确位置"],
+      "deferred": ["动作步骤与状态反馈"],
+      "evidence": ["结构线框已确认"]
+    },
+    "interaction": {
+      "confirmed": ["J01、A01、S01、S02"],
+      "flexible": ["控件形态与视觉层级"],
+      "deferred": ["颜色、字体、动效细节"],
+      "evidence": ["核心旅程已在灰阶原型点通"]
+    },
+    "visualDirection": {
+      "confirmed": [],
+      "flexible": ["构图、组件语言、信息密度和视觉气质"],
+      "deferred": ["选定方向的全部页面与边界状态"],
+      "evidence": ["高保真方向候选已生成并完成真实渲染"]
+    },
+    "visualFinal": {
+      "confirmed": [],
+      "flexible": ["不改变行为的像素级打磨"],
+      "deferred": ["工程实现"],
+      "evidence": []
+    },
+    "delivery": {
+      "confirmed": [],
+      "flexible": ["下游技术实现"],
+      "deferred": [],
+      "evidence": []
+    }
+  },
+  "requirements": [
+    {
+      "id": "R01",
+      "title": "查看项目",
+      "acceptance": "用户能进入指定项目"
+    }
+  ],
+  "pages": [
+    {
+      "id": "P01",
+      "title": "项目总览",
+      "requirementIds": ["R01"]
+    }
+  ],
+  "journeys": [
+    {
+      "id": "J01",
+      "title": "进入项目",
+      "actionIds": ["A01"],
+      "directionRequired": true,
+      "finalRequired": true
+    }
+  ],
+  "actions": [
+    {
+      "id": "A01",
+      "title": "打开项目",
+      "fromState": "S01",
+      "toState": "S02",
+      "directionRequired": true,
+      "finalRequired": true
+    }
+  ],
+  "states": [
+    {
+      "id": "S01",
+      "title": "项目列表",
+      "directionRequired": true,
+      "finalRequired": true
+    },
+    {
+      "id": "S02",
+      "title": "项目已打开",
+      "directionRequired": true,
+      "finalRequired": true
+    }
+  ],
+  "variants": [
+    {
+      "id": "direction-a",
+      "phase": "direction",
+      "pageIds": ["P01"],
+      "journeyIds": ["J01"],
+      "actionIds": ["A01"],
+      "stateIds": ["S01", "S02"]
+    }
+  ]
+}

@@ -19,9 +19,19 @@ This repository is not a prompt cheat sheet. Each Skill should be a compact piec
 | [cuihuo](./skills/cuihuo/README.en.md) | An opinion-hardening engine: turn a technical point into a plain, restrained op-ed with one idea per section, or distill it into a short note. |
 | [tangshan-style](./skills/tangshan-style/README.en.md) | A writing engine for future-facing speculative essays with historical depth and lines worth chewing on. |
 | [feynman-explainer](./skills/feynman-explainer/README.en.md) | Uses the Feynman technique to truly explain hard things: one reasoning chain, derived step by step, so non-experts actually get it. |
+| [opportunity-radar](./skills/opportunity-radar/README.en.md) | Finds product leads in public sources or supplied material, retaining evidence and signal strength. |
+| [opportunity-scorecard](./skills/opportunity-scorecard/README.en.md) | Evaluates product ideas across ten dimensions, with deterministic scoring and verdicts. |
+| [product-brief](./skills/product-brief/README.en.md) | Turns direct requirements or research into a PRD, testable acceptance conditions, and milestones. |
+| [style-compass](./skills/style-compass/README.en.md) | Creates UI/UX in a shared review workbench, preserving high-fidelity candidates, region comments, prototypes, and specifications. |
+| [engineering-docs](./skills/engineering-docs/README.en.md) | Unified engineering-document entry point for context gathering, co-authoring, technical decisions, diagrams, and implementation validation. |
+| [outside-view](./skills/outside-view/README.en.md) | Retrieves evidence only when it can change a decision, resolves conflicts, and stops unproductive research. |
 | [sansi-erhouxing](./skills/sansi-erhouxing/README.en.md) | Think before you edit: read the whole skeleton of an existing document before changing it, instead of patching one paragraph at a time. |
 | [video-reader](./skills/video-reader/) | Turns video into timestamped keyframes and a motion timeline, so an image-only LLM can reason about what happened at which second. |
 | [png-compress](./skills/png-compress-skill/README.en.md) | Batch-compresses PNG assets locally with incremental caching, quality gates, and automatic fallback, without an online API. |
+
+Radar, scorecard, product brief, style compass, engineering docs, and outside-view can each be installed independently. None requires iLoop or prior nodes. Their bilingual READMEs explain inputs, outputs, methods, examples, and requirements. Only an explicitly active OPC workflow supplies orchestration and approval rules; the skills do not impose a fixed sequence.
+
+Portable transfer tools ship with the relevant packages. The `opc-artifact/v1` format does not require an OPC runtime: standalone use provides explicit files and output locations. Research, computation, and visual verification require their respective host tools; missing verification is disclosed.
 
 ## Why This Repo Exists
 
@@ -39,18 +49,21 @@ The Skills in this repository should follow a few rules:
 
 ## Install
 
-Clone the repository and copy the Skill directory you need into your agent's Skills directory.
+Clone the repository and copy the complete Skill directory into your agent's Skills directory. These are first-install examples; compare local changes before updating an existing installation.
 
 ```bash
 git clone https://github.com/Job-Yang/jobyang-ai-skills.git
-cp -R jobyang-ai-skills/skills/haohao-shuohua ~/.claude/skills/haohao-shuohua
-cp -R jobyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
+mkdir -p ~/.trae/skills
+cp -R jobyang-ai-skills/skills/opportunity-radar ~/.trae/skills/opportunity-radar
+cp -R jobyang-ai-skills/skills/style-compass ~/.trae/skills/style-compass
 ```
 
-Claude Code's default user-level directory is:
+TRAE uses `~/.trae/skills/` for user-level skills. Replace the directory name to install another skill; start a new session if it has not appeared in the skill list. Claude Code uses `~/.claude/skills/`:
 
-```text
-~/.claude/skills/
+```bash
+mkdir -p ~/.claude/skills
+cp -R jobyang-ai-skills/skills/haohao-shuohua ~/.claude/skills/haohao-shuohua
+cp -R jobyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
 ```
 
 Keep each Skill directory intact. Do not copy only `SKILL.md`, because some Skills read files under `references/`, `scripts/`, or `assets/`.
@@ -67,6 +80,12 @@ Keep each Skill directory intact. Do not copy only `SKILL.md`, because some Skil
     ├── cuihuo/
     ├── tangshan-style/
     ├── feynman-explainer/
+    ├── opportunity-radar/
+    ├── opportunity-scorecard/
+    ├── product-brief/
+    ├── style-compass/
+    ├── engineering-docs/
+    ├── outside-view/
     ├── sansi-erhouxing/
     ├── video-reader/
     └── png-compress-skill/

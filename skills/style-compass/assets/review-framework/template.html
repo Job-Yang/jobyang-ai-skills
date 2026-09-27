@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>产品名 · 设计全过程工作台</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="review-framework/review-framework.css?v=5">
+  <style>
+    /* 项目只维护画板内容的样式，不修改外层工作台。 */
+    .prototype-page {
+      display: grid;
+      grid-template-rows: 64px minmax(0, 1fr) 72px;
+      overflow: hidden;
+      color: #252522;
+      background: #fff;
+    }
+
+    .prototype-header,
+    .prototype-footer {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      border-bottom: 1px solid #d5d5d0;
+    }
+
+    .prototype-footer {
+      border-top: 1px solid #d5d5d0;
+      border-bottom: 0;
+    }
+
+    .prototype-header strong,
+    .prototype-header span {
+      display: block;
+    }
+
+    .prototype-header span {
+      margin-top: 3px;
+      color: #777872;
+      font-size: 11px;
+    }
+
+    .prototype-button {
+      min-height: 34px;
+      padding: 0 12px;
+      border: 1px solid #aaa9a3;
+      border-radius: 4px;
+      background: #f4f4f1;
+    }
+
+    .prototype-content {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 0;
+      padding: 40px;
+      background: #f7f7f5;
+    }
+
+    .prototype-placeholder {
+      width: min(720px, 84%);
+      padding: 38px;
+      border: 1px solid #b9b9b3;
+      background: #fff;
+      text-align: center;
+    }
+
+    .prototype-placeholder h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .prototype-placeholder p {
+      max-width: 520px;
+      margin: 12px auto 0;
+      color: #777872;
+      line-height: 1.65;
+    }
+
+    .prototype-page[data-review-variant="direction-b"] .prototype-content {
+      background: #eef2f0;
+    }
+
+    .prototype-page[data-review-variant="direction-b"] .prototype-placeholder {
+      border-color: #40675f;
+      box-shadow: 10px 10px 0 #d8e3df;
+    }
+  </style>
+</head>
+<body>
+  <!-- 固定工作台开始：新项目不重写这部分。 -->
+  <main class="rf-shell" data-mode="experience" data-left-panel="open" data-right-panel="closed">
+    <header class="rf-topbar">
+      <div class="rf-brand">
+        <div class="rf-brand-mark">产</div>
+        <div class="rf-brand-copy">
+          <strong data-role="project-title">产品名</strong>
+          <span data-role="project-meta">设计全过程工作台</span>
+        </div>
+      </div>
+      <nav class="rf-flow" data-role="stage-list" aria-label="设计流程"></nav>
+      <div class="rf-top-actions">
+        <button
+          class="rf-icon-button"
+          data-command="left-panel-toggle"
+          aria-label="展开或收起项目内容"
+          aria-pressed="true"
+          title="项目内容"
+        ><span aria-hidden="true">页</span></button>
+        <button
+          class="rf-icon-button"
+          data-command="hotspots"
+          aria-label="显示可操作位置"
+          title="显示可操作位置"
+        ><span aria-hidden="true">点</span></button>
+        <button
+          class="rf-icon-button rf-comment-button"
+          data-command="comments-toggle"
+          aria-label="打开评审检查器"
+          aria-pressed="false"
+          title="评审检查器"
+        >
+          <span aria-hidden="true">评</span>
+          <b data-role="comment-count">0</b>
+        </button>
+      </div>
+    </header>
+
+    <section class="rf-main">
+      <aside class="rf-left" data-side-panel="left" data-open>
+        <header class="rf-side-header">
+          <strong data-role="page-section-title">当前关卡 · 项目内容</strong>
+          <button
+            class="rf-panel-close"
+            data-command="left-panel-toggle"
+            aria-label="收起项目内容"
+            title="收起"
+          >‹</button>
+        </header>
+        <nav class="rf-resource-tabs" aria-label="项目内容分类">
+          <button data-resource-tab="pages" aria-selected="true">页面</button>
+          <button data-resource-tab="states" aria-selected="false">状态</button>
+          <button data-resource-tab="assets" aria-selected="false">素材</button>
+          <button data-resource-tab="outputs" aria-selected="false">产物</button>
+        </nav>
+        <section class="rf-resource-panel" data-resource-panel="pages">
+          <ul class="rf-page-list" data-role="page-list"></ul>
+          <div class="rf-left-note" data-role="left-note"></div>
+        </section>
+        <section class="rf-resource-panel" data-resource-panel="states" hidden>
+          <div class="rf-resource-list" data-role="state-list"></div>
+        </section>
+        <section class="rf-resource-panel" data-resource-panel="assets" hidden>
+          <div class="rf-resource-list" data-role="asset-list"></div>
+        </section>
+        <section class="rf-resource-panel" data-resource-panel="outputs" hidden>
+          <div class="rf-resource-list" data-role="output-list"></div>
+        </section>
+      </aside>
+
+      <section class="rf-center">
+        <header class="rf-canvas-header">
+          <div class="rf-canvas-title">
+            <strong data-role="canvas-title">全部页面</strong>
+            <span data-role="canvas-subtitle">左侧选页面，底部选方案</span>
+          </div>
+          <div class="rf-canvas-tools">
+            <div class="rf-tool-group">
+              <button
+                class="rf-tool"
+                data-command="pan"
+                aria-pressed="false"
+                title="空白处可直接拖动；启用后可从页面上拖动"
+              >手形</button>
+              <button class="rf-tool" data-command="reset">原始</button>
+            </div>
+            <div class="rf-tool-group">
+              <button class="rf-tool" data-command="zoom-out" aria-label="缩小">−</button>
+              <button class="rf-tool" data-role="zoom-label">60%</button>
+              <button class="rf-tool" data-command="zoom-in" aria-label="放大">＋</button>
+              <button class="rf-tool" data-command="fit">适应</button>
+            </div>
+          </div>
+        </header>
+
+        <div class="rf-canvas" aria-label="原型画板">
+          <div class="rf-review-toolbar" role="toolbar" aria-label="画布评审工具">
+            <button class="rf-review-tool rf-mode" data-mode="experience" aria-pressed="true">
+              <span class="rf-review-tool-icon" aria-hidden="true">↖</span>
+              <span>体验</span>
+            </button>
+            <button class="rf-review-tool rf-mode" data-mode="explain" aria-pressed="false">
+              <span class="rf-review-tool-icon" aria-hidden="true">i</span>
+              <span>讲解</span>
+            </button>
+            <button class="rf-review-tool rf-mode" data-mode="comment" aria-pressed="false">
+              <span class="rf-review-tool-icon" aria-hidden="true">●</span>
+              <span>评论</span>
+            </button>
+            <button class="rf-review-tool rf-mode" data-mode="compare" aria-pressed="false">
+              <span class="rf-review-tool-icon" aria-hidden="true">▣</span>
+              <span>对比</span>
+            </button>
+          </div>
+          <div class="rf-canvas-mode-hint" data-role="canvas-mode-hint">
+            <strong data-role="canvas-mode-title">体验原型</strong>
+            <span data-role="canvas-mode-copy">直接点击页面里的按钮和入口。</span>
+          </div>
+          <div class="rf-board">
+            <!-- 可替换画板开始：新项目只新增或替换这些 article。 -->
+            <article
+              class="rf-page prototype-page"
+              data-review-artboard="structure-home"
+              data-review-stage="structure"
+              data-review-page="home"
+              data-review-variant="base"
+            >
+              <header class="prototype-header" data-review-module="home-header">
+                <div><strong>产品名</strong><span>结构关 · 首页</span></div>
+                <button class="prototype-button" data-prototype-action="state:menu-open">打开菜单</button>
+              </header>
+              <section class="prototype-content" data-review-module="home-content">
+                <div class="prototype-placeholder">
+                  <h1>替换为首页结构线框</h1>
+                  <p>固定工作台不限制产品怎么设计。这里只替换真实页面内容。</p>
+                </div>
+              </section>
+              <footer class="prototype-footer" data-review-module="home-footer">
+                <span>页面级状态和操作</span>
+                <button class="prototype-button" data-prototype-action="page:settings">查看设置页</button>
+              </footer>
+            </article>
+
+            <article
+              class="rf-page prototype-page"
+              data-review-artboard="structure-settings"
+              data-review-stage="structure"
+              data-review-page="settings"
+              data-review-variant="base"
+            >
+              <header class="prototype-header" data-review-module="settings-header">
+                <div><strong>产品名</strong><span>结构关 · 设置页</span></div>
+              </header>
+              <section class="prototype-content" data-review-module="settings-content">
+                <div class="prototype-placeholder">
+                  <h1>替换为设置页结构线框</h1>
+                  <p>左侧“项目内容”会根据设计清单自动生成，不需要手写导航。</p>
+                </div>
+              </section>
+              <footer class="prototype-footer" data-review-module="settings-footer">
+                <span>设置页操作</span>
+                <button class="prototype-button" data-prototype-action="page:home">返回首页</button>
+              </footer>
+            </article>
+
+            <article
+              class="rf-page prototype-page"
+              data-review-artboard="interaction-home"
+              data-review-stage="interaction"
+              data-review-page="home"
+              data-review-variant="base"
+            >
+              <header class="prototype-header" data-review-module="interaction-header">
+                <div><strong>产品名</strong><span>交互关 · 首页</span></div>
+              </header>
+              <section class="prototype-content" data-review-module="interaction-content">
+                <div class="prototype-placeholder">
+                  <h1>替换为可点灰阶原型</h1>
+                  <p>体验模式运行真实动线，讲解和评论模式不会误触业务动作。</p>
+                </div>
+              </section>
+              <footer class="prototype-footer" data-review-module="interaction-footer">
+                <span>核心任务动作</span>
+                <button class="prototype-button" data-prototype-action="state:completed">完成任务</button>
+              </footer>
+            </article>
+
+            <article
+              class="rf-page prototype-page"
+              data-review-artboard="visual-final-home-a"
+              data-review-stage="visual-final"
+              data-review-page="home"
+              data-review-variant="direction-a"
+            >
+              <header class="prototype-header" data-review-module="visual-a-header">
+                <div><strong>方向 A</strong><span>克制、清晰、紧凑</span></div>
+              </header>
+              <section class="prototype-content" data-review-module="visual-a-content">
+                <div class="prototype-placeholder">
+                  <h1>高保真方案 A</h1>
+                  <p>替换为包含真实内容、完整组件、关键状态和基础交互的成品级候选。</p>
+                </div>
+              </section>
+              <footer class="prototype-footer" data-review-module="visual-a-footer">
+                <span>方案 A 的操作区</span>
+              </footer>
+            </article>
+
+            <article
+              class="rf-page prototype-page"
+              data-review-artboard="visual-final-home-b"
+              data-review-stage="visual-final"
+              data-review-page="home"
+              data-review-variant="direction-b"
+            >
+              <header class="prototype-header" data-review-module="visual-b-header">
+                <div><strong>方向 B</strong><span>温和、松弛、有层次</span></div>
+              </header>
+              <section class="prototype-content" data-review-module="visual-b-content">
+                <div class="prototype-placeholder">
+                  <h1>高保真方案 B</h1>
+                  <p>候选可以重新组织控件和构图，不得把低保真线框直接换色。</p>
+                </div>
+              </section>
+              <footer class="prototype-footer" data-review-module="visual-b-footer">
+                <span>方案 B 的操作区</span>
+              </footer>
+            </article>
+
+            <article
+              class="rf-page prototype-page"
+              data-review-artboard="delivery-home"
+              data-review-stage="delivery"
+              data-review-page="home"
+              data-review-variant="final"
+            >
+              <header class="prototype-header" data-review-module="delivery-header">
+                <div><strong>最终设计</strong><span>设计交付</span></div>
+              </header>
+              <section class="prototype-content" data-review-module="delivery-content">
+                <div class="prototype-placeholder">
+                  <h1>最终可交付原型</h1>
+                  <p>网页原型、设计规格、设计令牌和评审记录从这里统一交付。</p>
+                </div>
+              </section>
+              <footer class="prototype-footer" data-review-module="delivery-footer">
+                <span>交付物索引</span>
+              </footer>
+            </article>
+            <!-- 可替换画板结束。 -->
+          </div>
+        </div>
+
+        <div class="rf-bottom-dock" data-role="bottom-dock">
+          <nav class="rf-page-strip" data-role="context-strip" aria-label="页面或方案总览"></nav>
+          <footer class="rf-footer">
+            <div class="rf-footer-copy">
+              <strong data-role="footer-title">当前：结构</strong>
+              <span data-role="footer-copy">确认页面和功能位置。</span>
+            </div>
+            <div class="rf-footer-actions">
+              <button class="rf-button" data-command="comments-export">导出评审意见</button>
+              <button class="rf-button rf-button-primary" data-command="stage-confirm">确认本关</button>
+            </div>
+          </footer>
+        </div>
+      </section>
+
+      <aside class="rf-right" data-side-panel="right">
+        <header class="rf-side-header">
+          <strong>上下文检查器</strong>
+          <button
+            class="rf-panel-close"
+            data-command="right-panel-toggle"
+            aria-label="收起上下文检查器"
+            title="收起"
+          >›</button>
+        </header>
+        <section class="rf-variant-decision" data-role="variant-decision" hidden>
+          <div class="rf-section-title">方案选择与融合</div>
+          <div class="rf-panel-section">
+            <p class="rf-panel-title" data-role="variant-decision-title">当前查看：全部方案</p>
+            <p class="rf-panel-copy" data-role="variant-decision-state">尚未选定主方向</p>
+            <textarea
+              class="rf-variant-note"
+              data-role="variant-note"
+              placeholder="补充意见，例如：以 A 为主，融合 B 的导航和配色。"
+            ></textarea>
+            <div class="rf-variant-actions">
+              <button class="rf-button" data-command="variant-note-save">保存补充意见</button>
+              <button class="rf-button rf-button-primary" data-command="variant-select">
+                先单独查看一个方案
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section data-panel="experience">
+          <div class="rf-section-title">体验原型</div>
+          <div class="rf-panel-section">
+            <p class="rf-panel-title">直接走一遍真实流程</p>
+            <p class="rf-panel-copy">点击页面里的按钮和入口；双指或拖动空白处可直接平移画布。看不出哪里能点时，使用“显示可操作位置”。</p>
+            <button class="rf-button rf-panel-command" data-command="hotspots">显示当前页可操作位置</button>
+          </div>
+        </section>
+
+        <section data-panel="explain">
+          <div class="rf-section-title">模块讲解</div>
+          <div class="rf-panel-section">
+            <p class="rf-panel-kicker" data-role="guide-kicker">原型讲解</p>
+            <h2 class="rf-panel-title" data-role="guide-title">选择一个模块</h2>
+            <div class="rf-guide-progress"><span data-role="guide-progress"></span></div>
+            <div class="rf-guide-facts" data-role="guide-facts"></div>
+            <div class="rf-guide-actions">
+              <button class="rf-button" data-command="guide-prev">上一个</button>
+              <button class="rf-button rf-button-primary" data-command="guide-start">从头讲解</button>
+              <button class="rf-button" data-command="guide-next">下一个</button>
+            </div>
+          </div>
+          <div class="rf-panel-section">
+            <p class="rf-panel-kicker">当前画板模块</p>
+            <div class="rf-guide-index" data-role="guide-index"></div>
+          </div>
+        </section>
+
+        <section data-panel="comment">
+          <div class="rf-section-title">区域评论</div>
+          <div class="rf-panel-section rf-comment-help">
+            <p class="rf-panel-title">把意见钉在具体位置</p>
+            <p class="rf-panel-copy">单击画板放评论钉；按住拖动可框选区域。双指仍可平移，按住空格可拖动画布。</p>
+          </div>
+          <div class="rf-comment-toolbar">
+            <div class="rf-filter-row">
+              <button class="rf-comment-filter" data-filter="open" aria-pressed="true">待处理</button>
+              <button class="rf-comment-filter" data-filter="processing" aria-pressed="false">处理中</button>
+              <button class="rf-comment-filter" data-filter="resolved" aria-pressed="false">已解决</button>
+              <button class="rf-comment-filter" data-filter="all" aria-pressed="false">全部</button>
+              <button class="rf-comment-filter" data-command="comments-export">导出</button>
+            </div>
+          </div>
+          <ul class="rf-comment-list" data-role="comment-list"></ul>
+        </section>
+
+        <section data-panel="compare">
+          <div class="rf-section-title">并排对比</div>
+          <div class="rf-panel-section">
+            <p class="rf-panel-title">选择 2 至 4 张画板</p>
+            <p class="rf-panel-copy">同一阶段的页面或方案会并排放在画板中。这里适合比较页面体系，也适合比较同一页面的多个方向。</p>
+            <div class="rf-compare-actions">
+              <button class="rf-button" data-command="compare-all">全选</button>
+              <button class="rf-button" data-command="compare-clear">清空</button>
+            </div>
+          </div>
+          <div class="rf-compare-list" data-role="compare-list"></div>
+        </section>
+      </aside>
+    </section>
+  </main>
+  <!-- 固定工作台结束。 -->
+
+  <section class="rf-floating-guide" hidden>
+    <strong data-role="floating-guide-title"></strong>
+    <span data-role="floating-guide-copy"></span>
+  </section>
+
+  <section class="rf-composer" hidden>
+    <h2 class="rf-composer-title" data-role="composer-title">评论这个区域</h2>
+    <p class="rf-composer-target" data-role="composer-target"></p>
+    <textarea data-role="composer-input" placeholder="写下疑问或修改意见。"></textarea>
+    <div class="rf-severity-row">
+      <button class="rf-severity" data-severity="question" aria-pressed="false">疑问</button>
+      <button class="rf-severity" data-severity="suggestion" aria-pressed="true">建议</button>
+      <button class="rf-severity" data-severity="must" aria-pressed="false">必须修改</button>
+    </div>
+    <div class="rf-comment-actions">
+      <button class="rf-button" data-command="comment-cancel">取消</button>
+      <button class="rf-button rf-button-primary" data-command="comment-save">记录意见</button>
+    </div>
+  </section>
+
+  <div class="rf-toast" role="status" aria-live="polite"></div>
+
+  <!-- 可替换设计清单开始：外壳会据此自动生成关卡、页面、方案和讲解。 -->
+  <script id="review-manifest" type="application/json">
+  {
+    "workspace": {
+      "layout": "spatial-studio/v1",
+      "leftResources": ["pages", "states", "assets", "outputs"],
+      "reviewModes": ["experience", "explain", "comment", "compare"],
+      "narrowPanelPolicy": "exclusive",
+      "contextDock": true
+    },
+    "project": {
+      "id": "product-topic",
+      "title": "产品名",
+      "subtitle": "设计全过程工作台",
+      "version": "0.1"
+    },
+    "activeStageId": "structure",
+    "stages": [
+      {
+        "id": "structure",
+        "title": "结构",
+        "summary": "页面和功能位置",
+        "confirm": "确认页面是否齐全、信息层级和跳转关系是否正确。",
+        "status": "active",
+        "defaultPageId": "all",
+        "defaultVariantId": "all"
+      },
+      {
+        "id": "interaction",
+        "title": "交互",
+        "summary": "动线和状态反馈",
+        "confirm": "亲手走通核心任务，确认步骤、反馈和异常状态。",
+        "status": "idle",
+        "defaultPageId": "all",
+        "defaultVariantId": "all"
+      },
+      {
+        "id": "visual-final",
+        "title": "视觉定稿",
+        "summary": "高保真候选与细节打磨",
+        "confirm": "选择成品级主方向，并在同一关完成融合和局部修改。",
+        "status": "idle",
+        "defaultPageId": "home",
+        "defaultVariantId": "all"
+      },
+      {
+        "id": "delivery",
+        "title": "设计交付",
+        "summary": "网页原型和规格",
+        "confirm": "确认最终原型、设计规格、设计令牌和评审记录可以交给开发。",
+        "status": "idle",
+        "defaultPageId": "all",
+        "defaultVariantId": "all"
+      }
+    ],
+    "artboards": [
+      {
+        "id": "structure-home",
+        "stageId": "structure",
+        "pageId": "home",
+        "pageTitle": "首页",
+        "variantId": "base",
+        "variantTitle": "结构基线",
+        "title": "结构 · 首页",
+        "summary": "首页的功能和信息层级。",
+        "modules": [
+          {
+            "id": "home-header",
+            "title": "首页顶栏",
+            "what": "产品身份和全局入口。",
+            "why": "把跨页面操作放在稳定位置。",
+            "actions": "打开全局菜单。",
+            "states": "默认、菜单展开。",
+            "confirm": "全局入口是否齐全。"
+          },
+          {
+            "id": "home-content",
+            "title": "首页主要内容",
+            "what": "首页承担的主要任务。",
+            "why": "让核心任务成为页面视觉中心。",
+            "actions": "查看和处理主要内容。",
+            "states": "默认、空、加载、错误。",
+            "confirm": "内容顺序和层级是否正确。"
+          },
+          {
+            "id": "home-footer",
+            "title": "首页操作区",
+            "what": "页面级操作和状态。",
+            "why": "把当前任务的动作固定在可预期位置。",
+            "actions": "进入设置页。",
+            "states": "默认、禁用。",
+            "confirm": "操作是否缺失或重复。"
+          }
+        ]
+      },
+      {
+        "id": "structure-settings",
+        "stageId": "structure",
+        "pageId": "settings",
+        "pageTitle": "设置",
+        "variantId": "base",
+        "variantTitle": "结构基线",
+        "title": "结构 · 设置",
+        "summary": "设置页的分组和返回关系。",
+        "modules": [
+          {
+            "id": "settings-header",
+            "title": "设置页顶栏",
+            "what": "设置页标题和返回入口。",
+            "why": "保持二级页面定位清楚。",
+            "actions": "返回上一页。",
+            "states": "默认。",
+            "confirm": "层级是否清楚。"
+          },
+          {
+            "id": "settings-content",
+            "title": "设置内容",
+            "what": "设置项分组区域。",
+            "why": "按任务而不是按技术模块组织。",
+            "actions": "修改设置。",
+            "states": "默认、保存中、失败。",
+            "confirm": "设置分组是否符合用户理解。"
+          },
+          {
+            "id": "settings-footer",
+            "title": "设置操作区",
+            "what": "设置页提交和反馈区域。",
+            "why": "集中承载保存结果。",
+            "actions": "保存或返回。",
+            "states": "可提交、禁用、成功。",
+            "confirm": "动作和反馈是否明确。"
+          }
+        ]
+      },
+      {
+        "id": "interaction-home",
+        "stageId": "interaction",
+        "pageId": "home",
+        "pageTitle": "首页",
+        "variantId": "base",
+        "variantTitle": "交互基线",
+        "title": "交互 · 首页",
+        "summary": "核心任务的可点灰阶原型。",
+        "modules": [
+          {
+            "id": "interaction-header",
+            "title": "交互入口",
+            "what": "核心任务的起点。",
+            "why": "让用户不需要寻找第一步。",
+            "actions": "开始任务。",
+            "states": "待开始、进行中。",
+            "confirm": "第一步是否自然。"
+          },
+          {
+            "id": "interaction-content",
+            "title": "任务过程",
+            "what": "核心任务进行区域。",
+            "why": "集中显示输入、进度和反馈。",
+            "actions": "完成主要操作。",
+            "states": "默认、处理中、错误。",
+            "confirm": "过程反馈是否充分。"
+          },
+          {
+            "id": "interaction-footer",
+            "title": "完成动作",
+            "what": "结束当前任务的动作。",
+            "why": "让任务闭环清楚。",
+            "actions": "完成任务。",
+            "states": "可用、禁用、完成。",
+            "confirm": "完成后的去向是否明确。"
+          }
+        ]
+      },
+      {
+        "id": "visual-final-home-a",
+        "stageId": "visual-final",
+        "pageId": "home",
+        "pageTitle": "首页",
+        "variantId": "direction-a",
+        "variantTitle": "方向 A",
+        "variantSummary": "克制、清晰、紧凑",
+        "title": "首页 · 高保真方案 A",
+        "summary": "包含真实内容、完整组件、关键状态和基础交互。",
+        "modules": [
+          {
+            "id": "visual-a-header",
+            "title": "方向 A 顶栏",
+            "what": "方向 A 的导航样式。",
+            "why": "强调信息密度和效率。",
+            "actions": "查看全局入口。",
+            "states": "默认、悬停。",
+            "confirm": "顶栏密度是否合适。"
+          },
+          {
+            "id": "visual-a-content",
+            "title": "方向 A 内容",
+            "what": "方向 A 的主体视觉。",
+            "why": "用克制层级突出主要内容。",
+            "actions": "查看内容。",
+            "states": "默认、选中。",
+            "confirm": "这个成品级方向是否足够具体，能否作为最终视觉基础。"
+          },
+          {
+            "id": "visual-a-footer",
+            "title": "方向 A 操作区",
+            "what": "方向 A 的操作样式。",
+            "why": "保持动作明确但不过度突出。",
+            "actions": "执行页面动作。",
+            "states": "默认、禁用。",
+            "confirm": "操作层级是否清楚。"
+          }
+        ]
+      },
+      {
+        "id": "visual-final-home-b",
+        "stageId": "visual-final",
+        "pageId": "home",
+        "pageTitle": "首页",
+        "variantId": "direction-b",
+        "variantTitle": "方向 B",
+        "variantSummary": "温和、松弛、有层次",
+        "title": "首页 · 高保真方案 B",
+        "summary": "允许重新组织导航、组件和构图，同时保持已确认任务语义。",
+        "modules": [
+          {
+            "id": "visual-b-header",
+            "title": "方向 B 顶栏",
+            "what": "方向 B 的导航样式。",
+            "why": "用更松弛的层次降低工具感。",
+            "actions": "查看全局入口。",
+            "states": "默认、悬停。",
+            "confirm": "顶栏气质是否合适。"
+          },
+          {
+            "id": "visual-b-content",
+            "title": "方向 B 内容",
+            "what": "方向 B 的主体视觉。",
+            "why": "用留白和轻层次提高亲和力。",
+            "actions": "查看内容。",
+            "states": "默认、选中。",
+            "confirm": "这个成品级方向是否足够具体，能否作为最终视觉基础。"
+          },
+          {
+            "id": "visual-b-footer",
+            "title": "方向 B 操作区",
+            "what": "方向 B 的操作样式。",
+            "why": "让动作与整体气质一致。",
+            "actions": "执行页面动作。",
+            "states": "默认、禁用。",
+            "confirm": "操作层级是否清楚。"
+          }
+        ]
+      },
+      {
+        "id": "delivery-home",
+        "stageId": "delivery",
+        "pageId": "home",
+        "pageTitle": "首页",
+        "variantId": "final",
+        "variantTitle": "最终交付",
+        "title": "设计交付 · 首页",
+        "summary": "开发应按此版本还原。",
+        "modules": [
+          {
+            "id": "delivery-header",
+            "title": "交付版本顶栏",
+            "what": "最终冻结的顶栏。",
+            "why": "作为开发实现的视觉事实源。",
+            "actions": "查看全局入口。",
+            "states": "最终状态。",
+            "confirm": "是否与设计规格一致。"
+          },
+          {
+            "id": "delivery-content",
+            "title": "交付版本内容",
+            "what": "最终冻结的主要内容。",
+            "why": "作为开发实现的页面事实源。",
+            "actions": "走通核心旅程。",
+            "states": "完整产品状态。",
+            "confirm": "核心旅程是否可交付。"
+          },
+          {
+            "id": "delivery-footer",
+            "title": "交付物索引",
+            "what": "原型、规格、令牌和记录的入口。",
+            "why": "让开发拿到一套互相对应的产物。",
+            "actions": "查看交付文件。",
+            "states": "已生成、缺失。",
+            "confirm": "所有交付物是否齐全。"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+  <!-- 可替换设计清单结束。 -->
+
+  <script src="review-framework/review-framework.js?v=5"></script>
+</body>
+</html>

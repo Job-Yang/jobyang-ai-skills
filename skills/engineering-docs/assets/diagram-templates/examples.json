@@ -1,0 +1,266 @@
+[
+  {
+    "id": "system-architecture", "name": "系统架构图", "layout": "layers",
+    "title": "知识服务按职责分层", "subtitle": "整体结构 · 包围关系表示归属，层间调用需另画关系图",
+    "note": "四层均为逻辑职责；本图不表达部署数量或调用方向。",
+    "groups": [
+      {"label": "用户入口", "items": ["桌面工作台", "移动客户端", "开放接口"]},
+      {"label": "业务能力", "items": ["内容管理", "检索与问答", "权限校验"]},
+      {"label": "共享服务", "items": ["全文索引", "异步任务", "审计记录"]},
+      {"label": "数据与基础设施", "items": ["元数据存储", "文件存储", "指标与告警"]}
+    ]
+  },
+  {
+    "id": "capability-grid", "name": "网格分组图", "layout": "grid", "columns": 3,
+    "title": "研发平台的能力分区", "subtitle": "六类能力并列展示 · 格子大小不代表投入比例",
+    "note": "按用户任务分组；未画出的关系不能推断为不存在。",
+    "groups": [
+      {"label": "需求", "items": ["需求澄清", "验收标准", "变更追踪"]},
+      {"label": "设计", "items": ["交互原型", "技术方案", "方案评审"]},
+      {"label": "开发", "items": ["代码实现", "单元测试", "合入检查"]},
+      {"label": "验证", "items": ["功能回归", "容量验证", "风险复核"]},
+      {"label": "交付", "items": ["发布准入", "渐进放量", "版本回退"]},
+      {"label": "运行", "items": ["指标观测", "故障响应", "反馈复盘"]}
+    ]
+  },
+  {
+    "id": "organization", "name": "组织架构图", "layout": "tree",
+    "title": "一个产品组的职责归属", "subtitle": "连线表示管理归属 · 横向位置不表示职级",
+    "note": "这是单一管理关系树；矩阵汇报应使用关系图。",
+    "nodes": [
+      {"id":"group","label":"产品组"},
+      {"id":"product","label":"产品与设计","parent":"group"},
+      {"id":"engineering","label":"工程","parent":"group"},
+      {"id":"operations","label":"交付与运营","parent":"group"},
+      {"id":"pm","label":"产品","parent":"product"},
+      {"id":"design","label":"设计","parent":"product"},
+      {"id":"client","label":"客户端","parent":"engineering"},
+      {"id":"service","label":"服务端","parent":"engineering"},
+      {"id":"qa","label":"质量","parent":"operations"},
+      {"id":"ops","label":"运营","parent":"operations"}
+    ]
+  },
+  {
+    "id": "hierarchy", "name": "层次结构图", "layout": "tree",
+    "title": "文档空间的内容层次", "subtitle": "父节点包含子节点 · 连线不表示操作先后",
+    "note": "同一文档若属于多个集合，应使用集合图或多对多关系图。",
+    "nodes": [
+      {"id":"space","label":"知识空间"},
+      {"id":"product","label":"产品资料","parent":"space"},
+      {"id":"tech","label":"工程资料","parent":"space"},
+      {"id":"research","label":"用户研究","parent":"product"},
+      {"id":"requirements","label":"需求定义","parent":"product"},
+      {"id":"design","label":"技术设计","parent":"tech"},
+      {"id":"runbook","label":"运行手册","parent":"tech"}
+    ]
+  },
+  {
+    "id": "mind-map", "name": "思维导图", "layout": "mindmap", "center": "发布准备",
+    "title": "发布前需要回答哪些问题", "subtitle": "主题拆解 · 曲线只表示归属，不表示执行顺序",
+    "note": "思维导图适合探索范围；真实发布顺序见发布流程。",
+    "groups": [
+      {"label":"功能","items":["验收范围","已知限制"]},
+      {"label":"质量","items":["回归结果","风险评估"]},
+      {"label":"交付","items":["发布窗口","版本产物"]},
+      {"label":"运行","items":["观测指标","值守安排"]},
+      {"label":"恢复","items":["回退条件","恢复演练"]},
+      {"label":"沟通","items":["变更说明","责任人"]}
+    ]
+  },
+  {
+    "id": "horizontal-timeline", "name": "水平时间线", "layout": "timeline", "orientation": "horizontal",
+    "title": "迁移分四个时间点推进", "subtitle": "横轴为项目日 D · 位置按实际时间间隔计算",
+    "note": "事件是时间点；持续工作与依赖应另用甘特图。",
+    "events": [
+      {"at":0,"label":"D0 · 基线确认","detail":"冻结当前口径"},
+      {"at":3,"label":"D3 · 双写验证","detail":"比较两侧结果"},
+      {"at":7,"label":"D7 · 小流量切换","detail":"验证真实负载"},
+      {"at":12,"label":"D12 · 迁移完成","detail":"关闭旧写入"}
+    ]
+  },
+  {
+    "id": "vertical-timeline", "name": "垂直时间线", "layout": "timeline", "orientation": "vertical",
+    "title": "一次故障的处置时间线", "subtitle": "纵轴为起点后的分钟数 · 时间从上向下",
+    "note": "间隔按分钟比例绘制；事件描述不等于因果判断。",
+    "events": [
+      {"at":0,"label":"00 分 · 告警触发","detail":"错误率超过阈值"},
+      {"at":5,"label":"05 分 · 确认影响","detail":"读请求出现超时"},
+      {"at":12,"label":"12 分 · 执行回退","detail":"恢复上一版本"},
+      {"at":20,"label":"20 分 · 指标恢复","detail":"继续观察稳定性"},
+      {"at":30,"label":"30 分 · 处置结束","detail":"进入根因复盘"}
+    ]
+  },
+  {
+    "id": "milestone-roadmap", "name": "阶段里程碑", "layout": "stages",
+    "title": "每个阶段交付什么结果", "subtitle": "阶段顺序图 · 等距排布，不表示工期",
+    "note": "真正的日期与依赖请用时间线或甘特图表达。",
+    "groups": [
+      {"label":"定义完成","items":["范围与验收口径确定","输出需求基线"]},
+      {"label":"方案通过","items":["主要技术风险已验证","输出评审结论"]},
+      {"label":"试点通过","items":["真实使用链路得到验证","输出试点记录"]},
+      {"label":"正式交付","items":["验收通过且恢复路径可用","输出交付记录"]}
+    ]
+  },
+  {
+    "id": "cycle", "name": "循环图", "layout": "cycle", "center": "持续改进",
+    "title": "改进通过反馈继续推进", "subtitle": "四个阶段顺时针循环 · 完成复盘后回到计划",
+    "note": "箭头表示下一阶段；本图不表达阶段耗时。",
+    "groups": [
+      {"label":"计划","items":["确定问题与指标"]},
+      {"label":"执行","items":["实施有限改动"]},
+      {"label":"检查","items":["对照实际结果"]},
+      {"label":"调整","items":["保留或修正方案"]}
+    ]
+  },
+  {
+    "id": "growth-flywheel", "name": "增长飞轮", "layout": "cycle", "center": "价值循环",
+    "title": "内容价值能否形成正反馈", "subtitle": "待验证的机制假设 · 顺时针阅读",
+    "note": "正反馈关系仍需数据验证，不能只凭环形布局成立。",
+    "groups": [
+      {"label":"有用内容","items":["解决实际问题"]},
+      {"label":"读者使用","items":["产生使用反馈"]},
+      {"label":"内容改进","items":["吸收有效反馈"]}
+    ]
+  },
+  {
+    "id": "pyramid", "name": "金字塔列表", "layout": "pyramid",
+    "title": "能力建设从基础逐层向上", "subtitle": "底层提供支撑 · 数字是层级编号",
+    "note": "宽度只表现层次，不代表人数、成本或完成比例。",
+    "groups": [
+      {"label":"持续改进","items":["从反馈中调整能力"]},
+      {"label":"稳定交付","items":["能验证，也能恢复"]},
+      {"label":"工程方法","items":["定义、设计与实现"]},
+      {"label":"事实基础","items":["数据、证据与上下文"]}
+    ]
+  },
+  {
+    "id": "brand-house", "name": "品牌屋", "layout": "house",
+    "title": "产品主张由哪些能力支撑", "subtitle": "屋顶是主张，立柱是支撑，地基是共同原则",
+    "note": "表达定位与支撑关系，不代表已经验证的市场效果。",
+    "roof":"让团队更容易找到可信知识", "promise":"从资料到答案，保留可追溯依据",
+    "pillars":[
+      {"label":"找得到","items":["统一检索","清楚分类"]},
+      {"label":"信得过","items":["标注来源","及时更新"]},
+      {"label":"用得上","items":["贴近任务","方便复用"]}
+    ],
+    "foundation":"共同基础：权限清晰、内容可维护、变更可追溯"
+  },
+  {
+    "id": "grid-matrix", "name": "网格矩阵图", "layout": "matrix",
+    "title": "不同阶段需要哪些证据", "subtitle": "横向是证据类型，纵向是交付阶段",
+    "note": "文字矩阵用于交叉核对；数值强弱应改用热力图。",
+    "rows":["方案评审","试点发布","全量交付"],
+    "columns":["功能","运行","恢复"],
+    "values":[["验收口径","容量假设","回退设计"],["链路回归","试点指标","恢复演练"],["验收记录","观测结果","回退可用"]]
+  },
+  {
+    "id":"two-axis", "name":"二维坐标图", "layout":"quadrant",
+    "title":"按影响与成本比较候选项", "subtitle":"相同评分口径 · 分界值均为 5 分",
+    "note":"评分是合成示例，坐标不自动决定最终优先级。",
+    "bounds":[0,10,0,10],"split":[5,5],"x_label":"实施成本（分，越右越高）","y_label":"预期影响（分，越上越高）",
+    "points":[{"label":"检索改进","x":3,"y":8},{"label":"数据迁移","x":7,"y":7},{"label":"文案修正","x":2,"y":3},{"label":"旧页重做","x":7,"y":2}]
+  },
+  {
+    "id":"bubble-quadrant", "name":"四象限气泡图", "layout":"bubble",
+    "title":"比较投入、影响与覆盖人数", "subtitle":"气泡面积对应人数 · 坐标采用相同评分口径",
+    "note":"面积按人数线性映射；不是按半径映射。",
+    "bounds":[0,10,0,10],"split":[5,5],"x_label":"投入成本（分）","y_label":"预期影响（分）",
+    "points":[{"label":"甲 · 8百人","x":2.5,"y":7.5,"size":8},{"label":"乙 · 20百人","x":7,"y":7,"size":20},{"label":"丙 · 4百人","x":3,"y":3,"size":4},{"label":"丁 · 12百人","x":7,"y":2.5,"size":12}]
+  },
+  {
+    "id":"release-train","name":"火车发布上线流程图","layout":"release",
+    "title":"按发布窗口组织功能上车","subtitle":"准出通过才上线 · 未就绪延期，准出失败阻断",
+    "note":"上线后异常按预定条件回退；正式流程需补实际门槛。",
+    "ready":"验收通过，依赖已满足","deferred":"保留原范围，不强行上车",
+    "phases":[
+      {"label":"集成入列","detail":"核对版本与依赖"},
+      {"label":"候选构建","detail":"产出可追溯版本"},
+      {"label":"准出检查","detail":"回归与风险验证"},
+      {"label":"发布上线","detail":"按窗口逐步放量"}
+    ]
+  },
+  {
+    "id":"product-development","name":"产品研发流程图","layout":"workflow","orientation":"vertical",
+    "title":"开发与用例准备并行推进","subtitle":"并行分支全部完成后，才能进入集成回归",
+    "note":"本图展开成功路径；失败后的修正需另画局部流程。",
+    "lanes":["产品与研发","项目协调","质量验证"],
+    "nodes":[
+      {"id":"req","lane":0,"step":0,"label":"范围与验收确认"},
+      {"id":"fork","lane":1,"step":1,"label":"并行开始（AND）"},
+      {"id":"code","lane":0,"step":2,"label":"实现与单元测试"},
+      {"id":"cases","lane":2,"step":2,"label":"准备回归用例"},
+      {"id":"join","lane":1,"step":3,"label":"全部完成（AND）"},
+      {"id":"test","lane":2,"step":4,"label":"执行集成回归"},
+      {"id":"accept","lane":0,"step":5,"label":"核对验收结果"}
+    ],
+    "edges":[{"from":"req","to":"fork"},{"from":"fork","to":"code"},{"from":"fork","to":"cases"},{"from":"code","to":"join"},{"from":"cases","to":"join"},{"from":"join","to":"test"},{"from":"test","to":"accept"}]
+  },
+  {
+    "id":"vertical-swimlane","name":"垂直泳道图","layout":"workflow","orientation":"vertical",
+    "title":"资料申请在责任方之间流转","subtitle":"泳道表示责任方 · 时间从上向下",
+    "note":"展示申请通过的路径；拒绝和补充材料应另列分支。",
+    "lanes":["申请人","资料负责人","系统"],
+    "nodes":[{"id":"a","lane":0,"step":0,"label":"提交使用说明"},{"id":"b","lane":1,"step":1,"label":"核对范围与期限"},{"id":"c","lane":2,"step":2,"label":"授予限定权限"},{"id":"d","lane":0,"step":3,"label":"收到申请结果"}],
+    "edges":[{"from":"a","to":"b"},{"from":"b","to":"c","label":"批准"},{"from":"c","to":"d"}]
+  },
+  {
+    "id":"horizontal-swimlane","name":"水平泳道图","layout":"workflow","orientation":"horizontal",
+    "title":"变更说明随交付一起确认","subtitle":"泳道表示责任方 · 时间从左向右",
+    "note":"只展示正常交付路径，箭头表示交接。",
+    "lanes":["研发","质量","运营"],
+    "nodes":[{"id":"a","lane":0,"step":0,"label":"提交版本"},{"id":"b","lane":1,"step":1,"label":"核对回归"},{"id":"c","lane":2,"step":2,"label":"确认说明"},{"id":"d","lane":0,"step":3,"label":"执行发布"}],
+    "edges":[{"from":"a","to":"b"},{"from":"b","to":"c"},{"from":"c","to":"d"}]
+  },
+  {
+    "id":"pie","name":"饼图","layout":"pie",
+    "title":"本月请求来自哪些入口","subtitle":"同一月份 · 四类入口互斥且覆盖全部请求",
+    "note":"数量单位为万次；比例分母为四类请求总量。",
+    "labels":["工作台","移动端","开放接口","其他"],"values":[45,30,20,5],"unit":"万次"
+  },
+  {
+    "id":"donut","name":"环形图","layout":"donut",
+    "title":"已处理工单的结果分布","subtitle":"同一周期 · 结果分类互斥",
+    "note":"中心显示总数；环段角度对应各类占比。",
+    "labels":["已解决","重复关闭","转交处理","不予处理"],"values":[72,12,10,6],"unit":"件工单"
+  },
+  {
+    "id":"funnel","name":"漏斗图","layout":"funnel",
+    "title":"从访问到完成任务的转化","subtitle":"同一批用户逐级筛选 · 每层是上一层的子集",
+    "note":"条宽对应人数；百分比均以首层 1000 人为分母。",
+    "labels":["访问","开始任务","提交结果","完成验收"],"values":[1000,720,460,320],"unit":"人"
+  },
+  {
+    "id":"radar","name":"雷达图","layout":"radar",
+    "title":"从多个维度观察试点结果","subtitle":"统一 0—5 分量表 · 维度顺序固定",
+    "note":"合成评分；多边形面积不能当作综合得分。",
+    "labels":["可用性","易用性","可维护性","可观测性","可恢复性"],"values":[4.5,3.5,4,3,4.2],"maximum":5
+  },
+  {
+    "id":"business-canvas","name":"商业模式画布","layout":"business",
+    "title":"知识服务的业务假设概览","subtitle":"九格用于核对假设是否相互支撑",
+    "note":"全部为合成假设；尚未验证需求、收入和成本。",
+    "cells":[
+      {"label":"重要伙伴","items":["内容提供方","集成伙伴"]},
+      {"label":"关键活动","items":["内容维护","服务交付"]},
+      {"label":"核心资源","items":["可信资料","检索能力"]},
+      {"label":"价值主张","items":["缩短查找时间","保留来源依据"]},
+      {"label":"客户关系","items":["自助使用","团队支持"]},
+      {"label":"渠道通路","items":["工作台","团队集成"]},
+      {"label":"客户细分","items":["研发团队","知识运营"]},
+      {"label":"成本结构","items":["内容维护、计算与服务成本"]},
+      {"label":"收入来源","items":["团队订阅、增值服务"]}
+    ]
+  },
+  {
+    "id":"venn","name":"韦恩图","layout":"venn",
+    "title":"优先验证同时满足三项的想法","subtitle":"重叠区域表达集合交集",
+    "note":"圆和交集面积不编码数量，大小相近不代表规模相近。",
+    "groups":["用户需要","技术可行","资源允许"],"intersection":"优先验证"
+  },
+  {
+    "id":"nested-sets","name":"嵌套集合图","layout":"venn","nested":true,
+    "title":"灰度范围逐级包含", "subtitle":"内圈是外圈的子集",
+    "note":"圆面积不代表人数；实际放量比例请另标数据。",
+    "groups":["全部用户","符合条件","获邀用户","已参与用户"]
+  }
+]

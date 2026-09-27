@@ -1,0 +1,59 @@
+{
+  "$schema": "./tokens.schema.json",
+  "meta": {
+    "name": "示例:克制工程感 (Calm-Tech)",
+    "based_on": "calm-tech",
+    "reference": "Linear / Vercel",
+    "scheme": "dark",
+    "generated_by": "style-compass",
+    "note": "选定方向后才生成的一致性产物,不是审美来源。改这里,重跑 export_tokens.py,SwiftUI 和 CSS 同步更新。"
+  },
+  "color": {
+    "bg": "#0B0C0E",
+    "surface": "#16181C",
+    "surface_alt": "#1C1F24",
+    "text": "#E6E8EB",
+    "text_muted": "#8A9099",
+    "accent": "#5E6AD2",
+    "accent_soft": "#3A3F66",
+    "border": "#23262B",
+    "success": "#3FB950",
+    "warning": "#D29922",
+    "danger": "#F85149"
+  },
+  "typography": {
+    "heading_font": "Geist, 'SF Pro Display', system-ui, sans-serif",
+    "body_font": "Geist, 'SF Pro Text', system-ui, sans-serif",
+    "mono_font": "'Geist Mono', 'JetBrains Mono', monospace",
+    "weight_regular": 400,
+    "weight_medium": 540,
+    "weight_bold": 680,
+    "scale": {
+      "xs": 12,
+      "sm": 13,
+      "base": 15,
+      "lg": 18,
+      "xl": 22,
+      "2xl": 28,
+      "3xl": 36
+    },
+    "line_height": 1.5
+  },
+  "radius": { "sm": 4, "base": 6, "lg": 10, "full": 999 },
+  "spacing": { "xs": 4, "sm": 8, "base": 12, "lg": 20, "xl": 32, "2xl": 48 },
+  "motion": {
+    "duration_fast": 120,
+    "duration_base": 200,
+    "duration_slow": 320,
+    "easing": "cubic-bezier(0.2, 0, 0, 1)"
+  },
+  "elevation": {
+    "flat": "none",
+    "soft": "0 1px 2px rgba(0,0,0,0.4)",
+    "raised": "0 4px 16px rgba(0,0,0,0.5)"
+  },
+  "guardrails": {
+    "use": "几何无衬线、深灰阶背景(非纯黑)、单一冷色强调、发丝级边框分层、快速功能性微动效",
+    "avoid": "紫白渐变、圆润卡通、多彩强调色堆叠、大圆角、弹跳动画、Inter/Roboto"
+  }
+}

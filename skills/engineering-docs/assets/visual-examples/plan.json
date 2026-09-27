@@ -1,0 +1,22 @@
+{
+  "kind": "synthetic_example",
+  "unit": "relative_workday",
+  "interval": "[start, finish)",
+  "assumptions": [
+    "Finish-to-start dependencies only",
+    "No resource conflicts",
+    "No holidays, extra lag or uncertain duration in this illustrative calculation"
+  ],
+  "tasks": [
+    {"id": "A", "name": "接口契约", "owner": "接口负责人", "duration": 2, "after": []},
+    {"id": "B", "name": "检查实现", "owner": "检查负责人", "duration": 4, "after": ["A"]},
+    {"id": "C", "name": "报告实现", "owner": "报告负责人", "duration": 3, "after": ["A"]},
+    {"id": "D", "name": "集成验证", "owner": "验证负责人", "duration": 3, "after": ["B", "C"]},
+    {"id": "E", "name": "交付验收", "owner": "交付负责人", "duration": 1, "after": ["D"]}
+  ],
+  "milestones": [
+    {"name": "契约冻结", "after": ["A"], "owner": "接口负责人", "evidence": "证据：评审记录"},
+    {"name": "实现齐备", "after": ["B", "C"], "owner": "检查负责人", "evidence": "证据：组件测试"},
+    {"name": "验收通过", "after": ["E"], "owner": "交付负责人", "evidence": "证据：验收报告"}
+  ]
+}

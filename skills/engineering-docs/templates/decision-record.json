@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "document": {
+    "title": "__TITLE__",
+    "type": "__TYPE__",
+    "status": "draft",
+    "review_from": null,
+    "template_mode": "default",
+    "purpose": "",
+    "audience": [],
+    "expected_action": "",
+    "scope": {
+      "in": [],
+      "out": []
+    },
+    "author": "__AUTHOR__",
+    "decision_owner": "",
+    "fact_owners": [],
+    "updated_at": "__DATE__",
+    "applicable_version": "",
+    "status_reason": "",
+    "previous_document": "",
+    "replacement_document": ""
+  },
+  "problem": {
+    "current_state": "",
+    "evidence": [],
+    "gap": "",
+    "impact": "",
+    "do_nothing": ""
+  },
+  "criteria": {
+    "goals": [],
+    "non_goals": [],
+    "constraints": []
+  },
+  "options": {
+    "candidates": [],
+    "comparison_criteria": [],
+    "unique_path_reason": ""
+  },
+  "decision": {
+    "recommendation": "",
+    "rationale": [],
+    "accepted_costs": [],
+    "assumptions": [],
+    "confidence": "",
+    "accepted_by": "",
+    "accepted_at": ""
+  },
+  "design": {
+    "system_boundary": [],
+    "responsibilities": [],
+    "main_flow": [],
+    "exceptions": [],
+    "contracts": [],
+    "change_points": []
+  },
+  "visuals": [],
+  "delivery": {
+    "risk_level": "standard",
+    "risk_triggers": [],
+    "risk_controls": {
+      "public_interface": {
+        "compatibility": "",
+        "versioning": "",
+        "callers": "",
+        "migration_order": ""
+      },
+      "data_write": {
+        "idempotency": "",
+        "consistency": "",
+        "retry_compensation": "",
+        "data_rollback": ""
+      },
+      "concurrency_async": {
+        "ordering": "",
+        "duplicates": "",
+        "loss": "",
+        "locking": "",
+        "capacity_degradation": ""
+      },
+      "security_privacy": {
+        "authorization": "",
+        "audit": "",
+        "data_exposure": "",
+        "failure_policy": "",
+        "special_review": ""
+      },
+      "performance_capacity": {
+        "baseline": "",
+        "target": "",
+        "load_test": "",
+        "bottleneck_hypothesis": "",
+        "metrics": ""
+      },
+      "migration_refactor": {
+        "dual_run": "",
+        "verification": "",
+        "cutover": "",
+        "retirement": "",
+        "rollback_window": ""
+      },
+      "user_visible": {
+        "error_experience": "",
+        "supported_versions": "",
+        "rollout_scope": "",
+        "support_communication": ""
+      },
+      "observability_ops": {
+        "signal": "",
+        "threshold": "",
+        "owner": "",
+        "response": ""
+      }
+    },
+    "impact_surface": [],
+    "validation": [],
+    "observability": [],
+    "rollout": [],
+    "rollback": [],
+    "ownership": [],
+    "special_reviews": [],
+    "implementation_evidence": []
+  },
+  "open_items": {
+    "blockers": [],
+    "questions": [],
+    "follow_ups": []
+  },
+  "gates": {
+    "G0": {
+      "status": "revise",
+      "reason": "",
+      "evidence": []
+    },
+    "G1": {
+      "status": "revise",
+      "reason": "",
+      "evidence": []
+    },
+    "G2": {
+      "status": "revise",
+      "reason": "",
+      "evidence": []
+    },
+    "G3": {
+      "status": "revise",
+      "reason": "",
+      "evidence": []
+    },
+    "G4": {
+      "status": "revise",
+      "reason": "",
+      "evidence": []
+    },
+    "G5": {
+      "status": "revise",
+      "reason": "",
+      "evidence": []
+    },
+    "G6": {
+      "status": "revise",
+      "reason": "",
+      "evidence": []
+    },
+    "G7": {
+      "status": "revise",
+      "reason": "",
+      "evidence": []
+    },
+    "G8": {
+      "status": "revise",
+      "reason": "",
+      "evidence": []
+    },
+    "G9": {
+      "status": "revise",
+      "reason": "",
+      "evidence": []
+    },
+    "G10": {
+      "status": "revise",
+      "reason": "",
+      "evidence": []
+    },
+    "G11": {
+      "status": "revise",
+      "reason": "",
+      "evidence": []
+    },
+    "G12": {
+      "status": "revise",
+      "reason": "",
+      "evidence": []
+    }
+  },
+  "reader_test": {
+    "answers_locked": false,
+    "approved_by": "",
+    "answers": {
+      "Q1": "",
+      "Q2": "",
+      "Q3": "",
+      "Q4": "",
+      "Q5": ""
+    },
+    "completed": false,
+    "result": "",
+    "findings": []
+  },
+  "history": []
+}

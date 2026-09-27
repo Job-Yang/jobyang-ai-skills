@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="489.6pt" height="424.8pt" viewBox="0 0 489.6 424.8" xmlns="http://www.w3.org/2000/svg" version="1.1"><title>按影响与成本比较候选项</title><desc>评分是合成示例，坐标不自动决定最终优先级。</desc>
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.9.4, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 424.8
+L 489.6 424.8
+L 489.6 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 68.544 322.848
+L 445.536 322.848
+L 445.536 118.944
+L 68.544 118.944
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 68.544 220.896
+L 257.04 220.896
+L 257.04 118.944
+L 68.544 118.944
+z
+" clip-path="url(#p482ca37196)" style="fill: #eae2fe"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 257.04 220.896
+L 445.536 220.896
+L 445.536 118.944
+L 257.04 118.944
+z
+" clip-path="url(#p482ca37196)" style="fill: #dff5e5"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 68.544 322.848
+L 257.04 322.848
+L 257.04 220.896
+L 68.544 220.896
+z
+" clip-path="url(#p482ca37196)" style="fill: #fef1ce"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 257.04 322.848
+L 445.536 322.848
+L 445.536 220.896
+L 257.04 220.896
+z
+" clip-path="url(#p482ca37196)" style="fill: #f0f4fc"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <defs>
+       <path id="mc1f1b2bcf1" d="M 0 0
+L 0 3.5
+" style="stroke: #646a73; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#mc1f1b2bcf1" x="68.544" y="322.848" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="68.544" y="337.578438" transform="rotate(-0 68.544 337.578438)">0</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2">
+      <g>
+       <use xlink:href="#mc1f1b2bcf1" x="143.9424" y="322.848" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="143.9424" y="337.578438" transform="rotate(-0 143.9424 337.578438)">2</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3">
+      <g>
+       <use xlink:href="#mc1f1b2bcf1" x="219.3408" y="322.848" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_3">
+      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="219.3408" y="337.578438" transform="rotate(-0 219.3408 337.578438)">4</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_4">
+      <g>
+       <use xlink:href="#mc1f1b2bcf1" x="294.7392" y="322.848" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="294.7392" y="337.578438" transform="rotate(-0 294.7392 337.578438)">6</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_5">
+      <g>
+       <use xlink:href="#mc1f1b2bcf1" x="370.1376" y="322.848" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="370.1376" y="337.578438" transform="rotate(-0 370.1376 337.578438)">8</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_6">
+      <g>
+       <use xlink:href="#mc1f1b2bcf1" x="445.536" y="322.848" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_6">
+      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="445.536" y="337.578438" transform="rotate(-0 445.536 337.578438)">10</text>
+     </g>
+    </g>
+    <g id="text_7">
+     <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="257.04" y="352.76825" transform="rotate(-0 257.04 352.76825)">实施成本（分，越右越高）</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_7">
+      <defs>
+       <path id="m008f6564b2" d="M 0 0
+L -3.5 0
+" style="stroke: #646a73; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m008f6564b2" x="68.544" y="322.848" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_8">
+      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: end" x="61.544" y="326.713219" transform="rotate(-0 61.544 326.713219)">0</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_8">
+      <g>
+       <use xlink:href="#m008f6564b2" x="68.544" y="282.0672" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_9">
+      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: end" x="61.544" y="285.932419" transform="rotate(-0 61.544 285.932419)">2</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_9">
+      <g>
+       <use xlink:href="#m008f6564b2" x="68.544" y="241.2864" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_10">
+      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: end" x="61.544" y="245.151619" transform="rotate(-0 61.544 245.151619)">4</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_10">
+      <g>
+       <use xlink:href="#m008f6564b2" x="68.544" y="200.5056" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_11">
+      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: end" x="61.544" y="204.370819" transform="rotate(-0 61.544 204.370819)">6</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_11">
+      <g>
+       <use xlink:href="#m008f6564b2" x="68.544" y="159.7248" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_12">
+      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: end" x="61.544" y="163.590019" transform="rotate(-0 61.544 163.590019)">8</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_12">
+      <g>
+       <use xlink:href="#m008f6564b2" x="68.544" y="118.944" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_13">
+      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: end" x="61.544" y="122.809219" transform="rotate(-0 61.544 122.809219)">10</text>
+     </g>
+    </g>
+    <g id="text_14">
+     <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="43.264375" y="220.896" transform="rotate(-90 43.264375 220.896)">预期影响（分，越上越高）</text>
+    </g>
+   </g>
+   <g id="line2d_13">
+    <path d="M 257.04 322.848
+L 257.04 118.944
+" clip-path="url(#p482ca37196)" style="fill: none; stroke: #707680; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="line2d_14">
+    <path d="M 68.544 220.896
+L 445.536 220.896
+" clip-path="url(#p482ca37196)" style="fill: none; stroke: #707680; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="PathCollection_1">
+    <defs>
+     <path id="mec915d2cd6" d="M 0 4.031129
+C 1.069068 4.031129 2.094493 3.606384 2.850439 2.850439
+C 3.606384 2.094493 4.031129 1.069068 4.031129 0
+C 4.031129 -1.069068 3.606384 -2.094493 2.850439 -2.850439
+C 2.094493 -3.606384 1.069068 -4.031129 0 -4.031129
+C -1.069068 -4.031129 -2.094493 -3.606384 -2.850439 -2.850439
+C -3.606384 -2.094493 -4.031129 -1.069068 -4.031129 0
+C -4.031129 1.069068 -3.606384 2.094493 -2.850439 2.850439
+C -2.094493 3.606384 -1.069068 4.031129 0 4.031129
+z
+" style="stroke: #7456b2"/>
+    </defs>
+    <g clip-path="url(#p482ca37196)">
+     <use xlink:href="#mec915d2cd6" x="181.6416" y="159.7248" style="fill: #eae2fe; stroke: #7456b2"/>
+    </g>
+   </g>
+   <g id="text_15">
+    <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'; text-anchor: start" x="188.6416" y="152.7248" transform="rotate(-0 188.6416 152.7248)">检索改进</text>
+   </g>
+   <g id="PathCollection_2">
+    <defs>
+     <path id="m886c26eb2c" d="M 0 4.031129
+C 1.069068 4.031129 2.094493 3.606384 2.850439 2.850439
+C 3.606384 2.094493 4.031129 1.069068 4.031129 0
+C 4.031129 -1.069068 3.606384 -2.094493 2.850439 -2.850439
+C 2.094493 -3.606384 1.069068 -4.031129 0 -4.031129
+C -1.069068 -4.031129 -2.094493 -3.606384 -2.850439 -2.850439
+C -3.606384 -2.094493 -4.031129 -1.069068 -4.031129 0
+C -4.031129 1.069068 -3.606384 2.094493 -2.850439 2.850439
+C -2.094493 3.606384 -1.069068 4.031129 0 4.031129
+z
+" style="stroke: #367747"/>
+    </defs>
+    <g clip-path="url(#p482ca37196)">
+     <use xlink:href="#m886c26eb2c" x="332.4384" y="180.1152" style="fill: #dff5e5; stroke: #367747"/>
+    </g>
+   </g>
+   <g id="text_16">
+    <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'; text-anchor: start" x="339.4384" y="173.1152" transform="rotate(-0 339.4384 173.1152)">数据迁移</text>
+   </g>
+   <g id="PathCollection_3">
+    <defs>
+     <path id="mae3b7b6e4e" d="M 0 4.031129
+C 1.069068 4.031129 2.094493 3.606384 2.850439 2.850439
+C 3.606384 2.094493 4.031129 1.069068 4.031129 0
+C 4.031129 -1.069068 3.606384 -2.094493 2.850439 -2.850439
+C 2.094493 -3.606384 1.069068 -4.031129 0 -4.031129
+C -1.069068 -4.031129 -2.094493 -3.606384 -2.850439 -2.850439
+C -3.606384 -2.094493 -4.031129 -1.069068 -4.031129 0
+C -4.031129 1.069068 -3.606384 2.094493 -2.850439 2.850439
+C -2.094493 3.606384 -1.069068 4.031129 0 4.031129
+z
+" style="stroke: #896b21"/>
+    </defs>
+    <g clip-path="url(#p482ca37196)">
+     <use xlink:href="#mae3b7b6e4e" x="143.9424" y="261.6768" style="fill: #fef1ce; stroke: #896b21"/>
+    </g>
+   </g>
+   <g id="text_17">
+    <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'; text-anchor: start" x="150.9424" y="254.6768" transform="rotate(-0 150.9424 254.6768)">文案修正</text>
+   </g>
+   <g id="PathCollection_4">
+    <defs>
+     <path id="mf7f0f36686" d="M 0 4.031129
+C 1.069068 4.031129 2.094493 3.606384 2.850439 2.850439
+C 3.606384 2.094493 4.031129 1.069068 4.031129 0
+C 4.031129 -1.069068 3.606384 -2.094493 2.850439 -2.850439
+C 2.094493 -3.606384 1.069068 -4.031129 0 -4.031129
+C -1.069068 -4.031129 -2.094493 -3.606384 -2.850439 -2.850439
+C -3.606384 -2.094493 -4.031129 -1.069068 -4.031129 0
+C -4.031129 1.069068 -3.606384 2.094493 -2.850439 2.850439
+C -2.094493 3.606384 -1.069068 4.031129 0 4.031129
+z
+" style="stroke: #4063a8"/>
+    </defs>
+    <g clip-path="url(#p482ca37196)">
+     <use xlink:href="#mf7f0f36686" x="332.4384" y="282.0672" style="fill: #f0f4fc; stroke: #4063a8"/>
+    </g>
+   </g>
+   <g id="text_18">
+    <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'; text-anchor: start" x="339.4384" y="275.0672" transform="rotate(-0 339.4384 275.0672)">旧页重做</text>
+   </g>
+  </g>
+  <g id="text_19">
+   <text style="fill: #646a73; font: 10px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="22.0896" transform="rotate(-0 23.0112 22.0896)">二维坐标图</text>
+  </g>
+  <g id="text_20">
+   <text style="fill: #1f2329; font: 700 18px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="52.2504" transform="rotate(-0 23.0112 52.2504)">按影响与成本比较候选项</text>
+  </g>
+  <g id="text_21">
+   <text style="fill: #646a73; font: 10px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="75.1896" transform="rotate(-0 23.0112 75.1896)">相同评分口径 · 分界值均为 5 分</text>
+  </g>
+  <g id="text_22">
+   <text style="fill: #646a73; font: 9px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="386.568" transform="rotate(-0 23.0112 386.568)">评分是合成示例，坐标不自动决定最终优先级。</text>
+  </g>
+  <g id="text_23">
+   <text style="fill: #646a73; font: 8.5px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="412.056" transform="rotate(-0 23.0112 412.056)">合成示例 · document-pastel</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p482ca37196">
+   <rect x="68.544" y="118.944" width="376.992" height="203.904"/>
+  </clipPath>
+ </defs>
+</svg>

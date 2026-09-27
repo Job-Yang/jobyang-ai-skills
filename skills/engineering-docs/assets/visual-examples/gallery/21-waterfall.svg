@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="489.6pt" height="374.4pt" viewBox="0 0 489.6 374.4" xmlns="http://www.w3.org/2000/svg" version="1.1"><title>三个增减项解释净减少 25 MiB</title><desc>独立合成数据｜100 − 20 − 8 + 3 = 75 MiB；负值减少，正值增加。</desc>
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.9.4, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 374.4
+L 489.6 374.4
+L 489.6 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 68.544 299.52
+L 455.328 299.52
+L 455.328 108.576
+L 68.544 108.576
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1"/>
+     <g id="text_1">
+      <text style="fill: #646a73; font: 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle" x="107.376959" y="314.035703" transform="rotate(-0 107.376959 314.035703)">初值</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2"/>
+     <g id="text_2">
+      <text style="fill: #646a73; font: 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle" x="184.65648" y="314.035703" transform="rotate(-0 184.65648 314.035703)">资源压缩</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3"/>
+     <g id="text_3">
+      <text style="fill: #646a73; font: 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle" x="261.936" y="314.035703" transform="rotate(-0 261.936 314.035703)">代码裁剪</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_4"/>
+     <g id="text_4">
+      <text style="fill: #646a73; font: 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle" x="339.21552" y="314.035703" transform="rotate(-0 339.21552 314.035703)">新增能力</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_5"/>
+     <g id="text_5">
+      <text style="fill: #646a73; font: 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle" x="416.495041" y="314.035703" transform="rotate(-0 416.495041 314.035703)">终值</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_6">
+      <path d="M 68.544 299.52
+L 455.328 299.52
+" clip-path="url(#p1cd85bca1b)" style="fill: none; stroke: #dee0e3; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_7"/>
+     <g id="text_6">
+      <text style="fill: #646a73; font: 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: end" x="61.544" y="303.277852" transform="rotate(-0 61.544 303.277852)">0</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_8">
+      <path d="M 68.544 267.696
+L 455.328 267.696
+" clip-path="url(#p1cd85bca1b)" style="fill: none; stroke: #dee0e3; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_9"/>
+     <g id="text_7">
+      <text style="fill: #646a73; font: 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: end" x="61.544" y="271.453852" transform="rotate(-0 61.544 271.453852)">20</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_10">
+      <path d="M 68.544 235.872
+L 455.328 235.872
+" clip-path="url(#p1cd85bca1b)" style="fill: none; stroke: #dee0e3; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_11"/>
+     <g id="text_8">
+      <text style="fill: #646a73; font: 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: end" x="61.544" y="239.629852" transform="rotate(-0 61.544 239.629852)">40</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_12">
+      <path d="M 68.544 204.048
+L 455.328 204.048
+" clip-path="url(#p1cd85bca1b)" style="fill: none; stroke: #dee0e3; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_13"/>
+     <g id="text_9">
+      <text style="fill: #646a73; font: 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: end" x="61.544" y="207.805852" transform="rotate(-0 61.544 207.805852)">60</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_14">
+      <path d="M 68.544 172.224
+L 455.328 172.224
+" clip-path="url(#p1cd85bca1b)" style="fill: none; stroke: #dee0e3; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_15"/>
+     <g id="text_10">
+      <text style="fill: #646a73; font: 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: end" x="61.544" y="175.981852" transform="rotate(-0 61.544 175.981852)">80</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_16">
+      <path d="M 68.544 140.4
+L 455.328 140.4
+" clip-path="url(#p1cd85bca1b)" style="fill: none; stroke: #dee0e3; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_17"/>
+     <g id="text_11">
+      <text style="fill: #646a73; font: 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: end" x="61.544" y="144.157852" transform="rotate(-0 61.544 144.157852)">100</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_18">
+      <path d="M 68.544 108.576
+L 455.328 108.576
+" clip-path="url(#p1cd85bca1b)" style="fill: none; stroke: #dee0e3; stroke-width: 0.6; stroke-linecap: round"/>
+     </g>
+     <g id="line2d_19"/>
+     <g id="text_12">
+      <text style="fill: #646a73; font: 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: end" x="61.544" y="112.333852" transform="rotate(-0 61.544 112.333852)">120</text>
+     </g>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 86.125091 299.52
+L 128.628827 299.52
+L 128.628827 140.4
+L 86.125091 140.4
+z
+" clip-path="url(#p1cd85bca1b)" style="fill: #f0f4fc; stroke: #4063a8; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 163.404611 172.224
+L 205.908348 172.224
+L 205.908348 140.4
+L 163.404611 140.4
+z
+" clip-path="url(#p1cd85bca1b)" style="fill: #dff5e5; stroke: #367747; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 240.684132 184.9536
+L 283.187868 184.9536
+L 283.187868 172.224
+L 240.684132 172.224
+z
+" clip-path="url(#p1cd85bca1b)" style="fill: #dff5e5; stroke: #367747; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 317.963652 184.9536
+L 360.467389 184.9536
+L 360.467389 180.18
+L 317.963652 180.18
+z
+" clip-path="url(#p1cd85bca1b)" style="fill: #fef1ce; stroke: #896b21; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 395.243173 299.52
+L 437.746909 299.52
+L 437.746909 180.18
+L 395.243173 180.18
+z
+" clip-path="url(#p1cd85bca1b)" style="fill: #f0f4fc; stroke: #4063a8; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_20">
+    <path d="M 128.628827 140.4
+L 163.404611 140.4
+" clip-path="url(#p1cd85bca1b)" style="fill: none; stroke-dasharray: 1,1.65; stroke-dashoffset: 0; stroke: #646a73; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_21">
+    <path d="M 205.908348 172.224
+L 240.684132 172.224
+" clip-path="url(#p1cd85bca1b)" style="fill: none; stroke-dasharray: 1,1.65; stroke-dashoffset: 0; stroke: #646a73; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_22">
+    <path d="M 283.187868 184.9536
+L 317.963652 184.9536
+" clip-path="url(#p1cd85bca1b)" style="fill: none; stroke-dasharray: 1,1.65; stroke-dashoffset: 0; stroke: #646a73; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_23">
+    <path d="M 360.467389 180.18
+L 395.243173 180.18
+" clip-path="url(#p1cd85bca1b)" style="fill: none; stroke-dasharray: 1,1.65; stroke-dashoffset: 0; stroke: #646a73; stroke-linecap: round"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 68.544 299.52
+L 455.328 299.52
+" style="fill: none; stroke: #9daabb; stroke-width: 0.6; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_13">
+    <text style="fill: #1f2329; font: 700 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle" x="107.376959" y="135.6264" transform="rotate(-0 107.376959 135.6264)">100</text>
+   </g>
+   <g id="text_14">
+    <text style="fill: #367747; font: 700 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle" x="184.65648" y="135.6264" transform="rotate(-0 184.65648 135.6264)">-20</text>
+   </g>
+   <g id="text_15">
+    <text style="fill: #367747; font: 700 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle" x="261.936" y="167.4504" transform="rotate(-0 261.936 167.4504)">-8</text>
+   </g>
+   <g id="text_16">
+    <text style="fill: #896b21; font: 700 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle" x="339.21552" y="175.4064" transform="rotate(-0 339.21552 175.4064)">+3</text>
+   </g>
+   <g id="text_17">
+    <text style="fill: #1f2329; font: 700 10.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle" x="416.495041" y="175.4064" transform="rotate(-0 416.495041 175.4064)">75</text>
+   </g>
+   <g id="text_18">
+    <text style="fill: #646a73; font: 9.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: start" x="68.544" y="99.0288" transform="rotate(-0 68.544 99.0288)">包体积 · MiB</text>
+   </g>
+  </g>
+  <g id="line2d_24">
+   <path d="M 23.0112 334.7136
+L 466.5888 334.7136
+" style="fill: none; stroke: #dee0e3; stroke-width: 0.6; stroke-linecap: round"/>
+  </g>
+  <g id="text_19">
+   <text style="fill: #646a73; font: 9.5px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: start" x="23.0112" y="22.464" transform="rotate(-0 23.0112 22.464)">21  /  瀑布图 · 合成数据</text>
+  </g>
+  <g id="text_20">
+   <text style="fill: #1f2329; font: 700 18px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: start" x="23.0112" y="53.1648" transform="rotate(-0 23.0112 53.1648)">三个增减项解释净减少 25 MiB</text>
+  </g>
+  <g id="text_21">
+   <text style="fill: #646a73; font: 10.2px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: start" x="23.0112" y="74.88" transform="rotate(-0 23.0112 74.88)">初值、增减项与终值使用同一单位</text>
+  </g>
+  <g id="text_22">
+   <text style="fill: #646a73; font: 9.1px 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: start" x="23.0112" y="354.9312" transform="rotate(-0 23.0112 354.9312)">独立合成数据｜100 − 20 − 8 + 3 = 75 MiB；负值减少，正值增加。</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p1cd85bca1b">
+   <rect x="68.544" y="108.576" width="386.784" height="190.944"/>
+  </clipPath>
+ </defs>
+</svg>

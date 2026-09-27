@@ -1,0 +1,29 @@
+{
+  "name": "document-pastel",
+  "version": 1,
+  "basis": "Feishu whiteboard classic palette; semantic strokes darkened for document-scale contrast",
+  "ink": "#1F2329",
+  "muted": "#646A73",
+  "line": "#707680",
+  "grid": "#DEE0E3",
+  "paper": "#FFFFFF",
+  "font": "Arial, PingFang SC, Noto Sans CJK SC, sans-serif",
+  "colors": {
+    "blue": ["#4063A8", "#F0F4FC"],
+    "purple": ["#7456B2", "#EAE2FE"],
+    "teal": ["#367747", "#DFF5E5"],
+    "amber": ["#896B21", "#FEF1CE"],
+    "red": ["#AF4643", "#FEE3E2"],
+    "gray": ["#646A73", "#F2F3F5"]
+  },
+  "border": {
+    "blue": "#5178C6",
+    "purple": "#8569CB",
+    "teal": "#509863",
+    "amber": "#D4B45B",
+    "red": "#D25D5A",
+    "gray": "#8F959E"
+  },
+  "sequence": ["purple", "teal", "amber", "blue", "red"],
+  "sizes": {"title": 26, "heading": 17, "body": 15, "caption": 13, "radius": 8}
+}

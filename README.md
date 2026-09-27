@@ -19,9 +19,19 @@ AI 时代最容易被低估的东西，不是一次回答写得多漂亮，而�
 | [cuihuo](./skills/cuihuo/) | 观点淬硬引擎：把一个技术观点写成平实克制、一节一观点的对外硬文，或提炼成短思考手记。 |
 | [tangshan-style](./skills/tangshan-style/) | 汤山体：把面向未来的想象与推演写成有历史纵深、每句耐嚼的畅想文。 |
 | [feynman-explainer](./skills/feynman-explainer/) | 用费曼技巧把复杂的东西讲透：一条逻辑链层层推导，让外行也能真正理解。 |
+| [opportunity-radar](./skills/opportunity-radar/) | 机会雷达：从公开信息或用户材料中筛出产品线索，逐条保留来源、证据和信号强度。 |
+| [opportunity-scorecard](./skills/opportunity-scorecard/) | 机会评分卡：为想法取证、按十维评估潜力，由脚本计算综合分和结论。 |
+| [product-brief](./skills/product-brief/) | 产品需求与计划：把直接需求或研究材料整理成 PRD、可验证验收和里程碑安排。 |
+| [style-compass](./skills/style-compass/) | 设计罗盘：用固定评审工作台完成 UI/UX，保留高保真候选、区域评论、定稿原型和设计规格。 |
+| [engineering-docs](./skills/engineering-docs/) | 研发技术文档统一入口：读取上下文、协作成文、形成工程决定，按需生成图示并验证可实施性。 |
+| [outside-view](./skills/outside-view/) | 兼听：只补会改变决定的外部证据，判断来源与冲突，并及时停止无效检索。 |
 | [sansi-erhouxing](./skills/sansi-erhouxing/) | 三思而后行：改任何成形文档前先通读全文骨架，别只盯一段、别补丁摞补丁。 |
 | [video-reader](./skills/video-reader/) | 把视频转成带时间戳的关键帧和运动时间线，让只能看图的大模型也能判断第几秒发生了什么。 |
 | [png-compress](./skills/png-compress-skill/) | 在本地批量压缩 App 工程里的 PNG：增量缓存、质量门禁、失败回退，不依赖在线 API。 |
+
+机会雷达、评分卡、产品需求、设计罗盘、研发文档和兼听都可单独安装，不依赖 iLoop，也不要求先跑其他节点。各自的中英文 README 说明输入、输出、方法、示例和运行要求。明确进入 OPC 时才采用它的编排与审批；这些技能本身不构成必须顺序执行的链条。
+
+跨平台交接工具随相关技能一起提供。格式名 `opc-artifact/v1` 不代表运行时依赖 OPC；独立使用显式传入文件和输出目录即可。联网取证、Python 计算和浏览器验收各自需要相应宿主能力，缺少时会说明未完成的验证。
 
 ## 为什么要有这个仓库
 
@@ -39,18 +49,21 @@ AI 时代最容易被低估的东西，不是一次回答写得多漂亮，而�
 
 ## 安装
 
-克隆仓库后，把需要的技能目录复制到你的 Agent Skills 目录。
+克隆仓库后，把需要的完整技能目录复制到 Agent Skills 目录。下面是首次安装示例；更新已有技能前先比对本地修改，避免直接覆盖。
 
 ```bash
 git clone https://github.com/Job-Yang/jobyang-ai-skills.git
-cp -R jobyang-ai-skills/skills/haohao-shuohua ~/.claude/skills/haohao-shuohua
-cp -R jobyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
+mkdir -p ~/.trae/skills
+cp -R jobyang-ai-skills/skills/opportunity-radar ~/.trae/skills/opportunity-radar
+cp -R jobyang-ai-skills/skills/style-compass ~/.trae/skills/style-compass
 ```
 
-Claude Code 的默认用户级目录：
+TRAE 用户级目录为 `~/.trae/skills/`。安装其他技能时替换目录名即可；若当前会话尚未显示新技能，新建会话检查技能列表。Claude Code 使用 `~/.claude/skills/`：
 
-```text
-~/.claude/skills/
+```bash
+mkdir -p ~/.claude/skills
+cp -R jobyang-ai-skills/skills/haohao-shuohua ~/.claude/skills/haohao-shuohua
+cp -R jobyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
 ```
 
 安装时要保留完整技能目录，不要只复制 `SKILL.md`。有些技能会读取 `references/`、`scripts/` 或 `assets/`。
@@ -67,6 +80,12 @@ Claude Code 的默认用户级目录：
     ├── cuihuo/
     ├── tangshan-style/
     ├── feynman-explainer/
+    ├── opportunity-radar/
+    ├── opportunity-scorecard/
+    ├── product-brief/
+    ├── style-compass/
+    ├── engineering-docs/
+    ├── outside-view/
     ├── sansi-erhouxing/
     ├── video-reader/
     └── png-compress-skill/

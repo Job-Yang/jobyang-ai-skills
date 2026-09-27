@@ -1,0 +1,21 @@
+{
+  "topic": "synthetic-example",
+  "one_liner": "仅用于验证脚本与交接格式的合成样例，不是产品建议",
+  "upstream": null,
+  "profile": {"form": "示例", "endpoint": "示例", "market": "未调研", "monetization": "未调研", "competitors": []},
+  "foundation": {"pass": true, "reason": "假设：本文件仅测试格式与计算，不作为市场判断"},
+  "dimensions": [
+    {"name": "痛点强度", "score": 6.75, "evidence": "假设：合成测试输入，无真实市场证据"},
+    {"name": "离钱近", "score": 6.75, "evidence": "假设：合成测试输入，无真实市场证据"},
+    {"name": "单位经济健康度", "score": 6.75, "evidence": "假设：合成测试输入，无真实市场证据"},
+    {"name": "一人可交付", "score": 6.75, "evidence": "假设：合成测试输入，无真实市场证据"},
+    {"name": "自然分发", "score": 6.75, "evidence": "假设：合成测试输入，无真实市场证据"},
+    {"name": "护城河", "score": 6.75, "evidence": "假设：合成测试输入，无真实市场证据"},
+    {"name": "市场趋势", "score": 6.75, "evidence": "假设：合成测试输入，无真实市场证据"},
+    {"name": "可验证性", "score": 6.75, "evidence": "假设：合成测试输入，无真实市场证据"},
+    {"name": "时机(Why now)", "score": 6.75, "evidence": "假设：合成测试输入，无真实市场证据"},
+    {"name": "AI-native契合度", "score": 6.75, "evidence": "假设：合成测试输入，无真实市场证据"}
+  ],
+  "diagnosis": "仅验证计算和文件协议，不能据此做业务判断",
+  "rebuttal": {"claim": "", "blindspot": ""}
+}
