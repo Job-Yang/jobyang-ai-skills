@@ -1,52 +1,96 @@
 # Style Compass
 
-Turn requirements into interactive UI/UX prototypes and implementation specifications. Designed for developers who can recognize a good interface but struggle to describe a visual direction. It runs independently of iLoop, Figma, Superdesign, and other design skills.
+Turn requirements into an interactive UI/UX prototype and an implementation-ready design specification. The result is more than a polished screenshot: structure, interaction, visual choices, review comments, and final delivery remain connected.
 
 [简体中文](./README.md)
 
-## Use it
+## What it can do
 
-> Use style-compass to design this product. I have requirements but no visual reference. Show interactive, high-fidelity options and refine the selected direction.
+| Stage | Capability |
+| --- | --- |
+| Structure | Confirm pages, content hierarchy, and navigation with grayscale HTML wireframes |
+| Interaction | Build clickable core journeys with default, loading, success, failure, disabled, and recovery states |
+| Visual exploration | Generate a small set of materially different high-fidelity directions instead of recoloring one wireframe |
+| Review | Experience, explain, comment on, and compare designs in one workbench |
+| Coverage protection | Track requirements, pages, journeys, actions, and states through stable `R/P/J/A/S` identifiers |
+| Final refinement | Expand the selected direction across all pages, real copy, key states, responsive layouts, and motion |
+| Developer handoff | Export specifications and tokens from the final HTML and stage contract |
 
-> Improve this interface and flow. Keep the candidates, selection reasons, and region comments, then deliver the prototype and specification.
+The workbench supports panning, zooming, page filtering, side-by-side comparison, region comments, resolution state, and stage approval. Comments and decisions are saved to files rather than disappearing with the chat session.
 
-Input can be a PRD, a short requirement, an existing product, or code and screenshots. Without a PRD, the skill establishes the minimum requirements within the current task.
+## Why the workflow is staged
 
-## Design
+People often recognize a good interface but cannot specify one in advance. Asking for a radius, font, or style label too early produces weak design input. Starting with a polished mockup has the opposite problem: color distracts from structural and interaction flaws.
 
-Confirm structure and interaction semantics, present high-fidelity visual candidates, then finish every page and state in the chosen direction. Grayscale prototypes can support structural exploration; visual decisions require realistic candidates, not recolored wireframes.
+Style Compass separates three decisions:
 
-Stable `R/P/J/A/S` identifiers track requirements, pages, journeys, actions, and states. Layout and controls may change during visual design; approved functions and outcomes must remain traceable.
+```text
+Structure: what exists and where it lives
+Interaction: how the user completes a task and receives feedback
+Visual design: how the confirmed content and behavior are expressed
+```
 
-Every stage uses the bundled Spatial Studio workbench: stage navigation at the top, project content on the left, designs in the center, explanations and comments on the right, and current objects below. The canvas supports direct panning and side-by-side comparisons.
+Each stage uses rendered screens and working interactions. Structure is still cheap to change before detailed visual work begins. During visual exploration, confirmed task semantics cannot silently disappear.
 
-The model creates the design. Scripts provide the workbench, structural checks, and exports. A generated scaffold is not a finished product.
+The `R/P/J/A/S` contract also addresses a common failure in AI redesigns: every redraw can lose a feature or change an outcome. Candidates must cover the required journeys, actions, and states before the user is asked to choose a direction.
+
+## How to ask
+
+> Use style-compass to design this product. I have requirements but no visual reference. Show interactive, high-fidelity directions and refine the selected one.
+
+> Improve this existing interface and flow. Preserve each candidate, selection rationale, and region comment, then deliver the prototype and specification.
+
+Input may be a PRD, a short requirement, an existing product, or code and screenshots.
+
+## How a project moves
+
+```text
+Requirements and existing product
+→ grayscale structure
+→ clickable interaction prototype
+→ 2–4 high-fidelity directions, or one clearly defined direction
+→ full pages and states in the selected direction
+→ runnable prototype, specification, and tokens
+```
+
+The four formal stages share the bundled Spatial Studio workbench. The top bar holds stage state, the left side holds project content, the center displays artboards, the right side explains or reviews the selected object, and the bottom dock shows the current pages, journeys, variants, or deliverables.
+
+## Why visual exploration does not start with tokens
+
+An early single-interface comparison used three prompting strategies:
+
+| Strategy | Blind score in that comparison |
+| --- | ---: |
+| A concrete product direction with freedom to design the whole page | 9.0 |
+| A fixed list of color, type, radius, and spacing tokens | 7.5 |
+| No visual guidance | 5.0 |
+
+That result motivated a practical change: tokens now record a selected direction and maintain cross-page consistency. Early exploration works at page level, where composition, density, hierarchy, image-text relationships, and motion can be considered together.
+
+This was one interface and one small comparison. It does not prove that naming a reference product universally improves design. The current method treats product names as research leads, not aesthetic formulas. Formal comparisons must freeze inputs, isolate generation and judging, retain failures, and allow the original or a tie to win.
 
 ## Deliverables
 
 | Artifact | Purpose |
 | --- | --- |
-| `prototype/index.html` | Review entry point and interactive artboards |
-| `prototype/index.design.json` | Stage decisions, semantic identifiers, and coverage |
+| `prototype/index.html` | Unified review entry and interactive artboards |
+| `prototype/index.design.json` | Stage decisions, identifiers, and coverage |
 | `prototype/review-framework/` | Bundled workbench CSS and JavaScript |
 | `prototype/review-data/comments.json` | Comments tied to pages, modules, and regions |
 | `prototype/review-data/workflow.json` | Stage state, selections, and combination decisions |
 | Structure, interaction, candidate, and final pages | Inspectable design history |
-| `design-spec-<topic>.md` | Specification exported from HTML and stage metadata |
+| `design-spec-<topic>.md` | Developer specification exported from HTML and metadata |
 
-The review server persists comments and selections. Before export, complete page, component, state, interaction, and prototype-index metadata; the exporter cannot infer all business semantics.
+## What is verified
 
-## Install and requirements
+- The workspace validator checks the four stages, side panels, context dock, review modes, and artboard manifest.
+- The stage-contract validator checks candidate coverage of journeys, actions, outcomes, states, and final pages.
+- Specifications and tokens are exported from final HTML to reduce drift between prototype and documentation.
+- These checks establish structural completeness, not aesthetic quality. Final delivery still requires rendered inspection, real interaction, and user approval.
 
-Copy the complete directory to `~/.trae/skills/style-compass/` or the host's skill directory, including assets, examples, references, and scripts.
-
-Scripts use Python 3.9+ and the standard library. A completed design also requires browser rendering, visual inspection, and interaction checks. External research, font services, and canvases are optional. Bundle distributable resources or disclose remaining network dependencies.
-
-Cloud hosts with Python and a web preview can use the same files. Text-only hosts can deliver drafts and complete code, but must mark runtime verification as pending. Review is incomplete if comments cannot be persisted.
+There is not yet a broad benchmark across multiple products and models. The 9.0/7.5/5.0 result explains an earlier design decision; it is not a general performance claim.
 
 ## Local start
-
-Run from the skill directory; `design-output` represents the caller's output location:
 
 ```bash
 python3 scripts/scaffold_review.py ./design-output/prototype
@@ -54,23 +98,11 @@ python3 scripts/validate_review_workspace.py ./design-output/prototype/index.htm
 python3 scripts/review_server.py --root ./design-output/prototype --port 8823
 ```
 
-Open `http://127.0.0.1:8823/index.html`. Replace product artboards and the design manifest, keep the shared workbench, and maintain the stage contract.
-
-Check candidate coverage before presentation. For final delivery, replace `direction` with `final` and perform browser verification:
+Before showing a direction and before final handoff:
 
 ```bash
 python3 scripts/validate_stage_contract.py --contract ./design-output/prototype/index.design.json --html ./design-output/prototype/index.html --phase direction
 python3 scripts/export_spec.py ./design-output/prototype/index.html --meta ./design-output/prototype/index.design.json --topic example-product --producer standalone -o ./design-output/design-spec-example-product.md
-python3 scripts/artifact_io.py pack --input ./design-output/design-spec-example-product.md --attach ./design-output/prototype --out ./design-output/design-result.zip
-python3 scripts/artifact_io.py ingest --input ./design-output/design-result.zip --output-root ./received
 ```
 
-The bundle includes prototypes, candidates, contracts, and saved review data. Import places prototypes under `<topic>/prototype/`; it does not rewrite relative Markdown links. Use the receipt and prototype index to locate files. Structural checks do not replace visual review, interaction tests, or user approval.
-
-## Package and optional integration
-
-[SKILL.md](./SKILL.md) is the agent entry. `references/` covers structure, intake, interaction, visual references, the workbench, stage contracts, and delivery. `scripts/` provides scaffolding, validation, exports, comparison, and the review server. New projects start from the shared workbench under `assets/review-framework/`.
-
-An explicitly active OPC workflow supplies requirements, output locations, and approval rules. Standalone use accepts direct input and does not look up iLoop paths. Outside-view can optionally support decisions that lack external evidence.
-
-The outputs are prototypes and specifications. Production implementation, deployment, and market validation remain separate tasks.
+Copy the complete directory into the host's Skills directory. Python 3.9+ runs the bundled standard-library tools; browser rendering and interaction are required for a completed visual review.

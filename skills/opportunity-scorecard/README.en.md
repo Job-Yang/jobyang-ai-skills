@@ -1,26 +1,55 @@
 # Opportunity Scorecard
 
-Assess whether a product idea deserves further validation. Start with a direct idea, research, or a radar candidate. Neither iLoop nor a prior radar scan is required.
+Turn a product idea, existing research, or a candidate lead into a traceable investment recommendation: gather more evidence, run a bounded test, invest further, or stop.
 
 [简体中文](./README.md)
 
-## Use it
+## What it can do
 
-> Use opportunity-scorecard to assess a tool that turns consultants' client interviews into traceable requirements. Here are the budget and source materials. Gather evidence before scoring, and explain the main risks.
+- Reject internally contradictory ideas, impossible prerequisites, or demonstrably empty markets.
+- Check whether the default ten-dimension rubric fits the actual decision.
+- Gather evidence for pain, revenue proximity, unit economics, delivery, distribution, defensibility, trend, testability, timing, and AI fit.
+- Separate stated interest, free trials, payment, and renewal.
+- Recalculate costs and sensitivity, including heavy-user losses hidden by averages.
+- Name the payment, cost, usage, or technical evidence that would change the recommendation.
+- Preserve a falsifiable non-consensus argument without allowing it to override a failed foundation.
+- Switch to a qualitative assessment when a numeric rubric would distort the decision.
 
-> Evaluate the second candidate in this list before we run a willingness-to-pay experiment. Identify unsupported assumptions.
+## Why reasoning and calculation are separated
 
-Useful inputs include the audience, problem, product form, market, revenue model, alternatives, and resource limits. Missing details are clarified only when they affect the assessment.
+Evidence quality, rubric applicability, and uncertainty require contextual judgment. Weights, thresholds, composite scores, and verdict labels should remain deterministic and reproducible.
 
-## Design
+```text
+Model: applicability, evidence, dimension rationale, counterargument
+Script: schema validation, weighted calculation, verdict rendering
+```
 
-The model interprets evidence and assigns dimension scores. Python validates input, computes the weighted result, selects the verdict, and renders the card.
+An all-model workflow can drift between runs. An all-spreadsheet workflow forces irrelevant dimensions onto every decision. The two-stage design keeps contextual judgment flexible while making arithmetic stable.
 
-First check whether the default solo-product rubric fits the decision, resources, and success criteria. If material dimensions are irrelevant, deliver a qualitative assessment without a composite score. Do not assign low or neutral scores to inapplicable dimensions or invent weights. Missing evidence for a relevant dimension remains an explicit uncertainty within the original scoring method.
+The score is a compressed view of current evidence, not the first line of the answer. Delivery starts with the next action, what should remain paused, and what evidence would change the recommendation.
 
-- **Foundation:** contradictory value, impossible prerequisites, or a demonstrably empty market force a reject verdict.
-- **Ten dimensions:** pain, proximity to revenue, unit economics, solo delivery, organic distribution, defensibility, market trend, testability, timing, and AI-native fit. Revenue, unit economics, and defensibility have weight 1.5; the others have weight 1.0. Total weight is 11.5.
-- **Non-consensus review:** a score below 6.5 can receive a dark-horse flag when both a falsifiable claim and a blind-spot explanation are supplied. A failed foundation cannot receive that flag.
+## How to ask
+
+> Assess a tool that turns consultants' interviews into traceable requirements. Here are the budget and source materials. Gather evidence before scoring and explain the main risks.
+
+> Evaluate the second candidate before a willingness-to-pay test. Identify unsupported assumptions.
+
+Useful input includes the audience, problem, product form, market, revenue model, alternatives, and resource limits.
+
+## Workflow
+
+```text
+Define the decision
+→ check rubric applicability
+→ test the foundation
+→ gather evidence for relevant dimensions
+→ calculate unit economics and sensitivity
+→ record a non-consensus case
+→ render the card with the script
+→ propose the smallest test and stopping conditions
+```
+
+When the default solo-product rubric applies:
 
 | Score | Verdict |
 | --- | --- |
@@ -29,37 +58,41 @@ First check whether the default solo-product rubric fits the decision, resources
 | ≥ 3.5 and < 5.0 | caution |
 | < 3.5 | reject |
 
-This is a default rubric for solo products, not a probability of success. Correct arithmetic cannot establish source truth or replace interviews and payment experiments.
+Revenue proximity, unit economics, and defensibility have weight 1.5; the other seven dimensions have weight 1.0. A failed foundation overrides the composite.
+
+When material dimensions do not fit the decision, the skill produces `evaluation-<topic>.md` without a composite, verdict, or dark-horse flag.
 
 ## Output
 
-- `_scoring-<topic>.json`: evidence, dimension scores, foundation assessment, and rebuttal.
-- `assess-<topic>.md`: computed result, verdict, flag, evidence, and diagnosis.
-- An optional ZIP containing both for transfer.
+- `_scoring-<topic>.json`: evidence, scores, foundation result, and non-consensus argument.
+- `assess-<topic>.md`: computed score, verdict, evidence, diagnosis, and next action.
+- `evaluation-<topic>.md`: qualitative assessment when the rubric does not apply.
+- An optional ZIP containing the card and source scoring data.
 
-If the rubric does not apply, or material applicability conditions are unknown, deliver `evaluation-<topic>.md` with evidence, counterevidence, relevant economics, unknowns, a recommended action, and validation conditions. It has no default composite, verdict, or dark-horse fields. Transfer it as an ordinary file; the current numerical-card validator and importer do not accept it. An OPC node requiring a standard card must resolve the mismatch before advancing.
+## Evaluation evidence
 
-The skill does not automatically write a PRD, discard ideas, or make investment decisions.
+The most important observed defect was rubric applicability. Earlier versions continued to include solo-delivery and AI-fit scores in organizational decisions even after adding a disclaimer.
 
-## Requirements and runnable example
+After introducing an applicability branch:
 
-Python 3.9+ with the standard library computes numerical cards; qualitative assessments do not need the scoring script. Evidence can come from supplied material or host search tools. When the rubric applies but Python is unavailable, deliver complete JSON and qualitative analysis marked as awaiting computation.
+| Comparison stage | Previous version | Current version |
+| --- | ---: | ---: |
+| Four targeted development cases | 19.50 / 20 | 20.00 / 20 |
+| Two targeted holdout cases | 18.75 / 20 | 20.00 / 20 |
+| Two independent reserve cases | 19.50 / 20 | 19.75 / 20 |
 
-Copy the whole directory to `~/.trae/skills/opportunity-scorecard/` or another host's skill directory. Run from that directory:
+The revised method more clearly required actual renewals, controlled familiarity effects in time comparisons, compared like-for-like workloads, and exited the solo-product composite for organizational decisions.
+
+The reserve cases did not establish a stable single winner. The evidence supports correction of a known bias, not universal superiority. The larger product-skill evaluation covered 20 cases, 60 outputs, and 34 comparisons, mostly with simulated material and near-ceiling scores.
+
+## Runnable example
 
 ```bash
 python3 scripts/score.py --input examples/scoring.synthetic.json --out assess-synthetic-example.md --producer standalone
 python3 scripts/artifact_io.py validate --input assess-synthetic-example.md
 python3 scripts/artifact_io.py pack --input assess-synthetic-example.md --scoring examples/scoring.synthetic.json --out scorecard-result.zip
-python3 scripts/artifact_io.py ingest --input scorecard-result.zip --output-root ./received
 ```
 
-The synthetic example gives all dimensions 6.75 and explicitly labels every evidence item as an assumption. It tests computation and transfer only. Real tasks use a task-specific JSON file and an explicit output location. Use `--stdout` instead of `--out` when the host saves the output.
+The bundled synthetic example scores every dimension at 6.75 and labels its evidence as assumptions. It validates calculation and transfer only.
 
-## Package and integration
-
-[SKILL.md](./SKILL.md) defines the workflow and JSON input; [scoring-method.md](./references/scoring-method.md) explains the rubric. `scripts/score.py` owns numeric rules. `scripts/scoring-rules.json` is generated from those rules for the bundled artifact validator.
-
-[handoff.md](./references/handoff.md) and `scripts/artifact_io.py` provide portable transfer. The `opc-artifact/v1` name describes a file format, not an iLoop dependency. Standalone import uses an explicit `--output-root`; new imports remain pending human review and conflicting content is not overwritten.
-
-Only an explicitly active OPC workflow controls input locations, approval, and downstream orchestration.
+Copy the complete directory into the host's Skills directory. Numeric cards require Python 3.9+ and the standard library. Structural and arithmetic validation do not establish evidence truth or product success.

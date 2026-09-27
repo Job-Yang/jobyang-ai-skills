@@ -29,9 +29,14 @@ This repository is not a prompt cheat sheet. Each Skill should be a compact piec
 | [video-reader](./skills/video-reader/) | Turns video into timestamped keyframes and a motion timeline, so an image-only LLM can reason about what happened at which second. |
 | [png-compress](./skills/png-compress-skill/README.en.md) | Batch-compresses PNG assets locally with incremental caching, quality gates, and automatic fallback, without an online API. |
 
-Radar, scorecard, product brief, style compass, engineering docs, and outside-view can each be installed independently. None requires iLoop or prior nodes. Their bilingual READMEs explain inputs, outputs, methods, examples, and requirements. Only an explicitly active OPC workflow supplies orchestration and approval rules; the skills do not impose a fixed sequence.
+The collection can be read as four capability groups:
 
-Portable transfer tools ship with the relevant packages. The `opc-artifact/v1` format does not require an OPC runtime: standalone use provides explicit files and output locations. Research, computation, and visual verification require their respective host tools; missing verification is disclosed.
+- **Judgment and verification**: VDD and outside-view.
+- **Product formation**: opportunity radar, opportunity scorecard, product brief, and style compass.
+- **Engineering delivery**: engineering docs, PNG compression, and video reader.
+- **Writing**: haohao-shuohua, cuihuo, tangshan-style, Feynman explainer, and sansi-erhouxing.
+
+Each README explains capabilities, usage, design rationale, evaluation evidence, and boundaries. `SKILL.md` is the execution entry read by the agent. Complex Skills add references, scripts, templates, or runtime assets as needed.
 
 ## Why This Repo Exists
 
