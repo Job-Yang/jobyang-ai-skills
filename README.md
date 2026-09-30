@@ -16,6 +16,7 @@ AI 时代最容易被低估的，是那些能反复起作用的工作方式。�
 | --- | --- |
 | [vdd](./skills/vdd/) | 面向验证的开发：在说“做完了/没问题”之前先走一遍验证，不乱报喜、不硬挤问题、敢说没问题。 |
 | [haohao-shuohua](./skills/haohao-shuohua/) | 把中文写得更像人说的：保事实、去 AI 味、加中文味、不许造词充深刻。 |
+| [haohao-eval](./skills/haohao-eval/) | 好好说话评测台：盲评中文改稿，按真实 BadCase 做每日召回、候选门禁、发布监控与自动回滚。 |
 | [cuihuo](./skills/cuihuo/) | 观点淬硬引擎：把一个技术观点写成平实克制、一节一观点的对外硬文，或提炼成短思考手记。 |
 | [tangshan-style](./skills/tangshan-style/) | 汤山体：把面向未来的想象与推演写成有历史纵深、每句耐嚼的畅想文。 |
 | [feynman-explainer](./skills/feynman-explainer/) | 用费曼技巧把复杂的东西讲透：一条逻辑链层层推导，让外行也能真正理解。 |
@@ -31,7 +32,7 @@ AI 时代最容易被低估的，是那些能反复起作用的工作方式。�
 
 可以把这些 Skill 看成几组能力：
 
-- **判断与验证**：VDD、兼听。
+- **判断与验证**：VDD、兼听、好好说话评测台。
 - **产品形成**：机会雷达、机会评分卡、产品需求与计划、设计罗盘。
 - **工程交付**：研发技术文档、PNG 压缩、视频读取。
 - **写作表达**：好好说话、淬火、汤山体、费曼讲解、三思而后行。
@@ -82,6 +83,7 @@ cp -R jobyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
 └── skills/
     ├── vdd/
     ├── haohao-shuohua/
+    ├── haohao-eval/
     ├── cuihuo/
     ├── tangshan-style/
     ├── feynman-explainer/

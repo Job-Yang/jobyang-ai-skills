@@ -47,11 +47,11 @@ Claude Code 的默认目录：
 
 ```
 haohao-shuohua/
-├── SKILL.md                            # 技能主文件:使用面、四条原则、三档场景
+├── SKILL.md                            # 技能主文件：场景、保真、表达和执行边界
 ├── assets/article/                     # 从飞书原文迁移的文章配图
 └── references/
-    ├── workflow.md                     # 中重档五段流程、回读与 report
-    ├── symptom-dictionary.md           # 症状词典:AI 味五层病灶 + 下刀五处
+    ├── workflow.md                     # 正式成稿的完整改写与复核流程
+    ├── symptom-dictionary.md           # 症状词典：AI 味线索与修改方向
     ├── before-after-worktext.md         # 五类工作文本改前改后对照
     ├── chinese-four-principles.md      # 中文四原则:动词/具体/气口/留白
     ├── protected-spans.md              # 受保护跨度:哪些字一个都不能动
@@ -61,6 +61,18 @@ haohao-shuohua/
 ```
 
 一句话总纲：**保事实不动，去 AI 味，加中文味，不许造词充深刻。**
+
+## 评测和每日改进
+
+日常写作不打分。需要比稿、跑回归或持续发现 BadCase 时，使用配套的 [`haohao-eval`](../haohao-eval/)。
+
+评测台不会直接改写本 Skill。它先让现用版和候选版改写同一批匿名题目，再逐条核对事实、场景和表达；候选通过当天门禁及次日复测后，才发布一份小型操作建议：
+
+```text
+~/.local/share/haohao-shuohua/daily-learning.md
+```
+
+本 Skill 写作前会读取这份建议。底线、主文件和 references 不会被每日流程自动覆盖，个人风格和私人原文也不会进入召回。
 
 ---
 

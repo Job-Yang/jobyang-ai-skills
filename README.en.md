@@ -16,6 +16,7 @@ This repository is not a prompt cheat sheet. Each Skill should be a compact piec
 | --- | --- |
 | [vdd](./skills/vdd/README.en.md) | Verification-driven development: run a verification pass before claiming "done" or "no problem" — no false optimism, no forced nitpicking, and the confidence to say it's fine. |
 | [haohao-shuohua](./skills/haohao-shuohua/README.en.md) | Cleans Chinese writing so it sounds like a person wrote it: keeps facts, removes AI flavor, restores Chinese rhythm, and blocks fake profundity. |
+| [haohao-eval](./skills/haohao-eval/README.en.md) | Evaluates Chinese rewrites with blind judging, daily failure recall, candidate gates, release monitoring, and automatic rollback. |
 | [cuihuo](./skills/cuihuo/README.en.md) | An opinion-hardening engine: turn a technical point into a plain, restrained op-ed with one idea per section, or distill it into a short note. |
 | [tangshan-style](./skills/tangshan-style/README.en.md) | A writing engine for future-facing speculative essays with historical depth and lines worth chewing on. |
 | [feynman-explainer](./skills/feynman-explainer/README.en.md) | Uses the Feynman technique to truly explain hard things: one reasoning chain, derived step by step, so non-experts actually get it. |
@@ -31,7 +32,7 @@ This repository is not a prompt cheat sheet. Each Skill should be a compact piec
 
 The collection can be read as four capability groups:
 
-- **Judgment and verification**: VDD and outside-view.
+- **Judgment and verification**: VDD, outside-view, and haohao-eval.
 - **Product formation**: opportunity radar, opportunity scorecard, product brief, and style compass.
 - **Engineering delivery**: engineering docs, PNG compression, and video reader.
 - **Writing**: haohao-shuohua, cuihuo, tangshan-style, Feynman explainer, and sansi-erhouxing.
@@ -82,6 +83,7 @@ Keep each Skill directory intact. Do not copy only `SKILL.md`, because some Skil
 └── skills/
     ├── vdd/
     ├── haohao-shuohua/
+    ├── haohao-eval/
     ├── cuihuo/
     ├── tangshan-style/
     ├── feynman-explainer/

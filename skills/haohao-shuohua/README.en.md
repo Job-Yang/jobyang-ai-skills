@@ -39,6 +39,18 @@ cp -R jobyang-ai-skills/skills/haohao-shuohua ~/.claude/skills/haohao-shuohua
 
 Keep the complete directory. Do not copy only `SKILL.md`, because the Skill relies on the files under `references/`.
 
+## Evaluation and daily improvement
+
+Ordinary writing is not scored. Use the companion [`haohao-eval`](../haohao-eval/README.en.md) for blind comparison, regression, and recurring BadCase recall.
+
+The evaluator does not rewrite this Skill. It compares the current and candidate guidance on the same anonymous cases, verifies fidelity and register, and publishes a small optional overlay only after same-day gates and next-day retesting:
+
+```text
+~/.local/share/haohao-shuohua/daily-learning.md
+```
+
+This Skill reads the overlay before writing. Its core instructions and references are not overwritten by the daily loop, and private source material is not added to recall automatically.
+
 ## Structure
 
 ```text

@@ -1,0 +1,68 @@
+[
+ {
+  "id": "clean-ba01",
+  "kind": "clean",
+  "group": "clean",
+  "任务": "改写",
+  "文体": "正式周报",
+  "力度": "标准",
+  "原文": "本周深入排查分析了支付链路的稳定性问题。我们系统梳理线上日志，定位了若干潜在风险点，并针对这些风险优化了相关模块，有效提升了整体稳定性。",
+  "上下文": "",
+  "来源": "haohao-shuohua/references/before-after-worktext.md 修好稿"
+ },
+ {
+  "id": "clean-ba02",
+  "kind": "clean",
+  "group": "clean",
+  "任务": "改写",
+  "文体": "正式复盘",
+  "力度": "标准",
+  "原文": "我们全面复盘了本次线上故障，认识到监控体系仍有不足。后续将进一步完善相关机制，持续提升系统的可观测性。",
+  "上下文": "",
+  "来源": "haohao-shuohua/references/before-after-worktext.md 修好稿"
+ },
+ {
+  "id": "clean-ba03",
+  "kind": "clean",
+  "group": "clean",
+  "任务": "改写",
+  "文体": "技术方案",
+  "力度": "标准",
+  "原文": "为从根本上解决当前架构在高并发场景下的性能瓶颈，我们提出一套全新的方案。方案具有可扩展性和高可用性，计划引入分布式缓存，有效缓解数据库压力。",
+  "上下文": "",
+  "来源": "haohao-shuohua/references/before-after-worktext.md 修好稿"
+ },
+ {
+  "id": "clean-ba04",
+  "kind": "clean",
+  "group": "clean",
+  "任务": "改写",
+  "文体": "维护通知",
+  "力度": "标准",
+  "原文": "各位同学，为保障系统稳定运行，我们将于本周五晚间维护系统，届时部分功能的正常使用可能受到影响。请提前做好准备，感谢大家理解与配合。",
+  "上下文": "",
+  "来源": "haohao-shuohua/references/before-after-worktext.md 修好稿"
+ },
+ {
+  "id": "clean-ba05",
+  "kind": "clean",
+  "group": "clean",
+  "任务": "改写",
+  "文体": "群消息",
+  "力度": "标准",
+  "原文": "你提到的问题，我初步看了，可能与配置有关。我会继续排查确认，有结果第一时间告诉你。",
+  "上下文": "",
+  "来源": "haohao-shuohua/references/before-after-worktext.md 修好稿"
+ },
+ {
+  "id": "clean-ba06",
+  "kind": "clean",
+  "group": "clean",
+  "任务": "改写",
+  "文体": "可以不改",
+  "力度": "标准",
+  "原文": "本阶段已完成核心模块重构，系统具备横向扩展能力。后续将继续完善监控机制，提升故障定位效率。",
+  "上下文": "",
+  "来源": "haohao-shuohua/references/before-after-worktext.md 修好稿"
+ }
+]
