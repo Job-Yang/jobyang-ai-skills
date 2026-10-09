@@ -1,126 +1,196 @@
 # Style Compass — 风格坐标库 (Style Coordinate Library)
 #
-# 设计原则:
-#   archetype 与 render_hint 用来传递构图、密度、层次和动效等整体语义。
-#   颜色、字号等精确 token 只在用户选定方向后生成，用于跨屏和跨平台一致性。
-#   本库不提供可以直接套用的固定视觉参数，避免把不同方向压成同一种模板。
+# 本库提供方向线索，不提供固定审美配方或效果保证。
+# 使用前读 visual-craft.md，从任务与真实内容选择具体手段。
+# archetypes 是查找参考的线索，不代表已核验该产品当前的设计；借关系，不借长相。
+# render_hint 描述这个方向的结构关系和取舍，不写具体色值：色值从方向简报推出来。
+# best_for/avoid_for 表达情境倾向，不按人群标签决定设计。
+# token 记录已形成的设计选择，用于跨页面一致性；不能替代整页判断。
 #
 # 字段约定:
-#   id            唯一标识
-#   name          中文人话名
-#   archetypes    代表产品——**这是最重要的字段**,渲染时直接点名,调动模型的全部理解
-#   mood          3-5 个情绪词(问诊匹配用)
-#   best_for      适合场景
-#   avoid_for     不适合场景(帮用户排除)
-#   one_liner     一句话气质,选样时念给用户听
-#   render_hint   ⭐ 喂给模型的渲染指令:精髓 + 该做什么 + 明确禁用什么(反 slop)
-#                 注意:描述的是"手艺和感觉",不是硬编码数值。留白/密度/层次这类才是精髓。
+#   id                 唯一标识
+#   name               中文人话名
+#   archetypes         代表产品线索，借用前确认相关关系与适用条件
+#   mood               3-5 个情绪词(问诊匹配用)
+#   axes               产品性格坐标，-2..+2，与 intake-questions.md 的四根滑杆对应：
+#                      friend_authority 像朋友(-2)↔像权威(+2)
+#                      young_mature     年轻新潮(-2)↔成熟经典(+2)
+#                      playful_serious  轻松好玩(-2)↔严肃专业(+2)
+#                      mass_elite       大众亲民(-2)↔小众讲究(+2)
+#   best_for           适合场景
+#   avoid_for          不适合场景(帮用户排除)
+#   one_liner          一句话气质，展示渲染好的候选时用
+#   render_hint        可能的具体处理与取舍，不是必须照抄的规则
+#   variation_levers   同一坐标下候选之间可以拉开的维度
+#   default_attractors 这个方向最容易落进的默认长相；括号里是 lint_design.py 能查出的规则
+#   cjk                中文界面的字体与排版要点；字体许可见 cjk-typography.md
 
-version: 2
+version: 4
 
 coordinates:
 
   - id: calm-tech
     name: 克制工程感
-    archetypes: [Linear, Vercel, Height, Raycast]
+    archetypes: [Linear, Vercel, Raycast]
     mood: [专业, 冷静, 高效, 锋利]
+    axes: { friend_authority: 1, young_mature: 0, playful_serious: 2, mass_elite: 1 }
     best_for: [开发者工具, 内部后台, 数据密集型仪表盘, B 端 SaaS]
     avoid_for: [儿童产品, 情感化营销页, 电商大促]
-    one_liner: "像 Linear:安静、锋利、给专业用户的高密度工具感,深色为主、几乎不喧哗。"
+    one_liner: "安静、锋利、给专业用户的高密度工具感，几乎不喧哗。"
     render_hint: >
-      参考 Linear / Vercel 那种"克制、精确、工程感"的美学,调动你对这类产品的全部理解自由发挥。
-      精髓在:单面板 + 发丝级分割线(而非一堆独立卡片)、信息密度高但透气、强弱字重拉开层次、
-      状态用极小的圆点/标签而非花哨徽章、一个克制的冷色强调(靛蓝一类)、快速而几乎无感的过渡。
-      深色背景用近黑而非纯黑。禁止:紫白渐变、圆润卡通、多彩强调色堆叠、大圆角、弹跳动画、
-      Inter/Roboto 当主视觉字体、教科书式的"卡片+阴影+药丸徽章"默认后台样式。
+      精髓在关系，不在颜色：单面板加分隔线分区（不是一堆独立卡片），信息密度高但透气，
+      用字重和灰阶层级拉开主次，状态用小圆点或短标签，过渡快到几乎无感。
+      浅底和深底都成立；强调色只承担主操作和当前状态，色相从品牌和任务推出，不默认冷色。
+    variation_levers: [明暗, 强调色色相, 字体角色（等宽数字或衬线标题）, 分区方式（分隔线、色带、留白）, 密度]
+    default_attractors:
+      - 近黑底加靛蓝强调（SMELL-DARK-INDIGO、SMELL-DEFAULT-ACCENT）
+      - 发丝线加卡片网格的仪表盘（SMELL-CARD-STACK）
+      - 全大写加宽字距的小标签（SMELL-EYEBROW）
+      - 一种字体包办所有角色，标题、正文、数据没有区别
+    cjk: 系统黑体（苹方、微软雅黑）；14px 基准；界面行高 1.5714；数字列 tabular-nums；不要给汉字加负字距。
+
+  - id: cn-enterprise
+    name: 规整企业感
+    archetypes: [Ant Design, Arco Design, Semi Design, TDesign]
+    mood: [规整, 可靠, 熟悉, 高效]
+    axes: { friend_authority: 1, young_mature: 1, playful_serious: 2, mass_elite: 0 }
+    best_for: [国内 B 端后台, 中台管理系统, 审批与表单密集的内部工具]
+    avoid_for: [品牌官网, 消费级 App, 需要强记忆点的营销页]
+    one_liner: "用户一看就会用的国内后台惯例，在熟悉的骨架上做出这个产品自己的样子。"
+    render_hint: >
+      骨架守惯例：左侧导航、顶部面包屑、筛选区加表格、右侧抽屉编辑，用户不用学。
+      辨识度放在表面：强调色、表格行的节奏、状态标签的写法、空状态和首屏摘要。
+      表单遵循国内用户习惯（必填星号、行内校验、底部固定操作栏），不追求花哨。
+    variation_levers: [强调色（不必是默认蓝）, 分区（卡片或分隔线）, 导航明暗, 表格密度, 首屏摘要的写法]
+    default_attractors:
+      - 组件库默认蓝原样使用，所有产品看起来一样（SMELL-DEFAULT-ACCENT 只覆盖 Tailwind 色值，组件库默认色靠人看）
+      - 每块内容一张带阴影的白卡片（SMELL-CARD-STACK）
+      - 深色侧边栏加白色内容区的后台模板
+      - 表格操作列堆满文字链接
+    cjk: 14px 基准、行高 22px（1.5714）；字重只用 400、500、600；数字右对齐并用 tabular-nums。
 
   - id: warm-clarity
     name: 温暖清爽
-    archetypes: [Things 3, Craft, Bear, Cron]
+    archetypes: [Things 3, Craft, Bear]
     mood: [温暖, 清爽, 亲和, 有条理]
+    axes: { friend_authority: -1, young_mature: 0, playful_serious: 0, mass_elite: 0 }
     best_for: [效率工具, 笔记/待办, 个人生产力 App, 轻量消费级]
     avoid_for: [硬核数据平台, 金融交易终端, 强企业感后台]
-    one_liner: "像 Things 3:干净留白、暖调中性、亲切但不幼稚,让人愿意每天打开。"
+    one_liner: "干净留白、亲切但不幼稚，让人愿意每天打开。"
     render_hint: >
-      参考 Things 3 / Craft 那种"温暖清爽、亲切有序"的美学自由发挥。
-      精髓在:充足而讲究的留白、暖白背景(不是刺眼纯白)、柔和克制的强调色、圆润但不夸张的圆角、
-      轻柔的缓动、清晰的分组与呼吸感。亲切但保持成熟,不要幼态。
-      禁止:冷硬深色、高饱和荧光色、密不透风的表格、生硬直角、廉价渐变。
+      精髓在：讲究的留白、清晰的分组与呼吸感、柔和克制的强调、圆润但不夸张的圆角、轻柔的缓动。
+      亲切但保持成熟，不要幼态。背景可暖可冷，按品牌和使用时段取舍。
+    variation_levers: [底色冷暖, 圆角大小, 分组方式（留白或浅色块）, 强调色饱和度, 图标风格]
+    default_attractors:
+      - 暖白底配橙棕强调，几乎所有“温暖”方向都会先想到它
+      - 处处大圆角加柔和阴影
+      - 插画式空状态铺满页面
+    cjk: 正文 14 到 16px，正文行高 1.75；中英混排交给 text-autospace；标题可以比正文只大一档。
 
   - id: neutral-flexible
     name: 中性灵活
     archetypes: [Notion, Coda, Slite]
     mood: [中性, 克制, 灵活, 内容优先]
+    axes: { friend_authority: 0, young_mature: 0, playful_serious: 1, mass_elite: 0 }
     best_for: [内容平台, 文档/知识库, 混合型工作台, 长期扩展的产品]
     avoid_for: [需要强品牌记忆点的营销页, 情绪化娱乐产品]
-    one_liner: "像 Notion:近乎无风格的风格,黑白灰为主、内容说话,极易扩展。"
+    one_liner: "近乎无风格的风格，内容当主角，极易扩展。"
     render_hint: >
-      参考 Notion / Coda 那种"中性、内容优先"的美学自由发挥。
-      精髓在:黑白灰基调让内容当主角、克制到近乎隐形的 UI、标题可用衬线制造一点气质、
-      极简的分隔和留白、强调色近乎黑而不抢戏。
-      禁止:抢戏的品牌色、渐变、重阴影、花哨图标、过度动效。
+      精髓在：克制到近乎隐形的界面、极简的分隔和留白、强调色几乎不抢戏。
+      中性不等于没有身份：至少留一处可识别的处理（标题字体、图标、首屏结构或一种标志性交互）。
+    variation_levers: [标题字体（黑体或宋体）, 强调色有无, 页面宽度, 图标风格, 一处标志性处理放在哪]
+    default_attractors:
+      - 纯黑白加系统字体，去掉导航后认不出是谁（OpenAI 的品牌测试）
+      - 衬线大标题配无衬线正文的固定搭配
+    cjk: 中文标题用宋体时选思源宋体（OFL）；正文黑体；文档类正文行高 1.75 到 1.9，行长不超过 40 字。
 
   - id: playful-gamified
     name: 活泼游戏化
     archetypes: [Duolingo, Cash App, Headspace(部分)]
     mood: [活泼, 友好, 有奖励感, 大胆]
+    axes: { friend_authority: -2, young_mature: -2, playful_serious: -2, mass_elite: -1 }
     best_for: [教育/学习, 习惯养成, 大众消费级, 面向年轻用户]
     avoid_for: [企业后台, 金融/医疗严肃场景, 专业工具]
-    one_liner: "像 Duolingo:高饱和大色块、圆润可爱、强反馈奖励感,情绪拉满、鼓励点击。"
+    one_liner: "高饱和、圆润、强反馈奖励感，鼓励点击。"
     render_hint: >
-      参考 Duolingo 那种"活泼、友好、有奖励感"的美学自由发挥。
-      精髓在:高饱和主色大方使用、大圆角、厚实的按钮(带底边的 3D 立体感)、明确的进度/成功反馈、
-      大字重标题、适度的弹跳动效带来愉悦感。
-      禁止:冷淡灰阶、密集信息、锐利直角、无反馈的静态交互、严肃衬线体。
+      精髓在：大方使用主色、大圆角、厚实的按钮、明确的进度和成功反馈、大字重标题。
+      奖励反馈要清楚但不打断任务；回弹只放在完成时刻，不放在每个按钮上。
+    variation_levers: [主色, 角色或吉祥物有无, 按钮立体程度, 奖励时刻的表达方式, 圆角大小]
+    default_attractors:
+      - 彩带和撒花庆祝（SMELL-CONFETTI）
+      - 每个按钮都加回弹（SMELL-BOUNCE）
+      - 表情符号当图标（SMELL-EMOJI-ICON）
+    cjk: 圆体中文字体多为厂商字体，网页嵌入前查许可；大字号中文标题字距保持 0。
 
   - id: editorial
     name: 编辑杂志感
     archetypes: [Readwise, Medium, Substack]
     mood: [文雅, 有序, 阅读友好, 有观点]
+    axes: { friend_authority: 1, young_mature: 1, playful_serious: 1, mass_elite: 1 }
     best_for: [阅读类, 内容/博客, 知识付费, 品牌官网, 长文本]
     avoid_for: [高频操作后台, 数据仪表盘, 交易类工具]
-    one_liner: "像 Medium:衬线大标题、宽松行距、以排版为主角,像一本讲究的杂志。"
+    one_liner: "以排版为主角，像一本讲究的杂志。"
     render_hint: >
-      参考 Medium / Readwise 那种"编辑杂志感"的美学自由发挥。
-      精髓在:讲究的衬线大标题、宽松行距、受控的正文测量宽度(每行 45-75 字符最舒服)、
-      印刷感的强调色、近乎直角、克制到几乎没有的动效——让文字排版当绝对主角。
-      禁止:无衬线堆砌、卡片密铺、荧光色、圆润按钮、抢戏的交互动画。
+      精髓在：标题与正文有角色区别、合适行距、按语言和载体控制行长、印刷感的强调、几乎没有的动效。
+      检查密集卡片、强调色和动画是否妨碍连续阅读；无衬线和圆润按钮并非天然不适合。
+    variation_levers: [标题字体（宋体、楷体或黑体）, 版心宽度, 强调色, 图片比重, 分栏]
+    default_attractors:
+      - Playfair、Fraunces 一类高频衬线（SMELL-TRAINING-FONT）
+      - 斜体衬线大标题
+      - 米色纸张底纹
+    cjk: 正文思源宋体或黑体，行高 1.75 到 2.0，行长 17 到 40 字；标题可用霞鹜文楷（OFL）；段首不缩进时用段间距。
 
   - id: minimal-zen
     name: 极简禅意
     archetypes: [Apple, Teenage Engineering, 无印良品]
     mood: [极简, 高级, 留白, 精确]
+    axes: { friend_authority: 1, young_mature: 1, playful_serious: 1, mass_elite: 2 }
     best_for: [高端硬件/消费电子, 精品工具, 品牌展示, 摄影/设计类]
     avoid_for: [信息密集后台, 预算有限的快速原型, 需要热闹氛围的场景]
-    one_liner: "像 Apple:大量留白、极少元素、每个像素都克制,靠精确和呼吸感显高级。"
+    one_liner: "大量留白、极少元素，靠精确和呼吸感显高级。"
     render_hint: >
-      参考 Apple / 无印良品 那种"极简禅意、高级克制"的美学自由发挥。
-      精髓在:大量留白当设计语言、元素极少但每个都精确对齐、单一克制的强调色、
-      高质量的呼吸感、丝滑而低调的缓动。少即是多。
-      禁止:信息塞满、多色强调、边框噪声、廉价渐变、生硬动画、装饰性图标。
+      精髓在：留白当设计语言、元素极少但每个都精确对齐、单一克制的强调、丝滑而低调的缓动。
+      保留任务必要的信息，不能靠删内容制造简洁。
+    variation_levers: [明暗, 产品图的比重, 字号反差, 网格严格程度, 强调色有无]
+    default_attractors:
+      - 超大首屏标题加一行小字（Design Arena 点名的 oversized hero）
+      - 错位构图（offset compositions）
+      - 靠删内容制造简洁
+    cjk: 中文大标题字重不超过 600，字距 0；正文不要小于 14px，留白再多也要保证可读。
 
   - id: bold-expressive
     name: 大胆潮流
     archetypes: [Gumroad(新), Figma 品牌页, Framer]
     mood: [大胆, 潮流, 有态度, 高对比]
+    axes: { friend_authority: -1, young_mature: -2, playful_serious: -1, mass_elite: 1 }
     best_for: [面向创作者/开发者的营销页, 新锐品牌, 落地页, 作品集]
     avoid_for: [严肃后台, 医疗/金融, 长时间使用的生产力工具]
-    one_liner: "像新版 Gumroad:大色块高对比、超大字号、粗黑边框,张扬有态度、第一眼抓人。"
+    one_liner: "大色块高对比、超大字号，张扬有态度、第一眼抓人。"
     render_hint: >
-      参考新版 Gumroad / Framer 品牌页那种"大胆、有态度、高对比"的美学自由发挥。
-      精髓在:超大标题字号制造冲击、粗黑边框和硬投影(offset shadow)、大胆撞色块、
-      近乎直角、干脆利落不拖泥带水的动效。要张扬、要有记忆点。
-      禁止:柔弱灰阶、细边框、低对比、优雅渐变过渡、缩手缩脚的留白、优雅衬线。
+      精髓在：用尺度反差制造冲击、大胆撞色、干脆的动效。
+      强表达集中在关键区域，次要操作仍可克制；检查粗边框、大字与密集内容是否冲突。
+    variation_levers: [主色组合, 边框与投影的硬度, 标题字体, 版式网格, 动效强度]
+    default_attractors:
+      - 紫蓝渐变（SMELL-PURPLE-GRADIENT）
+      - 便当格布局
+      - 超大首屏字
+      - 粗黑边框加硬投影的新野兽派模板
+    cjk: 中文展示标题可用得意黑（OFL）；大字号中文不要负字距；营销页正文仍按 16px、行高 1.75。
 
   - id: soft-wellness
     name: 柔和疗愈
     archetypes: [Calm, Headspace, Oak]
     mood: [平静, 疗愈, 柔和, 安心]
+    axes: { friend_authority: -2, young_mature: 0, playful_serious: 0, mass_elite: 0 }
     best_for: [健康/冥想, 睡眠/情绪, 医疗关怀, 女性向消费级]
     avoid_for: [硬核工具, 高效率后台, 高对比营销页]
-    one_liner: "像 Calm:低饱和渐变、柔光氛围、圆润无棱角,让人放松下来、慢下来。"
+    one_liner: "低饱和、柔光氛围、圆润无棱角，让人慢下来。"
     render_hint: >
-      参考 Calm / Headspace 那种"柔和疗愈、平静安心"的美学自由发挥。
-      精髓在:低饱和柔色、柔光渐变营造氛围(这里的渐变是加分项,和 slop 的紫渐变不同——要低饱和、有意境)、
-      大圆角无棱角、缓慢漂浮的动效、充足的呼吸空间。让人慢下来。
-      禁止:高对比撞色、锐利直角、密集信息、快速生硬动画、冷硬深色。
+      精髓在：低饱和柔色、有意境的渐变氛围、大圆角、缓慢漂浮的动效、充足的呼吸空间。
+      气氛不能牺牲文字可读性和及时反馈，缓慢动效也要提供减少动态时的替代。
+    variation_levers: [主色调（绿、蓝、暖色）, 渐变有无, 插画或摄影, 圆角大小, 动效节奏]
+    default_attractors:
+      - 紫粉渐变光斑（SMELL-PURPLE-GRADIENT）
+      - 毛玻璃卡片
+      - 低对比浅灰文字（TOKENS-CONTRAST）
+    cjk: 正文行高 1.75 以上；浅色文字也要满足 4.5:1；楷体或圆体只用在标题和短句。

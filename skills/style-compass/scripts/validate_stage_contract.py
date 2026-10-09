@@ -29,6 +29,19 @@ COLLECTION_PREFIXES = {
     "actions": "A",
     "states": "S",
 }
+STATE_KINDS = (
+    "default",
+    "empty",
+    "loading",
+    "partial",
+    "error",
+    "success",
+    "disabled",
+    "offline",
+    "permission",
+    "first-use",
+)
+REVERSIBILITY = ("undo", "confirm", "typed-confirm", "none")
 SEMANTIC_ATTRIBUTES = {
     "pages": "data-design-page",
     "journeys": "data-design-journey",
@@ -239,8 +252,57 @@ def coverage_percent(actual: Set[str], required: Set[str]) -> int:
     return round(len(actual & required) * 100 / len(required))
 
 
+def check_behavior(
+    actions: Dict[str, dict],
+    states: Dict[str, dict],
+    errors: List[str],
+    warnings: List[str],
+) -> None:
+    """可选的行为字段：声明了就必须填全；状态图的断路只提醒。"""
+    state_ids = set(states)
+    action_ids = set(actions)
+    for state_id, state in states.items():
+        kind = state.get("kind")
+        if kind is not None and kind not in STATE_KINDS:
+            errors.append(f"状态 {state_id} 的 `kind` 必须是 {', '.join(STATE_KINDS)} 之一")
+
+    for action_id, action in actions.items():
+        if action.get("async"):
+            for field in ("loadingState", "errorState"):
+                if action.get(field) not in state_ids:
+                    errors.append(f"异步动作 {action_id} 的 `{field}` 必须引用有效状态")
+            if action.get("recoveryActionId") not in action_ids:
+                errors.append(f"异步动作 {action_id} 的 `recoveryActionId` 必须引用有效动作（失败后怎么重试或返回）")
+        if action.get("destructive"):
+            reversibility = action.get("reversibility")
+            if reversibility not in REVERSIBILITY:
+                errors.append(f"危险动作 {action_id} 的 `reversibility` 必须是 {', '.join(REVERSIBILITY)} 之一")
+            elif reversibility in ("confirm", "typed-confirm") and not action.get("confirmLabel"):
+                warnings.append(f"危险动作 {action_id} 用确认框，补 `confirmLabel`，按钮写动作本身（如“删除 3 个文件”）")
+            elif reversibility == "none":
+                warnings.append(f"危险动作 {action_id} 既不能撤销也不确认；确认这是有意的")
+        if action.get("optimistic") and action.get("rollbackState") not in state_ids:
+            errors.append(f"乐观更新动作 {action_id} 的 `rollbackState` 必须引用有效状态（失败后回到哪里）")
+
+    entered = {a.get("toState") for a in actions.values()}
+    entered |= {a.get(f) for a in actions.values() for f in ("loadingState", "errorState", "rollbackState")}
+    left = {a.get("fromState") for a in actions.values()}
+    left |= {a.get("loadingState") for a in actions.values() if a.get("async")}
+    for state_id, state in states.items():
+        if state.get("initial") or state_id in left and state_id not in entered:
+            continue
+        if state_id not in entered and state_id not in left:
+            warnings.append(f"状态 {state_id} 没有任何动作进入或离开")
+        elif state_id not in left and not state.get("terminal"):
+            if state.get("kind") == "error":
+                warnings.append(f"错误状态 {state_id} 没有离开的动作；补重试或返回")
+            else:
+                warnings.append(f"状态 {state_id} 进入后没有离开的动作；是终点就标 `terminal: true`")
+
+
 def validate(contract: dict, html: str, phase: str) -> dict:
     errors: List[str] = []
+    warnings: List[str] = []
     if contract.get("schema") != SCHEMA:
         errors.append(f"`schema` 必须是 `{SCHEMA}`")
     if contract.get("phase") not in ("direction", "final"):
@@ -309,6 +371,7 @@ def validate(contract: dict, html: str, phase: str) -> dict:
             state_id = action.get(field)
             if not isinstance(state_id, str) or state_id not in state_ids:
                 errors.append(f"动作 {action_id} 的 `{field}` 必须引用有效状态")
+    check_behavior(indexed["actions"], indexed["states"], errors, warnings)
 
     variants = contract.get("variants")
     if not isinstance(variants, list) or not variants:
@@ -461,6 +524,7 @@ def validate(contract: dict, html: str, phase: str) -> dict:
         "interactionBaseline": interaction_report,
         "variants": variant_reports,
         "errors": errors,
+        "warnings": warnings,
     }
 
 
@@ -504,10 +568,14 @@ def main() -> int:
                 f"states={coverage['states']}% "
                 f"interactive={variant['interactiveActionCoverage']}%"
             )
+        for warning in report["warnings"]:
+            print(f"[stage-contract] WARN {warning}")
     else:
         print(f"[stage-contract] FAIL phase={args.phase}", file=sys.stderr)
         for error in report["errors"]:
             print(f"- {error}", file=sys.stderr)
+        for warning in report["warnings"]:
+            print(f"- 提醒：{warning}", file=sys.stderr)
     return 0 if report["passed"] else 1
 
 

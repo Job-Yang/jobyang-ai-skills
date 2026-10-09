@@ -232,6 +232,27 @@ HTML 中使用相同编号：
 
 一个元素可以承载多个语义编号，属性值用空格分隔。`data-design-action` 所在元素必须同时具备真实的 `data-prototype-action`，并用 `data-design-result` 标出动作结果，避免“声明覆盖，实际点不了”。
 
+## 行为字段（可选，声明了就要填全）
+
+交互关可以给动作和状态补充下面的字段。旧契约不写这些字段照样通过；一旦写了，校验脚本就检查它们是否完整。完整示例见 `examples/stage-contract.example.json`。
+
+| 位置 | 字段 | 含义 | 校验 |
+|---|---|---|---|
+| 状态 | `kind` | `default`、`empty`、`loading`、`partial`、`error`、`success`、`disabled`、`offline`、`permission`、`first-use` 之一 | 写了别的值报错 |
+| 状态 | `initial` | 旅程的起点 | 起点不要求有动作进入 |
+| 状态 | `terminal` | 旅程的终点 | 终点不要求有动作离开 |
+| 动作 | `async: true` | 要等结果的动作 | 必须有 `loadingState`、`errorState`（有效状态）和 `recoveryActionId`（失败后重试或返回的动作） |
+| 动作 | `destructive: true` | 删除、清空、撤销授权等 | 必须有 `reversibility`：`undo`、`confirm`、`typed-confirm`、`none`；用确认框时建议写 `confirmLabel`，写 `none` 会被提醒 |
+| 动作 | `optimistic: true` | 先改界面、再等服务器 | 必须有 `rollbackState`（失败后回到的状态） |
+
+另外，脚本会对状态图给出提醒（不影响通过）：
+
+- 某个状态没有任何动作进入或离开；
+- 进入后没有动作可以离开、又没标 `terminal` 的状态；
+- 没有恢复动作的错误状态。
+
+这些字段的依据：每屏要设计空、加载、部分、错误等状态（Scott Hurff 的 UI Stack）；危险操作优先撤销，确认框只给严重后果（NN/g）；乐观更新失败要回滚或给撤销（Vercel Web Interface Guidelines）。
+
 ## 验证责任
 
 - 用户确认产品取舍和视觉偏好。

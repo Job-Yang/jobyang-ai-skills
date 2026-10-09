@@ -4,22 +4,22 @@
   "phase": "direction",
   "stageBoundaries": {
     "requirements": {
-      "confirmed": ["R01"],
+      "confirmed": ["R01", "R02"],
       "flexible": ["页面数量与布局"],
       "deferred": ["具体控件与视觉"],
       "evidence": ["PRD 已人审"]
     },
     "structure": {
-      "confirmed": ["P01 承载 R01"],
+      "confirmed": ["P01 承载 R01、R02"],
       "flexible": ["区块精确位置"],
       "deferred": ["动作步骤与状态反馈"],
       "evidence": ["结构线框已确认"]
     },
     "interaction": {
-      "confirmed": ["J01、A01、S01、S02"],
+      "confirmed": ["J01、J02 及其动作和状态"],
       "flexible": ["控件形态与视觉层级"],
       "deferred": ["颜色、字体、动效细节"],
-      "evidence": ["核心旅程已在灰阶原型点通"]
+      "evidence": ["核心旅程已在灰阶原型点通，加载、失败和撤销都点过"]
     },
     "visualDirection": {
       "confirmed": [],
@@ -41,27 +41,15 @@
     }
   },
   "requirements": [
-    {
-      "id": "R01",
-      "title": "查看项目",
-      "acceptance": "用户能进入指定项目"
-    }
+    { "id": "R01", "title": "查看项目", "acceptance": "用户能进入指定项目；打开失败时能重试" },
+    { "id": "R02", "title": "删除项目", "acceptance": "删除后 5 秒内可以撤销" }
   ],
   "pages": [
-    {
-      "id": "P01",
-      "title": "项目总览",
-      "requirementIds": ["R01"]
-    }
+    { "id": "P01", "title": "项目总览", "requirementIds": ["R01", "R02"] }
   ],
   "journeys": [
-    {
-      "id": "J01",
-      "title": "进入项目",
-      "actionIds": ["A01"],
-      "directionRequired": true,
-      "finalRequired": true
-    }
+    { "id": "J01", "title": "进入项目", "actionIds": ["A01", "A02"], "directionRequired": true, "finalRequired": true },
+    { "id": "J02", "title": "删除项目", "actionIds": ["A03", "A04"], "directionRequired": false, "finalRequired": true }
   ],
   "actions": [
     {
@@ -69,23 +57,32 @@
       "title": "打开项目",
       "fromState": "S01",
       "toState": "S02",
-      "directionRequired": true,
-      "finalRequired": true
-    }
-  ],
-  "states": [
-    {
-      "id": "S01",
-      "title": "项目列表",
+      "async": true,
+      "loadingState": "S03",
+      "errorState": "S04",
+      "recoveryActionId": "A02",
       "directionRequired": true,
       "finalRequired": true
     },
+    { "id": "A02", "title": "重试打开", "fromState": "S04", "toState": "S03", "directionRequired": false, "finalRequired": true },
     {
-      "id": "S02",
-      "title": "项目已打开",
-      "directionRequired": true,
+      "id": "A03",
+      "title": "删除项目",
+      "fromState": "S01",
+      "toState": "S05",
+      "destructive": true,
+      "reversibility": "undo",
+      "directionRequired": false,
       "finalRequired": true
-    }
+    },
+    { "id": "A04", "title": "撤销删除", "fromState": "S05", "toState": "S01", "directionRequired": false, "finalRequired": true }
+  ],
+  "states": [
+    { "id": "S01", "title": "项目列表", "kind": "default", "initial": true, "directionRequired": true, "finalRequired": true },
+    { "id": "S02", "title": "项目已打开", "kind": "default", "terminal": true, "directionRequired": true, "finalRequired": true },
+    { "id": "S03", "title": "正在打开", "kind": "loading", "directionRequired": false, "finalRequired": true },
+    { "id": "S04", "title": "打开失败，可重试", "kind": "error", "directionRequired": false, "finalRequired": true },
+    { "id": "S05", "title": "已删除，5 秒内可撤销", "kind": "success", "directionRequired": false, "finalRequired": true }
   ],
   "variants": [
     {

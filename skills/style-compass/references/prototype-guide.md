@@ -8,6 +8,7 @@
 prototype/
 ├── index.html                         # 设计评审工作台入口
 ├── index.design.json                  # 阶段边界与 R/P/J/A/S 层间继承契约
+├── directions.json                    # 视觉方向卡（渲染候选前写，见 visual-craft.md）
 ├── review-framework/
 │   ├── review-framework.css           # 公共评审外壳
 │   └── review-framework.js            # 讲解、评论、画板和状态逻辑
@@ -71,6 +72,7 @@ design-spec-<topic>.md                 # 与 prototype/ 平级
 - OPC 标准道：`$ILOOP_DATA_ROOT/analysis/opc.product-pipeline/<topic>/prototype/` 和 `design-spec-<topic>.md`。
 - 自由模式：写到用户或宿主指定的 `<产物目录>/prototype/`，不自动猜工程路径。
 - 过程产物不能写进用户工程源码目录。
+- 设计档案（`DESIGN.md` 和 `design/`）是例外：它是产品的长期资产，交付时写进产品仓库，第一次写之前请用户确认文件清单。规则见 `design-archive.md`。
 
 ## 启动与验收
 
@@ -106,3 +108,6 @@ python3 scripts/review_server.py --root <prototype目录> --port <空闲端口>
 10. 方向候选执行 `python3 scripts/validate_stage_contract.py --contract prototype/index.design.json --html prototype/index.html --phase direction` 并通过。
 11. 设计交付执行同一命令的 `--phase final` 并通过。
 12. 900px 窄屏下顶部四关名称完整，左右面板互斥，底部对象坞和确认动作可见。
+13. 每关给用户前运行设计检查，没有 error：结构关和交互关用 `--phase structure`、`--phase interaction`；方向候选先过 `lint_design.py diverge prototype/directions.json`，再对候选页面用 `--phase direction`；定稿用 `--phase final --tokens <tokens.json>`。
+14. 设计交付后 `design_memory.py check <产品目录>` 通过：DESIGN.md 存在，DESIGN.md、`design/` 里的导出产物和 `prototype/tokens.css` 都和按 tokens.json 重新导出的结果一致。
+15. 定稿页引用的样式表都在原型目录里，`lint_design.py check` 没有 `CSS-LINK-OUTSIDE`；用 `artifact_io.py pack` 打出的交接包解开后，原型直接打开就有样式。

@@ -2,10 +2,13 @@
 """
 export_spec.py — 从"拍板的最终 HTML"自动抽取结构化设计规范,供下游 coding 节点消费。
 
-核心原则:HTML 是唯一事实源,spec 从它导出,不两头手写(否则必然漂移)。
+核心原则:spec 从拍板的 HTML 导出,不两头手写(否则必然漂移)。有产品档案时数值以 design/tokens.json 为准,
+导出前先过 `lint_design.py check --phase final --tokens design/tokens.json`。
 
 抽取来源:
-  1. HTML 里的 `:root { --xxx: yyy }` CSS 变量  → design tokens(颜色/圆角/间距/字体…)
+  0. design/tokens.json（--tokens 指定；不传时从 HTML 所在目录往上找三层） → 数值的事实源。
+     有它时 spec 的数值按它导出的 CSS 变量写，页面里和它不一样的变量逐条提醒；页面多出的变量附在后面
+  1. HTML 里的 `:root { --xxx: yyy }` CSS 变量(含 <link> 引入的本地样式表) → design tokens(颜色/圆角/间距/字体…)
   2. HTML 里的 <title>                          → 设计名
   3. 一个可选的同名 meta 文件 <name>.design.json → 补充语义:
        - reference   : 参考谁(信息量最高的指令,来自第2步)
@@ -18,12 +21,39 @@ export_spec.py — 从"拍板的最终 HTML"自动抽取结构化设计规范,�
 零第三方依赖(仅标准库)。
 
 用法:
-  python3 export_spec.py final.html [--meta final.design.json] [-o design-spec.md]
+  python3 export_spec.py final.html [--meta final.design.json] [--tokens design/tokens.json] [-o design-spec.md]
 """
 import argparse
 import json
 import os
 import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+LENGTH_VALUE = re.compile(r"^-?[\d.]+(px|rem|em)$")
+
+
+def find_tokens(html_path, levels=3):
+    """从 HTML 所在目录往上找 design/tokens.json。"""
+    folder = os.path.dirname(os.path.abspath(html_path))
+    for _ in range(levels + 1):
+        candidate = os.path.join(folder, "design", "tokens.json")
+        if os.path.isfile(candidate):
+            return candidate
+        parent = os.path.dirname(folder)
+        if parent == folder:
+            break
+        folder = parent
+    return None
+
+
+def token_vars(tokens_path):
+    """tokens.json 导出成 tokens.css 后的 :root 变量，和交付给代码的完全一样。"""
+    import export_tokens
+    from token_utils import load_tokens
+
+    return extract_root_vars(export_tokens.export_css(load_tokens(tokens_path)))
 
 
 def extract_title(html):
@@ -42,13 +72,30 @@ def extract_root_vars(html):
     return vars_
 
 
+def linked_stylesheets(html, base_dir):
+    """读 <link rel="stylesheet"> 引入的本地样式表;网络地址和评审工作台外壳不读。"""
+    sheets = []
+    for tag in re.findall(r"<link\b[^>]*>", html, re.I):
+        if not re.search(r"rel\s*=\s*['\"]?[^'\">]*stylesheet", tag, re.I):
+            continue
+        m = re.search(r"href\s*=\s*['\"]([^'\"]+)['\"]", tag, re.I)
+        if not m or re.match(r"^(?:[a-z][a-z0-9+.-]*:|//)", m.group(1), re.I) or "review-framework" in m.group(1):
+            continue
+        path = os.path.join(base_dir, m.group(1).split("#")[0].split("?")[0])
+        if os.path.isfile(path):
+            with open(path, "r", encoding="utf-8") as f:
+                sheets.append(f.read())
+    return sheets
+
+
 def classify_vars(vars_):
     """把 CSS 变量粗分类,方便 spec 分节呈现。"""
     buckets = {"颜色": {}, "字体": {}, "圆角": {}, "间距": {}, "动效": {}, "其他": {}}
     for k, v in vars_.items():
         key = k.lstrip("-")
         low = key.lower()
-        if any(t in low for t in ("font", "mono", "sans", "serif")):
+        if any(t in low for t in ("font", "mono", "sans", "serif", "weight", "leading", "tracking")) or (
+                low.startswith("text-") and LENGTH_VALUE.match(v.strip())):
             buckets["字体"][k] = v
         elif "radius" in low:
             buckets["圆角"][k] = v
@@ -79,11 +126,15 @@ def md_table(d):
     return "\n".join(lines)
 
 
-def build_spec(html_path, meta, topic=None, upstream=None, opc=False, producer="standalone"):
+def build_spec(html_path, meta, topic=None, upstream=None, opc=False, producer="standalone",
+               tokens_path=None, report=None):
     with open(html_path, "r", encoding="utf-8") as f:
         html = f.read()
     title = extract_title(html)
-    vars_ = extract_root_vars(html)
+    vars_ = {}
+    for css in linked_stylesheets(html, os.path.dirname(os.path.abspath(html_path))):
+        vars_.update(extract_root_vars(css))
+    vars_.update(extract_root_vars(html))
     meta_tokens = meta.get("tokens", {})
     if isinstance(meta_tokens, dict):
         vars_.update({
@@ -91,8 +142,18 @@ def build_spec(html_path, meta, topic=None, upstream=None, opc=False, producer="
             for key, value in meta_tokens.items()
             if isinstance(key, str) and key.startswith("--")
         })
+    drift = []
+    if tokens_path:
+        canonical = token_vars(tokens_path)
+        drift = [(name, vars_[name], value) for name, value in canonical.items()
+                 if name in vars_ and vars_[name].strip().lower() != value.strip().lower()]
+        vars_ = {**canonical, **{name: value for name, value in vars_.items() if name not in canonical}}
+    if report is not None:
+        report.update({"tokens": tokens_path, "drift": drift, "varCount": len(vars_)})
     buckets = classify_vars(vars_)
     html_name = os.path.basename(html_path)
+    tokens_name = (os.path.relpath(tokens_path, os.path.dirname(os.path.abspath(html_path)))
+                   if tokens_path else None)
 
     reference = meta.get("reference", "")
     screens = meta.get("screens") or meta.get("pages", [])
@@ -127,7 +188,10 @@ def build_spec(html_path, meta, topic=None, upstream=None, opc=False, producer="
 
     out.append(f"# 设计规范 · {title}")
     out.append("")
-    out.append("> 由 style-compass 从最终 HTML **自动导出**。HTML 是唯一事实源,改 HTML 后重新导出本文件。")
+    if tokens_name:
+        out.append(f"> 由 style-compass 从最终 HTML **自动导出**，数值取自 `{tokens_name}`。改了 HTML 或 tokens.json 都要重新导出本文件。")
+    else:
+        out.append("> 由 style-compass 从最终 HTML **自动导出**。改 HTML 后重新导出本文件;有 `design/tokens.json` 时数值以它为准。")
     out.append(f"> 视觉事实源:`{html_name}`(可运行,coding 时对照它)。")
     if human_review:
         out.append(
@@ -223,13 +287,17 @@ def build_spec(html_path, meta, topic=None, upstream=None, opc=False, producer="
     out.append("")
 
     # Design tokens(从 HTML 自动抽)
-    out.append("## 设计 Token（从 HTML 与阶段契约自动抽取）")
+    if tokens_name:
+        out.append("## 设计 Token（数值取自 tokens.json，页面里另外定义的变量附在后面）")
+    else:
+        out.append("## 设计 Token（从 HTML 与阶段契约自动抽取）")
     if buckets:
         for cat, d in buckets.items():
             out.append(f"\n### {cat}")
             out.append(md_table(d))
     else:
-        out.append("(未在 HTML 中找到 :root CSS 变量;建议渲染时把 tokens 写进 :root 以便导出)")
+        out.append("（HTML 里没有 :root CSS 变量，也没有找到 design/tokens.json，下游拿不到任何设计数值；"
+                   "用 --tokens 传 tokens.json，或让页面引用导出的 tokens.css）")
     out.append("")
 
     # 各状态(空/加载/错误)—— 契约字段
@@ -300,22 +368,49 @@ def main():
     ap.add_argument("--upstream", default=None, help="上游产物文件名,如 prd-<topic>.md")
     ap.add_argument("--opc", action="store_true", help="OPC 标准道:输出带 front-matter、文件名 design-spec-<topic>.md")
     ap.add_argument("--producer", default="standalone", help="生成宿主标识，如 mira；不自动猜测 iLoop")
+    ap.add_argument("--tokens", default=None, help="design/tokens.json；不传时从 HTML 所在目录往上找三层")
     ap.add_argument("-o", "--out", default=None, help="显式输出路径(覆盖默认命名)")
     args = ap.parse_args()
+    if args.tokens and not os.path.isfile(args.tokens):
+        ap.error(f"找不到 tokens 文件: {args.tokens}")
+
+    if not os.path.isfile(args.html):
+        ap.error(f"找不到 HTML 文件: {args.html}")
+    try:
+        with open(args.html, "r", encoding="utf-8") as f:
+            looks_like_html = re.search(r"<(!doctype|html|head|body|style|main|div)\b", f.read(), re.I)
+    except UnicodeDecodeError:
+        looks_like_html = None
+    if not looks_like_html:
+        ap.error(f"{args.html} 不像 HTML,确认传的是拍板的 HTML,不是 json/md")
+    if args.meta and not os.path.isfile(args.meta):
+        ap.error(f"找不到 meta 文件: {args.meta}")
 
     # meta 默认找同名 .design.json
     meta_path = args.meta
     if meta_path is None:
         guess = os.path.splitext(args.html)[0] + ".design.json"
         meta_path = guess if os.path.exists(guess) else None
-    meta = load_meta(meta_path)
+    try:
+        meta = load_meta(meta_path)
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        ap.error(f"meta 文件不是合法 JSON: {meta_path}: {e}")
+    if not isinstance(meta, dict):
+        ap.error(f"meta 文件顶层应该是对象: {meta_path}")
     # topic 兜底:meta 里有就用
     topic = args.topic or meta.get("topic")
 
     if args.opc and not topic:
         ap.error("--opc 需要 --topic 或 meta.topic")
-    spec = build_spec(args.html, meta, topic=topic, upstream=args.upstream, opc=args.opc,
-                      producer=args.producer)
+    from token_utils import TokenError
+
+    tokens_path = args.tokens or find_tokens(args.html)
+    report = {}
+    try:
+        spec = build_spec(args.html, meta, topic=topic, upstream=args.upstream, opc=args.opc,
+                          producer=args.producer, tokens_path=tokens_path, report=report)
+    except TokenError as e:
+        ap.error(str(e))
 
     # 默认输出名:OPC 标准道用 design-spec-<topic>.md,否则 design-spec.md
     if args.out:
@@ -332,6 +427,14 @@ def main():
         print(f"  (含 meta: {meta_path})")
     else:
         print("  (未找到 meta;仅导出 tokens+骨架。补 <name>.design.json 可加页面/组件/状态/交互/prototype索引)")
+    if tokens_path:
+        print(f"  （数值取自 {tokens_path}）")
+    for name, page_value, token_value in report.get("drift", []):
+        print(f"[spec] 提醒：页面里 {name} 是 {page_value}，tokens.json 里是 {token_value}，spec 按 tokens.json 写；"
+              "页面要么改回去，要么先改 tokens.json 再重新导出")
+    if not report.get("varCount"):
+        print("[spec] 警告：spec 里没有任何设计数值，下游只能照着 HTML 猜；用 --tokens 传 design/tokens.json，"
+              "或让页面引用导出的 tokens.css", file=sys.stderr)
 
 
 if __name__ == "__main__":

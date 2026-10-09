@@ -1,46 +1,61 @@
 {
-  "$schema": "./tokens.schema.json",
   "meta": {
-    "name": "示例:克制工程感 (Calm-Tech)",
+    "name": "示例：格式演示",
+    "summary": "给中小团队用的项目进度工具：每天打开好几次，要一眼看出哪里卡住。",
     "based_on": "calm-tech",
-    "reference": "Linear / Vercel",
-    "scheme": "dark",
+    "reference": "飞书多维表格",
+    "borrow": "表格密度和筛选的组织方式",
+    "scheme": "light",
     "generated_by": "style-compass",
-    "note": "选定方向后才生成的一致性产物,不是审美来源。改这里,重跑 export_tokens.py,SwiftUI 和 CSS 同步更新。"
+    "note": "格式示例，数值不是推荐配方。真实项目的数值从方向简报和选中的方向推出来；原样照抄会被 lint_design.py 标出 SMELL-EXAMPLE-COPY。"
   },
+  "locale": { "lang": "zh-CN" },
   "color": {
-    "bg": "#0B0C0E",
-    "surface": "#16181C",
-    "surface_alt": "#1C1F24",
-    "text": "#E6E8EB",
-    "text_muted": "#8A9099",
-    "accent": "#5E6AD2",
-    "accent_soft": "#3A3F66",
-    "border": "#23262B",
-    "success": "#3FB950",
-    "warning": "#D29922",
-    "danger": "#F85149"
+    "bg": "#F6F7F9",
+    "surface": "#FFFFFF",
+    "surface_alt": "#EEF0F3",
+    "text": "#1E2228",
+    "text_muted": "#545B66",
+    "accent": "#0B7A75",
+    "accent_soft": "#DCEFEE",
+    "on_accent": "#FFFFFF",
+    "border": "#DCDFE4",
+    "success": "#1F7A45",
+    "warning": "#A35F00",
+    "danger": "#C23B3B"
+  },
+  "color_roles": {
+    "accent": "主操作、当前选中、进度条；一屏不超过一处大面积使用",
+    "warning": "卡住的任务，只用在状态标签和图标上",
+    "danger": "逾期和删除"
   },
   "typography": {
-    "heading_font": "Geist, 'SF Pro Display', system-ui, sans-serif",
-    "body_font": "Geist, 'SF Pro Text', system-ui, sans-serif",
-    "mono_font": "'Geist Mono', 'JetBrains Mono', monospace",
+    "latin_heading": "'SF Pro Display', 'Segoe UI'",
+    "latin_body": "'SF Pro Text', 'Segoe UI'",
+    "latin_mono": "'JetBrains Mono', ui-monospace, Menlo, Consolas",
+    "cjk_sans": "'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC'",
+    "cjk_serif": "'Source Han Serif SC', 'Noto Serif SC', 'Songti SC'",
+    "heading_cjk": "sans",
     "weight_regular": 400,
-    "weight_medium": 540,
-    "weight_bold": 680,
-    "scale": {
-      "xs": 12,
-      "sm": 13,
-      "base": 15,
-      "lg": 18,
-      "xl": 22,
-      "2xl": 28,
-      "3xl": 36
-    },
-    "line_height": 1.5
+    "weight_medium": 500,
+    "weight_bold": 600,
+    "scale": { "xs": 12, "sm": 13, "base": 14, "md": 16, "lg": 18, "xl": 20, "2xl": 24, "3xl": 30 },
+    "line_height": { "ui": 1.5714, "body": 1.75, "heading": 1.35, "display": 1.2 },
+    "letter_spacing": { "cjk": "0", "label_short": "0.05em", "latin_display": "-0.01em" },
+    "measure": { "cjk_max_em": 40 },
+    "numerals": { "data": "tabular-nums" },
+    "webfont_cjk": { "enabled": false, "family": "Noto Sans SC", "license": "OFL-1.1", "delivery": "unicode-range 切片" }
   },
   "radius": { "sm": 4, "base": 6, "lg": 10, "full": 999 },
-  "spacing": { "xs": 4, "sm": 8, "base": 12, "lg": 20, "xl": 32, "2xl": 48 },
+  "spacing": { "xs": 4, "sm": 8, "base": 12, "lg": 16, "xl": 24, "2xl": 32 },
+  "layout": {
+    "container": "分隔线分区，不用卡片包每一块",
+    "density": "compact",
+    "grid": "左侧 240px 导航 + 内容区",
+    "max_width": 1440
+  },
+  "icon": { "library": "Lucide", "style": "线性", "stroke": 1.5, "sizes": { "sm": 16, "md": 20 } },
+  "decoration": { "app": "只靠分隔线和留白分层，不用渐变和阴影堆叠" },
   "motion": {
     "duration_fast": 120,
     "duration_base": 200,
@@ -49,11 +64,14 @@
   },
   "elevation": {
     "flat": "none",
-    "soft": "0 1px 2px rgba(0,0,0,0.4)",
-    "raised": "0 4px 16px rgba(0,0,0,0.5)"
+    "soft": "0 1px 2px rgba(15, 23, 42, 0.06)",
+    "raised": "0 8px 24px rgba(15, 23, 42, 0.12)"
   },
   "guardrails": {
-    "use": "几何无衬线、深灰阶背景(非纯黑)、单一冷色强调、发丝级边框分层、快速功能性微动效",
-    "avoid": "紫白渐变、圆润卡通、多彩强调色堆叠、大圆角、弹跳动画、Inter/Roboto"
+    "use": ["表格优先，列表行高 40px", "状态只用颜色加文字双重表达", "数字右对齐并用等宽数字"],
+    "avoid": ["卡片网格当首页", "大面积主色背景", "装饰性插画"],
+    "watch": ["SMELL-CARD-STACK：数据多时容易退回卡片堆叠", "SMELL-INDIGO-ACCENT：换强调色时别滑回靛蓝"],
+    "accepted_defaults": [],
+    "moments": "任务从“卡住”变成“进行中”时，状态标签有一次 200ms 的颜色过渡；其余界面不做动效"
   }
 }

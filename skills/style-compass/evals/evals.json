@@ -1,0 +1,289 @@
+{
+  "skill_name": "style-compass",
+  "version": "4.2",
+  "how_to_run": "改动技能后逐条过一遍：按 prompt 和 files 准备输入，运行技能，再逐条核对 expectations；checks 里的命令能自动运行的就运行。记录每条通过、不通过或无法判断，不通过的写明原因。用例检查的是技能的行为，不评价审美。",
+  "evals": [
+    {
+      "id": 1,
+      "name": "模糊需求不连环发问",
+      "route": "新产品",
+      "prompt": "帮我做个记账 App 的界面，要好看点。",
+      "files": [],
+      "expected_output": "技能先跑入场分流，判断为新产品；用点选问产品问题和产品性格滑杆，不在文字里问风格；写出方向简报后再提出候选方向。",
+      "expectations": [
+        "运行了 design_memory.py scan，并说明走“新产品”路线",
+        "一轮最多问 4 个问题，全部是点选，没有让用户用文字描述想要的风格",
+        "没有问颜色、字体、圆角这类视觉问题",
+        "design/direction.md 里有 3～5 个目标感受词、至少一条“X 但不 Y”、一条参考“像什么、不像什么”",
+        "简报里没有写色值、字体名或字号",
+        "提出 3～4 个风格坐标，其中一个标为反向候选；它推翻的是常规做法，没有把滑杆反过来"
+      ],
+      "checks": []
+    },
+    {
+      "id": 2,
+      "name": "已有档案时直接延续",
+      "route": "延续",
+      "prompt": "给这个产品加一个“团队设置”页面。",
+      "files": ["<产品目录>/DESIGN.md", "<产品目录>/design/tokens.json", "<产品目录>/design/direction.md", "<产品目录>/design/decisions.md"],
+      "expected_output": "技能读档案和最近的决策，不重新问诊；结构关和交互关简单过；视觉关只出一个沿用现有方向的版本，并用 tokens 检查。",
+      "expectations": [
+        "scan 的结果是“延续”，技能读了 DESIGN.md、direction.md 和最近三条决策",
+        "没有重新问产品性格滑杆和感受词",
+        "视觉关没有提出新的风格方向候选",
+        "新页面用的颜色和字体都来自 tokens.json"
+      ],
+      "checks": [
+        "python3 scripts/design_memory.py scan <产品目录>",
+        "python3 scripts/lint_design.py check <新页面>.html --phase final --tokens <产品目录>/design/tokens.json"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "有代码没档案时先补档",
+      "route": "补档",
+      "prompt": "这个项目做了半年了，帮我把现在的设计规范整理出来。",
+      "files": ["<产品目录>/src/**/*.css", "<产品目录>/src/**/*.tsx"],
+      "expected_output": "技能抽取现有的颜色、字体、圆角和间距，渲染一页“现状整理”给用户确认，确认后再写档案。",
+      "expectations": [
+        "运行了 design_memory.py extract，并把高频值映射成 tokens 草稿",
+        "渲染了一页现状整理（颜色、字体、按钮、表格或表单样例），没有只给文字清单",
+        "写进产品仓库之前，列出了要写的文件并请用户确认",
+        "方向简报标明是从现状反推的“推断”"
+      ],
+      "checks": ["python3 scripts/design_memory.py extract <产品目录>"]
+    },
+    {
+      "id": 4,
+      "name": "评审现有页面",
+      "route": "评审",
+      "prompt": "看看这个页面哪里不好，怎么改？",
+      "files": ["<任意现有页面>.html"],
+      "expected_output": "技能按 audit-guide.md：先跑检查和任务走查，再给出分级问题清单；用户选了要修的条目后才在副本上改，并前后对比。",
+      "expectations": [
+        "先问清或推断出产品目的和两到三个核心任务",
+        "运行了 lint_design.py check --phase final",
+        "问题清单每条都有位置、证据（走查步骤、规则编号或具体画面）、P0～P3 级别和改法",
+        "报告开头有三句话的结论",
+        "没有给页面打美观分",
+        "没有在用户选定条目之前直接重做整页"
+      ],
+      "checks": ["python3 scripts/lint_design.py check <页面>.html --phase final --json"]
+    },
+    {
+      "id": 5,
+      "name": "用户要求像某个产品",
+      "route": "新产品",
+      "prompt": "就做成 Linear 那样的感觉。",
+      "files": [],
+      "expected_output": "技能照做一个贴近参考的候选，同时加一个反向候选，并说明照着一个参考做容易被它固着；参考以“借用什么关系”的形式进入方向卡，而不是照抄画面。",
+      "expectations": [
+        "候选里有一个贴近参考的方向",
+        "候选里有一个 contrarian: true 的方向",
+        "方向卡或简报写明从参考借用的具体关系（比如“信息密度和键盘优先”），不是“参考 Linear 自由发挥”",
+        "没有照搬 Linear 的主色 #5E6AD2"
+      ],
+      "checks": ["python3 scripts/lint_design.py diverge prototype/directions.json"]
+    },
+    {
+      "id": 6,
+      "name": "候选没拉开时先重写方向卡",
+      "route": "新产品",
+      "prompt": "（内部）三张方向卡都是浅色背景、蓝色主色、无衬线字体、中等圆角。",
+      "files": ["prototype/directions.json"],
+      "expected_output": "diverge 检查报 DIVERGE-CLOSE，技能在渲染前重写方向卡，直到每对候选至少在三个维度上不同。",
+      "expectations": [
+        "渲染任何候选之前运行了 diverge",
+        "看到 DIVERGE-CLOSE 后重写了方向卡，没有直接渲染",
+        "重写后的 diverge 结果是 PASS"
+      ],
+      "checks": ["python3 scripts/lint_design.py diverge prototype/directions.json --min 3"]
+    },
+    {
+      "id": 7,
+      "name": "中文页面排版底线",
+      "route": "新产品",
+      "prompt": "做一个面向国内中小企业的进销存后台首页。",
+      "files": [],
+      "expected_output": "页面声明 zh-CN，字体栈带中文字体，正文行高不低于 1.5，中文不加负字距，数字列等宽。",
+      "expectations": [
+        "<html lang=\"zh-CN\">",
+        "字体栈里有 PingFang SC、Microsoft YaHei 等中文字体，并以通用字体族结尾",
+        "中文正文行高在 1.5～2.0 之间",
+        "中文文字没有负的 letter-spacing",
+        "表格里的数字使用 tabular-nums",
+        "字重只用 400、500、600"
+      ],
+      "checks": ["python3 scripts/lint_design.py check <页面>.html --phase final --tokens design/tokens.json"]
+    },
+    {
+      "id": 8,
+      "name": "删除操作优先撤销",
+      "route": "新产品",
+      "prompt": "项目列表要支持批量删除。",
+      "files": [],
+      "expected_output": "交互原型里删除后出现“已删除 N 个项目，撤销”；契约里的删除动作标 destructive，reversibility 是 undo；只有真正不可逆的操作才用确认框，按钮写动作本身。",
+      "expectations": [
+        "契约里删除动作有 destructive: true 和 reversibility",
+        "默认用撤销，不是每次都弹确认框",
+        "如果用了确认框，按钮写的是“删除 3 个项目”这样的动作，不是“确定”",
+        "可以点出撤销后的状态"
+      ],
+      "checks": ["python3 scripts/validate_stage_contract.py --contract prototype/index.design.json --html prototype/index.html --phase final"]
+    },
+    {
+      "id": 9,
+      "name": "异步操作的加载和失败",
+      "route": "新产品",
+      "prompt": "支持从 CSV 导入客户名单。",
+      "files": [],
+      "expected_output": "导入动作标 async，并有加载态、失败态和恢复动作；每个状态都能在原型里点出来，失败文案写真实原因和下一步。",
+      "expectations": [
+        "契约里导入动作有 async: true、loadingState、errorState 和 recoveryActionId",
+        "失败状态有离开的动作（重试或返回）",
+        "原型里能点出加载、部分成功、失败三种状态",
+        "失败提示是真实文案，比如“第 12 行手机号格式不对。下载错误行”"
+      ],
+      "checks": ["python3 scripts/validate_stage_contract.py --contract prototype/index.design.json --html prototype/index.html --phase final"]
+    },
+    {
+      "id": 10,
+      "name": "口味趋同时强制换",
+      "route": "新产品",
+      "prompt": "再帮我做一个新产品的界面。",
+      "files": ["~/.style-compass/taste.md（最近三条都选了 calm-tech）"],
+      "expected_output": "taste 给出新颖度提醒，技能的候选里至少有两个最近没选过的坐标，它们同样满足这次简报的目标感受。",
+      "expectations": [
+        "问诊前运行了 design_memory.py taste",
+        "候选里至少两个坐标不是 calm-tech",
+        "向用户说明了为什么这次换了方向"
+      ],
+      "checks": ["python3 scripts/design_memory.py taste --recent 3"]
+    },
+    {
+      "id": 11,
+      "name": "照抄示例数值会被拦下",
+      "route": "新产品",
+      "prompt": "（内部）生成的 tokens.json 直接用了 examples/tokens.example.json 的背景色和主色。",
+      "files": ["design/tokens.json"],
+      "expected_output": "lint 报 SMELL-EXAMPLE-COPY，技能根据方向简报重新定颜色。",
+      "expectations": [
+        "检查结果里出现 SMELL-EXAMPLE-COPY",
+        "技能改了颜色，并能说明新颜色和简报里的哪个感受词对应"
+      ],
+      "checks": ["python3 scripts/lint_design.py tokens design/tokens.json"]
+    },
+    {
+      "id": 12,
+      "name": "有理由地接受默认长相",
+      "route": "新产品",
+      "prompt": "这是给年轻玩家的电竞战队官网，就要紫色渐变、霓虹感。",
+      "files": [],
+      "expected_output": "技能照做，在 tokens 的 guardrails.accepted_defaults 里写明理由，检查把对应提示记为“已接受”；不对用户说教。",
+      "expectations": [
+        "候选里用了紫色渐变",
+        "accepted_defaults 里有 SMELL-PURPLE-GRADIENT 和一句理由",
+        "检查输出里这条是 accepted，不是 warn",
+        "没有劝用户放弃紫色"
+      ],
+      "checks": ["python3 scripts/lint_design.py check <页面>.html --phase final --tokens design/tokens.json"]
+    },
+    {
+      "id": 13,
+      "name": "灰阶关不混入彩色",
+      "route": "新产品",
+      "prompt": "（内部）交互原型里给主按钮用了品牌蓝。",
+      "files": ["prototype/interaction-<页面>.html"],
+      "expected_output": "interaction 阶段的检查报 GRAY-PHASE-COLOR，技能把颜色去掉后再给用户。",
+      "expectations": [
+        "给用户之前运行了 --phase interaction 检查",
+        "交给用户的版本没有 GRAY-PHASE-COLOR"
+      ],
+      "checks": ["python3 scripts/lint_design.py check prototype/interaction-<页面>.html --phase interaction"]
+    },
+    {
+      "id": 14,
+      "name": "交付时导出 DESIGN.md 并写档案",
+      "route": "新产品",
+      "prompt": "可以了，就按这个方向交付吧。",
+      "files": ["design/tokens.json", "design/direction.md"],
+      "expected_output": "技能一次导出全部 token 产物和 DESIGN.md，记录这次的选择，档案一致性检查通过。",
+      "expectations": [
+        "导出了 tokens.css、tailwind.tokens.js、DesignTokens.swift、style-prompt.md、tokens.dtcg.json 和 DESIGN.md",
+        "运行了 design_memory.py record，记下给了哪些候选、选了哪个、否掉的理由",
+        "design_memory.py check 通过",
+        "提醒用户在 AGENTS.md 里加“写 UI 前读 DESIGN.md”"
+      ],
+      "checks": [
+        "python3 scripts/export_tokens.py design/tokens.json --targets all --brief design/direction.md --design-md DESIGN.md",
+        "python3 scripts/design_memory.py check <产品目录>",
+        "npx -y @google/design.md lint DESIGN.md"
+      ]
+    },
+    {
+      "id": 15,
+      "name": "反向候选不反需求",
+      "route": "新产品",
+      "prompt": "（内部）简报的目标感受词是“年轻、轻松、有生活气”，写了“好玩但不幼稚”；方向卡里的反向候选是深色背景、等宽字体、安静克制的检索台。",
+      "files": ["design/direction.md", "prototype/directions.json"],
+      "expected_output": "技能认出这个反向候选把需求也反了过来，换成仍然年轻、轻松的反向候选：在整页布局、字体或用色策略上推翻常规做法，并在卡片里写清 keeps 和 flips。",
+      "expectations": [
+        "反向候选的 keeps 对得上简报里的目标感受词",
+        "反向候选的 flips 至少两条，写的是布局、字体或用色策略上的具体做法",
+        "反向候选没有换成和目标感受相反的气质，比如安静、严肃或压抑的深色",
+        "diverge 结果里没有 DIVERGE-CONTRARIAN-BRIEF"
+      ],
+      "checks": ["python3 scripts/lint_design.py diverge prototype/directions.json"]
+    },
+    {
+      "id": 16,
+      "name": "布局不同也算一眼可见的差别",
+      "route": "新产品",
+      "prompt": "（内部）两张方向卡明暗、主色和字体类别都一样。一张是顶部指标卡加横排状态 Tab，一张是左侧状态筛选栏加一句话汇总。",
+      "files": ["prototype/directions.json"],
+      "expected_output": "技能把整页布局写进两张卡的 layout，diverge 不再报 DIVERGE-SURFACE；不会为了消掉提醒去改明暗或主色。",
+      "expectations": [
+        "两张卡都写了 layout，说清导航、筛选和摘要放在哪",
+        "diverge 输出里这一对的 differs 含“布局”",
+        "没有为了消掉 DIVERGE-SURFACE 改动明暗、主色或字体"
+      ],
+      "checks": ["python3 scripts/lint_design.py diverge prototype/directions.json --json"]
+    },
+    {
+      "id": 17,
+      "name": "第一次记口味先问用户",
+      "route": "新产品",
+      "prompt": "就选第二个方向吧。",
+      "files": ["prototype/directions.json", "（这台机器上没有 ~/.style-compass/taste.md）"],
+      "expected_output": "技能运行 record 写下产品决策；脚本提示口味记录还没开，技能用一个点选问题问用户要不要在本机记口味，说明记录的位置、只存在本机、不进产品仓库。用户同意才加 --remember-taste 重新运行，不同意就运行 taste --off。",
+      "expectations": [
+        "写口味记录之前问了用户，问题里说明了记录的位置和只存在本机",
+        "用户没同意时，~/.style-compass/taste.md 不存在或只有关闭标记",
+        "用户同意或拒绝之后，后面的 record 不再重复问"
+      ],
+      "checks": [
+        "python3 scripts/design_memory.py record <产品目录> --chosen <选中的方向>",
+        "python3 scripts/design_memory.py taste"
+      ]
+    },
+    {
+      "id": 18,
+      "name": "定稿页自带样式表",
+      "route": "新产品",
+      "prompt": "（内部）方向已选定，全量完成后打交接包。",
+      "files": ["design/tokens.json", "prototype/index.html", "prototype/index.design.json"],
+      "expected_output": "导出 tokens 时加 --prototype prototype，定稿页引用原型目录里的 tokens.css；检查没有 CSS-LINK-OUTSIDE，档案检查通过；交接包里带着 prototype/tokens.css，解开后原型直接打开就有样式。",
+      "expectations": [
+        "定稿页的样式表链接指向原型目录里的 tokens.css，不指向 ../design/tokens.css",
+        "lint_design.py check --phase final 没有 CSS-LINK-OUTSIDE",
+        "design_memory.py check 通过，核对清单里有 prototype/tokens.css",
+        "交接包的文件清单里有 prototype/tokens.css"
+      ],
+      "checks": [
+        "python3 scripts/lint_design.py check prototype/<定稿页>.html --phase final --tokens design/tokens.json",
+        "python3 scripts/design_memory.py check <产品目录>",
+        "python3 scripts/artifact_io.py pack --input <spec.md> --attach prototype --out /tmp/handoff.zip"
+      ]
+    }
+  ]
+}

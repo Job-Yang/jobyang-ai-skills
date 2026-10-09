@@ -1,6 +1,6 @@
 ---
 name: "style-compass"
-description: "把需求转成可交互的 UI/UX 原型与开发规格，保留结构、交互、高保真候选、定稿和评审记录。用户要设计产品界面、选择视觉方向或交付设计稿时调用。可独立使用；明确进入 OPC 时服从其输入、审批和编排。"
+description: "把需求转成可交互的 UI/UX 原型与开发规格，保留结构、交互、高保真候选、定稿和评审记录，并把选定方向沉淀成产品设计档案（DESIGN.md 与 tokens）。用户要设计产品界面、选择视觉方向、给已有产品加页面、评审或优化现有页面、整理设计规范或交付设计稿时调用。可独立使用；明确进入 OPC 时服从其输入、审批和编排。"
 license: MIT
 ---
 
@@ -10,9 +10,9 @@ license: MIT
 
 它是可独立使用的 UI/UX 设计技能，也可作为 OPC 的设计节点，面向能写代码但缺少设计经验的人。包内包含方法、工作台和交付脚本，不要求安装 iLoop、其他设计技能或外部画布。脚本使用 Python 3.9+ 标准库；正式视觉与交互验收需要宿主浏览器能力，缺少时明确标注未验收。
 
-> **输入**:PRD(`prd-<topic>.md`);无 PRD 时也能直接拿一句需求/一个已有产品来做。
-> **输出**:`prototype/`(可交互 HTML,入口 `index.html`,核心旅程能点通)+ `design-spec-<topic>.md`。
-> 它不只是"出稿",还负责两件程序员最缺的事：**让它有审美**、**让交互顺手**。
+> **输入**：PRD（`prd-<topic>.md`）；无 PRD 时也能直接拿一句需求、一个已有产品来做。
+> **输出**：`prototype/`（可交互 HTML，入口 `index.html`，核心旅程能点通）＋ `design-spec-<topic>.md` ＋ 产品设计档案（`DESIGN.md`、`design/tokens.json` 等，见 `references/design-archive.md`）。
+> 它不只是“出稿”，还负责两件程序员最缺的事：**让它有审美**、**让交互顺手**。
 
 ## OPC 契约对齐（仅明确作为设计节点运行时）
 
@@ -53,11 +53,20 @@ license: MIT
 > **凡是视觉决策(颜色/密度/间距/字体/手感),一律"渲染出来给他看/给他玩",绝不"用文字问他/让他想象"。**
 > 文字只用来做**产品判断**(给谁用、做什么)和**粗筛方向**,永远不让用户在文字里判断风格。
 
-**审美的地板由"策展"兜住**：摆给用户的每一版，都从设计师认可的参考(Linear/Things/TE…)长出来，并用 guardrails 提前挡掉烂选择(烂字体/紫渐变/程序员味)。所以**用户哪怕随手挑，挑到的也不差**。这就是"拔高非专业者视觉能力"的真实机制——不是教他设计，是让他能挑的每个选项都被品味过滤过。
+**AI 写的页面难看，多半不是不会，而是没被说清楚。** 需求说得宽泛时，模型会回到训练数据里最常见的样子（OpenAI 的前端指南原话：“提示说得不够具体时，模型常常退回高频模式”）；同一个模型反复生成，结果也高度相似。所以技能做两件事：
 
-## 设计依据
+1. **把方向说具体**：问诊产出一份方向简报（感受词、“X 但不 Y”、产品原则、参考像什么不像什么），让每个候选都有可以对照的目标。
+2. **把候选拉开**：渲染前先写方向卡，用脚本确认候选之间至少在三个维度上不同，其中一个是反向候选（反第一直觉，不反需求）；渲染后检查有没有落回 AI 的默认长相。
 
-风格参考负责传递构图、密度、层次和动效等整体语义；Token 负责选定方向后的跨页面一致性，不承担审美来源。字体名也不等于字体实体，渲染前要确认字体真实可用，避免静默回退让不同方案失去差异。
+视觉创作先读 `references/visual-craft.md`：从页面用途和设计意图出发，把构图、主次、字体、图文、配色、组件与动效组合成完整方案。参考帮助提出具体选择，实际渲染与评审判断它是否成立。用户面对完整高保真候选，不承担逐项选择字号、圆角或发现功能缺失的责任。
+
+## 设计依据与效果边界
+
+产品名和风格库是寻找方向的线索。已有具体参考时，说明能借用的关系及适用条件；没有时按现有材料设计，标明参考不足，不编造看过的页面。Token 记录已形成的设计选择，字体还要检查实体与回退。设计系统实践能帮助提高一致性，不能保证审美结果。
+
+示例文件只演示格式。`examples/tokens.example.json` 的数值不是推荐配方，被原样照抄时检查脚本会报 `SMELL-EXAMPLE-COPY`。方向来自本产品的方向简报，不来自示例。
+
+维护技能或用户要求比较方法效果时，按 `references/visual-evaluation.md` 冻结输入、隔离生成与评审、保留全部结果。运行检查、视觉偏好和用户批准分开记录；小样本胜出不写成普遍保证。
 
 ## 设计全过程固定工作台（所有关卡强制复用）
 
@@ -100,7 +109,7 @@ python3 scripts/validate_review_workspace.py prototype/index.html
 
 ### 外部对比画布
 
-本地可交互 HTML 始终是唯一事实源。Superdesign 等外部画布不是默认交付物：
+事实源始终在本地：行为看可交互 HTML，数值看 `design/tokens.json`。Superdesign 等外部画布不是默认交付物：
 
 - 需要无限画布并排比较、多人远程评审，或用户明确要求时，可以把同一份 HTML 无损导入外部画布。
 - 默认只做镜像导入，不重新生成设计，不消耗生成额度。
@@ -114,31 +123,48 @@ python3 scripts/validate_review_workspace.py prototype/index.html
 - 需求、页面、旅程、动作和状态分别使用稳定的 `R/P/J/A/S` 编号。
 - 视觉可以重构控件和构图，但必须保留交互关确认的语义编号。
 - 语义发生变化时退回原关卡重新确认，不能在视觉关静默修改。
+- 异步、危险和乐观更新的动作可以声明行为字段（加载态、失败态、恢复动作、撤销方式、回滚状态），声明了就要填全。
 - 展示视觉候选前运行 `scripts/validate_stage_contract.py --phase direction`。
 - 进入设计交付前运行 `scripts/validate_stage_contract.py --phase final`。
 
 用户负责确认产品取舍和视觉偏好；Agent 负责覆盖检查和真实操作验证。完整性问题不能留给用户凭眼力发现。
 
-## 节点流程（四个正式关卡＋可选问诊）
+## 节点流程（入场分流＋四个正式关卡＋可选问诊）
 
 > **重在分清每关确认什么，不在增加关卡数量。** 结构→交互→视觉定稿→设计交付，每关都让用户拍板。
 > 但每一关本身要**轻、快、可跳过**:结构简单就一版过，UX 无歧义就快速点头。**关卡多 ≠ 每关都慢。**
 > 分层铁律：**结构(有什么)→ UX(怎么动)→ UI(长什么样)三件事分开确认，各改各的，不互相污染。**
 
+### 开工前 · 入场分流 —— 见 `references/design-archive.md`
+
+先运行 `python3 scripts/design_memory.py scan <产品目录>`，看这个产品有没有设计档案、有没有界面代码：
+
+| 路线 | 什么时候 | 怎么走 |
+|---|---|---|
+| 新产品 | 没有档案，也没有界面代码 | 完整走下面四关，交付时建档案 |
+| 延续 | 已有 `DESIGN.md` 或 `design/tokens.json` | 读档案和最近的决策，不重新问诊；结构关、交互关简单过；视觉关只做沿用现有方向的版本，检查带 `--tokens` |
+| 补档 | 没有档案，但有界面代码 | `design_memory.py extract` 抽出现有颜色、字体、圆角，渲染一页“现状整理”给用户确认，再写档案 |
+| 评审 | 用户要找问题、优化现有页面 | 按 `references/audit-guide.md` 检查、分级、出改法，改完前后对比 |
+
+scan 只给建议，用户的意图优先。第一次在产品仓库里写档案前，先列出文件请用户确认。本文命令里的 `scripts/` 指本技能目录下的脚本，`design/`、`prototype/` 等路径相对产品目录。
+
 ### 第 0 关 · 理结构 —— 见 `references/structure-guide.md`
 产出**低保真 HTML 线框图**(真形状画元素，全灰阶),套进通用评审工作台后起服务给链接让用户看。
+画之前先在内部列出对象和动作，画完自查每个需求都有落点。导航、按钮和表头写真实的词。
 每个大模块都要登记完整说明，用户可用讲解模式逐块看懂，也可在评论模式对具体位置或区域提意见。编号只表示讲解顺序，不能代替模块说明。
 确认"有什么、在哪、怎么跳"。**不碰交互动线，不碰视觉。**
 
 ### 第 1 关 · 问诊(只问产品，不问风格)—— 见 `references/intake-questions.md`
-用点选问**用户答得出的产品问题**,由技能翻成 3-4 个候选风格方向。用户全程不在文字里判断风格。
-(可与第 0 关合并进行，轻则一起过。)
+用点选问**用户答得出的产品问题**和四组“产品性格”滑杆，由技能写成方向简报 `design/direction.md`，再挑 3～4 个风格坐标，其中一个是反向候选：它反的是第一直觉，仍要满足简报的目标感受。问诊前运行 `design_memory.py taste`，最近总选同一坐标时主动换。
+用户全程不在文字里判断风格。(可与第 0 关合并进行，轻则一起过。)
 
 ### 第 2 关 · 确认 UX(可点低保真原型)—— 见 `references/interaction-guide.md`
 **结构定了、上视觉之前，单独敲交互。** 这是之前缺的一环：
 - 产出一个**灰阶、可点**的低保真原型(还是线框级、不上风格),让用户**真点**去感受动线：点键→进录制态、pending→sent 流转、错误横幅出现/消失、页签切换。
 - **手感靠点，不靠读**——别用一段文字描述"点击后进入…";让用户点。
 - 为什么单列一关：让用户从静态线框脑补整套交互，要求太高；交互必须能玩着确认。
+- 给用户之前，技能先查状态矩阵（空、加载、失败、成功等）、异步和危险操作的处理，新流程走一遍认知走查。危险操作优先撤销，确认框只给严重后果。
+- 评审时给用户两到四个具体任务去做，不问“看着怎么样”。
 - UX 定了，后面视觉关不得改变任务语义、步骤、状态流转和反馈；控件形态与构图可以重做。
 - 体验模式走真实动线；讲解模式解释每个交互模块；评论模式停止业务交互，专门放评论钉或框选区域。
 - 评论必须落盘，右侧列表能跳回原页面和原区域；还有未解决的“必须修改”时不得进入下一关。
@@ -146,29 +172,51 @@ python3 scripts/validate_review_workspace.py prototype/index.html
 ### 第 3 关 · 视觉定稿（高保真候选＋同关打磨）
 视觉关保留一个正式关卡，内部有两个检查点：
 
-1. **高保真方向候选**：生成 3～4 个接近成品的方向，不再做“线框换色”。候选可以只展开代表页面，但必须覆盖全部核心旅程、不同交互模式、决定布局是否成立的关键状态和高风险状态。
-2. **选定方向全量完成**：用户选择或融合方向后，在同一关展开全部页面、状态、真实文案、响应式和动效细节。
+1. **高保真方向候选**：按任务选择少量有实质差异的完整处理，通常 2～4 个；明确方向或局部问题可以只做一个，但要和当前版本或一个对照方案并排。顺序是：
+   - 先列 8～12 个一句话方向，挑出 2～4 个，写成方向卡 `prototype/directions.json`（明暗、主色、字体类别、整页布局、圆角、密度、容器、装饰、动效；反向候选另写 `keeps` 和 `flips`），运行 `python3 scripts/lint_design.py diverge prototype/directions.json`，没拉开就重写；
+   - 每个候选独立生成，不互相参考；按 `visual-craft.md` 提出意图、具体手段、观察办法和代价，再生成接近成品的候选；
+   - 展示前对每个候选运行 `lint_design.py check <候选>.html --phase direction`，对照坐标的“默认长相”自查；
+   - 候选可以只展开代表页面，但必须覆盖全部核心旅程、不同交互模式、决定布局是否成立的关键状态和高风险状态。
+2. **选定方向全量完成**：用户选择或融合方向后，把选定方向写成 `design/tokens.json`（中文产品按 `references/cjk-typography.md`），导出时加 `--prototype prototype`，页面引用原型目录里的 `tokens.css`。交接包只带原型目录，引用 `../design/tokens.css` 的页面到了下游会丢样式。用这些变量在同一关展开全部页面、状态、真实文案、响应式和动效细节，最后运行 `lint_design.py check <页面>.html --phase final --tokens design/tokens.json`。颜色以外，圆角、间距、字号和字体不在 tokens 档位里也会报 warn：要么改用变量，要么把反复用到的值加进 tokens。
 
 交互关只冻结任务语义、动作、状态和反馈，不冻结按钮长相、组件形态和具体构图。视觉候选可以重新组织导航、层级、控件和空间关系，只要已确认的任务仍能顺畅完成。
 
-候选必须在评审工作台里一次露全，点击后单独体验。用户可以选择主方向、框选局部评论，或说明融合其他方案的具体部分。方向候选通过 `direction` 门禁后才能展示；选定方向通过 `final` 门禁后，才可称为“视觉定稿”。
+候选必须在评审工作台里一次露全，点击后单独体验。用户可以选择主方向、框选局部评论，或说明融合其他方案的具体部分。看完候选后，请用户从感受词表里给每个候选点 3～5 个词，和简报里的目标词对照；选定后运行 `design_memory.py record` 记下给了什么、选了什么、为什么否掉。这台机器上还没有口味记录时，脚本只写产品决策，并提示先问用户：用一个点选问题问一次，说明记录只存在本机 `~/.style-compass/taste.md`、不进产品仓库；同意就加 `--remember-taste` 重新运行，不同意就运行 `design_memory.py taste --off`，以后不再问。方向候选通过 `direction` 门禁后才能展示；选定方向通过 `final` 门禁后，才可称为“视觉定稿”。
 
-验收时不看“配色是否不同”，而看四件事：不同候选是否真的采用不同构图与组件语言；单独拿出任一候选是否像成熟产品；方向必需 `J/A/S` 覆盖率是否为 100%；选定方案能否重放交互关的全部用例。
+验收分别记录：方向必需 `J/A/S` 覆盖与真实操作；完整页面和关键状态的视觉判断；用户对方向的取舍。先看画面与使用过程，再看作者解释。指出具体区域的改善或退步，允许原版胜出、平局与偏好分歧；脚本通过不能证明审美通过。
 
-### 第 4 关 · 交付双产物(HTML 是唯一事实源)—— 形态见 `references/prototype-guide.md`
+### 第 4 关 · 交付（行为看 HTML，数值看 tokens.json）—— 形态见 `references/prototype-guide.md`
 用户拍板后：
 1. **`prototype/`**(可交互 HTML)——入口 `index.html` 使用技能内置的固定工作台，把整条流水线串成可导航、可比较、可讲解、可评论的流程；项目只替换画板和设计清单，核心旅程能在浏览器点通。
 2. **`design-spec-<topic>.md`**——`scripts/export_spec.py` **从选定 HTML + `index.design.json` 自动抽取**(信息架构/页面对应PRD功能/组件/token/各状态/交互/prototype索引)。
    - OPC 标准道：`python3 scripts/export_spec.py prototype/<选定>.html --meta prototype/index.design.json --topic <t> --upstream prd-<t>.md --opc --producer iloop -o <适配器给定的输出路径>`。默认输出仍在 HTML 旁，只有显式 `-o` 才改变位置。
-   - 独立跨平台交付也提供 `--topic <t> --producer <宿主>`；使用 `scripts/artifact_io.py pack --input <spec.md> --attach <prototype目录> --out <交接.zip>` 携带原型、阶段契约、评论和历史候选。先导出浏览器里的评论，不以未持久化状态充当留痕。打包不代替上述视觉与交互验收。
+   - spec 的数值以 `design/tokens.json` 为准：脚本从 HTML 所在目录往上找它，也可以用 `--tokens` 指定；页面里和它不一致的变量会逐条提醒。既没有 tokens.json、页面也没有变量时，脚本会警告 spec 里没有任何设计数值。
+   - 独立跨平台交付也提供 `--topic <t> --producer <宿主>`；使用 `scripts/artifact_io.py pack --input <spec.md> --attach <prototype目录> --out <交接.zip>` 携带原型、阶段契约、评论和历史候选。打包前确认 `lint_design.py check` 没有 `CSS-LINK-OUTSIDE`，原型引用的样式表都在原型目录里。先导出浏览器里的评论，不以未持久化状态充当留痕。打包不代替上述视觉与交互验收。
    - ⚠️ spec 必须从 HTML 自动导出，不两头手写，否则必然漂移。
-3. tokens 导出(SwiftUI/CSS)用 `scripts/export_tokens.py`,做一致性。
+3. **设计档案**——从 `design/tokens.json` 一次导出 CSS、Tailwind、SwiftUI、风格提示、W3C 格式 token 和 `DESIGN.md`：
+   ```bash
+   python3 scripts/export_tokens.py design/tokens.json --out design --targets all --brief design/direction.md --design-md DESIGN.md --prototype prototype
+   python3 scripts/design_memory.py check <产品目录>
+   ```
+   tokens 有错误时导出失败、不写文件。`check` 按 tokens.json 重新导出一遍，和 `DESIGN.md`、`design/` 里的每份导出产物、`prototype/tokens.css` 整份比较：缺 `DESIGN.md` 或任何一份过期都不通过，并给出重新导出的命令。`DESIGN.md` 符合 Google DESIGN.md 格式，Stitch、Cursor、Claude Code 等工具都能读；在产品仓库的 `AGENTS.md` 里加一句“写 UI 前读 DESIGN.md”，后续页面就会沿用同一方向。
+
+## 检查脚本能管什么、不能管什么
+
+| 脚本 | 管什么 |
+|---|---|
+| `lint_design.py check` | 中文字体回退、行高字距、`lang`、缩放、图标按钮名称、焦点、动效与减少动态、灰阶关混入彩色、是否守 tokens（颜色、字体、字号、圆角、间距）、原型引用的样式表在不在原型目录里，以及常见的 AI 默认长相提示 |
+| `lint_design.py diverge` | 方向卡之间是否至少在三个维度上不同、有没有一眼可见的差别，反向候选有没有写清保住和推翻了什么 |
+| `lint_design.py tokens` | tokens 的格式、对比度和中文排版底线 |
+| `validate_stage_contract.py` | 编号、引用、覆盖率，以及异步、危险、乐观更新动作的行为字段 |
+| `design_memory.py` | 入场分流、现状抽取、决策和口味记录（第一次记之前先征得同意）、档案一致性（缺 `DESIGN.md` 或任何一份导出过期都不通过） |
+
+它们都管不了“好不好看”。以 `SMELL-` 开头的规则只是提示：同一种做法在一个方向里是陈词滥调，在另一个方向里可能正合适。确实要用时，在 tokens 的 `guardrails.accepted_defaults` 里写上规则编号和理由，检查就会记为“已接受”。审美由渲染和用户比较决定。
 
 ## 这个节点*不*负责什么(诚实边界)
 
 - **需求对不对**——上游产品节点的事。
 - **用户买不买账**——只有真实用户测试能答；技能给的是"一个立得住的好",不等于"你的市场要的好"。
-- **工程实现细节**——下游 coding 节点的事；本节点只保证交付物能被照着建、不失真。
+- **工程实现细节**——下游 coding 节点的事；本节点只保证交付物能被照着建、不失真。组件库在方向稳定后由 coding 节点沉淀，见 `design-archive.md`。
 
 ## 目录结构
 
@@ -176,33 +224,53 @@ python3 scripts/validate_review_workspace.py prototype/index.html
 style-compass/
 ├── SKILL.md
 ├── references/
-│   ├── structure-guide.md      # 第0步：需求→界面结构
-│   ├── intake-questions.md     # 第1步：只问产品的问诊
-│   ├── style-library.yaml      # 风格坐标库：archetypes + render_hint
-│   ├── interaction-guide.md    # 第2步：可点原型确认交互
-│   ├── stage-contracts.md      # 各关确认边界、稳定语义编号与覆盖门禁
+│   ├── design-archive.md       # 入场分流、设计档案、口味记录和组件库时机
+│   ├── structure-guide.md      # 第0关：需求→界面结构
+│   ├── intake-questions.md     # 第1关：只问产品的问诊和方向简报
+│   ├── style-library.yaml      # 风格坐标：性格轴、可调手段、默认长相，不作为固定配方
+│   ├── visual-craft.md         # 视觉创作：方向卡、候选拉开、默认长相自查和整体检查
+│   ├── cjk-typography.md       # 中文界面排版、字体许可与网络字体
+│   ├── interaction-guide.md    # 第2关：可点原型确认交互
+│   ├── stage-contracts.md      # 各关确认边界、稳定语义编号、行为字段与覆盖门禁
+│   ├── audit-guide.md          # 评审模式：现有页面找问题、分级、出改法
+│   ├── visual-evaluation.md    # 方法评测：冻结输入、独立生成、匿名比较和行为用例
 │   ├── review-framework.md     # 固定工作台、画板替换和评审数据协议
-│   └── prototype-guide.md      # 交付目录与评审工作台入口
+│   ├── prototype-guide.md      # 交付目录与评审工作台入口
+│   └── handoff.md              # OPC 交接规范
 ├── assets/
 │   └── review-framework/       # 固定工作台模板、样式和脚本
 ├── scripts/
+│   ├── lint_design.py          # 按关卡检查页面、tokens 和方向卡
+│   ├── design_memory.py        # 入场分流、现状抽取、决策与口味记录、档案一致性
+│   ├── token_utils.py          # tokens 解析、颜色计算和中文字体栈（共享库）
 │   ├── compare_variants.py     # 把多版 HTML 装订成并排对比页
-│   ├── export_spec.py          # 第5步：从最终 HTML 抽结构化设计 spec
-│   ├── export_tokens.py        # tokens → SwiftUI/CSS/Tailwind/prompt
+│   ├── export_spec.py          # 从最终 HTML 抽结构化设计 spec
+│   ├── export_tokens.py        # tokens → CSS/Tailwind/SwiftUI/风格提示/DESIGN.md/W3C token
 │   ├── validate_review_workspace.py # 校验空间画室公共外壳没有被项目改坏
-│   ├── validate_stage_contract.py # 检查层间引用与视觉候选覆盖
+│   ├── validate_stage_contract.py # 检查层间引用、视觉候选覆盖和行为字段
 │   ├── scaffold_review.py      # 生成固定工作台，新项目只替换画板和清单
-│   └── review_server.py        # 预览原型并持久化评论与关卡状态
+│   ├── review_server.py        # 预览原型并持久化评论与关卡状态
+│   ├── artifact_io.py          # 跨平台交接信封与打包
+│   └── scoring-rules.json      # OPC 共享评分规则
+├── tests/
+│   └── test_scripts.py         # 脚本单元测试：python3 -m unittest discover -s tests
+├── evals/
+│   └── evals.json              # 行为用例：技能该做和不该做的事
 └── examples/
-    └── tokens.example.json
+    ├── tokens.example.json     # tokens 格式示例（数值不是配方）
+    └── stage-contract.example.json # 带行为字段的契约示例
 ```
 
 ## 原则
 
 - **视觉决策看图，不靠文字**;**产品判断问用户，风格判断技能扛**。
 - **展示优先是默认，不是兜底**——多数非设计师本就想象不出。
-- **渲染质量归模型，脚本只做脚手架**。
-- **HTML 是唯一事实源，spec/tokens 从它导出**,防漂移。
+- **方向来自方向简报，不来自示例和训练数据的默认值**：先写清要什么感觉、不要什么感觉，再生成。
+- **候选要真的不同**：先写方向卡、过拉开检查，独立生成，留一个反第一直觉、不反需求的反向候选。
+- **默认长相按方向判断，不全局禁止**：提示可以接受，但要写理由。
+- **渲染质量归模型，脚本只做脚手架和确定性检查**。
+- **行为的事实源是 HTML，数值的事实源是 tokens.json**：spec 从 HTML 导出、数值取 tokens.json，CSS、DESIGN.md 等从 tokens.json 导出，定稿用 `--tokens` 检查颜色、字体、字号、圆角和间距的偏离，防漂移。
+- **口味记录只做提示，并且要防止越做越像**：第一次记之前先征得用户同意；反复否掉的理由主动避开；最近总选同一坐标时，候选里强制换。
 - **讲解和评论是两条独立信息流**：设计说明不冒充用户意见，用户意见必须绑定到具体画面。
 - **所有原型共用同一固定工作台**：产品内容可以换，关卡、页面／方案对比、体验、讲解、评论、确认和数据协议不能另起一套。
-- **archetype 是气质参照不是抄袭**；产物写到用户指定目录或宿主附件区，不默认写入工程根或本技能目录。
+- **archetype 是气质参照不是抄袭**；过程产物写到用户指定目录或宿主附件区，不默认写入工程根或本技能目录；设计档案经用户确认后写进产品仓库。

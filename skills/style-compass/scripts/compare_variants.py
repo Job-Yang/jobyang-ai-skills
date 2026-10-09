@@ -73,6 +73,9 @@ def main():
                  if os.path.basename(p) != out_base]
     if not paths:
         ap.error("至少给一个变体 html,或用 --dir")
+    missing = [p for p in paths if not os.path.isfile(p)]
+    if missing:
+        ap.error("找不到变体文件: " + ", ".join(missing))
 
     labels = None
     if args.labels:
