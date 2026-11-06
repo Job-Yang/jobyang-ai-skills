@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 1120" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif">
+  <rect width="640" height="1120" fill="#ffffff"/>
+  <text x="320" y="36" text-anchor="middle" font-size="20" font-weight="600" fill="#2b2b2b">研发技术文档：先组织决定，再写正文</text>
+
+  <!-- 被否掉的做法 -->
+  <g font-size="12.5" fill="#6b7280">
+    <rect x="40" y="76" width="262" height="62" rx="8" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="171" y="102" text-anchor="middle" font-weight="600">结构完整却没推动决定</text>
+    <text x="171" y="122" text-anchor="middle" font-size="11">候选陪跑，图文两张皮</text>
+
+    <rect x="338" y="76" width="262" height="62" rx="8" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="469" y="102" text-anchor="middle" font-weight="600">手写 mermaid 充结构图</text>
+    <text x="469" y="122" text-anchor="middle" font-size="11">画板 DSL 从零摆节点</text>
+  </g>
+
+  <!-- 主路径 -->
+  <g font-size="14" fill="#0b3b36">
+    <rect x="170" y="180" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="208" text-anchor="middle" font-weight="600">工程判断先成立</text>
+    <text x="320" y="228" text-anchor="middle" font-size="11.5" fill="#3d6b66">事实/决定/代价/回退不混写</text>
+
+    <rect x="170" y="300" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="328" text-anchor="middle" font-weight="600">三层正文</text>
+    <text x="320" y="348" text-anchor="middle" font-size="11.5" fill="#3d6b66">首屏结论 → 章节 → 细节附录</text>
+
+    <rect x="170" y="420" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="448" text-anchor="middle" font-weight="600">diagram_kit 出图</text>
+    <text x="320" y="468" text-anchor="middle" font-size="11.5" fill="#3d6b66">自包含 SVG，平台通用、可编辑</text>
+
+    <rect x="170" y="540" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="568" text-anchor="middle" font-weight="600">机器检查后交付</text>
+    <text x="320" y="588" text-anchor="middle" font-size="11.5" fill="#3d6b66">doc_check / diagram_check 必跑</text>
+  </g>
+
+  <g stroke="#0f9d8f" stroke-width="2.2" fill="#0f9d8f">
+    <line x1="320" y1="244" x2="320" y2="290"/><polygon points="320,300 315,290 325,290"/>
+    <line x1="320" y1="364" x2="320" y2="410"/><polygon points="320,420 315,410 325,410"/>
+    <line x1="320" y1="484" x2="320" y2="530"/><polygon points="320,540 315,530 325,530"/>
+  </g>
+
+  <!-- 琥珀：取舍 -->
+  <g font-size="12.5" fill="#7a5410">
+    <line x1="470" y1="452" x2="516" y2="452" stroke="#e8a33d" stroke-width="2"/>
+    <rect x="516" y="420" width="108" height="66" rx="8" fill="#fdf1dd" stroke="#e8a33d" stroke-width="2"/>
+    <text x="570" y="446" text-anchor="middle" font-weight="600">平台只发布</text>
+    <text x="570" y="465" text-anchor="middle" font-size="10.5">不决定结构</text>
+    <text x="570" y="479" text-anchor="middle" font-size="10.5">画板是适配器</text>
+
+    <line x1="170" y1="332" x2="120" y2="332" stroke="#e8a33d" stroke-width="2"/>
+    <rect x="16" y="300" width="104" height="66" rx="8" fill="#fdf1dd" stroke="#e8a33d" stroke-width="2"/>
+    <text x="68" y="326" text-anchor="middle" font-weight="600">内部账本</text>
+    <text x="68" y="345" text-anchor="middle" font-size="10.5">不印进正文</text>
+    <text x="68" y="359" text-anchor="middle" font-size="10.5">证据归证据</text>
+  </g>
+
+  <!-- 分工注记 -->
+  <g>
+    <rect x="60" y="660" width="520" height="120" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.5"/>
+    <text x="320" y="688" text-anchor="middle" font-size="13.5" font-weight="600" fill="#0b3b36">图的归属：严谨归这里，直观归 content-infographic</text>
+    <text x="320" y="714" text-anchor="middle" font-size="12" fill="#3d6b66">本技能：经得起评审、能照着实现的框线图</text>
+    <text x="320" y="736" text-anchor="middle" font-size="12" fill="#3d6b66">content-infographic：读者一眼记住道理的直观图</text>
+    <text x="320" y="758" text-anchor="middle" font-size="11" fill="#8a6420">时序/状态/甘特用 Mermaid；统计数字才用 ECharts</text>
+  </g>
+
+  <!-- 图例 -->
+  <g font-size="12" fill="#4b5563">
+    <rect x="60" y="1050" width="16" height="16" rx="3" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.5"/>
+    <text x="82" y="1063">主路径</text>
+    <rect x="180" y="1050" width="16" height="16" rx="3" fill="#fdf1dd" stroke="#e8a33d" stroke-width="1.5"/>
+    <text x="202" y="1063">取舍边界</text>
+    <rect x="330" y="1050" width="16" height="16" rx="3" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="352" y="1063">被否掉的做法</text>
+  </g>
+</svg>

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="1240" viewBox="0 0 880 1240" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+  <rect width="880" height="1240" fill="#ffffff"/>
+  <text x="40" y="52" font-size="26" font-weight="600" fill="#262b33">说法核查：先拆开事实，再判断该信多少</text>
+  <text x="40" y="86" font-size="15" fill="#5b6470">方法来自事实核查与笛卡尔式系统怀疑：只对事实验真，推论单独审</text>
+
+  <rect x="40" y="120" width="800" height="72" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="150" font-size="18" font-weight="600" fill="#0b6b55">输入：一条离散的说法 / 数据 / 结论</text>
+  <text x="64" y="176" font-size="14.5" fill="#0b6b55">整篇文章走论证精读；两方案怎么选走钢人抉择——本技能只管单条说法</text>
+
+  <line x1="440" y1="192" x2="440" y2="224" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="224" width="800" height="104" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="2"/>
+  <text x="64" y="256" font-size="18" font-weight="600" fill="#0b6b55">① 拆成三堆</text>
+  <text x="64" y="284" font-size="14.5" fill="#0b6b55">可外部验证的事实 · 从事实推出的结论 · 价值判断/立场</text>
+  <text x="64" y="308" font-size="14.5" fill="#0b6b55">只对第一堆做核查；价值不争对错，但要点明它在结论里起了什么作用</text>
+
+  <line x1="440" y1="328" x2="440" y2="360" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="360" width="800" height="120" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="2"/>
+  <text x="64" y="392" font-size="18" font-weight="600" fill="#0b6b55">② 事实验真：只查高影响项，给五级可信度</text>
+  <text x="64" y="420" font-size="14.5" fill="#0b6b55">已证实 · 基本成立但需收窄 · 存在争议 · 证据不足 · 明显错误</text>
+  <text x="64" y="444" font-size="14.5" fill="#0b6b55">另有两个过程状态：待外部核查 / 未执行外部核查</text>
+  <text x="64" y="466" font-size="13.5" fill="#0b6b55">处于这两个状态不许给任何肯定档，只能写「暂不可信判定」</text>
+
+  <line x1="440" y1="480" x2="440" y2="512" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="512" width="800" height="104" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="544" font-size="18" font-weight="600" fill="#0b6b55">③ 推理审计：假设事实成立，结论就成立吗</text>
+  <text x="64" y="572" font-size="14.5" fill="#0b6b55">相关当因果 · 个例当规律 · 隐藏假设 · 遗漏替代解释（基数/分母/对照）</text>
+  <text x="64" y="596" font-size="14.5" fill="#0b6b55">写清结论在什么条件下成立、什么条件下失效</text>
+
+  <line x1="440" y1="616" x2="440" y2="648" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="648" width="800" height="92" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="2"/>
+  <text x="64" y="680" font-size="18" font-weight="600" fill="#0b6b55">④ 收口</text>
+  <text x="64" y="708" font-size="14.5" fill="#0b6b55">一句话置信结论 + 还需验证的关键一项；用户要快答时给精简版</text>
+
+  <rect x="40" y="764" width="800" height="128" rx="12" fill="#fbf0dd" stroke="#c97a16" stroke-width="1.8"/>
+  <text x="64" y="796" font-size="17" font-weight="600" fill="#9a5a0e">来源纪律（写死）</text>
+  <text x="64" y="824" font-size="14" fill="#9a5a0e">一手来源优先；媒体转述不冒充官方；多个页面转载同一上游不算交叉验证。</text>
+  <text x="64" y="848" font-size="14" fill="#9a5a0e">没查就是没查：禁止凭模型记忆判真；不编造机构、数字、链接、发布日期。</text>
+  <text x="64" y="872" font-size="14" fill="#9a5a0e">证据一边倒时如实说，不为「客观」硬凑反方。</text>
+
+  <rect x="40" y="916" width="800" height="140" rx="12" fill="#f4f6f8" stroke="#9aa3ad" stroke-width="1.5" stroke-dasharray="8 5"/>
+  <text x="64" y="948" font-size="16" font-weight="600" fill="#5b6470">离线能力与成熟度</text>
+  <text x="64" y="976" font-size="14" fill="#5b6470">离线可用：拆解 + 推理审计照做，但没验证的一律标待核查。</text>
+  <text x="64" y="1000" font-size="14" fill="#5b6470">2026-10-20 随思维技能批次创建，目前「已建待盲测」：</text>
+  <text x="64" y="1024" font-size="14" fill="#5b6470">触发盲测、端到端样本、对抗软肋三关未跑；为什么先做它，待作者补。</text>
+
+  <defs>
+    <marker id="t" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0f8a6d"/></marker>
+  </defs>
+</svg>

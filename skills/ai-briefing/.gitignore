@@ -1,0 +1,16 @@
+# 个人配置（含读者画像，勿提交）
+config.json
+
+# X provider 真实 profile（含端点与 $ENV 变量名，可能暴露所用服务）
+x-provider.json
+
+# 测试临时文件
+tests/fixtures/_tmp_*.json
+
+# 本地生成的每日早报
+ai-daily-*.md
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/

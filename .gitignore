@@ -1,1 +1,11 @@
 .DS_Store
+__pycache__/
+*.pyc
+.pytest_cache/
+DerivedData/
+skills/*/.deps/
+skills/*/.deps
+
+# 个人/本机同步配置与私有约定（含本机绝对路径，不进公开仓）
+tools/sync.local.json
+SKILLS_SYNC_RULE.md

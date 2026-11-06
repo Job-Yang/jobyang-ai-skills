@@ -1,0 +1,16 @@
+{
+  "_comment": "复制为 tools/sync.local.json 并填入本机路径（sync.local.json 已被 git 忽略）。targets 是所有要同步的技能运行目录；zip_dir 是发布 zip 目录（只保留当前最新版，不留同步备份；旧版本从 Git 历史找回）。支持 ~ 展开。 每个 target 可选 only 列表，限定该宿主接收的技能；省略表示同步 manifest 全部。",
+  "targets": [
+    {
+      "dir": "~/path/to/your-agent/user_skills"
+    },
+    {
+      "dir": "~/path/to/another-host/skills",
+      "only": [
+        "haohao-shuohua",
+        "haohao-eval"
+      ]
+    }
+  ],
+  "zip_dir": "~/path/to/dist-zips"
+}

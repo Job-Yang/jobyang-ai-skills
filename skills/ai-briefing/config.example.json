@@ -1,0 +1,43 @@
+# ai-briefing 配置文件（复制为 config.json 后填写）
+# 所有字段都是可选项；不填就按通用默认走。不要把公司名、人名、密钥写进技能本体。
+{
+  "reader": {
+    "name": "",
+    "role": "",
+    "focus": "AI、Agent、大模型、开发者工具与个人知识系统",
+    "scoring_anchor": "对这位读者有没有用、能不能指导本周行动",
+    "context_hints": []
+  },
+  "language": "zh",
+  "tech_terms_keep_english": true,
+  "working_days": [1, 2, 3, 4, 5],
+  "daily_window_hours": 24,
+  "monday_window_hours": 72,
+  "weekly_recap_weekday": 5,
+  "coverage": [
+    "新模型", "大公司与AI公司动向", "关键人物发声",
+    "前沿突破与研究", "GitHub高价值项目", "Product Hunt精选", "中国AI生态"
+  ],
+  "sources": {
+    "x": {
+      "mode": "host_read",
+      "note": "host_read=用宿主网页读取能力直读主页（零依赖默认）；http=用 scripts/x_provider.py 调你有权使用的 X 数据服务，需填 x_provider_profile；stdin=宿主把读到的帖子 JSON 喂给 provider；none=只用二手报道并标注。技能本体不含任何真实端点和密钥。",
+      "x_provider_profile": "",
+      "watch_handles": ["sama", "karpathy", "ylecun", "OpenAI", "AnthropicAI", "GoogleDeepMind", "deepseek_ai"]
+    },
+    "github": {"trending": true, "languages": ["", "typescript", "python"]},
+    "product_hunt": {"enabled": true, "fetch": "https://www.producthunt.com/leaderboard/daily"},
+    "media": ["Hacker News", "TechCrunch", "The Verge", "量子位", "机器之心", "36氪"]
+  },
+  "delivery": {
+    "doc_kind": "markdown_or_host_doc",
+    "doc_url": "",
+    "write_command": "",
+    "always_echo_full_brief": true,
+    "newest_on_top": true
+  },
+  "optional_skills": {
+    "style_polish": "",
+    "note": "填一个宿主里存在的技能名/命令用于中文清洗；没有就用 references/style-fallback.md 的内置最小规则"
+  }
+}

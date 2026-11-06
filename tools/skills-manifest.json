@@ -1,0 +1,84 @@
+{
+  "_comment": "个人技能四处双写白名单，与 SKILLS_SYNC_RULE.md 的在册清单保持一致。编辑地＝豆包 .user_skills；版本地＝git 仓 skills/（回灌并 commit）；分发地＝~/.trae/skills 与 ~/Downloads/个人技能/<name>.zip。仅放用户自有、可迁移、可公开的技能；公司内部、第三方、强个人化技能不入此单。",
+  "_version": "2",
+  "skills": [
+    {
+      "name": "ai-briefing"
+    },
+    {
+      "name": "content-infographic"
+    },
+    {
+      "name": "cuihuo"
+    },
+    {
+      "name": "engineering-docs"
+    },
+    {
+      "name": "feynman-explainer"
+    },
+    {
+      "name": "haohao-eval"
+    },
+    {
+      "name": "haohao-shuohua"
+    },
+    {
+      "name": "me-context"
+    },
+    {
+      "name": "opportunity-radar"
+    },
+    {
+      "name": "opportunity-scorecard"
+    },
+    {
+      "name": "outside-view"
+    },
+    {
+      "name": "png-compress"
+    },
+    {
+      "name": "product-brief"
+    },
+    {
+      "name": "reverse-teardown"
+    },
+    {
+      "name": "sansi-erhouxing"
+    },
+    {
+      "name": "style-compass"
+    },
+    {
+      "name": "talk-smith"
+    },
+    {
+      "name": "tangshan-style"
+    },
+    {
+      "name": "vdd"
+    },
+    {
+      "name": "video-reader"
+    },
+    {
+      "name": "steelman-choice"
+    },
+    {
+      "name": "claim-check"
+    },
+    {
+      "name": "argument-reading"
+    },
+    {
+      "name": "root-rethink"
+    },
+    {
+      "name": "minimum-experiment"
+    },
+    {
+      "name": "skill-library-keeper"
+    }
+  ]
+}

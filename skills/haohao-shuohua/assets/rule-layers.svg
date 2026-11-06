@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="620" viewBox="0 0 880 620" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Source Han Sans SC, sans-serif">
+  <rect width="880" height="620" fill="#ffffff"/>
+  <text x="40" y="34" font-size="17" font-weight="600" fill="#2b2b2b">三条规则谁能动：宪法、判据、每日细则</text>
+  <text x="40" y="54" font-size="12" fill="#666666">青绿＝规则层　琥珀＝翻车逼出来的硬闸　灰虚线＝日常不做的事　箭头＝数据/修改的方向</text>
+
+  <!-- three layers -->
+  <rect x="40" y="84" width="500" height="84" rx="9" fill="#2a9d8f" stroke="#1f5f58" stroke-width="2"/>
+  <text x="62" y="110" font-size="14" font-weight="600" fill="#ffffff">第一层 · 宪法</text>
+  <text x="62" y="130" font-size="12" fill="#dff3f0">底线三段（保真＞场合＞力度＞风格）＋四条原则正文</text>
+  <text x="62" y="148" font-size="12" fill="#dff3f0">只有作者手工改；check_integrity.py 逐段算 sha256，被改即停</text>
+  <text x="62" y="164" font-size="11.5" fill="#bfe6e0">每日召回一个字都不许动它</text>
+
+  <rect x="40" y="196" width="500" height="66" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="1.8"/>
+  <text x="62" y="222" font-size="14" font-weight="600" fill="#1f5f58">第二层 · 稳定判据</text>
+  <text x="62" y="242" font-size="12" fill="#333333">references/ 八个文件：症状库、受保护跨度、节奏、造词清单、对照库</text>
+  <text x="62" y="258" font-size="11.5" fill="#555555">可以增补例子，不得推翻宪法</text>
+
+  <rect x="40" y="292" width="500" height="66" rx="9" fill="#f3faf9" stroke="#2a9d8f" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <text x="62" y="318" font-size="14" font-weight="600" fill="#1f5f58">第三层 · 每日细则 daily-learning.md</text>
+  <text x="62" y="338" font-size="12" fill="#333333">haohao-eval 攒够同类问题、过门禁才发布的当天细则</text>
+  <text x="62" y="354" font-size="11.5" fill="#555555">干活前读它；跟宪法冲突时宪法赢，细则让路</text>
+
+  <!-- eval box -->
+  <rect x="600" y="110" width="240" height="150" rx="10" fill="#ffffff" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="620" y="138" font-size="14" font-weight="600" fill="#1f5f58">haohao-eval 评测台</text>
+  <text x="620" y="160" font-size="12" fill="#333333">每天出题、盲评、逐字核对</text>
+  <text x="620" y="178" font-size="12" fill="#333333">找改坏/没改好，攒成病类</text>
+  <text x="620" y="196" font-size="12" fill="#333333">候选过门禁才发布细则</text>
+  <text x="620" y="222" font-size="11.5" fill="#7a5a12">红线：评测时不改被测版本</text>
+  <text x="620" y="240" font-size="11.5" fill="#7a5a12">不做把命中压到 0 的重试</text>
+
+  <!-- arrows -->
+  <g stroke="#555555" stroke-width="1.6" fill="#555555">
+    <line x1="290" y1="168" x2="290" y2="194"/><polygon points="290,196 286,189 294,189"/>
+    <line x1="290" y1="262" x2="290" y2="290"/><polygon points="290,292 286,285 294,285"/>
+  </g>
+  <text x="302" y="184" font-size="11" fill="#777777">宪法是展开说明</text>
+  <text x="302" y="280" font-size="11" fill="#777777">宪法之下</text>
+
+  <!-- eval to L3 -->
+  <g stroke="#2a9d8f" stroke-width="1.8" fill="#2a9d8f">
+    <path d="M 600 240 C 560 250, 552 310, 542 322" fill="none"/><polygon points="540,324 546,316 536,314"/>
+  </g>
+  <text x="548" y="286" font-size="11.5" fill="#1f5f58">只写第三层</text>
+  <g stroke="#2a9d8f" stroke-width="1.3" fill="#2a9d8f" stroke-dasharray="3 3">
+    <path d="M 540 340 C 580 360, 610 330, 616 272" fill="none"/><polygon points="616,270 611,277 620,278"/>
+  </g>
+  <text x="560" y="372" font-size="11" fill="#1f5f58">干活前读细则</text>
+
+  <!-- amber failure callouts -->
+  <rect x="40" y="392" width="410" height="76" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.6"/>
+  <text x="60" y="416" font-size="13" font-weight="600" fill="#7a5a12">翻车一：靠自觉守不住</text>
+  <text x="60" y="436" font-size="12" fill="#333333">通篇软自律，模型「感觉自己过了」就没真扫，</text>
+  <text x="60" y="454" font-size="12" fill="#333333">半角标点成串漏进成稿 → 写回持久面的成稿加交付硬闸</text>
+
+  <rect x="470" y="392" width="370" height="76" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.6"/>
+  <text x="490" y="416" font-size="13" font-weight="600" fill="#7a5a12">翻车二：硬闸在本机先塌</text>
+  <text x="490" y="436" font-size="12" fill="#333333">半角标点那条用 grep -P，在 macOS 自带 grep 上报错</text>
+  <text x="490" y="454" font-size="12" fill="#333333">失效 → 落成纯标准库 quick_scan.py，17 个正反用例守住</text>
+
+  <!-- gray dashed: no scoring -->
+  <rect x="40" y="500" width="800" height="56" rx="9" fill="#f4f5f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="60" y="524" font-size="12.5" fill="#5f6368">日常写作绝不打分：写字靠四条原则和红线，不靠分数。</text>
+  <text x="60" y="544" font-size="12.5" fill="#5f6368">要比稿、比工具、做回归时才走 haohao-eval——评测和写作拆开，是这套结构能长期用下去的关键。</text>
+</svg>

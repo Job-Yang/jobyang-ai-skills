@@ -27,17 +27,38 @@ This repository is not a prompt cheat sheet. Each Skill should be a compact piec
 | [engineering-docs](./skills/engineering-docs/README.en.md) | Unified engineering-document entry point for context gathering, co-authoring, technical decisions, diagrams, and implementation validation. |
 | [outside-view](./skills/outside-view/README.en.md) | Retrieves evidence only when it can change a decision, resolves conflicts, and stops unproductive research. |
 | [sansi-erhouxing](./skills/sansi-erhouxing/README.en.md) | Think before you edit: read the whole skeleton of an existing document before changing it, instead of patching one paragraph at a time. |
+| [reverse-teardown](./skills/reverse-teardown/README.en.md) | Reverse-tear down a strong artifact into its structure and key choices, separate transferable rules from context-only details, and output an action checklist plus a minimum experiment. |
+| [steelman-choice](./skills/steelman-choice/) | Steelman choice: when two options both sound right, build each side at its strongest (Principle of Charity), surface the real disagreement and one decision-flip question before choosing. |
+| [claim-check](./skills/claim-check/) | Claim check: split a discrete claim into fact/inference/value, verify facts on a five-level credibility scale, then audit the reasoning chain. |
+| [argument-reading](./skills/argument-reading/) | Argument reading: rebuild a whole article into an argument map—charitable reconstruction first, then evaluate evidence, hidden premises, and failure conditions. |
+| [skill-library-keeper](./skills/skill-library-keeper/) | Skill library keeper: library-level governance—five-question admission gate, health checks (collisions, orphans, hard platform coupling), and use/distill/rebuild decisions for external skills; auto-discovers the library path, zero hard platform coupling. |
+| [root-rethink](./skills/root-rethink/) | Root rethink: first-principles rethinking plus cross-domain mechanism borrowing—split facts/assumptions/goals/constraints to escape patch-on-patch solutions. |
+| [minimum-experiment](./skills/minimum-experiment/) | Minimum experiment: pick the most decisive, uncertain assumption and get real feedback via a cheap reversible experiment with preset continue/stop signals. |
 | [video-reader](./skills/video-reader/) | Turns video into timestamped keyframes and a motion timeline, so an image-only LLM can reason about what happened at which second. |
-| [png-compress](./skills/png-compress-skill/README.en.md) | Batch-compresses PNG assets locally with incremental caching, quality gates, and automatic fallback, without an online API. |
+| [png-compress](./skills/png-compress/) | Batch-compresses PNG assets locally with incremental caching, quality gates, and automatic fallback, without an online API. |
 
 The collection can be read as four capability groups:
 
-- **Judgment and verification**: VDD, outside-view, and haohao-eval.
-- **Product formation**: opportunity radar, opportunity scorecard, product brief, and style compass.
+- **Judgment and verification**: VDD, outside-view, haohao-eval, steelman choice, claim check, and argument reading.
+- **Product formation**: opportunity radar, opportunity scorecard, product brief, style compass, and reverse teardown (learning from artifacts).
 - **Engineering delivery**: engineering docs, PNG compression, and video reader.
 - **Writing**: haohao-shuohua, cuihuo, tangshan-style, Feynman explainer, and sansi-erhouxing.
 
 Each README explains capabilities, usage, design rationale, evaluation evidence, and boundaries. `SKILL.md` is the execution entry read by the agent. Complex Skills add references, scripts, templates, or runtime assets as needed.
+
+## The skill system at a glance
+
+The skills are not isolated tricks; they form reusable chains: task → skill → shared hub → output. Wider bands carry more tasks; several bands merging marks a shared hub (e.g. "outside-view · evidence", "product brief/design").
+
+[![Skill flow map](./docs/skill-map.png)](./docs/skill-map.html)
+
+▸ Click the image for the **interactive version**: hover a node to highlight its upstream/downstream path, click for positioning and good/bad signals, filter by product/thinking/writing/tool line, with a per-line walkthrough in the side panel.
+
+- [SKILL-MAP.en.md](./docs/SKILL-MAP.en.md): positioning, standalone value, and boundaries
+- [SKILL-QUALITY-CARD.md](./docs/SKILL-QUALITY-CARD.md): how to tell whether a thinking skill fired and worked well
+- [SKILL-GAP-AUDIT.md](./docs/SKILL-GAP-AUDIT.md): what is actually missing, derived from the map rather than impulse
+
+Before adding or changing a Skill, run the map and gap audit to confirm unique positioning, non-overlapping triggers, and zero environment coupling.
 
 ## Why This Repo Exists
 
@@ -94,8 +115,14 @@ Keep each Skill directory intact. Do not copy only `SKILL.md`, because some Skil
     ├── engineering-docs/
     ├── outside-view/
     ├── sansi-erhouxing/
+    ├── reverse-teardown/
+    ├── steelman-choice/
+    ├── claim-check/
+    ├── argument-reading/
+    ├── root-rethink/
+    ├── minimum-experiment/
     ├── video-reader/
-    └── png-compress-skill/
+    └── png-compress/
 ```
 
 Each Skill directory uses `SKILL.md` as its entry point; some also ship `references/`, `scripts/`, or `assets/`.

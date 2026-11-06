@@ -1,0 +1,73 @@
+{
+  "topic": "example-all-ten",
+  "one_liner": "对抗样例：十维全 10 分，验证天花板不溢出 verdict",
+  "upstream": null,
+  "profile": {
+    "form": "示例",
+    "endpoint": "示例",
+    "market": "未调研",
+    "monetization": "未调研",
+    "competitors": []
+  },
+  "foundation": {
+    "pass": true,
+    "reason": "假设：命题成立，只测打分上限"
+  },
+  "diagnosis": "预期：composite=10.0、verdict=validate，且不产生暗箱加分",
+  "rebuttal": {
+    "claim": "",
+    "blindspot": ""
+  },
+  "dimensions": [
+    {
+      "name": "痛点强度",
+      "score": 10.0,
+      "evidence": "假设：全 10 分对抗样例，无真实市场证据"
+    },
+    {
+      "name": "离钱近",
+      "score": 10.0,
+      "evidence": "假设：全 10 分对抗样例，无真实市场证据"
+    },
+    {
+      "name": "单位经济健康度",
+      "score": 10.0,
+      "evidence": "假设：全 10 分对抗样例，无真实市场证据"
+    },
+    {
+      "name": "一人可交付",
+      "score": 10.0,
+      "evidence": "假设：全 10 分对抗样例，无真实市场证据"
+    },
+    {
+      "name": "自然分发",
+      "score": 10.0,
+      "evidence": "假设：全 10 分对抗样例，无真实市场证据"
+    },
+    {
+      "name": "护城河",
+      "score": 10.0,
+      "evidence": "假设：全 10 分对抗样例，无真实市场证据"
+    },
+    {
+      "name": "市场趋势",
+      "score": 10.0,
+      "evidence": "假设：全 10 分对抗样例，无真实市场证据"
+    },
+    {
+      "name": "可验证性",
+      "score": 10.0,
+      "evidence": "假设：全 10 分对抗样例，无真实市场证据"
+    },
+    {
+      "name": "时机(Why now)",
+      "score": 10.0,
+      "evidence": "假设：全 10 分对抗样例，无真实市场证据"
+    },
+    {
+      "name": "AI-native契合度",
+      "score": 10.0,
+      "evidence": "假设：全 10 分对抗样例，无真实市场证据"
+    }
+  ]
+}

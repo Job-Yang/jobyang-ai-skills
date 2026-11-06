@@ -1,0 +1,37 @@
+[
+  {
+    "title": "主动式个人 AI 助手扎堆（Poke 评测、PPLX 邮件日历助手）",
+    "direction": "AI 主动代处理邮件日历事务，主动助手直达工作流",
+    "evidence_url": "https://www.producthunt.com/p/poke-by-interaction-co/a-week-with-poke-review-a-promising-start-for-a-proactive-ai-assistant",
+    "evidence_date": "2026-10-16",
+    "payment_signal": "付费用户已在订阅主动助手，但供给扎堆内卷"
+  },
+  {
+    "title": "AI 建站写代码工具烧积分不出活（MGX/Atoms 差评）",
+    "direction": "agent 产出确认层近亲：AI 建站工具烧积分不出活，产出要确认才能信",
+    "evidence_url": "https://www.producthunt.com/products/metagenius-ai-ai-seo-for-shopify/metagenius-ai-ai-seo-for-shopify",
+    "evidence_date": "2026-10-14",
+    "payment_signal": "付费差评：两天烧 3300 万积分没做出能用的网站"
+  },
+  {
+    "title": "戒烟社交问责（iwishtherewas 许愿墙）",
+    "direction": "戒烟 accountability 社交问责",
+    "evidence_url": "https://iwishtherewas.xyz/",
+    "evidence_date": "2026-02-15",
+    "payment_signal": "许愿原话：愿付每月 10-50 美元"
+  },
+  {
+    "title": "自出版作者多平台版税聚合",
+    "direction": "自出版版税聚合 royalty aggregation",
+    "evidence_url": "https://iwishtherewas.xyz/",
+    "evidence_date": "2026-02-20",
+    "payment_signal": "许愿原话：愿付每月 10-50 美元"
+  },
+  {
+    "title": "笔记囤着变不成行动（HN Ask HN）",
+    "direction": "second brain 笔记转行动",
+    "evidence_url": "https://hn.edgecompute.app/item/46826277",
+    "evidence_date": "2026-01-31",
+    "payment_signal": "讨论帖，无付费信号"
+  }
+]

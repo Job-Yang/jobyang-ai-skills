@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="600" viewBox="0 0 880 600" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Source Han Sans SC, sans-serif">
+  <rect width="880" height="600" fill="#ffffff"/>
+  <text x="40" y="34" font-size="17" font-weight="600" fill="#2b2b2b">talk-smith 是装配者，不是万能工厂</text>
+  <text x="40" y="54" font-size="12" fill="#666666">青绿＝主流水线　琥珀＝两次基准校准　灰虚＝不接的活</text>
+
+  <!-- upstream feynman -->
+  <rect x="40" y="96" width="200" height="62" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="1.8"/>
+  <text x="56" y="120" font-size="13" font-weight="600" fill="#1f5f58">上游：feynman-explainer</text>
+  <text x="56" y="140" font-size="11.5" fill="#333333">调研仓库/源码/论文的结论</text>
+  <text x="56" y="155" font-size="11" fill="#555555">先读它，成稿时只补新缺口</text>
+
+  <!-- five steps -->
+  <g>
+    <rect x="40" y="210" width="150" height="62" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+    <text x="56" y="234" font-size="12.5" font-weight="600" fill="#1f5f58">① 选题访谈</text>
+    <text x="56" y="253" font-size="11" fill="#333333">讲给谁、一句话主线</text>
+    <text x="56" y="267" font-size="11" fill="#333333">article/talk/slides</text>
+
+    <rect x="210" y="210" width="150" height="62" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+    <text x="226" y="234" font-size="12.5" font-weight="600" fill="#1f5f58">② 技术核实</text>
+    <text x="226" y="253" font-size="11" fill="#333333">术语原词、数字带出处</text>
+    <text x="226" y="267" font-size="11" fill="#333333">不过核实不进叙事</text>
+
+    <rect x="380" y="210" width="150" height="62" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+    <text x="396" y="234" font-size="12.5" font-weight="600" fill="#1f5f58">③ 叙事弧大纲</text>
+    <text x="396" y="253" font-size="11" fill="#333333">八拍推进链，先给大纲</text>
+    <text x="396" y="267" font-size="11" fill="#333333">用户确认再填正文</text>
+
+    <rect x="550" y="210" width="150" height="62" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+    <text x="566" y="234" font-size="12.5" font-weight="600" fill="#1f5f58">④ 分态产出</text>
+    <text x="566" y="253" font-size="11" fill="#333333">中长文 / talk / slides</text>
+    <text x="566" y="267" font-size="11" fill="#333333">同一内核三态互转</text>
+
+    <rect x="720" y="210" width="120" height="62" rx="9" fill="#2a9d8f" stroke="#1f5f58" stroke-width="2"/>
+    <text x="736" y="234" font-size="12.5" font-weight="600" fill="#ffffff">⑤ 质检硬闸</text>
+    <text x="736" y="253" font-size="11" fill="#dff3f0">五维评分&lt;线重写</text>
+    <text x="736" y="267" font-size="11" fill="#dff3f0">talk_check.py 真跑</text>
+  </g>
+  <g stroke="#555555" stroke-width="1.5" fill="#555555">
+    <line x1="190" y1="241" x2="208" y2="241"/><polygon points="210,241 203,237 203,245"/>
+    <line x1="360" y1="241" x2="378" y2="241"/><polygon points="380,241 373,237 373,245"/>
+    <line x1="530" y1="241" x2="548" y2="241"/><polygon points="550,241 543,237 543,245"/>
+    <line x1="700" y1="241" x2="718" y2="241"/><polygon points="720,241 713,237 713,245"/>
+  </g>
+  <g stroke="#2a9d8f" stroke-width="1.4" fill="#2a9d8f">
+    <line x1="140" y1="158" x2="140" y2="208"/><polygon points="140,210 136,203 144,203"/>
+  </g>
+
+  <!-- side callouts -->
+  <rect x="40" y="310" width="200" height="52" rx="8" fill="#ffffff" stroke="#2a9d8f" stroke-width="1.4"/>
+  <text x="56" y="331" font-size="12" font-weight="600" fill="#1f5f58">content-infographic</text>
+  <text x="56" y="349" font-size="11" fill="#333333">传播型封面/对比图，帮读者记</text>
+
+  <rect x="250" y="310" width="210" height="52" rx="8" fill="#ffffff" stroke="#2a9d8f" stroke-width="1.4"/>
+  <text x="266" y="331" font-size="12" font-weight="600" fill="#1f5f58">engineering-docs</text>
+  <text x="266" y="349" font-size="11" fill="#333333">精确架构/时序图，要评审才出</text>
+
+  <rect x="470" y="310" width="190" height="52" rx="8" fill="#ffffff" stroke="#2a9d8f" stroke-width="1.4"/>
+  <text x="486" y="331" font-size="12" font-weight="600" fill="#1f5f58">haohao-shuohua</text>
+  <text x="486" y="349" font-size="11" fill="#333333">定稿重档去 AI 味，它说了算</text>
+
+  <rect x="670" y="310" width="170" height="52" rx="8" fill="#ffffff" stroke="#2a9d8f" stroke-width="1.4" stroke-dasharray="5 3"/>
+  <text x="686" y="331" font-size="12" font-weight="600" fill="#1f5f58">sansi-erhouxing</text>
+  <text x="686" y="349" font-size="11" fill="#333333">只在改既有稿时先过它</text>
+
+  <!-- amber calibration -->
+  <rect x="40" y="392" width="410" height="80" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.6"/>
+  <text x="60" y="416" font-size="13" font-weight="600" fill="#7a5a12">基准校准一：风格样本换过一次</text>
+  <text x="60" y="436" font-size="11.5" fill="#333333">最初拿 8 篇成稿定规（疑似含 AI 改写稿），</text>
+  <text x="60" y="454" font-size="11.5" fill="#333333">后切到作者本人多次打磨的真实分享稿，删疑似 AI 外壳规则</text>
+
+  <rect x="470" y="392" width="370" height="80" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.6"/>
+  <text x="490" y="416" font-size="13" font-weight="600" fill="#7a5a12">基准校准二：裁决轴换过一次</text>
+  <text x="490" y="436" font-size="11.5" fill="#333333">从「对内/对外」改为「要不要面向读者做</text>
+  <text x="490" y="454" font-size="11.5" fill="#333333">有叙事、有人味的传播」——对内 talk 也归它</text>
+
+  <!-- gray dashed: not taken -->
+  <rect x="40" y="496" width="800" height="56" rx="9" fill="#f4f5f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="60" y="520" font-size="12" fill="#5f6368">不接的活：短观点硬文（cuihuo）、面向未来的畅想（tangshan-style）、要评审拍板的 RFC（engineering-docs）、</text>
+  <text x="60" y="540" font-size="12" fill="#5f6368">只想自己搞懂的调研（feynman）、三句话能讲清的答疑——触发词撞车时按传播意图裁决，不靠「对内/对外」。</text>
+</svg>

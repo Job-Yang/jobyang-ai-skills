@@ -1,0 +1,24 @@
+{
+  "topic": "example-dark-horse",
+  "one_liner": "边界样例：机械分未到线（5.0）但申辩有形状，必须 dark_horse=true",
+  "upstream": null,
+  "profile": {"form": "示例", "endpoint": "示例", "market": "未调研", "monetization": "未调研", "competitors": []},
+  "foundation": {"pass": true, "reason": "假设：命题无逻辑硬伤，只是各维证据都还偏弱"},
+  "dimensions": [
+    {"name": "痛点强度", "score": 5.0, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "离钱近", "score": 5.0, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "单位经济健康度", "score": 5.0, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "一人可交付", "score": 5.0, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "自然分发", "score": 5.0, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "护城河", "score": 5.0, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "市场趋势", "score": 5.0, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "可验证性", "score": 5.0, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "时机(Why now)", "score": 5.0, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "AI-native契合度", "score": 5.0, "evidence": "假设：占位验证用，无真实市场证据"}
+  ],
+  "diagnosis": "预期输出：composite=5.0、verdict=refine、dark_horse=true",
+  "rebuttal": {
+    "claim": "假设：竞品都在做通用工具，这个细分人群的抱怨还没人接住，落地页两周内可测出真实点击",
+    "blindspot": "假设：别人没看到是因为人群分散在小众论坛，社媒监听工具抓不到"
+  }
+}

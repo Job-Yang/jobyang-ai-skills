@@ -14,6 +14,10 @@ compare_variants.py — 把模型自由渲染的多个 HTML 变体,并排装订�
   python3 compare_variants.py a.html b.html c.html --labels "克制工程感,温暖清爽,极简禅意" -o compare.html
   # 或直接读目录下所有 *.html(排除自己的输出)
   python3 compare_variants.py --dir ./variants -o compare.html
+
+注意:对比页必须和各变体在同一目录(iframe 用相对文件名引用)。
+变体与输出不同目录时默认拒绝输出(截图时 iframe 会全部空白);
+确认知道后果时加 --allow-cross-dir 强制继续。
 """
 import argparse
 import glob
@@ -64,6 +68,8 @@ def main():
     ap.add_argument("--dir", help="改为读取该目录下所有 *.html(排除输出文件)")
     ap.add_argument("--labels", help="逗号分隔的标签,顺序对应各变体;省略则用文件名")
     ap.add_argument("-o", "--out", default="compare.html", help="输出对比页路径")
+    ap.add_argument("--allow-cross-dir", action="store_true",
+                    help="允许变体与输出不在同一目录(此时 iframe 相对引用会加载不到,仅用于知道后果的场景)")
     args = ap.parse_args()
 
     paths = args.variants
@@ -88,12 +94,15 @@ def main():
         label = labels[i] if labels else os.path.splitext(os.path.basename(p))[0]
         items.append((label, os.path.abspath(p)))
 
-    # 对比页必须和各变体 html 放在同一目录(iframe 用相对文件名),这里做个校验提醒
+    # 对比页必须和各变体 html 放在同一目录(iframe 用相对文件名),跨目录默认拒绝输出
     out_dir = os.path.dirname(os.path.abspath(args.out))
-    for label, p in items:
-        if os.path.dirname(p) != out_dir:
-            print(f"⚠️ 提醒:变体 {p} 与输出目录 {out_dir} 不同目录,"
-                  f"iframe 可能加载不到。建议把变体和 compare.html 放同一目录。")
+    cross_dir = [p for label, p in items if os.path.dirname(p) != out_dir]
+    if cross_dir and not args.allow_cross_dir:
+        ap.error(
+            "变体与输出不在同一目录,iframe 相对引用会加载不到,已拒绝输出:\n  "
+            + "\n  ".join(cross_dir)
+            + f"\n输出目录:{out_dir}\n请把变体和 compare.html 放同一目录,或确认后加 --allow-cross-dir。"
+        )
 
     html = build(items)
     with open(args.out, "w", encoding="utf-8") as f:

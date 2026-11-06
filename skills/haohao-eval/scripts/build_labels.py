@@ -1,13 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""从 50 条人工评语提炼校准标签:每例每工具的 保真档(绿/黄/橙/红)+通顺档(顺/硬/不通顺)+winner。
+"""从老羊 50 条评语提炼校准标签:每例每工具的 保真档(绿/黄/橙/红)+通顺档(顺/硬/不通顺)+winner。
 保真判据:红=编数字/承诺/场景/人设/改反(臆造);橙=丢信息/局部曲解/过度压缩/术语通俗化;
 黄=轻微程度/语气/用词偏差;绿=忠实只顺化。
 通顺判据:不通顺=评语明说"读着费劲/别扭/绕/不通顺";硬=破折号硬解释/有点别扭;顺=默认。
-winner:评语点名的更好者;'都不行+X最差'取非最差者为代表;真齐平记'平'。"""
+winner:评语点名的更好者;'都不行+X最差'取非最差者为代表;真齐平记'平'。
+
+注意:这是一次性离线构建脚本,不进每日召回流程(loop.py 从不调用它),重跑只在更新
+cases50.json 后做。输出默认写到本包 data/labels.json(相对本脚本定位,可移植),
+可用环境变量 HAOHAO_EVAL_LABELS_OUT 或 --out 参数覆盖。
+"""
 import argparse
 import json
 import os
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_OUT = os.path.join(os.path.dirname(HERE), "data", "labels.json")
 
 # (winner, 我们f, 我们l, 工具1f, 工具1l, 工具2f, 工具2l)
 T = {
@@ -63,7 +72,12 @@ T = {
  50:("我们","绿","顺","橙","硬","红","顺"),
 }
 
-def build_labels():
+def main():
+    ap = argparse.ArgumentParser(description="离线重建 labels.json(不进每日召回流程)")
+    ap.add_argument("--out", default=os.environ.get("HAOHAO_EVAL_LABELS_OUT", DEFAULT_OUT),
+                    help=f"输出路径,默认 {DEFAULT_OUT};也可用环境变量 HAOHAO_EVAL_LABELS_OUT 指定")
+    a = ap.parse_args()
+
     out = {}
     for cid, v in T.items():
         winner, uf, ul, af, al, bf, bl = v
@@ -73,21 +87,11 @@ def build_labels():
             "工具1": {"f": af, "l": al},
             "工具2": {"f": bf, "l": bl},
         }
-    return out
-
-
-def main():
-    default = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "labels.json")
-    parser = argparse.ArgumentParser(description="从历史人工评语生成校准标签")
-    parser.add_argument("--output", default=default, help="输出 JSON，默认写入技能 data/labels.json")
-    args = parser.parse_args()
-
-    out = build_labels()
-    os.makedirs(os.path.dirname(os.path.abspath(args.output)), exist_ok=True)
-    with open(args.output, "w", encoding="utf-8") as f:
+    os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
+    with open(a.out, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=1)
-    print(f"labels.json written: {len(out)} cases -> {os.path.abspath(args.output)}")
+    print(f"labels.json written: {a.out} ({len(out)} cases)")
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

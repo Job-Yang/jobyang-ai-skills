@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 1120" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif">
+  <rect width="640" height="1120" fill="#ffffff"/>
+  <text x="320" y="36" text-anchor="middle" font-size="20" font-weight="600" fill="#2b2b2b">本地 PNG 压缩流水线</text>
+
+  <!-- 开工前否掉的三条路 -->
+  <text x="320" y="72" text-anchor="middle" font-size="12" fill="#9aa0a6">开工前否掉的三条路</text>
+  <g font-size="12" fill="#6b7280">
+    <rect x="20" y="84" width="186" height="58" rx="8" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="113" y="108" text-anchor="middle" font-weight="600">在线网页逐张上传</text>
+    <text x="113" y="127" text-anchor="middle" font-size="11">整工程批量时太慢</text>
+
+    <rect x="227" y="84" width="186" height="58" rx="8" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="320" y="108" text-anchor="middle" font-weight="600">在线 API</text>
+    <text x="320" y="127" text-anchor="middle" font-size="11">有额度费用，图片离机</text>
+
+    <rect x="434" y="84" width="186" height="58" rx="8" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="527" y="108" text-anchor="middle" font-weight="600">逆向复刻私有算法</text>
+    <text x="527" y="127" text-anchor="middle" font-size="11">不做，只用公开路线</text>
+  </g>
+
+  <!-- 主路径竖线 -->
+  <g font-size="14" fill="#0b3b36">
+    <rect x="170" y="180" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="208" text-anchor="middle" font-weight="600">扫描工程目录</text>
+    <text x="320" y="228" text-anchor="middle" font-size="11.5" fill="#3d6b66">只收 PNG，排除构建目录</text>
+
+    <rect x="170" y="300" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="328" text-anchor="middle" font-weight="600">pngquant 有损量化</text>
+    <text x="320" y="348" text-anchor="middle" font-size="11.5" fill="#3d6b66">24/32 位 → 8 位索引色</text>
+
+    <rect x="170" y="420" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="448" text-anchor="middle" font-weight="600">oxipng 无损收尾</text>
+    <text x="320" y="468" text-anchor="middle" font-size="11.5" fill="#3d6b66">重压 DEFLATE、清元数据</text>
+  </g>
+
+  <!-- 门禁菱形 -->
+  <polygon points="320,530 430,585 320,640 210,585" fill="#fdf1dd" stroke="#e8a33d" stroke-width="2"/>
+  <text x="320" y="581" text-anchor="middle" font-size="14" font-weight="600" fill="#7a5410">质量与硬门禁</text>
+  <text x="320" y="600" text-anchor="middle" font-size="11.5" fill="#8a6420">解码 / 尺寸 / alpha / PSNR</text>
+
+  <g font-size="14" fill="#0b3b36">
+    <rect x="170" y="680" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="708" text-anchor="middle" font-weight="600">通过则写回</text>
+    <text x="320" y="728" text-anchor="middle" font-size="11.5" fill="#3d6b66">原地覆盖或输出副本</text>
+  </g>
+
+  <!-- 主路径箭头 -->
+  <g stroke="#0f9d8f" stroke-width="2.2" fill="#0f9d8f">
+    <line x1="320" y1="244" x2="320" y2="290"/><polygon points="320,300 315,290 325,290"/>
+    <line x1="320" y1="364" x2="320" y2="410"/><polygon points="320,420 315,410 325,410"/>
+    <line x1="320" y1="484" x2="320" y2="520"/><polygon points="320,530 315,520 325,520"/>
+    <line x1="320" y1="640" x2="320" y2="670"/><polygon points="320,680 315,670 325,670"/>
+  </g>
+
+  <!-- 缓存侧支 -->
+  <g font-size="12.5" fill="#0b3b36">
+    <rect x="24" y="302" width="128" height="60" rx="30" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.8"/>
+    <text x="88" y="328" text-anchor="middle" font-weight="600">内容 hash 缓存</text>
+    <text x="88" y="347" text-anchor="middle" font-size="11" fill="#3d6b66">压过即跳过</text>
+    <line x1="152" y1="332" x2="164" y2="332" stroke="#0f9d8f" stroke-width="1.8" stroke-dasharray="3 3"/>
+  </g>
+
+  <!-- 回退侧支（琥珀） -->
+  <g font-size="12.5" fill="#7a5410">
+    <line x1="430" y1="585" x2="470" y2="585" stroke="#e8a33d" stroke-width="2"/>
+    <polygon points="478,585 469,580 469,590" fill="#e8a33d"/>
+    <rect x="478" y="552" width="142" height="66" rx="8" fill="#fdf1dd" stroke="#e8a33d" stroke-width="2"/>
+    <text x="549" y="578" text-anchor="middle" font-weight="600">不过 / 变大</text>
+    <text x="549" y="597" text-anchor="middle" font-size="11">保留原图，记缓存</text>
+  </g>
+
+  <!-- 0.2.0 护栏 -->
+  <g font-size="12.5" fill="#7a5410">
+    <rect x="60" y="790" width="520" height="96" rx="8" fill="#fdf1dd" stroke="#e8a33d" stroke-width="2"/>
+    <text x="320" y="816" text-anchor="middle" font-weight="600">0.2.0 补的护栏：非 git 目录原地覆盖默认拒绝</text>
+    <text x="320" y="838" text-anchor="middle" font-size="11.5">先 dry-run 预估改动数量，再选：提交备份 / 显式放行 / 输出副本</text>
+    <text x="320" y="859" text-anchor="middle" font-size="11.5">退出码契约：0 成功（含回退） / 1 策略拒绝 / 2 真失败</text>
+    <text x="320" y="879" text-anchor="middle" font-size="11.5">回归覆盖：护栏、md5、坏缓存、嵌套排除、APNG 保护</text>
+  </g>
+
+  <!-- APNG -->
+  <g font-size="12.5" fill="#0b3b36">
+    <polygon points="100,930 160,930 176,962 160,994 100,994 84,962" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.8"/>
+    <text x="130" y="958" text-anchor="middle" font-weight="600">APNG</text>
+    <text x="130" y="976" text-anchor="middle" font-size="11">直接保留</text>
+  </g>
+
+  <!-- 图例 -->
+  <g font-size="12" fill="#4b5563">
+    <rect x="60" y="1050" width="16" height="16" rx="3" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.5"/>
+    <text x="82" y="1063">主路径 / 能力</text>
+    <rect x="200" y="1050" width="16" height="16" rx="3" fill="#fdf1dd" stroke="#e8a33d" stroke-width="1.5"/>
+    <text x="222" y="1063">取舍与风险分支</text>
+    <rect x="350" y="1050" width="16" height="16" rx="3" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="372" y="1063">开工前否掉的路线</text>
+  </g>
+</svg>

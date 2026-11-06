@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="1240" viewBox="0 0 880 1240" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+  <rect width="880" height="1240" fill="#ffffff"/>
+  <text x="40" y="52" font-size="26" font-weight="600" fill="#262b33">从一句需求到可验收的 PRD 与计划</text>
+  <text x="40" y="86" font-size="15" fill="#5b6470">验收分档、编号连续、弱项四件套，均来自 A/B 盲评的发现与修复记录</text>
+
+  <rect x="40" y="120" width="800" height="72" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="150" font-size="18" font-weight="600" fill="#0b6b55">输入：直接描述 / 附件 / 评分卡</text>
+  <text x="64" y="176" font-size="14.5" fill="#0b6b55">先提取人群、场景、频率、资源限制，把事实、确认与假设分开</text>
+
+  <line x1="440" y1="192" x2="440" y2="224" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="224" width="800" height="72" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="254" font-size="18" font-weight="600" fill="#0b6b55">界定问题 → 定 MVP</text>
+  <text x="64" y="280" font-size="14.5" fill="#0b6b55">功能编号 F1…Fn 必须连续，断号就地说明（盲评跳号无说明被扣分后立的规矩）</text>
+
+  <line x1="440" y1="296" x2="440" y2="328" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="328" width="800" height="72" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="358" font-size="18" font-weight="600" fill="#0b6b55">组织 PRD（产品层）</text>
+  <text x="64" y="384" font-size="14.5" fill="#0b6b55">写实体与旅程，不写存储选型、接口契约；缺依据的数字标待测目标</text>
+
+  <line x1="440" y1="400" x2="440" y2="432" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="432" width="800" height="72" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="462" font-size="18" font-weight="600" fill="#0b6b55">整理执行计划</text>
+  <text x="64" y="488" font-size="14.5" fill="#0b6b55">里程碑、区间估算（宽度超一倍要说明）、置信度三档、交付物与回退范围</text>
+
+  <text x="40" y="556" font-size="19" font-weight="600" fill="#262b33">验收怎么写才不糊弄（可靠度分档）</text>
+
+  <rect x="40" y="572" width="800" height="96" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="2"/>
+  <text x="64" y="604" font-size="17" font-weight="600" fill="#0b6b55">第一档 · 可注入 / 可回放的系统行为用例 + 频次上下限</text>
+  <text x="64" y="632" font-size="14" fill="#0b6b55">例：注入 20 个应抑制事件 0 触发；误触发 ≤ 3 次 / 设备 / 天</text>
+  <text x="64" y="654" font-size="14" fill="#0b6b55">用户行为指标降为第二档</text>
+
+  <rect x="40" y="684" width="800" height="80" rx="12" fill="#fbf0dd" stroke="#c97a16" stroke-width="1.8"/>
+  <text x="64" y="716" font-size="17" font-weight="600" fill="#9a5a0e">反例 · 自证型内部指标</text>
+  <text x="64" y="744" font-size="14" fill="#9a5a0e">「日志留存完整率 = 100%」只证明系统记了账；连着用户可感知后果才算数</text>
+
+  <rect x="40" y="784" width="800" height="96" rx="12" fill="#fbf0dd" stroke="#c97a16" stroke-width="1.8"/>
+  <text x="64" y="816" font-size="17" font-weight="600" fill="#9a5a0e">弱项验证四件套（上游评分卡点名的弱项必给）</text>
+  <text x="64" y="844" font-size="14" fill="#9a5a0e">可测假设 · 证伪指标（阈值+观察周期）· 止损动作 · 最小样本量</text>
+  <text x="64" y="866" font-size="14" fill="#9a5a0e">样本数门槛代替编造行业转化率</text>
+
+  <rect x="40" y="896" width="800" height="96" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="928" font-size="17" font-weight="600" fill="#0b6b55">什么时候把技术展开交出去</text>
+  <text x="64" y="956" font-size="14" fill="#0b6b55">① 两方案取舍影响工期量级　② 系统集成 / 数据迁移 / 合规　③ 需先做技术探查</text>
+  <text x="64" y="978" font-size="14" fill="#0b6b55">只是翻译页面字段和流程步骤，留在本 PRD 内</text>
+
+  <rect x="40" y="1012" width="800" height="150" rx="12" fill="#f4f6f8" stroke="#9aa3ad" stroke-width="1.5" stroke-dasharray="8 5"/>
+  <text x="64" y="1044" font-size="16" font-weight="600" fill="#5b6470">边界与待补</text>
+  <text x="64" y="1072" font-size="14" fill="#5b6470">不替用户批准计划：完整计划不是开工授权；不擅自替换用户已定的形态。</text>
+  <text x="64" y="1096" font-size="14" fill="#5b6470">A/B 盲评的对评材料与评分表未在仓库归档，评分细节待作者补。</text>
+  <text x="64" y="1120" font-size="14" fill="#5b6470">验收分档来自盲评发现后的修复记录，不代表线上真实事故复盘。</text>
+
+  <defs>
+    <marker id="t" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0f8a6d"/></marker>
+  </defs>
+</svg>

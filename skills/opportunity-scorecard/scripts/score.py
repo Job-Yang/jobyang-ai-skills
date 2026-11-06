@@ -14,9 +14,20 @@ import datetime
 import json
 import os
 import re
+import sys
 from pathlib import Path
 
-OPC_VERSION = "0.2.2"
+# 信封 schema 版本：与冻结的 artifact_io.seal() 输出一致（opc-artifact/v1 信封格式）。
+# 本字段只代表信封结构，不代表本 kit 版本；kit 版本见 CHANGELOG.md，不进信封。
+OPC_VERSION = "0.2.0"
+
+# topic slug 正则：必须与 artifact_io.py 的 SLUG 逐字一致（小写、单词间单连字符，
+# 不允许前导/连续/尾部连字符）。artifact_io 已冻结，本正则是它的同步副本；
+# 改前先跑 tests/ 回归里的 slug 一致性用例。
+TOPIC_SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
+
+# 打分最小步长：证据驱动的判断只支持 0.5 一档，更小的小数是伪精确。
+SCORE_STEP = 0.5
 
 # 维度 → 权重，唯一事实源（对齐 scoring-rubric.md 的 10 维表）。
 # 名称用 node-specs 机器读取表里的写法，保证下游能对上。权重和 = 11.5，即综合分除数。
@@ -43,7 +54,10 @@ TIERS = [
     (0.0, "reject", "🔴 暂不建议直接投入开发"),
 ]
 
-# 明显的占位/未填标记，出现即视为"没挂证据"。
+# 占位/未填标记拦截词表：是 artifact_io.py 占位集合（"..." / "TODO" / "待补" / "—"）
+# 的超集。artifact_io 已冻结、词表较松，score.py 在入口先拦更全的一组：
+# N/A 家族（n/a、NA、N/A）、tbd、待填、xxx、无、省略号、<...>、裸横线都算没挂证据。
+# 改动本表要回头对照 artifact_io.py validate_scorecard 的占位判断，保持超集关系。
 _PLACEHOLDER = re.compile(r"^\s*(todo|tbd|待补|待填|xxx|n/?a|无|\.{2,}|…|—|-{1,}|<.*>)\s*$", re.I)
 
 
@@ -56,8 +70,8 @@ def evaluate(data):
     errors = []
 
     topic = data.get("topic")
-    if _blank(topic) or not re.fullmatch(r"[a-z0-9][a-z0-9\-]*", str(topic).strip()):
-        errors.append("topic 必填，且为小写 slug（如 watch-sedentary），跨节点保持一致")
+    if _blank(topic) or not TOPIC_SLUG.fullmatch(str(topic).strip()):
+        errors.append("topic 必填，且为小写 slug（如 watch-sedentary；不允许连续连字符），跨节点保持一致")
     one_liner = data.get("one_liner")
     if _blank(one_liner):
         errors.append("one_liner 必填：一句话说清给谁、解决什么、怎么用")
@@ -84,6 +98,11 @@ def evaluate(data):
         score = d.get("score")
         if isinstance(score, bool) or not isinstance(score, (int, float)) or not (0 <= score <= 10):
             errors.append(f"维度「{name}」分数必须是 0-10 的数字")
+            score = None
+        elif abs(score * (1 / SCORE_STEP) - round(score * (1 / SCORE_STEP))) > 1e-6:
+            errors.append(
+                f"维度「{name}」分数 {score} 必须是 {SCORE_STEP:g} 的整数倍："
+                "证据判断只支持半档，6.75 这类小数是伪精确")
             score = None
         if _blank(d.get("evidence")):
             errors.append(f"维度「{name}」没挂证据：每维必须有链接/原话/数据，无证据即不给分（回去取证）")
@@ -116,6 +135,33 @@ def evaluate(data):
     rebuttal_shaped = not _blank(claim) and not _blank(blindspot)
     dark_horse = bool(found_pass is not False and composite < 6.5 and rebuttal_shaped)
 
+    # 证据对抗自检（不阻断，只警告）：脚本无法判断证据真伪，但能抓两类结构异常——
+    #   1) 同一证据被多个维度复用（偷懒打分的典型形状）；
+    #   2) 无链接且含"内部消息/据传"这类不可验证措辞（伪造证据的风险形状）。
+    evidence_warnings = []
+    _seen = {}
+    for name, score, weight, ev in scored:
+        _seen.setdefault(ev.strip().lower(), []).append(name)
+    for ev_key, names in _seen.items():
+        if ev_key and len(names) > 1:
+            evidence_warnings.append(
+                f"同一证据被 {len(names)} 个维度复用（{'、'.join(names)}）：确认是不是一条料撑十维")
+    _unverifiable = re.compile(r"内部消息|据传|听说|不便透露|有人说|小道", re.I)
+    for name, score, weight, ev in scored:
+        if _unverifiable.search(ev) and "http" not in ev:
+            evidence_warnings.append(
+                f"维度「{name}」证据无链接且含不可验证措辞（{ev[:20]}…）：需人复核真伪")
+
+    # 复评驳回#3：全十维都建立在传闻/无链接证据上时，composite 仍按档位判
+    # （机器 verdict 字段须与冻结 artifact_io 重算一致，不能改字符串），但产生确定性后果：
+    #   evidence_lock=all_unverifiable 机器可读标志 + 卡片结论行强制带"禁止 clean 引用"警告。
+    # 判据：evidence 含 http 链接 = 可验证 real；十维全部无链接 = 证据全传闻。
+    real_evidence_count = sum(1 for _, _, _, ev in scored if "http" in ev.lower())
+    evidence_lock = "all_unverifiable" if real_evidence_count == 0 else None
+    if evidence_lock:
+        evidence_warnings.append(
+            "十维证据全部无可验证链接（传闻/假设占满）：本卡不得 clean validate/引用，先补一手证据")
+
     # 一句话诊断：LLM 给了就用；没给则从最高/最低分自动兜底。
     diagnosis = data.get("diagnosis", "").strip()
     if not diagnosis:
@@ -135,9 +181,18 @@ def evaluate(data):
         "composite_score": composite,
         "verdict": verdict,
         "tier_label": tier_label,
+        "evidence_lock": evidence_lock,
+        "real_evidence_count": real_evidence_count,
         "dark_horse": dark_horse,
         "diagnosis": diagnosis,
         "rebuttal": {"claim": claim.strip(), "blindspot": blindspot.strip(), "shaped": rebuttal_shaped},
+        "evidence_warnings": evidence_warnings,
+        # 尺子置信度：先验权重/档位/地基门/dark_horse 不是统计结论，写进结果防被当成数据。
+        "method_caveats": {
+            "weight_source": "prior_experience",
+            "statistical_significance": False,
+            "note": "权重/档位/地基门/dark_horse 均为先验经验判断，无数据集校准，非统计显著；结论靠每维锚点与证据，composite 只辅助排序。",
+        },
     }
 
 
@@ -162,8 +217,12 @@ def render(r, producer=None):
         f"composite_score: {r['composite_score']:.2f}",
         f"verdict: {r['verdict']}",
         f"dark_horse: {'true' if r['dark_horse'] else 'false'}",
-        "---",
     ]
+    # 复评驳回#3：证据全传闻时，front-matter 加机器可读 evidence_lock（extra 标量键，
+    # 冻结 validate_envelope 允许；机器 verdict 档位不变以保持与重算一致）。
+    if r.get("evidence_lock"):
+        fm.append(f"evidence_lock: {r['evidence_lock']}")
+    fm.append("---")
     lines = fm + [
         "",
         f"## 机会：{r['one_liner']}",
@@ -183,10 +242,15 @@ def render(r, producer=None):
     for name, score, weight, evidence in r["dimensions"]:
         evidence = evidence.replace("|", "&#124;").replace("\n", "<br>")
         lines.append(f"| {name} | {score:g} | {weight:.1f} | {evidence} |")
+    # 复评驳回#3：证据全传闻时，结论行强制带"禁止 clean 引用"后果（正文 tier 文案，
+    # 冻结校验只看机器 verdict/composite/dark_horse，不看正文文案）。
+    conclusion_label = r["tier_label"]
+    if r.get("evidence_lock"):
+        conclusion_label += "　⚠ 证据全传闻·不可 clean 引用（先补一手证据）"
     lines += [
         "",
         "### 综合分与结论",
-        f"- composite_score：{r['composite_score']:.2f} → {r['tier_label']}",
+        f"- composite_score：{r['composite_score']:.2f} → {conclusion_label}",
         f"- 一句话诊断：{r['diagnosis']}",
         "",
         "### 非共识逃生舱",
@@ -198,10 +262,26 @@ def render(r, producer=None):
             lines.append("- ⚑ dark_horse=true：机械分未到线但申辩有形状，**强制人肉复看**，不让尺子一票否掉。")
     else:
         lines.append("- 申辩：无")
+    lines += [
+        "",
+        "### 尺子置信度声明",
+        "- 权重/档位/地基门/dark_horse 均为先验经验判断，无数据集校准，**非统计显著**；结论靠每维锚点与证据，composite 只辅助排序。",
+        "- composite_score 两位小数仅为与交接复算对齐，人读按 0.5 一档理解。",
+    ]
+    if r.get("evidence_warnings"):
+        lines.append("- 证据警告（不阻断，需人看）：")
+        for w in r["evidence_warnings"]:
+            lines.append(f"  - {w}")
     lines.append("")
     lines.append("> 本卡是桌面评估。下一步由用户或当前编排决定；导入不代表人审放行。")
     lines.append("")
     return "\n".join(lines)
+
+
+def _rejected(msg):
+    """与 artifact_io.py 一致的错误信封：JSON 打到 stderr，exit 1。"""
+    print(json.dumps({"status": "rejected", "error": msg}, ensure_ascii=False), file=sys.stderr)
+    return 1
 
 
 def main():
@@ -213,8 +293,18 @@ def main():
     parser.add_argument("--producer", help="宿主或调用方标识")
     args = parser.parse_args()
 
-    raw = Path(args.input).read_text(encoding="utf-8")
-    result = evaluate(json.loads(raw))
+    # 契约统一：输入缺维度/非法/JSON 坏掉时，不抛裸 traceback，
+    # 输出与 artifact_io.py 相同形状的 JSON 错误信封到 stderr 并 exit 1。
+    try:
+        raw = Path(args.input).read_text(encoding="utf-8")
+        result = evaluate(json.loads(raw))
+    except OSError as e:
+        return _rejected(f"读取输入失败：{args.input}: {e.strerror or e}")
+    except json.JSONDecodeError as e:
+        return _rejected(f"评分 JSON 不是合法 JSON：{e}")
+    except ValueError as e:
+        return _rejected(str(e))
+
     md = render(result, args.producer)
     if args.out:
         dest = Path(args.out).expanduser()
@@ -249,4 +339,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -9,7 +9,7 @@
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
-      <dc:title>Matplotlib v3.9.4, https://matplotlib.org/</dc:title>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
      </cc:Agent>
     </dc:creator>
    </cc:Work>
@@ -29,40 +29,40 @@ z
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path d="M 190.270092 301.697759
-C 209.504427 295.448142 225.889211 282.53142 236.456312 265.287472
-C 247.023414 248.043523 251.093759 227.580509 247.929998 207.605323
-C 244.766237 187.630137 234.57169 169.426465 219.193105 156.29191
-C 203.81452 143.157355 184.240176 135.936 164.015996 135.936
+    <path d="M 190.270084 301.697762
+C 209.504423 295.448146 225.889203 282.531427 236.456308 265.287478
+C 247.023414 248.043529 251.09376 227.580516 247.930001 207.605328
+C 244.766242 187.63014 234.571694 169.426464 219.193106 156.291909
+C 203.814518 143.157354 184.240181 135.936 164.016 135.936
 L 164.016 220.896
 z
-" style="fill: #eae2fe; stroke: #707680; stroke-width: 0.75; stroke-linejoin: miter"/>
+" style="fill: #2a78d6; stroke: #5f6670; stroke-width: 0.75; stroke-linejoin: miter"/>
    </g>
    <g id="patch_3">
-    <path d="M 79.056 220.895993
-C 79.056 234.302914 82.229469 247.521368 88.31608 259.467022
-C 94.402692 271.412676 103.231339 281.749694 114.077766 289.630085
-C 124.924193 297.510475 137.483468 302.712698 150.725328 304.810003
-C 163.967188 306.907309 177.519353 305.840727 190.270092 301.697759
+    <path d="M 79.056 220.896
+C 79.056 234.302918 82.229472 247.521381 88.316086 259.467033
+C 94.402699 271.412685 103.23134 281.749695 114.077765 289.630084
+C 124.92419 297.510473 137.483471 302.712697 150.725328 304.810001
+C 163.967185 306.907306 177.519347 305.840727 190.270084 301.697762
 L 164.016 220.896
 z
-" style="fill: #dff5e5; stroke: #707680; stroke-width: 0.75; stroke-linejoin: miter"/>
+" style="fill: #eb6834; stroke: #5f6670; stroke-width: 0.75; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
-    <path d="M 137.761905 140.094241
-C 120.700904 145.637697 105.826203 156.444808 95.281921 170.957761
-C 84.737638 185.470714 79.056 202.956993 79.056 220.895993
+    <path d="M 137.761916 140.094238
+C 120.700911 145.637695 105.826197 156.444807 95.281916 170.957765
+C 84.737635 185.470723 79.056 202.956998 79.056 220.896
 L 164.016 220.896
 z
-" style="fill: #fef1ce; stroke: #707680; stroke-width: 0.75; stroke-linejoin: miter"/>
+" style="fill: #1baf7a; stroke: #5f6670; stroke-width: 0.75; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
-    <path d="M 164.016001 135.936
-C 159.565219 135.936 155.12131 136.285746 150.725324 136.982002
-C 146.329339 137.678258 141.994851 138.718871 137.761905 140.094241
+    <path d="M 164.016 135.936
+C 159.565219 135.936 155.121312 136.285743 150.725328 136.981999
+C 146.329344 137.678254 141.99486 138.718872 137.761916 140.094238
 L 164.016 220.896
 z
-" style="fill: #f0f4fc; stroke: #707680; stroke-width: 0.75; stroke-linejoin: miter"/>
+" style="fill: #eda100; stroke: #5f6670; stroke-width: 0.75; stroke-linejoin: miter"/>
    </g>
    <g id="matplotlib.axis_1"/>
    <g id="matplotlib.axis_2"/>
@@ -73,7 +73,7 @@ L 328.032 136.7856
 L 328.032 127.0152
 L 318.24 127.0152
 z
-" style="fill: #eae2fe; stroke: #7456b2; stroke-linejoin: miter"/>
+" style="fill: #2a78d6; stroke: #2a78d6; stroke-linejoin: miter"/>
   </g>
   <g id="patch_7">
    <path d="M 318.24 168.2208
@@ -81,7 +81,7 @@ L 328.032 168.2208
 L 328.032 158.4504
 L 318.24 158.4504
 z
-" style="fill: #dff5e5; stroke: #367747; stroke-linejoin: miter"/>
+" style="fill: #eb6834; stroke: #eb6834; stroke-linejoin: miter"/>
   </g>
   <g id="patch_8">
    <path d="M 318.24 199.656
@@ -89,7 +89,7 @@ L 328.032 199.656
 L 328.032 189.8856
 L 318.24 189.8856
 z
-" style="fill: #fef1ce; stroke: #896b21; stroke-linejoin: miter"/>
+" style="fill: #1baf7a; stroke: #1baf7a; stroke-linejoin: miter"/>
   </g>
   <g id="patch_9">
    <path d="M 318.24 231.0912
@@ -97,38 +97,38 @@ L 328.032 231.0912
 L 328.032 221.3208
 L 318.24 221.3208
 z
-" style="fill: #f0f4fc; stroke: #4063a8; stroke-linejoin: miter"/>
+" style="fill: #eda100; stroke: #eda100; stroke-linejoin: miter"/>
   </g>
   <g id="text_1">
-   <text style="fill: #646a73; font: 10px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="22.0896" transform="rotate(-0 23.0112 22.0896)">饼图</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="22.0896" transform="rotate(-0 23.0112 22.0896)">饼图</text>
   </g>
   <g id="text_2">
-   <text style="fill: #1f2329; font: 700 18px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="52.2504" transform="rotate(-0 23.0112 52.2504)">本月请求来自哪些入口</text>
+   <text style="font-weight: 700; font-size: 18px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #1a1b1c" x="23.0112" y="52.2504" transform="rotate(-0 23.0112 52.2504)">本月请求来自哪些入口</text>
   </g>
   <g id="text_3">
-   <text style="fill: #646a73; font: 10px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="75.1896" transform="rotate(-0 23.0112 75.1896)">同一月份 · 四类入口互斥且覆盖全部请求</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="75.1896" transform="rotate(-0 23.0112 75.1896)">同一月份 · 四类入口互斥且覆盖全部请求</text>
   </g>
   <g id="text_4">
-   <text style="fill: #646a73; font: 9px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="386.568" transform="rotate(-0 23.0112 386.568)">数量单位为万次；比例分母为四类请求总量。</text>
+   <text style="font-size: 9px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="386.568" transform="rotate(-0 23.0112 386.568)">数量单位为万次；比例分母为四类请求总量。</text>
   </g>
   <g id="text_5">
-   <text style="fill: #646a73; font: 8.5px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="412.056" transform="rotate(-0 23.0112 412.056)">合成示例 · document-pastel</text>
+   <text style="font-size: 8.5px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="412.056" transform="rotate(-0 23.0112 412.056)">合成示例 · document-neutral</text>
   </g>
   <g id="text_6">
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 128.980031)">工作台  45</text>
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 139.561594)">45.0%</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; fill: #1a1b1c" transform="translate(335.8656 129.525012)">工作台  45</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; fill: #1a1b1c" transform="translate(335.8656 140.223254)">45.0%</text>
   </g>
   <g id="text_7">
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 160.415231)">移动端  30</text>
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 170.996794)">30.0%</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; fill: #1a1b1c" transform="translate(335.8656 160.918805)">移动端  30</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; fill: #1a1b1c" transform="translate(335.8656 171.617048)">30.0%</text>
   </g>
   <g id="text_8">
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 191.850431)">开放接口  20</text>
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 202.431994)">20.0%</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; fill: #1a1b1c" transform="translate(335.8656 192.368849)">开放接口  20</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; fill: #1a1b1c" transform="translate(335.8656 203.067091)">20.0%</text>
   </g>
   <g id="text_9">
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 223.285631)">其他  5</text>
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 233.867194)">5.0%</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; fill: #1a1b1c" transform="translate(335.8656 223.815768)">其他  5</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; fill: #1a1b1c" transform="translate(335.8656 234.51401)">5.0%</text>
   </g>
  </g>
 </svg>

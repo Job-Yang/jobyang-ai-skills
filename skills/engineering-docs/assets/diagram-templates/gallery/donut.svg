@@ -9,7 +9,7 @@
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
-      <dc:title>Matplotlib v3.9.4, https://matplotlib.org/</dc:title>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
      </cc:Agent>
     </dc:creator>
    </cc:Work>
@@ -29,128 +29,124 @@ z
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path d="M 80.560872 236.815896
-C 83.581549 252.650856 91.047572 267.303768 102.082811 279.055109
-C 113.11805 290.806449 127.273256 299.177816 142.887297 303.186821
-C 158.501339 307.195826 174.938577 306.679266 190.270082 301.697764
-C 205.601587 296.716256 219.203213 287.472603 229.478805 275.051547
-C 239.754396 262.630492 246.285633 247.537699 248.306067 231.544315
-C 250.326501 215.550932 247.753877 199.308039 240.890102 184.721777
-C 234.026327 170.135512 223.150817 157.799684 209.53983 149.161894
-C 195.928843 140.524105 180.136494 135.936 164.015996 135.936
-L 164.015998 166.5216
-C 174.333116 166.5216 184.440219 169.457987 193.151251 174.986172
-C 201.862283 180.514357 208.822609 188.409288 213.215425 197.744497
-C 217.608241 207.079705 219.25472 217.475156 217.961643 227.710922
-C 216.668565 237.946687 212.488574 247.606075 205.912195 255.55555
-C 199.335816 263.505026 190.630776 269.420964 180.818612 272.609129
-C 171.006449 275.79729 160.486617 276.127889 150.49363 273.562125
-C 140.500644 270.996362 131.441312 265.638687 124.378759 258.11783
-C 117.316206 250.596972 112.537952 241.219108 110.604718 231.084733
+    <path d="M 57.63867 237.452713
+C 60.780177 253.921068 68.544851 269.160099 80.021498 281.381487
+C 91.498146 293.602875 106.219558 302.309094 122.458159 306.478458
+C 138.696761 310.647823 155.791486 310.110599 171.736247 304.929832
+C 187.681009 299.749065 201.826704 290.135661 212.513317 277.217764
+C 223.199931 264.299867 229.992417 248.603359 232.093668 231.970244
+C 234.194919 215.337129 231.519394 198.444533 224.381071 183.274823
+C 217.242747 168.105113 205.932221 155.27584 191.776798 146.292535
+C 177.621375 137.309231 161.197314 132.5376 144.432 132.5376
+L 144.432 151.976448
+C 157.508945 151.976448 170.319713 155.69832 181.360943 162.705298
+C 192.402173 169.712275 201.224383 179.719108 206.792275 191.551482
+C 212.360168 203.383856 214.447077 216.560081 212.808101 229.53391
+C 211.169125 242.50774 205.870986 254.751016 197.535428 264.826976
+C 189.199869 274.902935 178.166227 282.401391 165.729313 286.442389
+C 153.292399 290.483387 139.958513 290.902422 127.292404 287.650318
+C 114.626295 284.398213 103.143594 277.607363 94.191809 268.07468
+C 85.240024 258.541997 79.183578 246.655553 76.733203 233.810236
 z
-" style="fill: #eae2fe; stroke: #707680; stroke-width: 0.75; stroke-linejoin: miter"/>
+" style="fill: #2a78d6; stroke: #ffffff; stroke-width: 2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_3">
-    <path d="M 92.281904 175.37215
-C 86.544325 184.413125 82.567339 194.457839 80.560877 204.97607
-C 78.55442 215.494302 78.55441 226.297664 80.560872 236.815896
-L 110.604718 231.084733
-C 109.320582 224.353065 109.320589 217.438913 110.604721 210.707245
-C 111.888857 203.975577 114.434128 197.54696 118.106179 191.760736
+    <path d="M 69.828535 173.551202
+C 63.861453 182.95382 59.725389 193.400324 57.63867 204.339287
+C 55.551951 215.27825 55.551951 226.51375 57.63867 237.452713
+L 76.733203 233.810236
+C 75.105562 225.277845 75.105562 216.514155 76.733203 207.981764
+C 78.360843 199.449373 81.586973 191.301099 86.241298 183.967057
 z
-" style="fill: #dff5e5; stroke: #707680; stroke-width: 0.75; stroke-linejoin: miter"/>
+" style="fill: #eb6834; stroke: #ffffff; stroke-width: 2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
-    <path d="M 132.740164 141.902179
-C 124.450976 145.184099 116.729788 149.750393 109.860473 155.433185
-C 102.991158 161.115978 97.058932 167.844756 92.281904 175.37215
-L 118.106179 191.760736
-C 121.163477 186.943204 124.960101 182.636786 129.356463 178.999799
-C 133.752824 175.362812 138.694385 172.440383 143.999465 170.339955
+    <path d="M 111.905104 138.742437
+C 103.284352 142.155634 95.254322 146.904581 88.110236 152.814683
+C 80.96615 158.724785 74.796643 165.722717 69.828535 173.551202
+L 86.241298 183.967057
+C 90.116422 177.860839 94.928637 172.402452 100.501024 167.792572
+C 106.073411 163.182693 112.336834 159.478515 119.061021 156.816221
 z
-" style="fill: #fef1ce; stroke: #707680; stroke-width: 0.75; stroke-linejoin: miter"/>
+" style="fill: #1baf7a; stroke: #ffffff; stroke-width: 2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
-    <path d="M 164.016042 135.936
-C 158.673897 135.936 153.343639 136.439849 148.096118 137.440867
-C 142.848596 138.441885 137.707166 139.935606 132.740164 141.902179
-L 143.999465 170.339955
-C 147.178346 169.081348 150.468862 168.125366 153.827275 167.484715
-C 157.185689 166.844063 160.597054 166.5216 164.016027 166.5216
+    <path d="M 144.432 132.5376
+C 138.876172 132.5376 133.332706 133.061612 127.875287 134.10267
+C 122.417868 135.143729 117.070782 136.697201 111.905104 138.742437
+L 119.061021 156.816221
+C 123.09025 155.220936 127.260977 154.009228 131.517764 153.197203
+C 135.774551 152.385177 140.098454 151.976448 144.432 151.976448
 z
-" style="fill: #f0f4fc; stroke: #707680; stroke-width: 0.75; stroke-linejoin: miter"/>
+" style="fill: #eda100; stroke: #ffffff; stroke-width: 2; stroke-linejoin: miter"/>
    </g>
    <g id="matplotlib.axis_1"/>
    <g id="matplotlib.axis_2"/>
    <g id="text_1">
-    <text style="fill: #1f2329; font: 700 24px 'Arial Unicode MS'; text-anchor: middle" x="164.016" y="216.648" transform="rotate(-0 164.016 216.648)">100</text>
+    <text style="font-weight: 700; font-size: 22px; font-family: 'Arial Unicode MS'; text-anchor: middle; fill: #1a1b1c" x="144.432" y="217.75889" transform="rotate(-0 144.432 217.75889)">100</text>
    </g>
    <g id="text_2">
-    <text style="fill: #646a73; font: 10px 'Arial Unicode MS'; text-anchor: middle" x="164.016" y="239.5872" transform="rotate(-0 164.016 239.5872)">件工单</text>
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS'; text-anchor: middle; fill: #5f6670" x="144.432" y="241.721782" transform="rotate(-0 144.432 241.721782)">件工单</text>
    </g>
   </g>
   <g id="patch_6">
-   <path d="M 318.24 136.7856
-L 328.032 136.7856
-L 328.032 127.0152
-L 318.24 127.0152
+   <path d="M 310.896 183.9384
+L 319.7088 183.9384
+L 319.7088 174.5928
+L 310.896 174.5928
 z
-" style="fill: #eae2fe; stroke: #7456b2; stroke-linejoin: miter"/>
+" style="fill: #2a78d6"/>
   </g>
   <g id="patch_7">
-   <path d="M 318.24 168.2208
-L 328.032 168.2208
-L 328.032 158.4504
-L 318.24 158.4504
+   <path d="M 310.896 210.276
+L 319.7088 210.276
+L 319.7088 200.9304
+L 310.896 200.9304
 z
-" style="fill: #dff5e5; stroke: #367747; stroke-linejoin: miter"/>
+" style="fill: #eb6834"/>
   </g>
   <g id="patch_8">
-   <path d="M 318.24 199.656
-L 328.032 199.656
-L 328.032 189.8856
-L 318.24 189.8856
+   <path d="M 310.896 236.6136
+L 319.7088 236.6136
+L 319.7088 227.268
+L 310.896 227.268
 z
-" style="fill: #fef1ce; stroke: #896b21; stroke-linejoin: miter"/>
+" style="fill: #1baf7a"/>
   </g>
   <g id="patch_9">
-   <path d="M 318.24 231.0912
-L 328.032 231.0912
-L 328.032 221.3208
-L 318.24 221.3208
+   <path d="M 310.896 262.9512
+L 319.7088 262.9512
+L 319.7088 253.6056
+L 310.896 253.6056
 z
-" style="fill: #f0f4fc; stroke: #4063a8; stroke-linejoin: miter"/>
+" style="fill: #eda100"/>
   </g>
   <g id="text_3">
-   <text style="fill: #646a73; font: 10px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="22.0896" transform="rotate(-0 23.0112 22.0896)">环形图</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="22.0896" transform="rotate(-0 23.0112 22.0896)">环形图</text>
   </g>
   <g id="text_4">
-   <text style="fill: #1f2329; font: 700 18px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="52.2504" transform="rotate(-0 23.0112 52.2504)">已处理工单的结果分布</text>
+   <text style="font-weight: 700; font-size: 18px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #1a1b1c" x="23.0112" y="52.2504" transform="rotate(-0 23.0112 52.2504)">已处理工单的结果分布</text>
   </g>
   <g id="text_5">
-   <text style="fill: #646a73; font: 10px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="75.1896" transform="rotate(-0 23.0112 75.1896)">同一周期 · 结果分类互斥</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="75.1896" transform="rotate(-0 23.0112 75.1896)">同一周期 · 结果分类互斥</text>
   </g>
   <g id="text_6">
-   <text style="fill: #646a73; font: 9px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="386.568" transform="rotate(-0 23.0112 386.568)">中心显示总数；环段角度对应各类占比。</text>
+   <text style="font-size: 9px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="386.568" transform="rotate(-0 23.0112 386.568)">中心显示总数；环段角度对应各类占比。</text>
   </g>
   <g id="text_7">
-   <text style="fill: #646a73; font: 8.5px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="412.056" transform="rotate(-0 23.0112 412.056)">合成示例 · document-pastel</text>
+   <text style="font-size: 8.5px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="412.056" transform="rotate(-0 23.0112 412.056)">合成示例 · document-neutral</text>
   </g>
   <g id="text_8">
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 128.980031)">已解决  72</text>
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 139.561594)">72.0%</text>
+   <text style="font-size: 9.5px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #1a1b1c" x="325.584" y="182.238989" transform="rotate(-0 325.584 182.238989)">已解决  72 · 72%</text>
   </g>
   <g id="text_9">
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 160.415231)">重复关闭  12</text>
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 170.996794)">12.0%</text>
+   <text style="font-size: 9.5px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #1a1b1c" x="325.584" y="208.553581" transform="rotate(-0 325.584 208.553581)">重复关闭  12 · 12%</text>
   </g>
   <g id="text_10">
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 191.850431)">转交处理  10</text>
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 202.431994)">10.0%</text>
+   <text style="font-size: 9.5px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #1a1b1c" x="325.584" y="234.868173" transform="rotate(-0 325.584 234.868173)">转交处理  10 · 10%</text>
   </g>
   <g id="text_11">
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 223.285631)">不予处理  6</text>
-   <text style="fill: #1f2329; font: 10px 'Arial Unicode MS'" transform="translate(335.8656 233.867194)">6.0%</text>
+   <text style="font-size: 9.5px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #1a1b1c" x="325.584" y="261.165695" transform="rotate(-0 325.584 261.165695)">不予处理  6 · 6%</text>
   </g>
  </g>
 </svg>

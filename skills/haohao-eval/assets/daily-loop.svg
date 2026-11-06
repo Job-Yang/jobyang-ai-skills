@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="830" viewBox="0 0 880 830" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Source Han Sans SC, sans-serif">
+  <rect width="880" height="830" fill="#ffffff"/>
+  <text x="40" y="34" font-size="17" font-weight="600" fill="#2b2b2b">一条 BadCase 到一条细则：每日召回怎么跑</text>
+  <text x="40" y="54" font-size="12" fill="#666666">青绿＝主路径　琥珀＝被拦下/回退　灰虚线＝已废弃或未确认　菱形＝判断门</text>
+
+  <!-- abandoned unified score -->
+  <rect x="120" y="72" width="640" height="46" rx="8" fill="#f4f5f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="140" y="92" font-size="12.5" fill="#5f6368">旧统一分已废弃（只留历史对照）：原样不改的「改写」平均 94.5 分、50 条里 27 条排第一</text>
+  <text x="140" y="109" font-size="12.5" fill="#5f6368">它奖励「不动」和「没命中正则」，量不出失真——分数和正则降级为提示，不当结论。</text>
+
+  <!-- main path -->
+  <g>
+    <rect x="80" y="146" width="300" height="52" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+    <text x="100" y="168" font-size="13.5" font-weight="600" fill="#1f5f58">① 出题：先写事实清单</text>
+    <text x="100" y="186" font-size="12" fill="#333333">再照清单写稿，裁判才能逐条对账</text>
+
+    <rect x="80" y="226" width="300" height="52" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+    <text x="100" y="248" font-size="13.5" font-weight="600" fill="#1f5f58">② 现用版改写全部题目</text>
+    <text x="100" y="266" font-size="12" fill="#333333">有目标病灶时另写候选版，写完即冻结</text>
+
+    <rect x="80" y="306" width="300" height="52" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+    <text x="100" y="328" font-size="13.5" font-weight="600" fill="#1f5f58">③ 打乱匿名，逐份裁判</text>
+    <text x="100" y="346" font-size="12" fill="#333333">每条问题引用原句，脚本逐字核对，对不上作废</text>
+
+    <polygon points="230,392 330,424 230,456 130,424" fill="#fff8e6" stroke="#d9a441" stroke-width="1.8"/>
+    <text x="230" y="420" font-size="13" font-weight="600" fill="#7a5a12" text-anchor="middle">同类问题攒够了吗</text>
+    <text x="230" y="438" font-size="11.5" fill="#7a5a12" text-anchor="middle">6 条 · 2 天或 2 种来源</text>
+
+    <rect x="520" y="400" width="220" height="48" rx="8" fill="#f4f5f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <text x="536" y="420" font-size="12" fill="#5f6368">否：入问题池等待</text>
+    <text x="536" y="437" font-size="11.5" fill="#5f6368">单条 BadCase 不直接改规则</text>
+
+    <rect x="80" y="486" width="300" height="52" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+    <text x="100" y="508" font-size="13.5" font-weight="600" fill="#1f5f58">④ 候选细则冻结</text>
+    <text x="100" y="526" font-size="12" fill="#333333">冻结后不许改候选、不许放宽门槛重试</text>
+
+    <polygon points="230,562 330,594 230,626 130,594" fill="#fff8e6" stroke="#d9a441" stroke-width="1.8"/>
+    <text x="230" y="590" font-size="13" font-weight="600" fill="#7a5a12" text-anchor="middle">当天门禁过了吗</text>
+    <text x="230" y="608" font-size="11.5" fill="#7a5a12" text-anchor="middle">脚本算，AI 不参与改判</text>
+
+    <rect x="520" y="570" width="230" height="48" rx="8" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.6"/>
+    <text x="536" y="590" font-size="12" fill="#7a5a12">不过：这个病灶冷却 7 天</text>
+    <text x="536" y="607" font-size="11.5" fill="#7a5a12">攒够证据再试，连拒 3 次挂起</text>
+
+    <rect x="80" y="656" width="300" height="52" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+    <text x="100" y="678" font-size="13.5" font-weight="600" fill="#1f5f58">⑤ 次日用全新题复测</text>
+    <text x="100" y="696" font-size="12" fill="#333333">预发布那天看过的题都不算数</text>
+
+    <rect x="520" y="664" width="230" height="44" rx="8" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.4" stroke-dasharray="6 4"/>
+    <text x="536" y="689" font-size="12" fill="#7a5a12">复测不过：撤回，冷却</text>
+
+    <rect x="80" y="736" width="300" height="48" rx="9" fill="#2a9d8f" stroke="#1f5f58" stroke-width="2"/>
+    <text x="100" y="757" font-size="13.5" font-weight="600" fill="#ffffff">⑥ 发布到 daily-learning.md</text>
+    <text x="100" y="774" font-size="11.5" fill="#dff3f0">只写每日细则这一层，宪法不碰</text>
+  </g>
+
+  <!-- arrows main column -->
+  <g stroke="#555555" stroke-width="1.6" fill="#555555">
+    <line x1="230" y1="198" x2="230" y2="224"/><polygon points="230,226 226,219 234,219"/>
+    <line x1="230" y1="278" x2="230" y2="304"/><polygon points="230,306 226,299 234,299"/>
+    <line x1="230" y1="358" x2="230" y2="390"/><polygon points="230,392 226,385 234,385"/>
+    <line x1="230" y1="456" x2="230" y2="484"/><polygon points="230,486 226,479 234,479"/>
+    <line x1="230" y1="538" x2="230" y2="560"/><polygon points="230,562 226,555 234,555"/>
+    <line x1="230" y1="626" x2="230" y2="654"/><polygon points="230,656 226,649 234,649"/>
+    <line x1="230" y1="708" x2="230" y2="734"/><polygon points="230,736 226,729 234,729"/>
+  </g>
+  <!-- branch arrows -->
+  <g stroke="#9aa0a6" stroke-width="1.4" fill="#9aa0a6">
+    <line x1="330" y1="424" x2="518" y2="424"/><polygon points="520,424 513,420 513,428"/>
+  </g>
+  <g stroke="#d9a441" stroke-width="1.5" fill="#d9a441">
+    <line x1="330" y1="594" x2="518" y2="594"/><polygon points="520,594 513,590 513,598"/>
+    <line x1="380" y1="682" x2="518" y2="686"/><polygon points="520,686 513,682 513,690"/>
+  </g>
+
+  <!-- annotation: post-release monitor -->
+  <rect x="430" y="744" width="420" height="40" rx="8" fill="#ffffff" stroke="#2a9d8f" stroke-width="1.4" stroke-dasharray="4 3"/>
+  <text x="446" y="761" font-size="12" fill="#1f5f58">发布后监控 7 天：改坏率明显升高就自动回滚</text>
+  <text x="40" y="810" font-size="11.5" fill="#1f5f58">新装默认头 14 天影子：只记「本来会发布」、不真发布，达标才切自动发布；回滚后该病灶冷却 14 天。</text>
+</svg>

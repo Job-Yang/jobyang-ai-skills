@@ -14,8 +14,8 @@
 ```yaml
 ---
 schema: opc-artifact/v1
-opc_node: prd
-artifact_kind: prd
+opc_node: design
+artifact_kind: design
 opc_version: 0.2.0
 topic: example-product
 created: 2026-09-25T10:00:00+00:00
@@ -25,7 +25,7 @@ human_review: pending
 ---
 ```
 
-`opc_node` 是能力；`artifact_kind` 是产物类型，例如同一个 prd 节点输出 prd 和 plan。兼容已有 v1 中没有 artifact_kind 的文件。`topic` 使用小写 slug；多候选雷达可为 null，每条候选要给自己的 slug。`created` 为带时区的真实生成时间。
+`opc_node` 是能力；`artifact_kind` 是产物类型。本节点的信封固定 `opc_node: design`、`artifact_kind: design`。兼容已有 v1 中没有 artifact_kind 的文件。`topic` 使用小写 slug；多候选雷达可为 null，每条候选要给自己的 slug。`created` 为带时区的真实生成时间。
 
 直接输入的 upstream 为 null。多个上游写 `inputs: '["prd-example-product.md", "assess-example-product.md"]'`，使用工件相对路径，不使用远端绝对路径。并行实例使用不同 topic（如 example-product-ios、example-product-web），或由编排为实例分配不同数据根；不允许把两份同名产物挤进一个路径。可附 `node_run_id` 记录实例，但本版本不实现调度引擎。
 

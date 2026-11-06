@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 1120" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif">
+  <rect width="640" height="1120" fill="#ffffff"/>
+  <text x="320" y="36" text-anchor="middle" font-size="20" font-weight="600" fill="#2b2b2b">可移植个人档案：AI 起草，人确认</text>
+  <text x="320" y="60" text-anchor="middle" font-size="12.5" fill="#6b7280">「我是谁、我要什么、我讨厌什么」存成本地 Markdown</text>
+
+  <!-- 写模式 -->
+  <text x="320" y="104" text-anchor="middle" font-size="13" font-weight="600" fill="#0b3b36">写模式：候选不自动落盘</text>
+  <g font-size="13.5" fill="#0b3b36">
+    <rect x="170" y="120" width="300" height="58" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="144" text-anchor="middle" font-weight="600">自然聊出候选事实</text>
+    <text x="320" y="163" text-anchor="middle" font-size="11" fill="#3d6b66">入职式了解，不是问卷不是测评</text>
+
+    <rect x="170" y="216" width="300" height="58" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="240" text-anchor="middle" font-weight="600">候选先入 inbox</text>
+    <text x="320" y="259" text-anchor="middle" font-size="11" fill="#3d6b66">句中轻确认，收尾一次性汇总</text>
+
+    <rect x="170" y="312" width="300" height="58" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="336" text-anchor="middle" font-weight="600">人确认后落盘 declared</text>
+    <text x="320" y="355" text-anchor="middle" font-size="11" fill="#3d6b66">外部内容永不自动落盘</text>
+  </g>
+  <g stroke="#0f9d8f" stroke-width="2.2" fill="#0f9d8f">
+    <line x1="320" y1="178" x2="320" y2="206"/><polygon points="320,216 315,206 325,206"/>
+    <line x1="320" y1="274" x2="320" y2="302"/><polygon points="320,312 315,302 325,302"/>
+  </g>
+
+  <!-- 读模式 -->
+  <text x="320" y="420" text-anchor="middle" font-size="13" font-weight="600" fill="#0b3b36">读模式：按需门禁，用后清理</text>
+  <g font-size="13" fill="#0b3b36">
+    <rect x="120" y="436" width="400" height="58" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.8"/>
+    <text x="320" y="460" text-anchor="middle" font-weight="600">任务分类 → 切片 → L0–L4 门禁 → 暴露预览</text>
+    <text x="320" y="480" text-anchor="middle" font-size="11" fill="#3d6b66">上下文预算内取用，用完即清</text>
+  </g>
+
+  <!-- 琥珀：修正过的口径 -->
+  <g font-size="12.5" fill="#7a5410">
+    <rect x="120" y="540" width="400" height="100" rx="8" fill="#fdf1dd" stroke="#e8a33d" stroke-width="2"/>
+    <text x="320" y="566" text-anchor="middle" font-weight="600">两次口径修正（都写进了提交）</text>
+    <text x="320" y="588" text-anchor="middle" font-size="11.5">「云端模拟」改「外发预演（仅本机、未上传）」</text>
+    <text x="320" y="608" text-anchor="middle" font-size="11.5">立「只对用户讲有价值的话」纪律</text>
+    <text x="320" y="628" text-anchor="middle" font-size="11.5">禁播报内部过程</text>
+  </g>
+
+  <!-- 原则注记 -->
+  <g>
+    <rect x="60" y="690" width="520" height="110" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.5"/>
+    <text x="320" y="718" text-anchor="middle" font-size="13.5" font-weight="600" fill="#0b3b36">数据与技能分离</text>
+    <text x="320" y="744" text-anchor="middle" font-size="12" fill="#3d6b66">技能目录只有机制和空白模板，不含任何真实数据</text>
+    <text x="320" y="766" text-anchor="middle" font-size="12" fill="#3d6b66">真实档案在本地私有仓，随文件夹搬移</text>
+    <text x="320" y="788" text-anchor="middle" font-size="11" fill="#8a6420">脚本零联网、纯标准库；判断权不交给 AI</text>
+  </g>
+
+  <!-- 图例 -->
+  <g font-size="12" fill="#4b5563">
+    <rect x="60" y="1050" width="16" height="16" rx="3" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.5"/>
+    <text x="82" y="1063">读写流程</text>
+    <rect x="190" y="1050" width="16" height="16" rx="3" fill="#fdf1dd" stroke="#e8a33d" stroke-width="1.5"/>
+    <text x="212" y="1063">口径修正</text>
+  </g>
+</svg>

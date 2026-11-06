@@ -15,6 +15,7 @@ video_frames.py — 把视频翻译成"带时间戳的关键帧 + 运动时间�
 """
 
 import argparse
+import atexit
 import importlib
 import importlib.util
 import json
@@ -23,6 +24,17 @@ import shutil
 import subprocess
 import sys
 import tempfile
+
+# 本次运行自动创建的临时帧目录(用户显式 --outdir / --debug 指定的目录不入列)。
+# --cleanup 只清理这个列表里的目录, 绝不碰用户自己指定的输出位置。
+TEMP_DIRS = []
+
+# 未设此环境变量=1 时, 不静默 pip 装包(cv2/numpy 约 90MB, whisper 含 torch 约 2GB)。
+PIP_GATE_ENV = "VIDEO_READER_YES_PIP"
+
+
+def _pip_allowed():
+    return os.environ.get(PIP_GATE_ENV) == "1"
 
 # 在受限/沙箱环境里,OpenCV/FFmpeg 默认开大量线程会触发 "Can't spawn new thread"。
 # 必须在 import cv2 之前把相关线程数压到 1,保证可移植。
@@ -80,6 +92,18 @@ def _ensure_deps():
         return
 
     pkgs = [pkg for _, pkg in missing]
+    # 装包确认闸门: Agent 场景下"首次跑就静默装 90MB"不可接受。
+    # 未设 VIDEO_READER_YES_PIP=1 → 打印体量预告+手动命令, exit 3, 不动用户环境。
+    if not _pip_allowed():
+        exe, ver, _ = _interpreter_id()
+        print(
+            f"[video-reader] 检测到缺少依赖: {', '.join(pkgs)}(opencv 约 90MB)。\n"
+            "  为避免 Agent 静默修改用户 Python 环境, 未设放行变量前不执行安装。\n"
+            f"  放行(本次允许自动装): {PIP_GATE_ENV}=1 python3 {sys.argv[0]} ...\n"
+            f"  或手动安装到当前解释器: {exe} -m pip install --user --break-system-packages {' '.join(pkgs)}",
+            file=sys.stderr, flush=True)
+        sys.exit(3)
+
     print(f"[video-reader] 检测到缺少依赖: {', '.join(pkgs)},尝试用上面这个解释器自动安装…",
           file=sys.stderr, flush=True)
     cmd = [sys.executable, "-m", "pip", "install",
@@ -144,6 +168,14 @@ def open_video(path):
     w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) or 0)
     h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) or 0)
     duration = total / fps if total > 0 else 0.0
+    # 防呆: "能打开但不是视频"的文件(PNG 改名 mp4、损坏/截断文件)
+    # 不得静默当成"全静止视频" exit 0 —— 那会让 Agent 一本正经回复"视频里没有动作"。
+    if total <= 0 or duration <= 0 or w == 0 or h == 0:
+        log(f"ERROR: 文件能打开但不含可解码视频流"
+            f"(total_frames={total}, {w}x{h}, duration={duration:.2f}s)。\n"
+            f"  常见原因: 改后缀上传时传错了文件(如 PNG 改名 mp4)、文件损坏或截断。\n"
+            f"  请确认文件内容真的是视频: {path}")
+        sys.exit(2)
     return cap, fps, total, duration, w, h
 
 
@@ -262,16 +294,36 @@ def merge_short(segs, min_static=0.4):
 
 def resolve_outdir(args, mode):
     """决定帧存哪。
-    - 显式 --outdir:用它(稳定、可复查)。
+    - 显式 --outdir:用它(稳定、可复查, 不入自动清理名单)。
     - --debug 但没给 --outdir:存到当前目录下 video_reader_debug/<视频名>_<mode>/,稳定可见。
-    - 都没有:随机临时目录,模型读完即弃。"""
+    - 都没有:随机临时目录;记入 TEMP_DIRS, 退出时打印删除提示, --cleanup 时自动删。"""
     if args.outdir:
         return args.outdir, False
     if getattr(args, "debug", False):
         base = os.path.splitext(os.path.basename(args.video))[0]
         d = os.path.join(os.getcwd(), "video_reader_debug", f"{base}_{mode}")
         return d, True
-    return tempfile.mkdtemp(prefix=f"vframes_{mode}_"), False
+    d = tempfile.mkdtemp(prefix=f"vframes_{mode}_")
+    TEMP_DIRS.append(d)
+    return d, False
+
+
+def register_frame_dir_hint(outdir):
+    """退出时在 stderr 打印删除提示(不自动删——模型 Read 帧可能滞后, 自动删会读空)。
+    若 --cleanup 已在 main() 里把目录删了, 检查 isdir 后不打陈旧提示。"""
+    def _hint():
+        if os.path.isdir(outdir):
+            log(f"[video-reader] 帧目录保留在 {outdir}; 确认模型读完后可删除: rm -rf {outdir}")
+    atexit.register(_hint)
+
+
+def truncate_times(times, max_frames, what):
+    """抽帧上限保护: zoom 宽区间 × 高 density 可能静默产生数千帧、数百 MB。"""
+    if len(times) > max_frames:
+        log(f"  [warn] {what}将抽 {len(times)} 帧, 超过 --max-frames={max_frames}, "
+            f"已截断到前 {max_frames} 个时间点; 区间过宽或 density 过高时请收窄区间。")
+        return times[:max_frames]
+    return times
 
 
 def dump_debug(outdir, samples, thr, segs, extra=None):
@@ -395,6 +447,7 @@ def cmd_scan(args):
 
     outdir, _ = resolve_outdir(args, "scan")
     os.makedirs(outdir, exist_ok=True)
+    register_frame_dir_hint(outdir)
 
     if getattr(args, "debug", False):
         dump_debug(outdir, samples, thr, segs,
@@ -402,6 +455,7 @@ def cmd_scan(args):
                           "fps": round(fps, 3)})
 
     times = pick_scan_frames(segs, args.density)
+    times = truncate_times(times, args.max_frames, "scan")
     frames = []
     for t in times:
         fn = save_frame(cap, fps, t, outdir, args.quality, args.max_width)
@@ -462,8 +516,17 @@ def cmd_transcribe(args):
             "  装好重试;或本次跳过语音转写,只用 scan/zoom 看画面。")
         sys.exit(4)
 
-    # 2) whisper 是 pip 软依赖,体积大(带 torch),所以"用到才按需装"。
+    # 2) whisper 是 pip 软依赖,体积大(带 torch 约 2GB),所以"用到才按需装"。
+    #    同样受 PIP_GATE_ENV 闸门: 未放行不静默装大包。
     if importlib.util.find_spec("whisper") is None:
+        if not _pip_allowed():
+            exe, ver, _ = _interpreter_id()
+            log("[transcribe] 未检测到 openai-whisper, 自动安装会顺带拉约 2GB 的 torch。\n"
+                "  为避免 Agent 静默装大包, 未设放行变量前不执行安装。\n"
+                f"  放行(本次允许自动装): {PIP_GATE_ENV}=1 python3 {sys.argv[0]} transcribe ...\n"
+                f"  或手动安装: {exe} -m pip install --user --break-system-packages openai-whisper\n"
+                "  本次跳过语音转写。")
+            sys.exit(4)
         log("[transcribe] 未检测到 openai-whisper,尝试按需安装(较大,含 torch)…")
         try:
             subprocess.run([sys.executable, "-m", "pip", "install",
@@ -540,11 +603,13 @@ def cmd_zoom(args):
 
     outdir, _ = resolve_outdir(args, "zoom")
     os.makedirs(outdir, exist_ok=True)
+    register_frame_dir_hint(outdir)
 
     # 密集均匀抽帧(zoom 是看细节,不折叠)
     dur = max(0.0, t_end - t_start)
     n = max(2, int(round(dur * args.density)) + 1)
     times = sorted(set(round(t_start + dur * i / (n - 1), 3) for i in range(n)))
+    times = truncate_times(times, args.max_frames, "zoom")
 
     frames = []
     for t in times:
@@ -585,6 +650,7 @@ def cmd_grid(args):
         times = [round(t_start + span * i / (n - 1), 3) for i in range(n)]
     else:
         times = [round(t_start, 3)] * n
+    # grid 的单元格数由 rows×cols 显式指定, 不受 --max-frames 约束(它是 scan/zoom 抽帧上限)
 
     log(f"视频: {args.video}  (fps {fps:.2f}, 时长 {duration:.2f}s)")
     log(f"  九宫格 {rows}x{cols}={n} 格, 区间 {t_start:.2f}s-{t_end:.2f}s, 每格宽 {args.cell_width}px")
@@ -613,6 +679,7 @@ def cmd_grid(args):
 
     outdir, _ = resolve_outdir(args, "grid")
     os.makedirs(outdir, exist_ok=True)
+    register_frame_dir_hint(outdir)
     grid_path = os.path.join(outdir, "grid.jpg")
     cv2.imwrite(grid_path, grid_img, [cv2.IMWRITE_JPEG_QUALITY, args.quality])
 
@@ -648,6 +715,15 @@ def main():
     common.add_argument("--debug", action="store_true",
                         help="调试模式:帧存到当前目录 video_reader_debug/ 下(可复查),"
                              "并额外输出运动数据JSON与帧差曲线图。默认关闭。")
+    common.add_argument("--max-frames", type=int, default=300,
+                        help="scan/zoom 抽帧上限(帧), 超限截断并 warn; "
+                             "防 zoom 宽区间×高 density 静默产出数千帧, 默认 300")
+    cleanup_g = common.add_mutually_exclusive_group()
+    cleanup_g.add_argument("--keep-frames", action="store_true",
+                           help="保留临时帧目录(默认行为), 退出时在 stderr 打印删除提示")
+    cleanup_g.add_argument("--cleanup", action="store_true",
+                           help="成功退出时自动删除本次自动创建的临时帧目录; "
+                                "--outdir/--debug 指定的目录不删")
 
     ps = sub.add_parser("scan", parents=[common], help="粗扫:运动时间线+稀疏抽帧")
     ps.add_argument("--analyze-fps", type=float, default=10.0,
@@ -683,6 +759,13 @@ def main():
 
     args = p.parse_args()
     args.func(args)
+    # 走到这里说明命令成功结束(失败路径都已 sys.exit)。
+    # --cleanup 只删本次自动创建的临时目录; 用户显式 --outdir/--debug 目录绝不动。
+    if getattr(args, "cleanup", False):
+        for d in TEMP_DIRS:
+            if os.path.isdir(d):
+                shutil.rmtree(d, ignore_errors=True)
+                log(f"[video-reader] 已按 --cleanup 删除临时帧目录: {d}")
 
 
 if __name__ == "__main__":

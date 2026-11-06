@@ -1,14 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# ╔══════════════════════════════════════════════════════════════════════╗
+# ║ 【已废弃】本文件里的「统一分」(unified_score / FID / FLU / 拟合权重)   ║
+# ║ 已废弃 · 该分奖励不动 · 禁止据此调任何规则 · 勿重跑拟合。              ║
+# ║ 理由:原样不改的「改写」在 50 条上平均 94.5 分、27/50 排第一,          ║
+# ║ 它奖励的是「不动」和「没命中正则」,量不出失真。保留仅为历史对照。      ║
+# ║ 活路径只有两样:score_residual(残留正则)和 new_number_prescreen,      ║
+# ║ 它们被 loop.py 机械检查引用,命中只当提示、裁判复核后才算数。          ║
+# ╚══════════════════════════════════════════════════════════════════════╝
 """
-好好说话 · 评测尺 v3(三维合成一个统一分,保真 > 通顺 > AI味)
+好好说话 · 残留/新数字预筛尺(每日召回机械检查的提示来源)
 
 每日召回(loop.py)只用这里的残留正则和 new_number_prescreen 给机械检查抬旗,
 命中只当提示,由裁判逐条确认。统一分不参与任何发布判断:原样不改的"改写"
 在 50 条上平均 94.5 分,比三个真工具都高,它量不出失真。
 
 —— 为什么推翻 v2 的「三轴不加权」——
-作者的判词:三个分不如一个分好判。尤其「AI 味没了、也通顺、但把原意改坏了」
+老羊的判词:三个分不如一个分好判。尤其「AI 味没了、也通顺、但把原意改坏了」
 这种,必须一票否决式扣大分,不能让它靠另外两项混及格。所以 v3 合成一个 0-100
 的统一分:
 
@@ -23,17 +31,16 @@
     残留分:纯正则,机器数 AI 味残留(0-100)
 
 保真是乘法闸,所以「红」把通顺满分+残留满分也压到 ≈30;真实性权重天然最高。
-0.65/0.35 让通顺压过 AI 味。这就是人工评语体现的排序:真实性 > 流畅度 > AI味。
+0.65/0.35 让通顺压过 AI 味。这就是老羊要的排序:真实性 > 流畅度 > AI味。
 
-—— 用法 ——
-  # 单段只算残留(机器能独立算的部分)
-  echo "一段中文" | python3 scorer_v3.py
+—— 用法(唯一活用法) ——
+  # 单段只算残留(机器能独立算的部分),命中只当提示,裁判复核后才算数
+  echo "一段中文" | python3 scorer.py
 
-  # 算统一分:残留机器算,保真/通顺由大模型或人给档(在线评测时大模型填)
-  python3 scorer_v3.py --unified --rewrite 改写.txt --fid 黄 --flu 顺
+  # 声明名家风格时加 --style 鲁迅:只豁免破折号、三连、分号排比这类疑似项,硬病照扣
+  echo "一段中文" | python3 scorer.py --style 鲁迅
 
-  # 代入 50 例做校准(用人工评语标注的保真/通顺档),打印分数表 + 自洽性检查
-  python3 scorer_v3.py --calibrate cases.json --labels labels.json
+  # --unified / --calibrate 已废弃:调用只打印废弃提示,不再出分。勿据此调任何规则。
 """
 import re, sys, json, argparse, os
 
@@ -119,7 +126,7 @@ def score_residual(text, style=None):
     return max(0, BASE - total), detail
 
 # ================= 新数字预筛(归一化后再判,别误伤) =================
-# 人工评语提醒:50% 和「一半」、阿拉伯数字和中文数字,可能是一个意思。改数字有时是对的、
+# 老羊提醒:50% 和「一半」、阿拉伯数字和中文数字,可能是一个意思。改数字有时是对的、
 # 更通顺的。所以这一层先把中文数字/口语量词归一化,再看是不是真冒出了原文没有的量化断言;
 # 命中也只是「抬高保真怀疑,送大模型/人复核」,不自动判红,更不是硬扣分。
 _CN_NUM = {'零':0,'一':1,'两':2,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,'十':10}
@@ -176,41 +183,46 @@ def new_number_prescreen(orig, rewrite):
         return True, f"新增量化 {new},原文归一化后没有 —— 臆造硬信号,送大模型/人复核(保真候选红)"
     return False, "无新增硬量化断言(已按中文/阿拉伯/百分比/一半/带单位归一化)"
 
-# ================= 合成:一个统一分 =================
-# 下列档位系数/权重不是拍的,是 fit_weights.py 用 50 条人工评语 pairwise 拟合的
-# (见 data/fitted_weights.json)。要改先重跑拟合 + 全量回归,别手改。
+# ================= 合成:一个统一分【已废弃 · 历史对照 · 只读】 =================
+# 【已废弃·该分奖励不动·禁止据此调任何规则·勿重跑拟合】
+# 下面这套系数当年由 fit_weights.py 用 50 条单人评语 pairwise 拟合,自述满足率
+# 只有 24/50(48%),且原样不改的稿平均拿 94.5 分排第一——它奖励的是「不动」。
+# 本段保留为只读死代码,仅作历史对照:任何人不得据此调任何规则,也不得重跑拟合。
+# data/fitted_weights.json 已移到 data/archive/。活判断只走档位化裁判协议,不走这个分。
+DEPRECATED_UNIFIED = True
 FID = {'绿': 1.0, '黄': 0.921, '橙': 0.7193, '红': 0.2967}
 FLU = {'顺': 100, '硬': 81.36, '不通顺': 50.67}
-W_FLU, W_RES = 0.7157, 0.2843   # 通顺 > AI味,w 由拟合得出
+W_FLU, W_RES = 0.7157, 0.2843   # 通顺 > AI味,w 由拟合得出(历史值,勿改勿重拟)
 
 def unified_score(fid, flu, residual):
-    """fid∈{绿黄橙红}  flu∈{顺硬不通顺}  residual∈[0,100] → 一个 0-100 分"""
+    """[已废弃] fid∈{绿黄橙红}  flu∈{顺硬不通顺}  residual∈[0,100] → 一个 0-100 分。
+    仅历史对照用;每日召回不调用,禁止据此调任何规则。"""
     inner = W_FLU * FLU[flu] + W_RES * residual
     return round(FID[fid] * inner, 1)
 
+DEPRECATED_NOTICE = (
+    "【已废弃】统一分不用于任何判断:原样不改的稿平均拿 94.5 分、50 条里 27 条排第一,\n"
+    "它奖励的是「不动」,量不出失真;当年拟合自述满足率只有 24/50。禁止据此调任何规则,\n"
+    "也不要重跑拟合(fit_weights.py 已归档为历史实验)。本命令只保留历史对照意义,已不再出分。\n"
+    "活用法只有一个:echo \"一段中文\" | python3 scripts/scorer.py —— 只算残留分,给机械检查当提示。"
+)
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--unified", action="store_true")
+    ap.add_argument("--unified", action="store_true", help="[已废弃] 统一分,打印废弃提示不再出分")
     ap.add_argument("--rewrite"); ap.add_argument("--orig")
     ap.add_argument("--fid"); ap.add_argument("--flu")
-    ap.add_argument("--calibrate"); ap.add_argument("--labels")
+    ap.add_argument("--calibrate", help="[已废弃] 50 条自洽性校准,打印废弃提示不再出分")
+    ap.add_argument("--labels")
     ap.add_argument("--style", help="声明名家风格(如 鲁迅/王小波),豁免疑似类节奏信号,硬病照扣")
     a = ap.parse_args()
 
     if a.calibrate:
-        run_calibration(a.calibrate, a.labels); return
+        print(DEPRECATED_NOTICE); return 0
 
-    if a.unified and a.rewrite:
-        r = open(a.rewrite, encoding="utf-8").read()
-        res, _ = score_residual(r, style=a.style)
-        fid = a.fid or '绿'; flu = a.flu or '顺'
-        sc = unified_score(fid, flu, res)
-        stag = f" | 风格 {a.style}(疑似类豁免)" if a.style else ""
-        print(f"残留分 {res}/100 | 保真 {fid} | 通顺 {flu}{stag} → 统一分 {sc}/100")
-        if a.orig:
-            flag, msg = new_number_prescreen(open(a.orig,encoding='utf-8').read(), r)
-            print(f"新数字预筛: {'⚑抬旗' if flag else '未抬旗'} — {msg}")
-        return
+    if a.unified:
+        print(DEPRECATED_NOTICE); return 0
 
     txt = sys.stdin.read()
     sc, det = score_residual(txt, style=a.style)
@@ -220,13 +232,15 @@ def main():
         ex = " [风格豁免]" if d.get("风格豁免") else ""
         print(f"  [{tag}] {d['类别']}: {d['命中数']}处 = -{d['小计']}{ex}  例: {' / '.join(d['样本'])}")
 
-# ---------- 校准运行器 ----------
+# ---------- 校准运行器【已废弃 · 只读死代码 · CLI 已不再调用】 ----------
 def run_calibration(cases_path, labels_path):
+    """[已废弃] 50 条自洽性校准。结果曾自述 satisfy=24/50,连自己标签都复现不了,
+    保留仅作历史对照;不要重跑,不要据此调任何规则。"""
     cases = json.load(open(cases_path, encoding="utf-8"))
     labels = json.load(open(labels_path, encoding="utf-8"))
     tools = ["我们", "工具1", "工具2"]
     rows, agree, total = [], 0, 0
-    print(f"{'#':>3} {'文体':<8} " + "".join(f"{t:>18}" for t in tools) + "   人工判词里的赢家")
+    print(f"{'#':>3} {'文体':<8} " + "".join(f"{t:>18}" for t in tools) + "   老羊判词里的赢家")
     print("-"*96)
     for it in cases:
         cid = str(it["id"])
@@ -241,7 +255,7 @@ def run_calibration(cases_path, labels_path):
             scores[t] = sc
             cell[t] = f"{sc:>5}({f}{l[:1]}R{res})"
         winner = lab.get("winner", "")
-        # 自洽性检查:人工评语说谁更好,谁的分是否最高(或并列最高)
+        # 自洽性检查:老羊说谁更好,谁的分是否最高(或并列最高)
         top = max(scores.values())
         top_tools = [t for t in tools if scores[t] >= top - 3]  # 3分容差算并列
         ok = ""
@@ -253,7 +267,7 @@ def run_calibration(cases_path, labels_path):
                     agree += 1; ok = "✓齐平"
                 else: ok = "✗差距过大"
             elif "|" in winner:
-                # 并列赢家:人工评语说 A、B 都好(C 最差)。要求 A、B 都进 top,且都明显高于第三方
+                # 并列赢家:老羊说 A、B 都好(C 最差)。要求 A、B 都进 top,且都明显高于第三方
                 co = winner.split("|")
                 others = [t for t in tools if t not in co]
                 if all(w in top_tools for w in co) and (not others or min(scores[w] for w in co) >= max(scores[o] for o in others)):
@@ -268,7 +282,7 @@ def run_calibration(cases_path, labels_path):
     for t in tools:
         vals = [r[t] for r in rows]
         print(f"{t} 均分 {sum(vals)/len(vals):.1f}  最低 {min(vals)}  最高 {max(vals)}")
-    print(f"\n自洽性:有明确人工判词的 {total} 例中,尺子排序一致 {agree} 例 ({agree/max(1,total)*100:.0f}%)")
+    print(f"\n自洽性:老羊有明确判词的 {total} 例中,尺子排序一致 {agree} 例 ({agree/max(1,total)*100:.0f}%)")
     # 技能目录只读,校准结果写到当前工作目录
     out_path = os.path.join(os.getcwd(), "calib_scores.json")
     json.dump(rows, open(out_path,"w",encoding="utf-8"), ensure_ascii=False, indent=2)

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="489.6pt" height="424.8pt" viewBox="0 0 489.6 424.8" xmlns="http://www.w3.org/2000/svg" version="1.1"><title>集群请求集中在核心交易链路</title><desc>中心显示总量；最大段用强调色，小占比靠图例辨认。</desc>
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 424.8
+L 489.6 424.8
+L 489.6 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 76.350683 277.217764
+C 85.836875 288.6846 98.0681 297.571105 111.905104 303.049563
+C 125.742108 308.52802 140.741518 310.422886 155.506244 308.557668
+C 170.27097 306.692449 184.327912 301.126912 196.367764 292.379447
+C 208.407617 283.631983 218.044591 271.982882 224.381071 258.517177
+C 230.71755 245.051472 233.550498 230.200639 232.616045 215.34793
+C 231.681592 200.495221 227.009679 186.116554 219.035465 173.551202
+C 211.06125 160.98585 200.040246 150.636438 186.998984 143.466944
+C 173.957722 136.297449 159.314076 132.5376 144.432 132.5376
+L 144.432 151.976448
+C 156.040019 151.976448 167.462063 154.90913 177.634247 160.501336
+C 187.806432 166.093542 196.402815 174.166083 202.622702 183.967057
+C 208.84259 193.768032 212.486681 204.983392 213.215555 216.568506
+C 213.944429 228.153619 211.734729 239.737268 206.792275 250.240518
+C 201.849821 260.743768 194.332981 269.830066 184.941896 276.653089
+C 175.550812 283.476111 164.586397 287.81723 153.06991 289.272101
+C 141.553424 290.726971 129.853884 289.248976 119.061021 284.975779
+C 108.268158 280.702582 98.727802 273.771108 91.328572 264.826976
+z
+" style="fill: #2a78d6; stroke: #ffffff; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 56.247955 215.34793
+C 55.548706 226.462171 56.956888 237.609076 60.398168 248.200247
+C 63.839448 258.791418 69.252192 268.637162 76.350683 277.217764
+L 91.328572 264.826976
+C 85.791749 258.134106 81.569809 250.454426 78.885611 242.193313
+C 76.201413 233.9322 75.103031 225.237614 75.648445 216.568506
+z
+" style="fill: #eb6834; stroke: #ffffff; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 72.948553 168.960236
+C 68.045584 175.708593 64.122839 183.11737 61.297281 190.965659
+C 58.471723 198.813949 56.771718 207.022962 56.247955 215.34793
+L 75.648445 216.568506
+C 76.05698 210.07503 77.382984 203.672 79.586919 197.550334
+C 81.790854 191.428669 84.850596 185.649822 88.674911 180.386104
+z
+" style="fill: #1baf7a; stroke: #ffffff; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 97.087202 146.292535
+C 92.396261 149.269497 87.996538 152.682272 83.946513 156.485498
+C 79.896488 160.288725 76.214187 164.465476 72.948553 168.960236
+L 88.674911 180.386104
+C 91.222106 176.880191 94.094301 173.622325 97.25332 170.655809
+C 100.412339 167.689292 103.844123 165.027328 107.503057 162.705298
+z
+" style="fill: #eda100; stroke: #ffffff; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 122.458159 135.313542
+C 117.97477 136.46468 113.588761 137.966347 109.340648 139.80467
+C 105.092534 141.642993 100.995437 143.812294 97.087202 146.292535
+L 107.503057 162.705298
+C 110.551481 160.770709 113.747217 159.078654 117.060745 157.644762
+C 120.374274 156.210871 123.795361 155.039571 127.292404 154.141682
+z
+" style="fill: #e87ba4; stroke: #ffffff; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 144.432 132.5376
+C 140.729635 132.5376 137.030927 132.770303 133.357756 133.234332
+C 129.684585 133.698362 126.044208 134.392801 122.458159 135.313542
+L 127.292404 154.141682
+C 130.089522 153.423505 132.929016 152.881842 135.79409 152.519899
+C 138.659163 152.157956 141.544155 151.976448 144.432 151.976448
+z
+" style="fill: #008300; stroke: #ffffff; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="matplotlib.axis_1"/>
+   <g id="matplotlib.axis_2"/>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 22px; font-family: 'Arial Unicode MS'; text-anchor: middle; fill: #1a1b1c" x="144.432" y="217.75889" transform="rotate(-0 144.432 217.75889)">100</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 10px; font-family: 'Arial Unicode MS'; text-anchor: middle; fill: #5f6670" x="144.432" y="241.692875" transform="rotate(-0 144.432 241.692875)">万次请求</text>
+   </g>
+  </g>
+  <g id="patch_8">
+   <path d="M 310.896 165.0348
+L 319.7088 165.0348
+L 319.7088 155.6892
+L 310.896 155.6892
+z
+" style="fill: #2a78d6"/>
+  </g>
+  <g id="patch_9">
+   <path d="M 310.896 188.3988
+L 319.7088 188.3988
+L 319.7088 179.0532
+L 310.896 179.0532
+z
+" style="fill: #eb6834"/>
+  </g>
+  <g id="patch_10">
+   <path d="M 310.896 211.7628
+L 319.7088 211.7628
+L 319.7088 202.4172
+L 310.896 202.4172
+z
+" style="fill: #1baf7a"/>
+  </g>
+  <g id="patch_11">
+   <path d="M 310.896 235.1268
+L 319.7088 235.1268
+L 319.7088 225.7812
+L 310.896 225.7812
+z
+" style="fill: #eda100"/>
+  </g>
+  <g id="patch_12">
+   <path d="M 310.896 258.4908
+L 319.7088 258.4908
+L 319.7088 249.1452
+L 310.896 249.1452
+z
+" style="fill: #e87ba4"/>
+  </g>
+  <g id="patch_13">
+   <path d="M 310.896 281.8548
+L 319.7088 281.8548
+L 319.7088 272.5092
+L 310.896 272.5092
+z
+" style="fill: #008300"/>
+  </g>
+  <g id="text_3">
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="22.0896" transform="rotate(-0 23.0112 22.0896)">环形图-单一大占比</text>
+  </g>
+  <g id="text_4">
+   <text style="font-weight: 700; font-size: 18px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #1a1b1c" x="23.0112" y="52.2504" transform="rotate(-0 23.0112 52.2504)">集群请求集中在核心交易链路</text>
+  </g>
+  <g id="text_5">
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="75.1896" transform="rotate(-0 23.0112 75.1896)">同一时段 · 单一大占比加多个小占比</text>
+  </g>
+  <g id="text_6">
+   <text style="font-size: 9px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="386.568" transform="rotate(-0 23.0112 386.568)">中心显示总量；最大段用强调色，小占比靠图例辨认。</text>
+  </g>
+  <g id="text_7">
+   <text style="font-size: 8.5px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="412.056" transform="rotate(-0 23.0112 412.056)">合成示例 · document-neutral</text>
+  </g>
+  <g id="text_8">
+   <text style="font-size: 9.5px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #1a1b1c" x="325.584" y="163.284178" transform="rotate(-0 325.584 163.284178)">核心交易  64 · 64%</text>
+  </g>
+  <g id="text_9">
+   <text style="font-size: 9.5px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #1a1b1c" x="325.584" y="186.822592" transform="rotate(-0 325.584 186.822592)">缓存命中  12 · 12%</text>
+  </g>
+  <g id="text_10">
+   <text style="font-size: 9.5px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #1a1b1c" x="325.584" y="210.058936" transform="rotate(-0 325.584 210.058936)">异步任务  9 · 9%</text>
+  </g>
+  <g id="text_11">
+   <text style="font-size: 9.5px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #1a1b1c" x="325.584" y="233.413287" transform="rotate(-0 325.584 233.413287)">定时清理  6 · 6%</text>
+  </g>
+  <g id="text_12">
+   <text style="font-size: 9.5px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #1a1b1c" x="325.584" y="256.745373" transform="rotate(-0 325.584 256.745373)">日志上报  5 · 5%</text>
+  </g>
+  <g id="text_13">
+   <text style="font-size: 9.5px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #1a1b1c" x="325.584" y="280.141287" transform="rotate(-0 325.584 280.141287)">指标采样  4 · 4%</text>
+  </g>
+ </g>
+</svg>

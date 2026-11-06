@@ -1,0 +1,61 @@
+[
+  {
+    "id": "deep-lane-6-roles",
+    "name": "深泳道压力图",
+    "layout": "workflow",
+    "orientation": "horizontal",
+    "title": "一次请求流经六个职责方并含支付回退复核",
+    "subtitle": "横向泳道 · 时间从左向右 · 支付失败回退到鉴权复核",
+    "note": "压力样例：6 条泳道、12 张卡片、含跨多道回退；只画主成功与回退复核路径。",
+    "lanes": ["前端", "网关", "鉴权", "订单", "库存", "支付"],
+    "nodes": [
+      {"id": "a", "lane": 0, "step": 0, "label": "打开页面"},
+      {"id": "b", "lane": 1, "step": 1, "label": "签名限流"},
+      {"id": "c", "lane": 2, "step": 2, "label": "校验令牌"},
+      {"id": "d", "lane": 3, "step": 3, "label": "创建订单"},
+      {"id": "e", "lane": 4, "step": 4, "label": "预占库存"},
+      {"id": "p", "lane": 5, "step": 5, "label": "发起扣款"},
+      {"id": "f", "lane": 2, "step": 5, "label": "复核令牌"},
+      {"id": "g", "lane": 1, "step": 6, "label": "回源校验"},
+      {"id": "h", "lane": 0, "step": 6, "label": "渲染结果"},
+      {"id": "p2", "lane": 5, "step": 6, "label": "记录流水"},
+      {"id": "e2", "lane": 4, "step": 6, "label": "释放库存"},
+      {"id": "d2", "lane": 3, "step": 6, "label": "超时关单"}
+    ],
+    "edges": [
+      {"from": "a", "to": "b"},
+      {"from": "b", "to": "c"},
+      {"from": "c", "to": "d"},
+      {"from": "d", "to": "e"},
+      {"from": "e", "to": "p"},
+      {"from": "p", "to": "f", "label": "支付后复核"},
+      {"from": "f", "to": "g"},
+      {"from": "g", "to": "h"},
+      {"from": "p", "to": "p2"},
+      {"from": "p2", "to": "e2"},
+      {"from": "e2", "to": "d2"}
+    ]
+  },
+  {
+    "id": "donut-big-share",
+    "name": "环形图-单一大占比",
+    "layout": "donut",
+    "title": "集群请求集中在核心交易链路",
+    "subtitle": "同一时段 · 单一大占比加多个小占比",
+    "note": "中心显示总量；最大段用强调色，小占比靠图例辨认。",
+    "labels": ["核心交易", "缓存命中", "异步任务", "定时清理", "日志上报", "指标采样"],
+    "values": [64, 12, 9, 6, 5, 4],
+    "unit": "万次请求"
+  },
+  {
+    "id": "donut-even",
+    "name": "环形图-均匀多项",
+    "layout": "donut",
+    "title": "工单来源在多个渠道间相对均匀",
+    "subtitle": "同一周期 · 七项占比接近、无单一主导",
+    "note": "中心显示总量；图例紧凑对齐，多份仍可读。",
+    "labels": ["官网", "客户端", "开放接口", "客服转派", "合作伙伴", "移动端", "其他"],
+    "values": [18, 15, 14, 13, 12, 11, 17],
+    "unit": "张工单"
+  }
+]

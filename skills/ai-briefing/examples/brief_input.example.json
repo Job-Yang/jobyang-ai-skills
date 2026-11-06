@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-23",
+  "weekday": "周五",
+  "window_note": "覆盖周五早 24 小时；另含本周 GitHub Trending 复盘。",
+  "top3": [
+    "示例头条一：用一句话说清它为什么值得读者今天知道。",
+    "示例头条二：这里放对读者系统或工作有直接影响的事件。",
+    "示例头条三：趋势级信号，给出读者本周可做的动作。"
+  ],
+  "groups": [
+    {
+      "emoji": "🧠",
+      "title": "新模型",
+      "items": [
+        {
+          "title": "示例模型 Flash 发布",
+          "url": "https://example.com/model",
+          "fact": "100 万上下文，输入 1 元/输出 4 元每百万 token，缓存 0.1 元。",
+          "judgment": "竞争焦点转向 agent 单任务综合成本，**缓存价是最大杠杆**；值得加进模型路由做 A/B。",
+          "stars": "⭐4",
+          "stars_reason": "和读者的模型对照实验直接相关，扣一分因数据为厂商自报。",
+          "source": "官方博客 · 2026-10-22"
+        }
+      ]
+    },
+    {
+      "emoji": "🎙️",
+      "title": "关键人物发声",
+      "items": []
+    }
+  ],
+  "weekly_github": [
+    {
+      "title": "example/awesome-harness",
+      "url": "https://github.com/example/awesome-harness",
+      "fact": "本周 +12.3k★，给 coding agent 做独立验收角色，同模型换 harness 通过率提升。",
+      "judgment": "**验收方不看执行者推理**这一条可直接改进完成门禁；项目久未更新，只读论文/源码不安装。",
+      "stars": "⭐5",
+      "stars_reason": "与读者的 loop/门禁同构，本周值得深读。",
+      "source": "GitHub Trending weekly · 2026-10-23 抓取"
+    }
+  ],
+  "channel_status": ["GitHub 实时抓取成功", "X 主页直读成功", "Product Hunt 聚合镜像", "文档写入成功"],
+  "doc_url": "https://example.com/doc"
+}

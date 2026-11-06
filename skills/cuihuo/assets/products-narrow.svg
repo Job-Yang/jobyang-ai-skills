@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="1060" viewBox="0 0 390 1060" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Source Han Sans SC, sans-serif">
+  <rect width="390" height="1060" fill="#ffffff"/>
+  <text x="20" y="30" font-size="16" font-weight="600" fill="#2b2b2b">一套文风，两种产物</text>
+  <text x="20" y="50" font-size="11.5" fill="#666666">青绿＝主路径　琥珀＝翻车后补的规则　灰虚＝不接的活</text>
+
+  <rect x="20" y="66" width="350" height="76" rx="9" fill="#2a9d8f" stroke="#1f5f58" stroke-width="2"/>
+  <text x="36" y="92" font-size="13" font-weight="600" fill="#ffffff">总纲：观点大于行文</text>
+  <text x="36" y="112" font-size="11.5" fill="#dff3f0">专业且克制，给同行看，直抒胸臆；</text>
+  <text x="36" y="130" font-size="11.5" fill="#dff3f0">私下「大家都没搞懂」是燃料，绝不成姿态</text>
+
+  <g stroke="#555555" stroke-width="1.5" fill="#555555">
+    <line x1="195" y1="142" x2="195" y2="166"/><polygon points="195,169 191,162 199,162"/>
+  </g>
+
+  <rect x="20" y="172" width="350" height="112" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="36" y="196" font-size="13" font-weight="600" fill="#1f5f58">产物一：想法硬文（1200 到 4000 字）</text>
+  <text x="36" y="218" font-size="11.5" fill="#333333">开篇直给主张，不铺垫不定义术语；</text>
+  <text x="36" y="236" font-size="11.5" fill="#333333">机理加事实逐层推进，一节一个观点讲清就走；</text>
+  <text x="36" y="254" font-size="11.5" fill="#333333">敢下至少一个可被反驳的硬判断；</text>
+  <text x="36" y="272" font-size="11.5" fill="#333333">一句立场收尾，不升华不号召</text>
+
+  <rect x="20" y="300" width="350" height="130" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="36" y="324" font-size="13" font-weight="600" fill="#1f5f58">产物二：锻造手记（≤120 字，80 为宜）</text>
+  <text x="36" y="346" font-size="11.5" fill="#333333">模式 A 口语原始想法：理顺，不创作发挥；</text>
+  <text x="36" y="364" font-size="11.5" fill="#333333">模式 B 已写好文章：找只能留的一句话，</text>
+  <text x="36" y="382" font-size="11.5" fill="#333333">不摘抄开头背景，核心观点常在中后段；</text>
+  <text x="36" y="404" font-size="11.5" fill="#7a5a12">因果环不许砍：条件、行为、后果一环都不能少，</text>
+  <text x="36" y="422" font-size="11.5" fill="#7a5a12">字数不够压修饰词，不压后果</text>
+
+  <rect x="20" y="452" width="350" height="86" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.8"/>
+  <text x="36" y="476" font-size="12.5" font-weight="600" fill="#7a5a12">翻车一：去 AI 味规则双源漂移</text>
+  <text x="36" y="496" font-size="11.5" fill="#333333">自己平行维护一份必杀句式清单，必然和事实源</text>
+  <text x="36" y="514" font-size="11.5" fill="#333333">漂移 → haohao-shuohua 立为唯一事实源，冲突以它为准</text>
+  <text x="36" y="530" font-size="11" fill="#7a5a12">淬火只留硬文加严：标题管到小标题、门槛比喻零容忍</text>
+
+  <rect x="20" y="552" width="350" height="86" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.8"/>
+  <text x="36" y="576" font-size="12.5" font-weight="600" fill="#7a5a12">翻车二：手记提炼把后果环砍没</text>
+  <text x="36" y="596" font-size="11.5" fill="#333333">A/B 实测败因：PRD 案例把「出了怪需求也不知道</text>
+  <text x="36" y="614" font-size="11.5" fill="#333333">为什么」压没了 → 补硬规则，配正反例对照</text>
+  <text x="36" y="630" font-size="11" fill="#7a5a12">交付前把成稿因果环节数和原话对一遍</text>
+
+  <rect x="20" y="658" width="350" height="112" rx="9" fill="#f4f5f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="36" y="682" font-size="12" fill="#5f6368">不接的活</text>
+  <text x="36" y="704" font-size="11.5" fill="#5f6368">把一个新东西说清楚、降门槛 → feynman-explainer；</text>
+  <text x="36" y="722" font-size="11.5" fill="#5f6368">把一个未来想象讲得让人愿读 → tangshan-style；</text>
+  <text x="36" y="740" font-size="11.5" fill="#5f6368">有叙事弧、含 talk/slides 的分享 → talk-smith。</text>
+  <text x="36" y="762" font-size="11" fill="#8a8f94">判据：核心是不是「我要输出一个可被反驳的判断」</text>
+</svg>

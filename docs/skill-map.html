@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>个人技能库 · 流向图</title>
+<style>
+  :root{
+    --ink:#2b3138; --sub:#7c8690; --line:#eceff3; --bg:#f7f8fa;
+    --prod:#3aa76d; --prod-bg:#e7f5ed;
+    --think:#3b8fd1; --think-bg:#e8f2fb;
+    --write:#e0823f; --write-bg:#fdf0e4;
+    --util:#8b95a0; --util-bg:#f0f2f5;
+    --src:#94a0ac; --res:#8b73d6; --res-bg:#f1edfd;
+    --flow:#c7d0da;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);
+    font-family:-apple-system,"PingFang SC","Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  header{padding:26px 30px 2px}
+  h1{font-size:22px;font-weight:700;margin:0 0 6px;letter-spacing:.2px}
+  .lead{color:var(--sub);font-size:13.5px;margin:0;line-height:1.6}
+  .bar{display:flex;justify-content:space-between;align-items:center;gap:16px;
+    padding:10px 30px 4px;flex-wrap:wrap}
+  .filters{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);
+    border-radius:999px;padding:6px 15px;cursor:pointer;font-size:13px;color:#525b64;user-select:none;
+    transition:all .15s}
+  .chip:hover{border-color:#c4ccd4}
+  .chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .dot{width:9px;height:9px;border-radius:50%}
+  .layout{display:flex;gap:18px;padding:12px 22px 26px;align-items:flex-start}
+  .card{flex:1;min-width:0;background:#fff;border:1px solid var(--line);border-radius:20px;
+    padding:10px 6px;box-shadow:0 1px 2px rgba(30,40,50,.04)}
+  svg{display:block;min-width:1100px;width:100%;height:auto}
+  .aside{width:304px;flex:0 0 304px;position:sticky;top:18px;background:#fff;border:1px solid var(--line);
+    border-radius:18px;padding:22px;min-height:340px}
+  @media(max-width:980px){.layout{flex-direction:column}.aside{width:100%;flex:none;position:static}.card{overflow-x:auto}}
+  /* ?print=1 静态导出：只留图，便于截图嵌 README */
+  body.print{background:#fff}
+  body.print header,body.print .bar,body.print .aside{display:none}
+  body.print .layout{padding:0}
+  body.print .card{border:none;border-radius:0;box-shadow:none;padding:0}
+  body.print .colhead{display:none}
+
+  /* 流带：默认全灰，筛选/悬停才显簇色 */
+  .flow{fill:var(--flow);opacity:.55;transition:opacity .15s}
+  .flow.muted{opacity:.06}
+  .flow.hot{opacity:.9}
+  .node{cursor:pointer}
+  .node .cap{fill:#fff;stroke:#d3dae1;stroke-width:1.5}
+  .node.src .cap{fill:#f1f3f5;stroke:none}
+  .node.res .cap{fill:var(--res-bg);stroke:#d9cef6}
+  .node.prod .cap{fill:var(--prod-bg);stroke:#bfe3cf}
+  .node.think .cap{fill:var(--think-bg);stroke:#c2ddf2}
+  .node.write .cap{fill:var(--write-bg);stroke:#f3d3b8}
+  .node.util .cap{fill:var(--util-bg);stroke:#dde2e7}
+  .node.test .cap{fill:#fff;stroke:var(--think);stroke-width:2.2}
+  .node .lab{font-size:12.5px;font-weight:600;fill:var(--ink);pointer-events:none}
+  .node.src .lab{font-weight:500;fill:#4b555d}
+  .node.res .lab{font-weight:600;fill:#5e4bb0}
+  .node.dim .cap{opacity:.25}.node.dim .lab{opacity:.25}
+  .colhead{font-size:11px;font-weight:700;fill:#9aa4ad;letter-spacing:1.6px;text-transform:uppercase}
+  .aside h2{font-size:17px;margin:0 0 2px}
+  .aside .en{font-size:11px;color:var(--sub);margin-bottom:12px}
+  .tag{display:inline-block;font-size:10.5px;font-weight:700;border-radius:999px;padding:3px 11px;margin:0 6px 12px 0}
+  .t-prod{background:var(--prod-bg);color:var(--prod)}.t-think{background:var(--think-bg);color:var(--think)}
+  .t-write{background:var(--write-bg);color:var(--write)}.t-util{background:var(--util-bg);color:#5f6a74}
+  .t-src{background:#f1f3f5;color:#4b555d}.t-res{background:var(--res-bg);color:#6a54b8}
+  .t-test{background:#fff;color:var(--think);border:1.5px solid var(--think)}
+  .aside p{font-size:13px;line-height:1.7;margin:8px 0}
+  .aside .k{font-size:11px;font-weight:700;color:var(--sub);letter-spacing:.5px;margin:16px 0 3px}
+  .g{font-size:13px;line-height:1.65}
+  .good{color:#2e8a55}.bad{color:#c0492f}
+  .hint{color:var(--sub);font-size:13px;line-height:1.8}
+  .hint b{color:var(--ink)}
+  .close{float:right;cursor:pointer;color:#c0c7ce;font-size:20px;line-height:1;margin-top:-4px}
+  .close:hover{color:var(--ink)}
+  .linesub{font-size:12.5px;color:var(--sub);line-height:1.7;margin:4px 0 2px}
+  .lg-line{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:#fafbfc;
+    border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin-top:9px;cursor:pointer;
+    font-size:13px;color:var(--ink);transition:border-color .12s}
+  .lg-line:hover{border-color:#c2cad2}
+  .lg-line .meta{margin-left:auto;color:var(--sub);font-size:11px;white-space:nowrap}
+  .lg-row{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px dashed #eef1f4;cursor:pointer}
+  .lg-row:hover{background:#fafbfc}.lg-row:last-child{border-bottom:none}
+  .lg-idx{width:20px;height:20px;border-radius:50%;flex:none;margin-top:1px;color:#fff;font-size:10px;
+    display:flex;align-items:center;justify-content:center;font-weight:700}
+  .lg-row.branch .lg-idx{background:#fff;border:1.6px dashed #9aa4ad;color:#8b95a0}
+  .lg-row b{font-size:13px;font-weight:600}
+  .lg-row span{display:block;font-size:12px;color:var(--sub);line-height:1.55;margin-top:2px}
+  .backlink{font-size:12px;color:var(--think);cursor:pointer;margin-bottom:10px;display:inline-block}
+</style>
+</head>
+<body>
+<header>
+  <h1>个人技能库 · 流向图</h1>
+  <p class="lead">从左到右：你在做的一类事 → 对应技能 → 多股流汇入共用枢纽 → 最终产出。<b style="color:var(--ink)">带子越宽，承接的任务越多；几条带子合进同一处，就是共用枢纽。</b></p>
+</header>
+<div class="bar">
+  <div class="filters" id="filters">
+    <span class="chip active" data-f="all">全部</span>
+    <span class="chip" data-f="prod"><i class="dot" style="background:var(--prod)"></i>产品</span>
+    <span class="chip" data-f="think"><i class="dot" style="background:var(--think)"></i>思维</span>
+    <span class="chip" data-f="write"><i class="dot" style="background:var(--write)"></i>写作</span>
+    <span class="chip" data-f="util"><i class="dot" style="background:var(--util)"></i>工具</span>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="card"><svg id="chart" viewBox="0 0 1460 740"></svg></div>
+  <aside class="aside" id="aside">
+    <div class="hint">
+      <b>这张图怎么读</b><br>
+      · 左边是你在做的一类事，顺着带子往右走到产出。<br>
+      · 最宽的汇合点是中间的<b style="color:var(--think)">「取证·兼听」</b>与<b style="color:var(--prod)">「产品需求/设计」</b>——多个技能都把结果汇到这里。<br>
+      · 思维技能的带子多数弯回绿色产品主干，而不是直接结束；写作线（橙）独立通向「对外成稿」。<br><br>
+      <b>悬停</b>任意节点可高亮它的整条上下游路径；<b>点击</b>查看它干嘛、单独收益、好用与翻车信号。
+    </div>
+  </aside>
+</div>
+
+<script>
+const PAL={prod:['#3aa76d','#e7f5ed'],think:['#3b8fd1','#e8f2fb'],write:['#e0823f','#fdf0e4'],util:['#8b95a0','#f0f2f5']};
+const N={};
+function n(o){N[o.id]=o;}
+
+// —— 列 1：任务源（聚合为 8 类）——
+[
+ ['t_find','发现 / 评估机会'],
+ ['t_decide','想清楚、做决定'],
+ ['t_verify','验证信息或文章'],
+ ['t_try','想低成本先验证'],
+ ['t_learn','学习优秀成品'],
+ ['t_build','做需求 / 设计 / 技术方案'],
+ ['t_write','写文章 / 分享 / 改稿'],
+ ['t_tool','处理素材 / 出日报']
+].forEach(([id,label])=>n({id,label,d:0,c:'src'}));
+
+// —— 列 2：技能 ——
+[
+ ['radar','机会雷达','prod','exist'],['scorecard','机会评分卡','prod','exist'],
+ ['steelman-choice','钢人抉择','think','test'],['root-rethink','归本重推','think','test'],
+ ['claim-check','说法核查','think','test'],['argument-reading','论证精读','think','test'],
+ ['minimum-experiment','最小实验','think','test'],
+ ['reverse-teardown','反向拆解','prod','test'],
+ ['brief','产品需求','prod','exist'],['compass','设计罗盘','prod','exist'],
+ ['engineering-docs','技术文档','prod','exist'],
+ ['feynman','费曼讲透','write','exist'],['sansi','三思改稿','write','exist'],
+ ['haohao','去 AI 味','write','exist'],['cuihuo','淬火硬文','write','exist'],
+ ['tangshan','汤山体','write','exist'],['talk','技术分享','write','exist'],['haohao-eval','评测台','write','exist'],
+ ['png','PNG 压缩','util','exist'],['video','视频解读','util','exist'],
+ ['briefing','AI 日报','util','exist'],['infographic','信息图','util','exist']
+].forEach(([id,label,c,st])=>n({id,label,d:1,c,status:st}));
+
+// —— 列 3：共用枢纽 ——
+[
+ ['hub_brief','产品需求 / 计划','prod'],
+ ['hub_design','设计 / 原型','prod'],
+ ['hub_proof','取证 · 兼听','think'],
+ ['hub_lint','去 AI 味','write']
+].forEach(([id,label,c])=>n({id,label,d:2,c}));
+
+// —— 列 4：成文 / 验证 ——
+n({id:'doc',label:'技术文档',d:3,c:'prod'});
+n({id:'vdd',label:'完成验证',d:3,c:'prod'});
+
+// —— 列 5：产出 ——
+[
+ ['o_opp','机会 / 评分结论'],['o_decide','更清醒的选择'],['o_truth','可信的判断'],
+ ['o_exp','实验反馈'],['o_rule','可迁移规律'],['o_plan','PRD / 原型'],
+ ['o_ship','交付'],['o_write','对外成稿'],['o_tool','即取即用产物']
+].forEach(([id,label])=>n({id,label,d:4,c:'res'}));
+
+// —— 流：[源, 目标, 权重] ——
+const E=[];const e=(s,t,w=1)=>E.push({s,t,w});
+// 任务源 → 技能
+e('t_find','radar',2);e('t_find','scorecard',2);
+e('t_decide','steelman-choice',2);e('t_decide','root-rethink',2);
+e('t_verify','claim-check',2);e('t_verify','argument-reading',2);
+e('t_try','minimum-experiment',2);
+e('t_learn','reverse-teardown',2);
+e('t_build','brief',2);e('t_build','compass',2);e('t_build','engineering-docs',2);
+e('t_write','feynman');e('t_write','sansi');e('t_write','cuihuo');e('t_write','tangshan');e('t_write','talk');
+e('t_tool','png');e('t_tool','video');e('t_tool','briefing');e('t_tool','infographic');
+// 产品主干
+e('radar','scorecard');e('scorecard','o_opp');e('radar','o_opp');
+e('scorecard','brief',2);e('brief','hub_brief',3);e('compass','hub_design',3);
+e('brief','engineering-docs',2);e('engineering-docs','doc');e('doc','vdd');e('vdd','o_ship',3);
+e('hub_brief','o_plan',2);e('hub_design','o_plan',3);e('doc','o_plan');
+// 思维 → 取证枢纽
+e('steelman-choice','hub_proof',2);e('claim-check','hub_proof',2);
+e('argument-reading','hub_proof',2);e('root-rethink','hub_proof');
+e('hub_proof','o_truth',3);e('claim-check','o_truth');e('argument-reading','o_truth',2);
+// 思维 → 选择/回流
+e('steelman-choice','o_decide',2);e('root-rethink','o_decide');e('root-rethink','steelman-choice');
+e('steelman-choice','hub_brief');
+e('minimum-experiment','o_exp',2);e('minimum-experiment','hub_brief',2);
+e('reverse-teardown','o_rule',2);e('reverse-teardown','hub_design',2);e('reverse-teardown','hub_brief');
+// 写作
+e('talk','feynman');e('feynman','o_write');
+['cuihuo','tangshan','talk','sansi','haohao-eval'].forEach(x=>e(x,'hub_lint'));
+e('feynman','hub_lint');e('hub_lint','o_write',3);
+// 工具
+['png','video','briefing','infographic'].forEach(x=>e(x,'o_tool'));
+
+const COLX=[200,430,720,1000,1290], NW=12, GAP=13, TOP=66, H=690;
+Object.values(N).forEach(x=>{x.in=0;x.out=0;});
+E.forEach(({s,t,w})=>{N[s].out+=w;N[t].in+=w;});
+const cols={};Object.values(N).forEach(x=>(cols[x.d]=cols[x.d]||[]).push(x));
+
+function order(d){ // 同列按簇纵向分组，减少交叉
+  const rank={src:0,prod:1,think:2,write:3,util:4,res:5};
+  const arr=cols[d];
+  if(d===1) arr.sort((a,b)=>rank[a.c]-rank[b.c] || a.label.localeCompare(b.label));
+  if(d===0) arr.sort((a,b)=>{
+    const w={t_find:0,t_decide:1,t_verify:1,t_try:1,t_learn:1,t_build:2,t_write:3,t_tool:4};
+    return w[a.id]-w[b.id];});
+  if(d===2) arr.sort((a,b)=>rank[a.c]-rank[b.c]);
+  if(d===4) arr.sort((a,b)=>{
+    const w={o_opp:0,o_decide:1,o_truth:1,o_exp:2,o_rule:2,o_plan:3,o_ship:3,o_write:4,o_tool:5};
+    return w[a.id]-w[b.id];});
+}
+[0,1,2,3,4].forEach(order);
+
+Object.entries(cols).forEach(([d,arr])=>{
+  d=+d;
+  const total=arr.reduce((s,x)=>s+Math.max(x.in,x.out,1),0);
+  const fixed=(d===0||d===4);
+  const usable=H-150-(arr.length-1)*GAP;
+  let y=TOP;
+  arr.forEach(x=>{
+    const f=Math.max(x.in,x.out,1);
+    let h=fixed?22:Math.max(16,f/total*usable);
+    h=Math.min(h,d===2?54:40);
+    x.h=h;x.y=y;y+=h+GAP;
+  });
+  const used=y-GAP-TOP,off=Math.max((H-60-used)/2,0);
+  arr.forEach(x=>x.y+=off);
+});
+
+const NS='http://www.w3.org/2000/svg',svg=document.getElementById('chart');
+Object.values(N).forEach(x=>{x.ic=0;x.oc=0;});
+
+// 列标题
+['你在做的事','对应技能','共用枢纽','成文 / 验证','产出'].forEach((t,i)=>{
+  const el=document.createElementNS(NS,'text');el.setAttribute('class','colhead');
+  el.setAttribute('x',COLX[i]);el.setAttribute('y',42);el.setAttribute('text-anchor','middle');el.textContent=t;
+  svg.appendChild(el);
+});
+
+function band(s,t,w){
+  const x0=COLX[s.d]+NW/2,x1=COLX[t.d]-NW/2;
+  const y0=s.y+s.oc+w/2,y1=t.y+t.ic+w/2;s.oc+=w+2.5;t.ic+=w+2.5;
+  const cx=(x0+x1)/2;
+  return `M${x0},${y0-w/2} C${cx},${y0-w/2} ${cx},${y1-w/2} ${x1},${y1-w/2}
+          L${x1},${y1+w/2} C${cx},${y1+w/2} ${cx},${y0+w/2} ${x0},${y0+w/2} Z`;
+}
+const flowEls=[];
+E.forEach(edge=>{
+  const p=document.createElementNS(NS,'path');
+  p.setAttribute('class','flow');
+  p.setAttribute('d',band(N[edge.s],N[edge.t],5+edge.w*2.4));
+  p.dataset.s=edge.s;p.dataset.t=edge.t;p.dataset.c=N[edge.t].c;
+  svg.appendChild(p);flowEls.push(p);
+});
+
+Object.values(N).forEach(x=>{
+  const g=document.createElementNS(NS,'g');
+  g.setAttribute('class',`node ${x.c} ${x.status==='test'?'test':''}`);
+  g.dataset.id=x.id;g.dataset.c=x.c;
+  const r=document.createElementNS(NS,'rect');
+  r.setAttribute('class','cap');
+  r.setAttribute('x',COLX[x.d]-NW/2);r.setAttribute('y',x.y);
+  r.setAttribute('width',NW);r.setAttribute('height',x.h);r.setAttribute('rx',NW/2);
+  g.appendChild(r);
+  const t=document.createElementNS(NS,'text');t.setAttribute('class','lab');
+  const left=x.d===0;
+  t.setAttribute('x',COLX[x.d]+(left?-14:NW/2+12));
+  t.setAttribute('y',x.y+x.h/2+4);
+  t.setAttribute('text-anchor',left?'end':'start');t.textContent=x.label;
+  g.appendChild(t);
+  g.addEventListener('mouseenter',()=>spot(x.id,true));
+  g.addEventListener('mouseleave',()=>spot(x.id,false));
+  g.addEventListener('click',()=>detail(x));
+  svg.appendChild(g);
+});
+
+function family(id){
+  const set=new Set([id]);let go=true;
+  while(go){go=false;
+    E.forEach(({s,t})=>{if(set.has(s)&&!set.has(t)){set.add(t);go=true;}if(set.has(t)&&!set.has(s)){set.add(s);go=true;}});}
+  return set;
+}
+function spot(id,on){
+  const f=family(id);
+  flowEls.forEach(p=>{
+    const linked=f.has(p.dataset.s)&&f.has(p.dataset.t);
+    p.classList.toggle('hot',on&&linked);
+    p.classList.toggle('muted',on&&!linked);
+    if(on&&linked){p.style.fill=PAL[p.dataset.c][0];}
+    if(!on)p.style.fill='';
+  });
+  document.querySelectorAll('.node').forEach(g=>g.classList.toggle('dim',on&&!f.has(g.dataset.id)));
+}
+function keyOf(c){return {prod:'prod',think:'think',write:'write',util:'util',src:'util',res:'think'}[c]||'util';}
+
+const DET={
+ radar:['扫一个领域有哪些产品机会/痛点，逐条带来源证据。','独立做一次机会扫描。','拿到几条可追溯线索，知道先看哪条。','只丢一堆没出处的"可能方向"。'],
+ scorecard:['给单个想法按十维脚本打分，判断值不值得继续。','脱离流程给任何想法做定量体检。','低分被当场拦下并说明死在哪一维。','分数精确却没有证据支撑。'],
+ 'steelman-choice':['两个方案都讲得通时，先把两边各自立到最强，逼出真分歧和一个翻盘问题。','任意环境防止草率拍板。','纠结被缩成"就差这一个事实/取舍"。','和稀泥、稻草人反方、或替你拍板。'],
+ 'root-rethink':['拆回事实/假设/目标/约束重新推导，推不动再跨领域借机制。','任意对话跳出补丁循环。','看清旧方案掩盖哪个真问题，新路每步有事实。','一堆"回归本质"口号落不到动作。'],
+ 'claim-check':['把说法拆成事实/推论/立场，五级可信度+推理审计。','离线也能拆解并标注待查项。','知道哪句能信、哪句打问号、最该查什么。','没查证却写"已证实"或编来源。'],
+ 'argument-reading':['整篇文章重建为论证地图，先善意重建再评价。','转发前给任意长文做可信度体检。','看懂文章哪步推理断了、藏了什么前提。','变成摘要，或只顾挑刺。'],
+ 'minimum-experiment':['挑最致命的一个假设，设计低成本可逆可证伪试错。','把空想变成一周内见分晓的反馈。','拿到本周能做、做砸能退的动作。','怎么算输说不清，或等于先把产品做出来。'],
+ 'reverse-teardown':['从优秀成品还原结构与关键选择，分清能搬和只适合对方的。','任意环境看到好东西都能带走做法。','能说出"照做3件事"和"千万别搬的点"。','全是"高级/简洁"的夸，没具体改什么。'],
+ brief:['把想法/评分转成可验收 PRD、MVP 边界和里程碑。','独立产出能开工的需求计划。','每条功能都有可验证的验收条件。','写成无法验收的愿望清单。'],
+ compass:['UI/UX 评审，产出线框、原型和设计规格。','单独完成一轮设计。','原型能点，关键旅程有落点。','只有好看的图，没回答需求落点。'],
+ 'engineering-docs':['写研发技术方案与决定，按需出图。','独立成文并记录决定代价。','关键决定附事实、假设、代价和回退。','目录全但看不出为什么这么定。'],
+ feynman:['一条逻辑链把复杂概念讲透给自己懂。','任意主题讲明白。','外行也能顺着复述。','要点清单和术语堆砌。'],
+ sansi:['改成形文档前先通读全文骨架，防补丁式改稿。','小改有投入闸门。','改完全局一致不补丁摞补丁。','只盯一段改，前后矛盾。'],
+ haohao:['中文成稿清洗：保事实去机器腔，支持扩展屏蔽表。','对任意成稿 lint。','读着像人写的，事实没丢。','改完没 AI 味但意思也没了。'],
+ cuihuo:['技术观点淬成一节一观点的对外硬文。','独立写观点文。','观点立得住、删尽车轱辘话。','气势足但论证空心。'],
+ tangshan:['面向未来有历史纵深的技术畅想长文。','独立写畅想文。','推演有路径感不喊口号。','宏大词汇堆砌。'],
+ talk:['技术分享中长文/演讲稿/slides。','独立做完一场分享。','听众跟得住、有记忆点。','把技术文档念一遍。'],
+ 'haohao-eval':['盲评、每日召回、门禁评测改稿质量。','独立的改稿评测台。','坏改被召回拦截。','评分指导不了怎么改。'],
+ png:['本地批量压 PNG，缓存/门禁/回退。','任意本地工程直接用。','体积下来画质可控。','压坏图或污染源码目录。'],
+ video:['视频转带时间戳关键帧和运动时间线。','任意环境看懂视频。','能定位"第几秒发生了什么"。','只给截图没有时间线。'],
+ briefing:['5 分钟 AI/科技日报，事实+判断+机会卡片。','任意环境生成情报简报。','宁缺毋滥、每条有判断。','信息堆砌没有取舍。'],
+ infographic:['把关键道理做成"图自己讲清一件事"的信息图。','零依赖渲染高清 SVG/PNG。','图不看正文也能懂那一个点。','装饰配图、图文两张皮。'],
+ hub_proof:['只补会改变决定的外部证据，判冲突、定停止。多个思维技能汇到这里统一取证。','独立做有纪律的检索。','该搜的搜了、冲突解释清、知道何时停。','为全面而乱搜。'],
+ hub_brief:['产品需求/计划的汇聚点：评分、钢人结论、实验结果都回流到这里。','—','所有上游判断落成可验收的计划。','判断停在口头，落不了地。'],
+ hub_design:['设计/原型汇聚点：反向拆解学来的规律、PRD 都汇到这里。','—','学来的规律真正变成界面。','学归学，做界面时没用上。'],
+ hub_lint:['所有对外文字的统一出口。','—','成稿统一去机器腔。','不同文体被改成一个腔调。'],
+ doc:['研发技术方案与技术决定。','独立成文。','关键决定附事实、假设、代价、回退。','目录全但看不出为什么这么定。'],
+ vdd:['说完成前必须拿出对应验证证据。','任意环境防虚报。','每条声明都对得上测试/日志/截图。','说"应该没问题"但没验证。']
+};
+const CN={prod:'产品',think:'思维',write:'写作',util:'工具',src:'你的任务',res:'产出'};
+
+let activeLine=null;
+// 每条线按流向给"它在链上扮演什么"的一句话（branch=旁挂/旁路）
+const LINE_GUIDE={
+ prod:{title:'产品主干线',color:'var(--prod)',
+   sub:'这是最常走的一条线：从发现一个机会，到判断值不值得、写成需求、做出设计和技术方案，最后验证交付。',
+   when:'你在做一个新产品或新功能时——找机会、排优先级、写 PRD、做界面、定技术方案。',
+   nodes:[['radar',1],['scorecard',2],['brief',3],['compass',4],['engineering-docs',5],['vdd',6]],
+   branches:[['reverse-teardown','旁挂：看到优秀成品时学规律，汇入需求与设计']]},
+ think:{title:'思维线 · 卡住时的旁路',color:'var(--think)',
+   sub:'它不直接交付东西，而是在主干任意一站"卡住"时绕上去想清楚，再把结论、证据或实验结果带回产品主干。',
+   when:'两个方案选不出／不敢信某条说法或某篇文章／觉得一直在打补丁／想法没把握不敢直接做。',
+   nodes:[['root-rethink',1],['steelman-choice',2],['claim-check',3],['argument-reading',3],['hub_proof',4],['minimum-experiment',5]],
+   branches:[['brief','收尾：结论/实验结果回流到「产品需求」继续主干'],['compass','收尾：学来的规律回流到「设计」']]},
+ write:{title:'写作线 · 对外成文',color:'var(--write)',
+   sub:'要把东西写给别人看时才上，独立于产品线；不同文体走不同技能，所有成稿最后统一过一次「去 AI 味」。',
+   when:'讲透一个概念、改已有稿子、写技术观点硬文、写未来畅想、做技术分享。',
+   nodes:[['sansi',1],['feynman',2],['cuihuo',3],['tangshan',3],['talk',3],['haohao-eval',4],['hub_lint',5]],
+   branches:[]},
+ util:{title:'工具线 · 随取随用',color:'var(--util)',
+   sub:'不参与主流程的独立工具，需要时直接用，直接产出可用产物。',
+   when:'要批量压图、看懂一个视频、出一期 AI 日报、给文章配信息图。',
+   nodes:[['png',1],['video',2],['briefing',3],['infographic',4]],
+   branches:[]}
+};
+// 节点在链路上的角色一句话（没有则回退到 DET）
+const LINE_ROLE={
+ radar:'扫出有哪些机会/痛点，带来源证据',scorecard:'给想法打分，决定先做哪个',
+ brief:'把结论落成可验收的需求和计划',compass:'把需求变成界面原型与设计规格',
+ 'engineering-docs':'形成技术方案与决定，附代价和回退',vdd:'做完前拿出测试/日志等验证证据',
+ 'reverse-teardown':'从优秀成品学可迁移规律',
+ 'root-rethink':'怀疑在打补丁时，拆回事实/假设/目标重新推导',
+ 'steelman-choice':'两个方案都有理时，把两边立到最强再定位翻盘问题',
+ 'claim-check':'核查单条说法/数据，给五级可信度',
+ 'argument-reading':'精读整篇文章的论证链、前提与谬误',
+ hub_proof:'共用枢纽：统一去外部取证据、判冲突、定停止',
+ 'minimum-experiment':'用最低成本的可逆实验拿到真实反馈',
+ sansi:'改稿前先通读全文骨架，防补丁式改稿',
+ feynman:'先把硬概念讲透（也是各文体的讲白助手）',
+ cuihuo:'写一节一观点的技术观点硬文',tangshan:'写面向未来的技术畅想长文',
+ talk:'做技术分享中长文/演讲稿/slides','haohao-eval':'用盲评和召回给改稿质量把关',
+ hub_lint:'共用枢纽：所有成稿统一去机器腔',
+ png:'本地批量压缩工程 PNG',video:'把视频转成带时间戳的关键帧',
+ briefing:'生成宁缺毋滥的 AI/科技日报',infographic:'把关键道理做成自解释信息图'
+};
+function roleOf(id){return LINE_ROLE[id]||(DET[id]&&DET[id][0])||'';}
+function lineRow(id,idx,branch){
+  const x=N[id];if(!x)return '';
+  const num=branch?'旁':idx;
+  return `<div class="lg-row ${branch?'branch':''}" onclick="detail(N['${id}'])">
+    <div class="lg-idx" style="background:${branch?'#fff':PAL[x.c][0]};color:${branch?'#8b95a0':'#fff'};border-color:${PAL[x.c][0]}">${num}</div>
+    <div><b>${x.label}</b><span>${branch===true?(LINE_GUIDE[activeLine].branches.find(b=>b[0]==='${id}')||[])[1]||roleOf(id):roleOf(id)}</span></div></div>`;
+}
+function renderLine(f){
+  activeLine=f;const g=LINE_GUIDE[f];
+  let h=`<span class="close" onclick="goBack()">×</span><h2 style="color:${g.color}">${g.title}</h2>
+    <div class="linesub">${g.sub}</div>
+    <div class="k">什么时候你在这条线上</div><div class="g">${g.when}</div>
+    <div class="k">链路上的技能（按流向，点任意一条看详情）</div>
+    <div>${g.nodes.map(r=>lineRow(r[0],r[1],false)).join('')}${g.branches.map(r=>lineRow(r[0],0,true)).join('')}</div>`;
+  aside(h);
+}
+function goBack(){if(activeLine)renderLine(activeLine);else home();}
+
+function detail(x){
+  if(x.d===0){aside(`<h2>${x.label}</h2><p>一类真实任务的入口，从这里流进右侧相应技能。</p>`);return;}
+  if(x.d===4){aside(`<h2>${x.label}</h2><p>技能工作完你拿到的结果；多条带子汇到这里，表示多个技能都能产出这一类东西。</p>`);return;}
+  const d=DET[x.id]||['','','',''];
+  let h=`<span class="close" onclick="goBack()">×</span><h2>${x.label}</h2>`;
+  h+=`<span class="tag t-${x.c}">${CN[x.c]}</span>`;
+  if(x.status==='test')h+=`<span class="tag t-test">已建·待盲测</span>`;
+  if(d[0])h+=`<p>${d[0]}</p><div class="k">单独装到任意环境的收益</div><div class="g">${d[1]}</div>
+    <div class="k">做好了的体感</div><div class="g good">✓ ${d[2]}</div><div class="k">翻车信号</div><div class="g bad">✗ ${d[3]}</div>`;
+  aside(h);
+}
+function aside(h){document.getElementById('aside').innerHTML=h;}
+function home(){activeLine=null;
+ const meta={prod:'从机会到交付',think:'卡住时绕上去想清楚',write:'要对外成文时',util:'随取随用的独立工具'};
+ const lines=['prod','think','write','util'].map(f=>
+  `<button class="lg-line" onclick="pickLine('${f}')"><i class="dot" style="background:${PAL[f][0]}"></i><b>${{prod:'产品主干线',think:'思维线',write:'写作线',util:'工具线'}[f]}</b><span class="meta">${meta[f]}</span></button>`).join('');
+ aside(`<div class="hint"><b>这张图怎么读</b><br>· 左边是你在做的一类事，顺着带子往右走到产出；<b>带子越宽＝承接任务越多</b>。<br>· 最宽的汇合点是<b style="color:var(--think)">「取证·兼听」</b>与<b style="color:var(--prod)">「产品需求/设计」</b>。<br>· <b>悬停</b>节点高亮上下游，<b>点击</b>看定位与好坏信号。<div class="k">四条线速览（点开看链路上每个技能是干嘛的）</div>${lines}</div>`);}
+function pickLine(f){document.querySelector('.chip[data-f="'+f+'"]').click();}
+
+document.getElementById('filters').addEventListener('click',e=>{
+  const chip=e.target.closest('.chip');if(!chip)return;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active',c===chip));
+  const f=chip.dataset.f;
+  document.querySelectorAll('.node').forEach(g=>{
+    const mine=f==='all'||g.dataset.c===f||g.dataset.c==='src'||g.dataset.c==='res';
+    g.classList.toggle('dim',!mine);});
+  flowEls.forEach(p=>{
+    const mine=f==='all'||p.dataset.c===f;
+    p.classList.toggle('muted',!mine);
+    p.style.fill=(f==='all')?'':PAL[f][0];
+  });
+  if(f==='all')home();else renderLine(f);
+});
+if(new URLSearchParams(location.search).get('print')==='1')document.body.classList.add('print');
+home();
+</script>
+</body>
+</html>

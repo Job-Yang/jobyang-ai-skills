@@ -1,0 +1,75 @@
+{
+  "kind": "synthetic_extra_examples",
+  "description": "人工构造的制图样例（矩形树图、桑基流向图），不能用于推断任何真实系统性能。树图子项之和等于父项合计；桑基每个节点入流量等于出流量（纯源/纯汇除外），损耗单独成汇。",
+  "treemap": {
+    "unit": "MiB",
+    "metric": "运行时堆内存占用",
+    "groups": [
+      {
+        "name": "交易域",
+        "total": 390,
+        "children": [
+          {"name": "订单服务", "value": 180},
+          {"name": "支付服务", "value": 120},
+          {"name": "库存服务", "value": 90}
+        ]
+      },
+      {
+        "name": "平台域",
+        "total": 280,
+        "children": [
+          {"name": "网关", "value": 150},
+          {"name": "通知服务", "value": 70},
+          {"name": "认证中心", "value": 60}
+        ]
+      },
+      {
+        "name": "数据域",
+        "total": 190,
+        "children": [
+          {"name": "报表服务", "value": 110},
+          {"name": "搜索服务", "value": 80}
+        ]
+      },
+      {
+        "name": "基础设施",
+        "total": 80,
+        "children": [
+          {"name": "配置中心", "value": 45},
+          {"name": "链路追踪", "value": 35}
+        ]
+      }
+    ]
+  },
+  "sankey": {
+    "unit": "次/分钟",
+    "nodes": [
+      {"name": "入口请求", "layer": 0},
+      {"name": "订单服务", "layer": 1},
+      {"name": "库存服务", "layer": 1},
+      {"name": "支付服务", "layer": 1},
+      {"name": "通知服务", "layer": 1},
+      {"name": "缓存命中", "layer": 2},
+      {"name": "数据库访问", "layer": 2},
+      {"name": "降级丢弃", "layer": 2}
+    ],
+    "links": [
+      {"source": "入口请求", "target": "订单服务", "value": 4200},
+      {"source": "入口请求", "target": "库存服务", "value": 2600},
+      {"source": "入口请求", "target": "支付服务", "value": 2200},
+      {"source": "入口请求", "target": "通知服务", "value": 1000},
+      {"source": "订单服务", "target": "缓存命中", "value": 1200},
+      {"source": "订单服务", "target": "数据库访问", "value": 2500},
+      {"source": "订单服务", "target": "降级丢弃", "value": 500},
+      {"source": "库存服务", "target": "缓存命中", "value": 800},
+      {"source": "库存服务", "target": "数据库访问", "value": 1500},
+      {"source": "库存服务", "target": "降级丢弃", "value": 300},
+      {"source": "支付服务", "target": "缓存命中", "value": 600},
+      {"source": "支付服务", "target": "数据库访问", "value": 1400},
+      {"source": "支付服务", "target": "降级丢弃", "value": 200},
+      {"source": "通知服务", "target": "缓存命中", "value": 400},
+      {"source": "通知服务", "target": "数据库访问", "value": 500},
+      {"source": "通知服务", "target": "降级丢弃", "value": 100}
+    ]
+  }
+}

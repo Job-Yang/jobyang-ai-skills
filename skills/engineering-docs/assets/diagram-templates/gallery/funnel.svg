@@ -9,7 +9,7 @@
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
-      <dc:title>Matplotlib v3.9.4, https://matplotlib.org/</dc:title>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
      </cc:Agent>
     </dc:creator>
    </cc:Work>
@@ -42,7 +42,7 @@ L 425.729455 132.653455
 L 425.729455 168.453553
 L 127.518545 168.453553
 z
-" clip-path="url(#p49307e38a2)" style="fill: #eae2fe; stroke: #7456b2; stroke-linejoin: miter"/>
+" clip-path="url(#pfbb71a6a64)" style="fill: #f2f7fd; stroke: #2a78d6; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
     <path d="M 169.268073 183.796452
@@ -50,7 +50,7 @@ L 383.979927 183.796452
 L 383.979927 219.59655
 L 169.268073 219.59655
 z
-" clip-path="url(#p49307e38a2)" style="fill: #dff5e5; stroke: #367747; stroke-linejoin: miter"/>
+" clip-path="url(#pfbb71a6a64)" style="fill: #fef6f3; stroke: #eb6834; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
     <path d="M 208.035491 234.93945
@@ -58,7 +58,7 @@ L 345.212509 234.93945
 L 345.212509 270.739548
 L 208.035491 270.739548
 z
-" clip-path="url(#p49307e38a2)" style="fill: #fef1ce; stroke: #896b21; stroke-linejoin: miter"/>
+" clip-path="url(#pfbb71a6a64)" style="fill: #f1faf7; stroke: #1baf7a; stroke-linejoin: miter"/>
    </g>
    <g id="patch_6">
     <path d="M 228.910255 286.082447
@@ -66,87 +66,87 @@ L 324.337745 286.082447
 L 324.337745 321.882545
 L 228.910255 321.882545
 z
-" clip-path="url(#p49307e38a2)" style="fill: #f0f4fc; stroke: #4063a8; stroke-linejoin: miter"/>
+" clip-path="url(#pfbb71a6a64)" style="fill: #fef9f0; stroke: #eda100; stroke-linejoin: miter"/>
    </g>
    <g id="matplotlib.axis_1"/>
    <g id="matplotlib.axis_2">
     <g id="ytick_1">
      <g id="line2d_1">
       <defs>
-       <path id="m008f6564b2" d="M 0 0
+       <path id="m20d4841c9c" d="M 0 0
 L -3.5 0
-" style="stroke: #646a73; stroke-width: 0.8"/>
+" style="stroke: #5f6670; stroke-width: 0.8"/>
       </defs>
       <g>
-       <use xlink:href="#m008f6564b2" x="112.608" y="150.553504" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+       <use xlink:href="#m20d4841c9c" x="112.608" y="150.553504" style="fill: #5f6670; stroke: #5f6670; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_1">
-      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: end" x="105.608" y="154.434754" transform="rotate(-0 105.608 154.434754)">访问</text>
+      <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: end; fill: #5f6670" x="105.608" y="155.128316" transform="rotate(-0 105.608 155.128316)">访问</text>
      </g>
     </g>
     <g id="ytick_2">
      <g id="line2d_2">
       <g>
-       <use xlink:href="#m008f6564b2" x="112.608" y="201.696501" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+       <use xlink:href="#m20d4841c9c" x="112.608" y="201.696501" style="fill: #5f6670; stroke: #5f6670; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_2">
-      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: end" x="105.608" y="205.56172" transform="rotate(-0 105.608 205.56172)">开始任务</text>
+      <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: end; fill: #5f6670" x="105.608" y="206.205501" transform="rotate(-0 105.608 206.205501)">开始任务</text>
      </g>
     </g>
     <g id="ytick_3">
      <g id="line2d_3">
       <g>
-       <use xlink:href="#m008f6564b2" x="112.608" y="252.839499" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+       <use xlink:href="#m20d4841c9c" x="112.608" y="252.839499" style="fill: #5f6670; stroke: #5f6670; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_3">
-      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: end" x="105.608" y="256.704718" transform="rotate(-0 105.608 256.704718)">提交结果</text>
+      <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: end; fill: #5f6670" x="105.608" y="257.358624" transform="rotate(-0 105.608 257.358624)">提交结果</text>
      </g>
     </g>
     <g id="ytick_4">
      <g id="line2d_4">
       <g>
-       <use xlink:href="#m008f6564b2" x="112.608" y="303.982496" style="fill: #646a73; stroke: #646a73; stroke-width: 0.8"/>
+       <use xlink:href="#m20d4841c9c" x="112.608" y="303.982496" style="fill: #5f6670; stroke: #5f6670; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_4">
-      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: end" x="105.608" y="307.847715" transform="rotate(-0 105.608 307.847715)">完成验收</text>
+      <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: end; fill: #5f6670" x="105.608" y="308.51259" transform="rotate(-0 105.608 308.51259)">完成验收</text>
      </g>
     </g>
    </g>
    <g id="text_5">
-    <text style="fill: #1f2329; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="276.624" y="153.342941" transform="rotate(-0 276.624 153.342941)">1000 · 100.0%</text>
+    <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: middle; fill: #1a1b1c" x="276.624" y="153.351062" transform="rotate(-0 276.624 153.351062)">1000 · 100.0%</text>
    </g>
    <g id="text_6">
-    <text style="fill: #1f2329; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="276.624" y="204.485939" transform="rotate(-0 276.624 204.485939)">720 · 72.0%</text>
+    <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: middle; fill: #1a1b1c" x="276.624" y="204.49406" transform="rotate(-0 276.624 204.49406)">720 · 72.0%</text>
    </g>
    <g id="text_7">
-    <text style="fill: #1f2329; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="276.624" y="255.628936" transform="rotate(-0 276.624 255.628936)">460 · 46.0%</text>
+    <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: middle; fill: #1a1b1c" x="276.624" y="255.637057" transform="rotate(-0 276.624 255.637057)">460 · 46.0%</text>
    </g>
    <g id="text_8">
-    <text style="fill: #1f2329; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="276.624" y="306.771934" transform="rotate(-0 276.624 306.771934)">320 · 32.0%</text>
+    <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: middle; fill: #1a1b1c" x="276.624" y="306.780055" transform="rotate(-0 276.624 306.780055)">320 · 32.0%</text>
    </g>
   </g>
   <g id="text_9">
-   <text style="fill: #646a73; font: 10px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="22.0896" transform="rotate(-0 23.0112 22.0896)">漏斗图</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="22.0896" transform="rotate(-0 23.0112 22.0896)">漏斗图</text>
   </g>
   <g id="text_10">
-   <text style="fill: #1f2329; font: 700 18px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="52.2504" transform="rotate(-0 23.0112 52.2504)">从访问到完成任务的转化</text>
+   <text style="font-weight: 700; font-size: 18px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #1a1b1c" x="23.0112" y="52.2504" transform="rotate(-0 23.0112 52.2504)">从访问到完成任务的转化</text>
   </g>
   <g id="text_11">
-   <text style="fill: #646a73; font: 10px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="75.1896" transform="rotate(-0 23.0112 75.1896)">同一批用户逐级筛选 · 每层是上一层的子集</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="75.1896" transform="rotate(-0 23.0112 75.1896)">同一批用户逐级筛选 · 每层是上一层的子集</text>
   </g>
   <g id="text_12">
-   <text style="fill: #646a73; font: 9px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="386.568" transform="rotate(-0 23.0112 386.568)">条宽对应人数；百分比均以首层 1000 人为分母。</text>
+   <text style="font-size: 9px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="386.568" transform="rotate(-0 23.0112 386.568)">条宽对应人数；百分比均以首层 1000 人为分母。</text>
   </g>
   <g id="text_13">
-   <text style="fill: #646a73; font: 8.5px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="412.056" transform="rotate(-0 23.0112 412.056)">合成示例 · document-pastel</text>
+   <text style="font-size: 8.5px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="412.056" transform="rotate(-0 23.0112 412.056)">合成示例 · document-neutral</text>
   </g>
  </g>
  <defs>
-  <clipPath id="p49307e38a2">
+  <clipPath id="pfbb71a6a64">
    <rect x="112.608" y="123.192" width="328.032" height="208.152"/>
   </clipPath>
  </defs>

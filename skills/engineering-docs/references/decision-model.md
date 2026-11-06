@@ -205,6 +205,22 @@ decision:
   assumptions: 仍在使用的假设
   accepted_by: 决定责任人
 
+reading:
+  orientation:
+    thesis: 全文顶层主张
+    why_now: 为什么现在做
+    scope: 当前边界
+    reader_actions: 读者动作
+  overview:
+    required: 是否需要独立总体模型
+    exemption_reason: 简单文档的豁免理由
+    heading: 总体模型所在章节
+    summary: 整体方案怎样运作
+    format: diagram | table | list | prose
+    source_ref: 可编辑总览图或结构源
+    nodes: 顶层节点、责任、关系和对应章节 id
+  chapters: 带父子关系的章节树及章首摘要
+
 design:
   system_boundary: 系统边界
   responsibilities: 职责划分
@@ -245,6 +261,50 @@ open_items:
 ```
 
 结构化对象是内部检查面，不是固定的正文目录。`visuals` 也是按需数组；没有需要图示的关系时可以为空。其他字段可以为空，只要它确实不影响当前决定；不得为了填满对象而给正文制造章节或图表。
+
+## 阅读地图
+
+工程判断完成后，再建立独立的阅读地图。它不增加技术事实，而是把方案组织成可逐层展开的结构树：
+
+```yaml
+reading:
+  orientation:
+    thesis: 一句话主张
+    why_now: 当前为什么必须处理
+    scope: 当前版本做什么，不承诺什么
+    reader_actions:
+      - 评审或执行者现在要做的动作
+  overview:
+    required: true
+    exemption_reason: ""
+    heading: SDK 总体架构
+    summary: 两条主线怎样协作完成目标
+    format: diagram
+    source_ref: diagrams/sdk-overview.mmd
+    nodes:
+      - id: runtime
+        name: 运行链路
+        responsibility: 处理实时请求
+        relation: 与配置链路共享版本契约
+        chapter: 运行链路
+  chapters:
+    - id: runtime
+      parent: overview
+      heading: 运行链路
+      summary: 本章的黑盒结论、输入输出和边界
+      role: core
+      supports: []
+    - id: rollout
+      parent: overview
+      heading: 发布与回退
+      summary: 两条主线共同遵守的交付控制
+      role: crosscutting
+      supports: [runtime, config]
+```
+
+正式技术方案默认提供 Level 1 总览。局部单点改动若不需要独立总览，将 `required` 设为 false，并填写 `exemption_reason` 与一句整体改动模型。总览中的核心节点必须映射到正文主章节；横切章节用 `supports` 声明连接哪些核心节点。
+
+`chapters` 是部分展开的树。每个章节的 `summary` 概括下层；只有需要评审或实施的节点继续展开。H1/H2 使用稳定节点名，完整判断写在章首摘要。完整性模型与阅读地图不能合并：前者防止遗漏事实，后者防止把所有事实平铺。分层方法见 `human-reading.md`。
 
 图示语义、可编辑源、预览和发布地址各自承担不同职责。默认保留本地源和预览，图源随正文交付，不要求飞书或其他服务端 ID。普通文档不必为这些字段创建结构化记录。
 
@@ -303,16 +363,17 @@ decided | implementable | implemented
 
 ### 标准方案
 
-适合跨模块或存在真实选择的改动。常见阅读顺序是：
+适合跨模块、系统或 SDK 设计，以及存在真实选择的改动。常见阅读顺序是：
 
 ```text
-先给建议和决定依据
-再交代当前问题与关键约束
-随后说明方案和关键改造点
-最后说明上线、验证与回退
+用短背景说明为什么做、目标和边界
+给出 Level 1 总体模型
+按总体节点逐章展开黑盒职责和必要白盒细节
+用横切章节说明取舍、风险、验证、发布和回退
+把接口、字段、完整证据和测试矩阵放进对应附录
 ```
 
-章节名要跟随实际内容。例如“随机灰度会破坏重试幂等”比“风险分析”更有信息。
+总体节点与主章节保持同名。H1/H2 用简短节点名，完整判断写在章首；例如“重试与幂等”比“风险分析”更有信息，也比把整句风险塞进标题更稳定。
 
 ### 高风险方案
 

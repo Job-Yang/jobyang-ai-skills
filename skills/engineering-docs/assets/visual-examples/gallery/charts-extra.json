@@ -1,0 +1,18 @@
+[
+  {
+    "id": "22-treemap",
+    "type": "矩形树图",
+    "title": "交易域占四成内存，基础设施合计不足一成",
+    "conclusion": "合成示例｜数据不代表真实系统；服务相邻不证明因果。",
+    "source": "22-treemap.svg",
+    "preview": "22-treemap.png"
+  },
+  {
+    "id": "23-sankey",
+    "type": "桑基流向图",
+    "title": "入口流量 11% 在降级链路被丢弃",
+    "conclusion": "合成示例｜数据不代表真实系统；相邻流带不证明因果。",
+    "source": "23-sankey.svg",
+    "preview": "23-sankey.png"
+  }
+]

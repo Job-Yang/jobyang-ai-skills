@@ -1,0 +1,21 @@
+{
+  "layout": "columns",
+  "kicker": "模型是怎么学会的",
+  "title": "预训练、微调、RLHF",
+  "subtitle": "参数量相同，训练目标不一样，base 和 instruct 的行为差距就出在这里。",
+  "footer": "写给 RD 的 AI 底层原理 · 预训练 vs 微调 vs RLHF",
+  "data": {
+    "columns": [
+      {"title": "预训练", "subtitle": "Pretraining · 喂海量文本",
+       "scene": "训练数据里有新闻、教材、代码、对话、论文",
+       "bullets": ["学会大量世界知识", "学到的是文本续写，不是指令执行"]},
+      {"title": "指令微调", "subtitle": "Instruction Tuning · 问题-回答对",
+       "scene": "几万到几百万条，模式很固定",
+       "bullets": ["当输入是问题时，输出应该是回答", "参数量相同，训练目标不一样"]},
+      {"title": "RLHF", "subtitle": "人类反馈强化学习 · 多输出排序",
+       "scene": "人类标注员排序，训一个打分模型",
+       "bullets": ["用强化学习让输出尽量得高分", "学会回答得让人满意"]}
+    ],
+    "chain": ["把整个 SDK 编译好", "在 SDK 基础上开发应用层逻辑", "做用户测试然后迭代产品"]
+  }
+}

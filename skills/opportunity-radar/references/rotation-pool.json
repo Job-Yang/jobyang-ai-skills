@@ -1,0 +1,90 @@
+{
+  "pool_version": "opc-radar-rotation/v2",
+  "note": "方向池 v2（0.4.0）：v1 的六个方向全是方法/痛点主题，且大多锚在不可达信源，导致天天盯 agent 信任层。v2 改成 10 个垂直人群/行业镜头 + 2 个方法道。每天 anchor 一个垂直、补位选最久没扫的；方法道约每 6 个工作日轮一次。collect.py 每天全源采集，镜头词用于过滤池子和补定向网页搜。",
+  "pool": [
+    {
+      "id": "dev-tools",
+      "label": "开发者与 agent 基建",
+      "lens": "coding agent、MCP、可观测、测试、部署、API 与 CLI 小工具",
+      "keywords": ["coding agent", "MCP server", "developer tool", "CLI", "observability", "代码", "开发者"],
+      "queries": ["Show HN developer tool \"I wish\"", "GitHub trending AI agent tool", "开发者 付费 小工具 痛点"]
+    },
+    {
+      "id": "knowledge-work",
+      "label": "知识工作自动化",
+      "lens": "文档、研究、会议、销售、客服、招聘这些岗位动作里的手工活",
+      "keywords": ["sales automation", "meeting notes", "research assistant", "customer support", "recruiting", "文档", "销售", "客服"],
+      "queries": ["\"I'd pay for\" sales automation", "support agent \"too expensive\" alternative", "运营 手动 重复 想自动化"]
+    },
+    {
+      "id": "creator",
+      "label": "内容创作链路",
+      "lens": "视频、图片、音频、写作、播客制作链路里没被做好的环节",
+      "keywords": ["video editing", "podcast", "thumbnail", "script writing", "voiceover", "短视频", "播客", "剪辑"],
+      "queries": ["creators \"wish there was\" tool", "video editing AI \"but it doesn't\"", "博主 剪辑 付费 工具 吐槽"]
+    },
+    {
+      "id": "local-services",
+      "label": "本地小生意与服务业",
+      "lens": "餐饮、美业、健身教练、诊所、律所这类小老板的数字化手工活",
+      "keywords": ["small business", "salon software", "gym owner", "clinic scheduling", "本地生活", "门店", "个体户"],
+      "queries": ["small business owner \"would pay for\"", "salon or gym owner spreadsheet scheduling", "门店 老板 付费 系统 难用"]
+    },
+    {
+      "id": "finance-legal",
+      "label": "财税法务合规",
+      "lens": "记账、报税、发票、合同、合规这些专业且肯花钱的环节",
+      "keywords": ["bookkeeping", "tax", "invoice", "contract review", "compliance", "报税", "发票", "合同"],
+      "queries": ["freelancer bookkeeping \"I wish\"", "contract review tool \"too expensive\"", "个体户 报税 发票 麻烦"]
+    },
+    {
+      "id": "health-family",
+      "label": "健康家庭与宠物",
+      "lens": "健康管理、育儿、养老、宠物这些高情感高付费的具体人群时刻",
+      "keywords": ["caregiver", "pet owner", "parenting", "menopause", "sleep", "育儿", "养老", "宠物"],
+      "queries": ["caregiver \"would pay for\" app", "pet owner spreadsheet tracking", "宝妈 宠物 付费 app 差评"]
+    },
+    {
+      "id": "learning",
+      "label": "教育与培训",
+      "lens": "语言学习、职业技能、考试、企业培训里的个性化环节",
+      "keywords": ["language learning", "exam prep", "tutor", "corporate training", "考证", "英语", "培训"],
+      "queries": ["\"I wish there was\" learning app", "tutor app \"but it doesn't\"", "考证 陪练 付费 吐槽"]
+    },
+    {
+      "id": "commerce-ops",
+      "label": "电商营销与独立站",
+      "lens": "选品、投放、客服、素材、独立站运营这些肯花钱的活",
+      "keywords": ["shopify", "amazon seller", "ads", "product research", "独立站", "选品", "投放", "跨境"],
+      "queries": ["shopify seller \"would pay for\"", "amazon FBA tool \"too expensive\"", "跨境 电商 卖家 付费 工具"]
+    },
+    {
+      "id": "personal-ops",
+      "label": "个人大事与生活管理",
+      "lens": "求职、移民、租房、个人财务、旅行规划这些低频高价值时刻",
+      "keywords": ["job hunt", "visa", "personal finance", "moving", "wedding planning", "求职", "移民", "租房"],
+      "queries": ["job search \"wish there was\" tool", "visa immigration \"would pay\"", "求职 简历 面试 付费 工具"]
+    },
+    {
+      "id": "cn-handmade",
+      "label": "中文代服务与手作信号",
+      "lens": "闲鱼、小红书、V2EX、即刻里花钱请人做、还没被软件接住的活",
+      "keywords": ["代做", "代装", "陪跑", "私教", "咨询", "定制", "闲鱼", "V2EX"],
+      "queries": ["闲鱼 AI 代做 代装", "V2EX 做了一个 求反馈", "小红书 花钱找人做 工具"]
+    },
+    {
+      "id": "demand-sweep",
+      "label": "方法道：许愿与愿付原话全域捞",
+      "lens": "不分垂直，专门捞 HN 评论、Ask HN、Reddit RSS 里的「I wish/I would pay」原话",
+      "keywords": ["wish there was", "would pay for", "is there a tool", "looking for an app"],
+      "queries": ["HN comments \"wish there was\"", "Reddit \"I would pay for\"", "Ask HN looking for a tool"]
+    },
+    {
+      "id": "launch-gap",
+      "label": "方法道：新发布与差评 gap",
+      "lens": "Product Hunt、Show HN、GitHub 新项目的评论区里「不错但缺 X」",
+      "keywords": ["alternative", "too expensive", "wish it could", "but it doesn't", "差评", "替代"],
+      "queries": ["Product Hunt launch \"wish it could\"", "Show HN \"but it doesn't\"", "新上线 差评 缺功能"]
+    }
+  ]
+}

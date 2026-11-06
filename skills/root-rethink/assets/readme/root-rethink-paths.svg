@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="1240" viewBox="0 0 880 1240" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+  <rect width="880" height="1240" fill="#ffffff"/>
+  <text x="40" y="52" font-size="26" font-weight="600" fill="#262b33">归本重推：从基本事实重新推导，不在旧方案上打补丁</text>
+  <text x="40" y="86" font-size="15" fill="#5b6470">理论来自第一性原理（区别于类比推理）与跨域机制迁移</text>
+
+  <rect x="40" y="120" width="800" height="76" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="150" font-size="18" font-weight="600" fill="#0b6b55">触发：方案越改越复杂、补丁摞补丁</text>
+  <text x="64" y="176" font-size="14.5" fill="#0b6b55">或本行业常规答案都解不开卡点。问题本身说不清时，先澄清，不急着重推</text>
+
+  <line x1="440" y1="196" x2="440" y2="228" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="228" width="800" height="120" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="2"/>
+  <text x="64" y="260" font-size="18" font-weight="600" fill="#0b6b55">第一步 · 拆成四堆（严格分开）</text>
+  <text x="64" y="288" font-size="14.5" fill="#0b6b55">基本事实 · 未验证假设（逐条写「若它不成立会怎样」）</text>
+  <text x="64" y="312" font-size="14.5" fill="#0b6b55">真正目标 vs 当前手段 · 现实约束</text>
+  <text x="64" y="336" font-size="13.5" fill="#0b6b55">拿不准是事实还是假设时，默认放假设堆标待验证</text>
+
+  <line x1="440" y1="348" x2="440" y2="380" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="380" width="800" height="104" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="2"/>
+  <text x="64" y="412" font-size="18" font-weight="600" fill="#0b6b55">模式一 · 向内：放下惯例重新推导</text>
+  <text x="64" y="440" font-size="14.5" fill="#0b6b55">不看竞品做法和当前实现，只从事实、真正目标、约束推出新路径</text>
+  <text x="64" y="464" font-size="14.5" fill="#0b6b55">输出：原方案哪部分只是补丁 · 新路径 · 成立前提 · 代价 · 验证第一步</text>
+
+  <line x1="440" y1="484" x2="440" y2="516" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="516" width="800" height="120" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="548" font-size="18" font-weight="600" fill="#0b6b55">模式二 · 向外：向内推不动才跨域借解</text>
+  <text x="64" y="576" font-size="14.5" fill="#0b6b55">剥掉行业术语找底层结构（分配/协调/缓存/纠错/激励…），</text>
+  <text x="64" y="600" font-size="14.5" fill="#0b6b55">去 2–3 个相距较远的领域找机制（借机制不借形式），</text>
+  <text x="64" y="624" font-size="14.5" fill="#0b6b55">每个案例写清结构相似点和什么条件下会失效</text>
+
+  <rect x="40" y="664" width="800" height="120" rx="12" fill="#fbf0dd" stroke="#c97a16" stroke-width="1.8"/>
+  <text x="64" y="696" font-size="17" font-weight="600" fill="#9a5a0e">投入闸门与合法结论</text>
+  <text x="64" y="724" font-size="14" fill="#9a5a0e">简单问题不值得从零推：能用成熟方案且代价可接受，明说「这题不值得推」。</text>
+  <text x="64" y="748" font-size="14" fill="#9a5a0e">重推后若惯例确实最优，如实说「惯例在此约束下成立，无需重造」——这是合法结论。</text>
+  <text x="64" y="772" font-size="14" fill="#9a5a0e">禁止用「回归本质」「做减法」这类口号冒充深刻；结论必须落到具体动作。</text>
+
+  <rect x="40" y="812" width="800" height="140" rx="12" fill="#f4f6f8" stroke="#9aa3ad" stroke-width="1.5" stroke-dasharray="8 5"/>
+  <text x="64" y="844" font-size="16" font-weight="600" fill="#5b6470">成熟度与待补</text>
+  <text x="64" y="872" font-size="14" fill="#5b6470">2026-10-21 随思维技能批次创建，目前「已建待盲测」：</text>
+  <text x="64" y="896" font-size="14" fill="#5b6470">触发盲测、端到端样本、对抗软肋三关未跑，不夸已成熟。</text>
+  <text x="64" y="920" font-size="14" fill="#5b6470">为什么把「跨域借解」和「第一性原理」合在一个技能里，没有单独记录，待作者补。</text>
+
+  <defs>
+    <marker id="t" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0f8a6d"/></marker>
+  </defs>
+</svg>

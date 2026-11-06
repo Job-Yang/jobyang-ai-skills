@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="1080" viewBox="0 0 390 1080" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Source Han Sans SC, sans-serif">
+  <rect width="390" height="1080" fill="#ffffff"/>
+  <text x="20" y="30" font-size="16" font-weight="600" fill="#2b2b2b">先善意重建，再严谨评价</text>
+  <text x="20" y="50" font-size="11.5" fill="#666666">青绿＝主路径　琥珀＝防失败硬规则　灰虚＝归属与状态</text>
+
+  <rect x="20" y="66" width="350" height="76" rx="9" fill="#2a9d8f" stroke="#1f5f58" stroke-width="2"/>
+  <text x="36" y="92" font-size="13" font-weight="600" fill="#ffffff">三协议分流：按文本机制选</text>
+  <text x="36" y="112" font-size="11.5" fill="#dff3f0">事实报道走信息协议；评论观点走论证协议；</text>
+  <text x="36" y="130" font-size="11.5" fill="#dff3f0">营销倡议走说服协议</text>
+
+  <g stroke="#555555" stroke-width="1.5" fill="#555555">
+    <line x1="195" y1="142" x2="195" y2="162"/><polygon points="195,165 191,158 199,158"/>
+  </g>
+
+  <rect x="20" y="150" width="350" height="86" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="36" y="174" font-size="12.5" font-weight="600" fill="#1f5f58">重建论证：先给作者最强版本</text>
+  <text x="36" y="194" font-size="11.5" fill="#333333">每个关键结论拆成五环：理由、证据、推理连接、</text>
+  <text x="36" y="212" font-size="11.5" fill="#333333">隐藏前提、成立边界；原文陈述、合理重建、增强建议分开标注</text>
+  <text x="36" y="230" font-size="11" fill="#7a5a12">批评前先给出最强版本，稻草人不许用</text>
+
+  <g stroke="#555555" stroke-width="1.5" fill="#555555">
+    <line x1="195" y1="236" x2="195" y2="256"/><polygon points="195,259 191,252 199,252"/>
+  </g>
+
+  <rect x="20" y="262" width="350" height="76" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="36" y="286" font-size="12.5" font-weight="600" fill="#1f5f58">评价：强项、断点、替代解释</text>
+  <text x="36" y="306" font-size="11.5" fill="#333333">批判不等于找错，允许「未发现实质问题」；</text>
+  <text x="36" y="324" font-size="11.5" fill="#333333">事实核查只查会实质改变核心判断的，没查就写待核查</text>
+
+  <g stroke="#555555" stroke-width="1.5" fill="#555555">
+    <line x1="195" y1="338" x2="195" y2="358"/><polygon points="195,361 191,354 199,354"/>
+  </g>
+
+  <rect x="20" y="364" width="350" height="66" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="36" y="388" font-size="12.5" font-weight="600" fill="#1f5f58">判断分三堆给</text>
+  <text x="36" y="408" font-size="11.5" fill="#333333">值得接受的、需要保留的、无法判断的，分开给；</text>
+  <text x="36" y="424" font-size="11.5" fill="#333333">收口必须答一句「这轮让你的下一步改变了什么」</text>
+
+  <rect x="20" y="450" width="350" height="112" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.8"/>
+  <text x="36" y="474" font-size="12.5" font-weight="600" fill="#7a5a12">防失败硬规则（踩一条即返工）</text>
+  <text x="36" y="494" font-size="11.5" fill="#333333">摘要冒充批判：只复述不算精读；谬误标签堆砌：</text>
+  <text x="36" y="512" font-size="11.5" fill="#333333">先讲具体断点再用标签；事实核查幻觉：未核查不写已验证；</text>
+  <text x="36" y="530" font-size="11.5" fill="#333333">立场投射与虚假平衡：赞反同一证据标准；</text>
+  <text x="36" y="548" font-size="11.5" fill="#333333">钢人冒充原意：增强建议必须标注</text>
+
+  <rect x="20" y="582" width="350" height="136" rx="9" fill="#f4f5f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="36" y="606" font-size="12" fill="#5f6368">归属与状态</text>
+  <text x="36" y="628" font-size="11.5" fill="#5f6368">离散说法验真走 claim-check；</text>
+  <text x="36" y="646" font-size="11.5" fill="#5f6368">两方案抉择走 steelman-choice；开放决策走 outside-view。</text>
+  <text x="36" y="664" font-size="11.5" fill="#5f6368">它只管一篇完整文本的论证质量。</text>
+  <text x="36" y="690" font-size="11.5" fill="#8a8f94">2026-10-20 与两个邻居同批创建，至今待盲测，</text>
+  <text x="36" y="708" font-size="11.5" fill="#8a8f94">还没有被真实精读案例反复打磨过</text>
+</svg>

@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.deps/
+.DS_Store
+*.openapijson
+*.check.openapijson
+*.lark.json

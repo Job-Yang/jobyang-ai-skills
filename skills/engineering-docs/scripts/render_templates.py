@@ -11,15 +11,23 @@ import math
 from pathlib import Path
 import re
 import unicodedata
+import sys
 
 ASSETS = Path(__file__).resolve().parents[1] / "assets"
-THEME = json.loads((ASSETS / "visual-examples/theme.json").read_text())
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from visual_theme import THEME, categorical_tone, structural_tone, semantic_tone
 INK, MUTED, LINE = (THEME[k] for k in ("ink", "muted", "line"))
 PALETTE = THEME["sequence"]
 
 
 def tone(index):
-    return THEME["colors"][PALETTE[index % len(PALETTE)]]
+    """Compatibility entry for categorical data, not structural node order."""
+    return list(categorical_tone(index))
+
+
+def paint(item):
+    """Forward only explicit appearance fields, never labels or ordinal indices."""
+    return {k: item[k] for k in ("tone", "status", "emphasis") if k in item} if isinstance(item, dict) else {}
 
 
 def check(condition, message):
@@ -45,6 +53,12 @@ def wrap(text, width, size):
     return lines + [line]
 
 
+def _label_left(item):
+    """Left edge of a text label for any SVG text-anchor (start/middle/end)."""
+    shift = {"middle": item["width"] / 2, "end": item["width"]}.get(item["anchor"], 0)
+    return item["x"] - shift
+
+
 class Canvas:
     def __init__(self, spec, height=600):
         self.spec, self.height, self.parts = spec, height, []
@@ -54,11 +68,15 @@ class Canvas:
         self.text(32, 105, spec["subtitle"], 14, MUTED, width=616)
 
     def shape(self, tag, **attrs):
+        # 浅色面边界弱于实体和连线；不改变无填充路径、箭头或显式状态色。
+        if tag in {"polygon", "circle", "ellipse"} and attrs.get("stroke") == LINE and attrs.get("fill") not in (None, "none"):
+            attrs["stroke"] = THEME["group_border"]
         attrs = {k.replace("_", "-"): v for k, v in attrs.items()}
         self.parts.append("<" + tag + " " + " ".join(
             f'{k}="{html.escape(str(v), quote=True)}"' for k, v in attrs.items()) + "/>")
 
     def rect(self, x, y, w, h, fill="white", border=LINE, radius=8):
+        border = THEME["group_border"] if border == LINE else border
         self.shape("rect", x=x, y=y, width=w, height=h, rx=radius,
                    fill=fill, stroke=border, stroke_width=1.2)
 
@@ -73,14 +91,16 @@ class Canvas:
                                 "width": units(row) * size, "anchor": anchor})
         return len(rows) * size * 1.4
 
-    def box(self, key, x, y, w, h, title, detail="", index=0, filled=False):
-        dark, light = tone(index)
+    def box(self, key, x, y, w, h, title, detail="", index=0, filled=False,
+            *, tone=None, status=None, emphasis=False):
+        appearance = semantic_tone({"tone": tone, "status": status, "emphasis": emphasis})
+        border = appearance["border"] if emphasis or status or tone in {"success", "warning", "error"} else appearance["entity_border"]
         needed = 26 + len(wrap(title, w - 24, 15)) * 21
         if detail:
             needed += len(wrap(detail, w - 24, 13)) * 18.2 + 5
         check(h >= needed - 5, f"Text exceeds box {key}; increase height or split the diagram.")
         self.boxes[key] = (x, y, w, h)
-        self.rect(x, y, w, h, light if filled else "white", dark)
+        self.rect(x, y, w, h, appearance["tint"], border)
         self.text(x + 12, y + 25, title, 15, INK, 600, w - 24)
         if detail:
             self.text(x + 12, y + 30 + len(wrap(title, w - 24, 15)) * 21,
@@ -101,7 +121,7 @@ class Canvas:
         note = self.spec["note"]
         self.path(f"M32 {self.height-69} H648", THEME["grid"], 1)
         self.text(32, self.height-44, note, 13, MUTED, width=616)
-        footer = "合成示例 · document-pastel" if self.spec.get("sample") else "document-pastel"
+        footer = ("合成示例 · " if self.spec.get("sample") else "") + THEME["name"]
         self.text(32, self.height-12, footer, 12, MUTED)
         for key, (x, y, w, h) in self.boxes.items():
             check(x >= 24 and x+w <= 656 and y >= 130 and y+h <= self.height-85,
@@ -111,13 +131,13 @@ class Canvas:
                     check(min(x+w, ox+ow) <= max(x, ox) or min(y+h, oy+oh) <= max(y, oy),
                           f"Overlapping boxes: {key}, {other}; split the diagram.")
         for item in self.labels:
-            left = item["x"] - (item["width"]/2 if item["anchor"] == "middle" else 0)
+            left = _label_left(item)
             check(left >= 15 and left + item["width"] <= 666, f"Label out of bounds: {item['text']}")
             check(0 < item["y"] <= self.height - 5, f"Vertical overflow: {item['text']}")
         for i, a in enumerate(self.labels):
-            ax = a["x"] - (a["width"]/2 if a["anchor"] == "middle" else 0)
+            ax = _label_left(a)
             for b in self.labels[i+1:]:
-                bx = b["x"] - (b["width"]/2 if b["anchor"] == "middle" else 0)
+                bx = _label_left(b)
                 check(min(ax+a["width"], bx+b["width"]) <= max(ax,bx)
                       or min(a["y"]+2,b["y"]+2) <= max(a["y"]-a["size"],b["y"]-b["size"]),
                       f"Text labels overlap: {a['text']} / {b['text']}")
@@ -126,7 +146,7 @@ class Canvas:
                f'<desc>{html.escape(note)}</desc><defs><marker id="arrow" viewBox="0 0 10 10" '
                'refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">'
                f'<path d="M1 1 L8 5 L1 9" fill="none" stroke="{LINE}" stroke-width="1.5"/>'
-               '</marker></defs><rect width="680" height="100%" fill="white"/>'
+               f'</marker></defs><rect width="680" height="100%" fill="{THEME["canvas_bg"]}"/>'
                f'<g font-family="{THEME["font"]}">' + "".join(self.parts) + "</g></svg>\n")
         path.write_text(svg)
         return {"boxes": self.boxes, "labels": self.labels, "width": 680, "height": self.height}
@@ -140,14 +160,14 @@ def layers(spec):
     y = 148
     for i, (g, height) in enumerate(zip(groups, heights)):
         check(1 <= len(g["items"]) <= 9, "Split layers with more than 9 items.")
-        dark, light = tone(i)
+        dark, light = structural_tone(g)
         c.rect(32, y, 616, height, light, dark)
         c.text(50, y + 29, g["label"], 17, weight=600)
         for k, item in enumerate(g["items"]):
             row, col = divmod(k, 3)
             count = min(3, len(g["items"])-row*3)
             w = (580 - 14*(count-1))/count
-            c.box(f"g{i}-{k}", 50 + col*(w+14), y+49+row*65, w, 55, item, index=i)
+            c.box(f"g{i}-{k}", 50 + col*(w+14), y+49+row*65, w, 55, item, index=i, **paint(g))
         y += height + 16
     return c
 
@@ -164,7 +184,7 @@ def grid(spec):
     for row, height in enumerate(row_heights):
         for col, g in enumerate(groups[row*columns:(row+1)*columns]):
             i = row*columns+col
-            dark, light = tone(i)
+            dark, light = structural_tone(g)
             x = 32 + col*(w+16)
             c.rect(x, y, w, height, light, dark)
             c.text(x+16, y+29, g["label"], 17, weight=600, width=w-32)
@@ -216,7 +236,7 @@ def tree(spec):
     for key, d in order:
         x, y = xs[key], 155+d*136
         width = min(160, span*leaf_counts[key]-12)
-        c.box(key, x-width/2, y, width, 83, lookup[key]["label"], index=d, filled=d == 0)
+        c.box(key, x-width/2, y, width, 83, lookup[key]["label"], index=d, filled=d == 0, **paint(lookup[key]))
     for key, d in order:
         for child in children[key]:
             x1, y1, w1, h1 = c.boxes[key]
@@ -232,14 +252,14 @@ def mindmap(spec):
     rows = math.ceil(len(groups)/2)
     c = Canvas(spec, 250+rows*144)
     cy = 153 + rows*72
-    c.box("root", 247, cy-41, 186, 82, spec["center"], index=0, filled=True)
+    c.box("root", 247, cy-41, 186, 82, spec["center"], index=0, filled=True, **paint(spec))
     for i, g in enumerate(groups):
         side = i % 2
         y = 152+(i//2)*144
         x = 460 if side else 32
-        c.box(f"branch{i}", x, y, 188, 110, g["label"], "\n".join(g["items"]), i)
+        c.box(f"branch{i}", x, y, 188, 110, g["label"], "\n".join(g["items"]), i, **paint(g))
         a, b = (433, x) if side else (247, x+188)
-        c.path(f"M{a} {cy} C{(a+b)/2} {cy} {(a+b)/2} {y+55} {b} {y+55}", tone(i)[0])
+        c.path(f"M{a} {cy} C{(a+b)/2} {cy} {(a+b)/2} {y+55} {b} {y+55}", structural_tone()[0])
     return c
 
 
@@ -261,18 +281,18 @@ def timeline(spec):
             check(all(abs(y-a) >= 120 for a in used[side]), "Timeline labels collide; split close events.")
             used[side].append(y)
             x = 372 if side else 32
-            c.box(f"event{i}", x, y-25, 276, 108, event["label"], event["detail"], i, True)
+            c.box(f"event{i}", x, y-25, 276, 108, event["label"], event["detail"], i, True, **paint(event))
             c.path(f"M340 {y} H{x if side else x+276}")
-            c.shape("circle", cx=340, cy=y, r=5, fill=tone(i)[1], stroke=tone(i)[0])
+            c.shape("circle", cx=340, cy=y, r=5, fill=structural_tone(event)[1], stroke=structural_tone(event)[0])
     else:
         c.path("M64 311 H616", arrow=True)
         positions = [84+(v-lo)/(hi-lo)*512 for v in values]
         for i, (event, x) in enumerate(zip(events, positions)):
             y = 153 if i % 2 == 0 else 358
             left = max(32, min(x-84, 480))
-            c.box(f"event{i}", left, y, 168, 110, event["label"], event["detail"], i, True)
+            c.box(f"event{i}", left, y, 168, 110, event["label"], event["detail"], i, True, **paint(event))
             c.path(f"M{x} 311 V{y+110 if i%2 == 0 else y}")
-            c.shape("circle", cx=x, cy=311, r=5, fill=tone(i)[1], stroke=tone(i)[0])
+            c.shape("circle", cx=x, cy=311, r=5, fill=structural_tone(event)[1], stroke=structural_tone(event)[0])
             c.label(x, 340, str(event["at"]))
     return c
 
@@ -283,12 +303,12 @@ def stages(spec):
     c = Canvas(spec, 250 + len(groups)*110)
     for i, g in enumerate(groups):
         y = 153 + i*110
-        dark, light = tone(i)
+        dark, light = structural_tone(g)
         c.shape("polygon", points=f"32,{y} 176,{y} 193,{y+42} 176,{y+84} 32,{y+84} 49,{y+42}",
                 fill=light, stroke=dark)
         c.text(114, y+38, g["label"], 15, weight=600, anchor="middle", width=120)
         c.box(f"stage{i}", 220, y, 428, 84, g["items"][0],
-              " · ".join(g["items"][1:]), i)
+              " · ".join(g["items"][1:]), i, **paint(g))
         if i+1 < len(groups):
             c.path(f"M114 {y+84} V{y+109}", arrow=True)
     return c
@@ -302,7 +322,7 @@ def cycle(spec):
     c.text(cx, cy-5, spec["center"], 20, weight=600, anchor="middle", width=190)
     c.text(cx, cy+24, "按箭头方向循环", 13, MUTED, anchor="middle", width=190)
     for i, g in enumerate(groups):
-        dark, light = tone(i)
+        dark, light = structural_tone(g)
         start = -90+i*360/len(groups)+16
         end = -90+(i+1)*360/len(groups)-18
         xy = lambda a, r: (cx+r*math.cos(math.radians(a)), cy+r*math.sin(math.radians(a)))
@@ -313,7 +333,7 @@ def cycle(spec):
         positions = ([(340,198),(560,390),(340,582),(120,390)] if len(groups)==4
                      else [(340,198),(532,552),(148,552)])
         x, y = positions[i]
-        c.box(f"cycle{i}", x-88, y-45, 176, 90, g["label"], "\n".join(g["items"]), i, True)
+        c.box(f"cycle{i}", x-88, y-45, 176, 90, g["label"], "\n".join(g["items"]), i, True, **paint(g))
     return c
 
 
@@ -325,7 +345,7 @@ def pyramid(spec):
         y = 158+i*89
         half_width = 160 / len(groups)
         top, bottom = i*half_width, (i+1)*half_width
-        dark, light = tone(i)
+        dark, light = structural_tone(g)
         c.shape("polygon", points=f"{194-top},{y} {194+top},{y} {194+bottom},{y+84} {194-bottom},{y+84}",
                 fill=light, stroke=dark)
         c.text(194, y+61, str(i+1), 15, weight=600, anchor="middle", width=40)
@@ -339,15 +359,15 @@ def house(spec):
     pillars = spec["pillars"]
     check(2 <= len(pillars) <= 4, "Use 2–4 pillars.")
     c = Canvas(spec, 665)
-    c.shape("polygon", points="50,245 340,149 630,245", fill=tone(0)[1], stroke=tone(0)[0])
+    c.shape("polygon", points="50,245 340,149 630,245", fill=structural_tone()[1], stroke=structural_tone()[0])
     c.text(340, 215, spec["roof"], 20, weight=600, anchor="middle", width=340)
-    c.rect(50, 260, 580, 64, tone(1)[1], tone(1)[0], 0)
+    c.rect(50, 260, 580, 64, structural_tone()[1], structural_tone()[0], 0)
     c.text(340, 297, spec["promise"], 17, weight=600, anchor="middle", width=548)
     width = (580-12*(len(pillars)-1))/len(pillars)
     for i, p in enumerate(pillars):
         c.box(f"pillar{i}", 50+i*(width+12), 339, width, 146,
-              p["label"], "\n".join(p["items"]), i+2, True)
-    c.rect(50, 501, 580, 64, tone(3)[1], tone(3)[0], 0)
+              p["label"], "\n".join(p["items"]), i+2, True, **paint(p))
+    c.rect(50, 501, 580, 64, structural_tone()[1], structural_tone()[0], 0)
     c.text(340, 538, spec["foundation"], 16, weight=600, anchor="middle", width=550)
     return c
 
@@ -360,13 +380,14 @@ def matrix(spec):
     c = Canvas(spec, 290 + len(rows)*88)
     w = 488/len(cols)
     for j, col in enumerate(cols):
-        c.rect(160+j*w, 148, w-5, 54, tone(j)[1], tone(j)[0], 4)
+        header = semantic_tone({"tone": "accent"})
+        c.rect(160+j*w, 148, w-5, 54, header["tint"], header["entity_border"], 4)
         c.text(160+j*w+(w-5)/2, 181, col, 15, weight=600, anchor="middle", width=w-15)
     for i, row in enumerate(rows):
         y = 216+i*88
         c.text(32, y+35, row, 15, weight=600, width=116)
         for j, value in enumerate(values[i]):
-            c.rect(160+j*w, y, w-5, 76, tone(j)[1], THEME["grid"], 4)
+            c.rect(160+j*w, y, w-5, 76, THEME["entity_fill"], THEME["entity_border"], 4)
             c.text(172+j*w, y+28, value, 14, width=w-25)
     return c
 
@@ -374,7 +395,6 @@ def matrix(spec):
 def workflow(spec):
     lanes, nodes, edges = spec["lanes"], spec["nodes"], spec["edges"]
     vertical = spec.get("orientation", "vertical") == "vertical"
-    check(2 <= len(lanes) <= 3, "Use 2–3 lanes.")
     check(bool(nodes), "Workflow needs nodes.")
     check(all(isinstance(n["step"], int) and n["step"] >= 0
               and isinstance(n["lane"], int) for n in nodes), "Invalid lane or step.")
@@ -384,51 +404,135 @@ def workflow(spec):
     check(len(ids) == len(nodes), "Duplicate workflow IDs.")
     check(all(e["from"] in ids and e["to"] in ids for e in edges), "Dangling workflow edge.")
     steps = 1+max(n["step"] for n in nodes)
-    check(steps <= 6 and all(0 <= n["lane"] < len(lanes) for n in nodes), "Unsupported lane or step.")
-    if vertical:
-        c = Canvas(spec, 285+steps*107)
-        lane_w = 616/len(lanes)
-        for i, lane in enumerate(lanes):
-            c.rect(32+i*lane_w, 148, lane_w-10, steps*107+55, tone(i)[1], tone(i)[0])
-            c.text(48+i*lane_w, 180, lane, 16, weight=600, width=lane_w-32)
-        for n in nodes:
-            c.box(n["id"], 47+n["lane"]*lane_w, 208+n["step"]*107, lane_w-40, 73,
-                  n["label"], index=n["lane"])
-    else:
-        check(steps <= 4, "Horizontal lanes support at most four columns at 680px.")
-        c = Canvas(spec, 256+len(lanes)*125)
-        cell_w = 510/steps
-        for i, lane in enumerate(lanes):
-            c.rect(32, 148+i*125, 616, 112, tone(i)[1], tone(i)[0])
-            c.text(45, 183+i*125, lane, 15, weight=600, width=83)
-        for n in nodes:
-            c.box(n["id"], 132+n["step"]*cell_w, 165+n["lane"]*125,
-                  cell_w-24, 76, n["label"], index=n["lane"])
-    for e in edges:
-        a, b = c.boxes[e["from"]], c.boxes[e["to"]]
-        ax, ay, aw, ah = a
-        bx, by, bw, bh = b
-        if vertical and by > ay:
-            start, end = (ax+aw/2, ay+ah), (bx+bw/2, by)
-            my = (start[1]+end[1])/2
-            path = f"M{start[0]} {start[1]} V{my} H{end[0]} V{end[1]}"
-            route = [start, (start[0], my), (end[0], my), end]
-            labelpos = ((start[0]+end[0])/2, my-6)
-        elif not vertical and bx > ax:
-            start, end = (ax+aw, ay+ah/2), (bx, by+bh/2)
-            mx = (start[0]+end[0])/2
-            path = f"M{start[0]} {start[1]} H{mx} V{end[1]} H{end[0]}"
-            route = [start, (mx, start[1]), (mx, end[1]), end]
-            labelpos = (mx, (start[1]+end[1])/2-6)
-        else:
-            check(False, "Back edges need an explicit focused flow; use the curated retry example.")
+    check(all(0 <= n["lane"] < len(lanes) for n in nodes), "Unsupported lane or step.")
+    node_by_id = {n["id"]: n for n in nodes}
+
+    def _guard_edges(c, route, e):
         for key, (x, y, w, h) in c.boxes.items():
             if key in (e["from"], e["to"]):
                 continue
             for (x1, y1), (x2, y2) in zip(route, route[1:]):
-                intersects = ((x1 == x2 and x < x1 < x+w and max(y1,y2)>y and min(y1,y2)<y+h)
-                              or (y1 == y2 and y < y1 < y+h and max(x1,x2)>x and min(x1,x2)<x+w))
-                check(not intersects, f"Edge crosses {key}; use a graph layout or split the flow.")
+                intersects = ((x1 == x2 and x-1 < x1 < x+w+1 and max(y1, y2) > y+1 and min(y1, y2) < y+h-1)
+                              or (y1 == y2 and y-1 < y1 < y+h+1 and max(x1, x2) > x+1 and min(x1, x2) < x+w-1))
+                check(not intersects, f"Edge crosses {key}; reflow steps or empty that column.")
+
+    if vertical:
+        check(2 <= len(lanes) <= 3, "Use 2–3 lanes.")
+        check(steps <= 6, "Vertical lanes support at most six columns.")
+        c = Canvas(spec, 285+steps*107)
+        lane_w = 616/len(lanes)
+        for i, lane in enumerate(lanes):
+            c.rect(32+i*lane_w, 148, lane_w-10, steps*107+55, structural_tone(lane)[1], structural_tone(lane)[0])
+            c.text(48+i*lane_w, 180, lane["label"] if isinstance(lane, dict) else lane, 16, weight=600, width=lane_w-32)
+        for n in nodes:
+            c.box(n["id"], 47+n["lane"]*lane_w, 208+n["step"]*107, lane_w-40, 73,
+                  n["label"], index=n["lane"], **paint(n))
+        for e in edges:
+            a, b = c.boxes[e["from"]], c.boxes[e["to"]]
+            ax, ay, aw, ah = a
+            bx, by, bw, bh = b
+            if by > ay:
+                start, end = (ax+aw/2, ay+ah), (bx+bw/2, by)
+                my = (start[1]+end[1])/2
+                path = f"M{start[0]} {start[1]} V{my} H{end[0]} V{end[1]}"
+                route = [start, (start[0], my), (end[0], my), end]
+                labelpos = ((start[0]+end[0])/2, my-6)
+            else:
+                check(False, "Back edges need an explicit focused flow; use the curated retry example.")
+            _guard_edges(c, route, e)
+            c.path(path, arrow=True)
+            if e.get("label"):
+                c.label(*labelpos, e["label"])
+        return c
+
+    # ---- horizontal: compact per-lane heights, content-adaptive cards ----
+    check(2 <= len(lanes) <= 6, "Horizontal swimlanes support 2–6 roles.")
+    check(steps <= 8, "Horizontal lanes support at most eight columns at 680px.")
+    CARD_LEFT, CARD_RIGHT = 130.0, 648.0
+    CARD_AREA_W = CARD_RIGHT - CARD_LEFT
+    LANE_PAD, LANE_GAP, CELL_GAP = 12.0, 12.0, 12.0
+    cell_w = CARD_AREA_W/steps
+    card_w = cell_w - CELL_GAP
+    check(card_w >= 46, "Too many steps; cards would be too narrow.")
+
+    def card_height(label):
+        return 26 + len(wrap(label, card_w-24, 15))*21
+    heights = {n["id"]: card_height(n["label"]) for n in nodes}
+
+    lane_max = [0]*len(lanes)
+    for n in nodes:
+        lane_max[n["lane"]] = max(lane_max[n["lane"]], heights[n["id"]])
+    lane_h = [m + 2*LANE_PAD for m in lane_max]
+    lane_top = [0]*len(lanes)
+    y = 148.0
+    for L in range(len(lanes)):
+        lane_top[L] = y
+        y += lane_h[L] + (LANE_GAP if L+1 < len(lanes) else 0.0)
+    bottom = lane_top[-1] + lane_h[-1]
+    c = Canvas(spec, int(math.ceil(bottom + 90)))
+
+    # density guards: a lane must hug its tallest card (no big vertical blank)
+    for L in range(len(lanes)):
+        check(lane_max[L] == 0 or lane_h[L] <= lane_max[L]*1.55 + 6,
+              f"Lane {L} carries too much whitespace above its cards.")
+
+    for L, lane in enumerate(lanes):
+        c.rect(32, lane_top[L], 616, lane_h[L], structural_tone(lane)[1], structural_tone(lane)[0])
+        c.text(46, lane_top[L] + lane_h[L]/2 + 5, lane["label"] if isinstance(lane, dict) else lane, 14, weight=600, width=78)
+    for n in nodes:
+        x = CARD_LEFT + n["step"]*cell_w + (cell_w-card_w)/2
+        h = heights[n["id"]]
+        ytop = lane_top[n["lane"]] + (lane_h[n["lane"]]-h)/2
+        check(ytop >= lane_top[n["lane"]]+LANE_PAD-1, f"Card {n['id']} overflows its lane top.")
+        check(ytop+h <= lane_top[n["lane"]]+lane_h[n["lane"]]-LANE_PAD+1,
+              f"Card {n['id']} overflows its lane bottom.")
+        c.box(n["id"], x, ytop, card_w, h, n["label"], index=n["lane"], **paint(n))
+
+    # port staggering: spread several shared exits/entries so lines never overlap
+    out_total, in_total = {}, {}
+    for e in edges:
+        a, b = node_by_id[e["from"]], node_by_id[e["to"]]
+        if a["lane"] != b["lane"]:
+            out_total[e["from"]] = out_total.get(e["from"], 0)+1
+            in_total[e["to"]] = in_total.get(e["to"], 0)+1
+    out_seen, in_seen = {}, {}
+    for e in edges:
+        a, b = node_by_id[e["from"]], node_by_id[e["to"]]
+        ax, ay, aw, ah = c.boxes[e["from"]]
+        bx, by, bw, bh = c.boxes[e["to"]]
+        la, lb = a["lane"], b["lane"]
+        if la == lb:
+            if b["step"] > a["step"]:
+                sx, ex = ax+aw, bx
+                sy = ey = ay+ah/2
+            else:
+                sx, ex = ax, bx+bw
+                sy = ey = ay+ah/2
+            path = f"M{sx} {sy} H{ex}"
+            route = [(sx, sy), (ex, ey)]
+            labelpos = ((sx+ex)/2, sy-6)
+        else:
+            out_seen[e["from"]] = out_seen.get(e["from"], 0)+1
+            in_seen[e["to"]] = in_seen.get(e["to"], 0)+1
+            def frac(total, seen):
+                return 0.5 if total <= 1 else 0.3+0.4*(seen-1)/(total-1)
+            ef = frac(out_total[e["from"]], out_seen[e["from"]])
+            nf = frac(in_total[e["to"]], in_seen[e["to"]])
+            if lb > la:  # target lane below: exit source bottom, groove in gap under source
+                g = (lane_top[la]+lane_h[la] + lane_top[la+1])/2
+                ex, ey = ax+aw*ef, ay+ah
+                nx, ny = bx+bw*nf, by
+                path = f"M{ex} {ey} V{g} H{nx} V{ny}"
+                route = [(ex, ey), (ex, g), (nx, g), (nx, ny)]
+                labelpos = (nx, g-7)
+            else:        # target lane above: exit source top, groove in gap over source
+                g = (lane_top[la-1]+lane_h[la-1] + lane_top[la])/2
+                ex, ey = ax+aw*ef, ay
+                nx, ny = bx+bw*nf, by+bh
+                path = f"M{ex} {ey} V{g} H{nx} V{ny}"
+                route = [(ex, ey), (ex, g), (nx, g), (nx, ny)]
+                labelpos = (nx, g+14)
+        _guard_edges(c, route, e)
         c.path(path, arrow=True)
         if e.get("label"):
             c.label(*labelpos, e["label"])
@@ -441,7 +545,7 @@ def release(spec):
     check(len(phases) == 4, "Release overview has four explicit gates.")
     for i, p in enumerate(phases):
         x = 32+i*157
-        c.box(f"gate{i}", x, 311, 145, 95, p["label"], p["detail"], i, True)
+        c.box(f"gate{i}", x, 311, 145, 95, p["label"], p["detail"], i, True, **paint(p))
         if i:
             c.path(f"M{x-12} 358 H{x}", arrow=True)
     c.box("featureA", 32, 157, 195, 88, "已就绪功能", spec["ready"], 1)
@@ -469,7 +573,7 @@ def business(spec):
               (276,148,128,350), (413,148,113,170), (413,328,113,170),
               (535,148,113,350), (32,513,301,93), (347,513,301,93)]
     for i, (cell, (x,y,w,h)) in enumerate(zip(cells, places)):
-        c.box(f"cell{i}", x,y,w,h, cell["label"], "\n".join(cell["items"]), i, True)
+        c.box(f"cell{i}", x,y,w,h, cell["label"], "\n".join(cell["items"]), i, True, **paint(cell))
     return c
 
 
@@ -481,7 +585,7 @@ def venn(spec):
     if nested:
         for i, g in enumerate(groups):
             r = 172-i*35
-            c.shape("circle", cx=260, cy=340, r=r, fill=tone(i)[1], stroke=tone(i)[0])
+            c.shape("circle", cx=260, cy=340, r=r, fill=structural_tone()[1], stroke=structural_tone()[0])
             yy = 340-r+22
             c.path(f"M260 {yy} H475")
             c.text(490, yy+5, g, 15, width=150)
@@ -489,7 +593,7 @@ def venn(spec):
         check(len(groups) <= 3, "Overlapping set template supports at most 3 sets.")
         coords = [(260,300), (414,300)] if len(groups)==2 else [(260,290),(420,290),(340,408)]
         for i, (g, (x,y)) in enumerate(zip(groups, coords)):
-            c.shape("circle", cx=x, cy=y, r=112, fill=tone(i)[1], fill_opacity=.65, stroke=tone(i)[0])
+            c.shape("circle", cx=x, cy=y, r=112, fill=structural_tone()[1], fill_opacity=.65, stroke=structural_tone()[0])
         for i, (g, (x,y)) in enumerate(zip(groups, coords)):
             c.text(x+(-45 if i==0 else 45 if i==1 else 0), y+(40 if i==2 else -40),
                    g, 15, weight=600, anchor="middle", width=140)
@@ -498,15 +602,18 @@ def venn(spec):
 
 
 def quantitative(spec, output):
-    import matplotlib
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from bootstrap import require
+    matplotlib = require("matplotlib")[0]
     matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    from matplotlib import font_manager
+    plt = require("matplotlib.pyplot")[0]
+    font_manager = require("matplotlib.font_manager")[0]
     from matplotlib.patches import Rectangle
-    import numpy as np
+    np = require("numpy")[0]
     fonts = {f.name for f in font_manager.fontManager.ttflist}
     font = next((x for x in ("PingFang SC", "Noto Sans CJK SC", "Arial Unicode MS") if x in fonts), "DejaVu Sans")
-    with matplotlib.rc_context({"font.family": font, "svg.fonttype": "none", "svg.hashsalt": "document-pastel",
+    with matplotlib.rc_context({"font.family": font, "svg.fonttype": "none", "svg.hashsalt": THEME["name"],
                                 "font.size": 10.8, "text.color": INK, "axes.labelcolor": MUTED,
                                 "xtick.color": MUTED, "ytick.color": MUTED}):
         fig = plt.figure(figsize=(6.8, 5.9), facecolor="white")
@@ -514,7 +621,7 @@ def quantitative(spec, output):
         fig.text(.047,.877,spec["title"],fontsize=18,weight="bold")
         fig.text(.047,.823,spec["subtitle"],fontsize=10,color=MUTED)
         fig.text(.047,.09,spec["note"],fontsize=9,color=MUTED)
-        footer = "合成示例 · document-pastel" if spec.get("sample") else "document-pastel"
+        footer = ("合成示例 · " if spec.get("sample") else "") + THEME["name"]
         fig.text(.047,.03,footer,fontsize=8.5,color=MUTED)
         kind = spec["layout"]
         values = np.asarray(spec.get("values", []), dtype=float)
@@ -522,7 +629,7 @@ def quantitative(spec, output):
         stats = {}
         if kind in ("pie", "donut", "funnel"):
             labels = spec["labels"]
-            check(len(values)==len(labels) and 2<=len(values)<=6 and np.all(values>=0)
+            check(len(values)==len(labels) and 2<=len(values)<=8 and np.all(values>=0)
                   and values.sum()>0, "Invalid composition data.")
             if kind == "funnel":
                 check(np.all(values[:-1]>=values[1:]) and values[0]>0, "Funnel needs nested nonincreasing counts.")
@@ -542,21 +649,51 @@ def quantitative(spec, output):
                 stats["overall_conversion"] = float(values[-1]/values[0])
                 stats["widths"] = values.tolist()
             else:
-                ax = fig.add_axes([.065,.23,.54,.50])
-                wedges, _ = ax.pie(values, startangle=90, counterclock=False,
-                                  colors=[tone(i)[1] for i in range(len(values))],
-                                  wedgeprops={"edgecolor": LINE, "linewidth": .75,
-                                              **({"width":.36} if kind=="donut" else {})})
-                for i, (name,v) in enumerate(zip(labels,values)):
-                    yy = .69-i*.074
-                    fig.patches.append(Rectangle((.65,yy-.012),.02,.023,
-                        transform=fig.transFigure,facecolor=tone(i)[1],edgecolor=tone(i)[0]))
-                    fig.text(.686,yy,f"{name}  {v:g}\n{v/values.sum():.1%}",fontsize=10,va="center")
                 if kind == "donut":
-                    ax.text(0,.05,f"{values.sum():g}",ha="center",fontsize=24,weight="bold")
-                    ax.text(0,-.22,spec["unit"],ha="center",fontsize=10,color=MUTED)
-                stats["shares"] = (values/values.sum()).tolist()
-                stats["angles"] = [float(w.theta2-w.theta1) for w in wedges]
+                    # Refined thin-ring donut: largest slice first, muted harmonic
+                    # tail, white gaps, centered legend,克制 center typography.
+                    order = np.argsort(-values)
+                    vals = values[order]
+                    labs = [labels[i] for i in order]
+                    # Identity follows the input category even when slices are sorted by size.
+                    seg_colors = [tone(int(i))[0] for i in order]
+                    ax = fig.add_axes([.045,.22,.50,.52])
+                    wedges, _ = ax.pie(vals, startangle=90, counterclock=False,
+                                       colors=seg_colors,
+                                       wedgeprops={"edgecolor":THEME["paper"],"linewidth":2.0,
+                                                   "width":.22})
+                    total = float(vals.sum())
+                    ax.text(0,.10,f"{total:g}",ha="center",va="center",
+                            fontsize=22,weight="bold",color=INK)
+                    ax.text(0,-.20,spec["unit"],ha="center",va="center",
+                            fontsize=10,color=MUTED)
+                    n = len(vals)
+                    row_h = .062 if n <= 4 else (.055 if n <= 6 else .048)
+                    top = .485 + (n-1)*row_h/2
+                    for i,(name,v) in enumerate(zip(labs,vals)):
+                        yy = top - i*row_h
+                        fig.patches.append(Rectangle((.635,yy-.011),.018,.022,
+                            transform=fig.transFigure,facecolor=seg_colors[i],edgecolor="none"))
+                        fig.text(.665,yy,f"{name}  {v:g} · {v/total:.0%}",
+                                 fontsize=9.5,va="center",color=INK)
+                    stats["shares"] = (vals/total).tolist()
+                    stats["angles"] = [float(w.theta2-w.theta1) for w in wedges]
+                    stats["order"] = [int(i) for i in order]
+                    stats["theta1"] = [round(float(w.theta1), 2) for w in wedges]
+                    stats["theta2"] = [round(float(w.theta2), 2) for w in wedges]
+                    stats["inner_ratio"] = 1-.22
+                else:
+                    ax = fig.add_axes([.065,.23,.54,.50])
+                    wedges, _ = ax.pie(values, startangle=90, counterclock=False,
+                                      colors=[tone(i)[0] for i in range(len(values))],
+                                      wedgeprops={"edgecolor": LINE, "linewidth": .75})
+                    for i, (name,v) in enumerate(zip(labels,values)):
+                        yy = .69-i*.074
+                        fig.patches.append(Rectangle((.65,yy-.012),.02,.023,
+                            transform=fig.transFigure,facecolor=tone(i)[0],edgecolor=tone(i)[0]))
+                        fig.text(.686,yy,f"{name}  {v:g}\n{v/values.sum():.1%}",fontsize=10,va="center")
+                    stats["shares"] = (values/values.sum()).tolist()
+                    stats["angles"] = [float(w.theta2-w.theta1) for w in wedges]
         elif kind == "radar":
             check(values.ndim==1 and 3<=len(values)<=6 and len(spec["labels"])==len(values), "Radar needs 3–6 dimensions.")
             maximum = float(spec["maximum"])
@@ -589,7 +726,7 @@ def quantitative(spec, output):
                 size = float(p.get("size",1))
                 check(math.isfinite(size) and size>0,"Bubble size must be positive.")
                 ax.scatter(p["x"],p["y"],s=45*size if kind=="bubble" else 65,
-                           color=tone(i)[1],edgecolor=tone(i)[0],zorder=3)
+                           color=tone(i)[0],edgecolor=tone(i)[0],zorder=3)
                 ax.annotate(p["label"],(p["x"],p["y"]),xytext=(7,7),textcoords="offset points",fontsize=10)
             ax.axvline(mx,color=LINE,lw=.8)
             ax.axhline(my,color=LINE,lw=.8)
@@ -625,6 +762,29 @@ STRUCTURAL = {"layers":layers, "grid":grid, "tree":tree, "mindmap":mindmap,
 QUANTITATIVE = {"pie","donut","funnel","radar","quadrant","bubble"}
 
 
+def _extra_structural():
+    """Lazy accessor for v2.3 structural builders, imported only when requested."""
+    global _EXTRA_STRUCTURAL
+    try:
+        return _EXTRA_STRUCTURAL
+    except NameError:
+        import structural_extra
+        _EXTRA_STRUCTURAL = structural_extra.BUILDERS
+        return _EXTRA_STRUCTURAL
+
+
+def _load_examples():
+    """Core examples plus v2.3 extra gold-standard specs (ids stay unique)."""
+    items = json.loads((ASSETS/"diagram-templates/examples.json").read_text())
+    extra_path = ASSETS/"diagram-templates/examples_extra.json"
+    if extra_path.exists():
+        items += json.loads(extra_path.read_text())
+    stress_path = ASSETS/"diagram-templates/examples_stress.json"
+    if stress_path.exists():
+        items += json.loads(stress_path.read_text())
+    return items
+
+
 def render(spec, output):
     for key in ("id","name","title","subtitle","note","layout"):
         check(isinstance(spec.get(key),str) and spec[key], f"Missing field: {key}")
@@ -637,6 +797,11 @@ def render(spec, output):
     kind = spec["layout"]
     if kind in STRUCTURAL:
         result = STRUCTURAL[kind](spec).save(output)
+    elif kind in _extra_structural():
+        # v2.3 extra structural layouts (stage_gate/causal_chain/feedback_loop/
+        # state_machine/image_annotate); lazy import avoids an import cycle because
+        # structural_extra imports symbols back from this module.
+        result = _extra_structural()[kind](spec).save(output)
     elif kind in QUANTITATIVE:
         result = quantitative(spec,output)
     else:
@@ -656,14 +821,14 @@ def main():
         if args.input:
             item = json.loads(args.input.read_text())
         else:
-            examples = json.loads((ASSETS/"diagram-templates/examples.json").read_text())
+            examples = _load_examples()
             matching = [s for s in examples if s["id"] == args.example]
             check(bool(matching), f"Unknown example: {args.example}")
             item = {**matching[0], "sample": True}
         result = render(item,args.out)
         print(json.dumps(result,ensure_ascii=False))
     else:
-        examples = json.loads((ASSETS/"diagram-templates/examples.json").read_text())
+        examples = _load_examples()
         results = [render({**item, "sample": True},args.out/(item["id"]+".svg")) for item in examples]
         (args.out/"templates.json").write_text(json.dumps(results,ensure_ascii=False,indent=2))
         print(f"Rendered {len(results)} template examples.")

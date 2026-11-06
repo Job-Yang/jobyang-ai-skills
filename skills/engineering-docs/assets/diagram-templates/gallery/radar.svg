@@ -9,7 +9,7 @@
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
-      <dc:title>Matplotlib v3.9.4, https://matplotlib.org/</dc:title>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
      </cc:Agent>
     </dc:creator>
    </cc:Work>
@@ -73,57 +73,57 @@ L 294.738235 293.878084
 L 207.346324 276.694563
 L 159.95815 197.577212
 z
-" clip-path="url(#p8f15670f07)" style="fill: #eae2fe; stroke: #eae2fe; stroke-linejoin: miter"/>
+" clip-path="url(#pd994d85f15)" style="fill: #f2f7fd; stroke: #f2f7fd; stroke-linejoin: miter"/>
    </g>
    <g id="matplotlib.axis_1">
     <g id="xtick_1">
      <g id="line2d_1">
       <path d="M 244.8 225.144
 L 244.8 118.944
-" clip-path="url(#p8f15670f07)" style="fill: none; stroke: #dee0e3; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#pd994d85f15)" style="fill: none; stroke: #e4e3dd; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="text_1">
-      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="244.8" y="99.233438" transform="rotate(-0 244.8 99.233438)">可用性</text>
+      <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: middle; fill: #5f6670" x="244.8" y="99.777023" transform="rotate(-0 244.8 99.777023)">可用性</text>
      </g>
     </g>
     <g id="xtick_2">
      <g id="line2d_2">
       <path d="M 244.8 225.144
 L 345.802202 192.326395
-" clip-path="url(#p8f15670f07)" style="fill: none; stroke: #dee0e3; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#pd994d85f15)" style="fill: none; stroke: #e4e3dd; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="text_2">
-      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="367.200974" y="188.16295" transform="rotate(-0 367.200974 188.16295)">易用性</text>
+      <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: middle; fill: #5f6670" x="367.200974" y="188.706536" transform="rotate(-0 367.200974 188.706536)">易用性</text>
      </g>
     </g>
     <g id="xtick_3">
      <g id="line2d_3">
       <path d="M 244.8 225.144
 L 307.222794 311.061605
-" clip-path="url(#p8f15670f07)" style="fill: none; stroke: #dee0e3; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#pd994d85f15)" style="fill: none; stroke: #e4e3dd; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="text_3">
-      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="320.447962" y="332.053925" transform="rotate(-0 320.447962 332.053925)">可维护性</text>
+      <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: middle; fill: #5f6670" x="320.447962" y="332.644761" transform="rotate(-0 320.447962 332.644761)">可维护性</text>
      </g>
     </g>
     <g id="xtick_4">
      <g id="line2d_4">
       <path d="M 244.8 225.144
 L 182.377206 311.061605
-" clip-path="url(#p8f15670f07)" style="fill: none; stroke: #dee0e3; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#pd994d85f15)" style="fill: none; stroke: #e4e3dd; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="text_4">
-      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="169.152038" y="332.053925" transform="rotate(-0 169.152038 332.053925)">可观测性</text>
+      <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: middle; fill: #5f6670" x="169.152038" y="332.602573" transform="rotate(-0 169.152038 332.602573)">可观测性</text>
      </g>
     </g>
     <g id="xtick_5">
      <g id="line2d_5">
       <path d="M 244.8 225.144
 L 143.797798 192.326395
-" clip-path="url(#p8f15670f07)" style="fill: none; stroke: #dee0e3; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#pd994d85f15)" style="fill: none; stroke: #e4e3dd; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="text_5">
-      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: middle" x="122.399026" y="188.16295" transform="rotate(-0 122.399026 188.16295)">可恢复性</text>
+      <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: middle; fill: #5f6670" x="122.399026" y="188.732693" transform="rotate(-0 122.399026 188.732693)">可恢复性</text>
      </g>
     </g>
    </g>
@@ -147,10 +147,10 @@ C 218.25 221.657486 218.936767 218.204874 220.270998 214.983755
 C 221.60523 211.762636 223.560977 208.835653 226.026315 206.370315
 C 228.491653 203.904977 231.418636 201.94923 234.639755 200.614998
 C 237.860874 199.280767 241.313486 198.594 244.8 198.594
-" clip-path="url(#p8f15670f07)" style="fill: none; stroke: #dee0e3; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#pd994d85f15)" style="fill: none; stroke: #e4e3dd; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="text_6">
-      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: start" x="254.960245" y="198.463436" transform="rotate(-0 254.960245 198.463436)">1.25</text>
+      <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="254.960245" y="198.34742" transform="rotate(-0 254.960245 198.34742)">1.25</text>
      </g>
     </g>
     <g id="ytick_2">
@@ -172,10 +172,10 @@ C 191.7 218.170972 193.073534 211.265748 195.741997 204.82351
 C 198.410459 198.381272 202.321954 192.527305 207.25263 187.59663
 C 212.183305 182.665954 218.037272 178.754459 224.47951 176.085997
 C 230.921748 173.417534 237.826972 172.044 244.8 172.044
-" clip-path="url(#p8f15670f07)" style="fill: none; stroke: #dee0e3; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#pd994d85f15)" style="fill: none; stroke: #e4e3dd; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="text_7">
-      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: start" x="265.12049" y="173.934434" transform="rotate(-0 265.12049 173.934434)">2.50</text>
+      <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="265.12049" y="173.818419" transform="rotate(-0 265.12049 173.818419)">2.50</text>
      </g>
     </g>
     <g id="ytick_3">
@@ -197,10 +197,10 @@ C 165.15 214.684458 167.210302 204.326622 171.212995 194.663265
 C 175.215689 184.999908 181.082932 176.218958 188.478945 168.822945
 C 195.874958 161.426932 204.655908 155.559689 214.319265 151.556995
 C 223.982622 147.554302 234.340458 145.494 244.8 145.494
-" clip-path="url(#p8f15670f07)" style="fill: none; stroke: #dee0e3; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#pd994d85f15)" style="fill: none; stroke: #e4e3dd; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="text_8">
-      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: start" x="275.280735" y="149.405433" transform="rotate(-0 275.280735 149.405433)">3.75</text>
+      <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="275.280735" y="149.289417" transform="rotate(-0 275.280735 149.289417)">3.75</text>
      </g>
     </g>
     <g id="ytick_4">
@@ -222,10 +222,10 @@ C 138.6 211.197944 141.347069 197.387495 146.683994 184.503019
 C 152.020918 171.618544 159.843909 159.910611 169.70526 150.04926
 C 179.566611 140.187909 191.274544 132.364918 204.159019 127.027994
 C 217.043495 121.691069 230.853944 118.944 244.8 118.944
-" clip-path="url(#p8f15670f07)" style="fill: none; stroke: #dee0e3; stroke-width: 0.8; stroke-linecap: square"/>
+" clip-path="url(#pd994d85f15)" style="fill: none; stroke: #e4e3dd; stroke-width: 0.8; stroke-linecap: square"/>
      </g>
      <g id="text_9">
-      <text style="fill: #646a73; font: 10.8px 'Arial Unicode MS'; text-anchor: start" x="285.440981" y="124.876431" transform="rotate(-0 285.440981 124.876431)">5.00</text>
+      <text style="font-size: 10.8px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="285.440981" y="124.760416" transform="rotate(-0 285.440981 124.760416)">5.00</text>
      </g>
     </g>
    </g>
@@ -236,7 +236,7 @@ L 294.738235 293.878084
 L 207.346324 276.694563
 L 159.95815 197.577212
 L 244.8 129.564
-" clip-path="url(#p8f15670f07)" style="fill: none; stroke: #7456b2; stroke-width: 1.5; stroke-linecap: square"/>
+" clip-path="url(#pd994d85f15)" style="fill: none; stroke: #2a78d6; stroke-width: 1.5; stroke-linecap: square"/>
    </g>
    <g id="patch_4">
     <path d="M 244.8 118.944
@@ -260,23 +260,23 @@ C 272.556505 121.691069 258.746056 118.944 244.8 118.944
    </g>
   </g>
   <g id="text_10">
-   <text style="fill: #646a73; font: 10px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="22.0896" transform="rotate(-0 23.0112 22.0896)">雷达图</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="22.0896" transform="rotate(-0 23.0112 22.0896)">雷达图</text>
   </g>
   <g id="text_11">
-   <text style="fill: #1f2329; font: 700 18px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="52.2504" transform="rotate(-0 23.0112 52.2504)">从多个维度观察试点结果</text>
+   <text style="font-weight: 700; font-size: 18px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #1a1b1c" x="23.0112" y="52.2504" transform="rotate(-0 23.0112 52.2504)">从多个维度观察试点结果</text>
   </g>
   <g id="text_12">
-   <text style="fill: #646a73; font: 10px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="75.1896" transform="rotate(-0 23.0112 75.1896)">统一 0—5 分量表 · 维度顺序固定</text>
+   <text style="font-size: 10px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="75.1896" transform="rotate(-0 23.0112 75.1896)">统一 0—5 分量表 · 维度顺序固定</text>
   </g>
   <g id="text_13">
-   <text style="fill: #646a73; font: 9px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="386.568" transform="rotate(-0 23.0112 386.568)">合成评分；多边形面积不能当作综合得分。</text>
+   <text style="font-size: 9px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="386.568" transform="rotate(-0 23.0112 386.568)">合成评分；多边形面积不能当作综合得分。</text>
   </g>
   <g id="text_14">
-   <text style="fill: #646a73; font: 8.5px 'Arial Unicode MS'; text-anchor: start" x="23.0112" y="412.056" transform="rotate(-0 23.0112 412.056)">合成示例 · document-pastel</text>
+   <text style="font-size: 8.5px; font-family: 'Arial Unicode MS'; text-anchor: start; fill: #5f6670" x="23.0112" y="412.056" transform="rotate(-0 23.0112 412.056)">合成示例 · document-neutral</text>
   </g>
  </g>
  <defs>
-  <clipPath id="p8f15670f07">
+  <clipPath id="pd994d85f15">
    <path d="M 351 225.144
 C 351 211.197944 348.252931 197.387495 342.916006 184.503019
 C 337.579082 171.618544 329.756091 159.910611 319.89474 150.04926

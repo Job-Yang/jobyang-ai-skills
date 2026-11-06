@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 1120" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif">
+  <rect width="640" height="1120" fill="#ffffff"/>
+  <text x="320" y="36" text-anchor="middle" font-size="20" font-weight="600" fill="#2b2b2b">AI 每日早报流水线</text>
+  <text x="320" y="60" text-anchor="middle" font-size="12.5" fill="#6b7280">不变的方法论沉淀成文件，会变的进配置</text>
+
+  <!-- 被否掉的做法 -->
+  <g font-size="12.5" fill="#6b7280">
+    <rect x="40" y="84" width="262" height="62" rx="8" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="171" y="110" text-anchor="middle" font-weight="600">规则散在调度器</text>
+    <text x="171" y="130" text-anchor="middle" font-size="11">换平台换公司就丢了</text>
+
+    <rect x="338" y="84" width="262" height="62" rx="8" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="469" y="110" text-anchor="middle" font-weight="600">深挖硬耦合写作技能</text>
+    <text x="469" y="130" text-anchor="middle" font-size="11">先加上后瘦身，只留轻提醒</text>
+  </g>
+
+  <!-- 主路径竖线 -->
+  <g font-size="14" fill="#0b3b36">
+    <rect x="170" y="180" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="208" text-anchor="middle" font-weight="600">多渠道采集</text>
+    <text x="320" y="228" text-anchor="middle" font-size="11.5" fill="#3d6b66">GitHub Trending / 公开媒体 / X</text>
+
+    <rect x="170" y="300" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="328" text-anchor="middle" font-weight="600">交叉验证筛选</text>
+    <text x="320" y="348" text-anchor="middle" font-size="11.5" fill="#3d6b66">双源确认，宁缺毋滥</text>
+
+    <rect x="170" y="420" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="448" text-anchor="middle" font-weight="600">写判断和机会分</text>
+    <text x="320" y="468" text-anchor="middle" font-size="11.5" fill="#3d6b66">锚定读者画像，不复述事实</text>
+
+    <rect x="170" y="540" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="568" text-anchor="middle" font-weight="600">固定卡片渲染</text>
+    <text x="320" y="588" text-anchor="middle" font-size="11.5" fill="#3d6b66">脚本确定性产出，版式每日一致</text>
+
+    <rect x="170" y="660" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="688" text-anchor="middle" font-weight="600">双保险交付</text>
+    <text x="320" y="708" text-anchor="middle" font-size="11.5" fill="#3d6b66">写进文档，同时回显全文</text>
+  </g>
+
+  <g stroke="#0f9d8f" stroke-width="2.2" fill="#0f9d8f">
+    <line x1="320" y1="244" x2="320" y2="290"/><polygon points="320,300 315,290 325,290"/>
+    <line x1="320" y1="364" x2="320" y2="410"/><polygon points="320,420 315,410 325,410"/>
+    <line x1="320" y1="484" x2="320" y2="530"/><polygon points="320,540 315,530 325,530"/>
+    <line x1="320" y1="604" x2="320" y2="650"/><polygon points="320,660 315,650 325,650"/>
+  </g>
+
+  <!-- 琥珀降级 -->
+  <g font-size="12.5" fill="#7a5410">
+    <line x1="170" y1="212" x2="120" y2="212" stroke="#e8a33d" stroke-width="2"/>
+    <rect x="18" y="180" width="104" height="66" rx="8" fill="#fdf1dd" stroke="#e8a33d" stroke-width="2"/>
+    <text x="70" y="206" text-anchor="middle" font-weight="600">渠道失败</text>
+    <text x="70" y="225" text-anchor="middle" font-size="10.5">不空手结束</text>
+    <text x="70" y="239" text-anchor="middle" font-size="10.5">缺啥标啥</text>
+
+    <line x1="470" y1="692" x2="520" y2="692" stroke="#e8a33d" stroke-width="2"/>
+    <rect x="518" y="660" width="104" height="66" rx="8" fill="#fdf1dd" stroke="#e8a33d" stroke-width="2"/>
+    <text x="570" y="686" text-anchor="middle" font-weight="600">文档写不进</text>
+    <text x="570" y="705" text-anchor="middle" font-size="10.5">降级 md 文件</text>
+    <text x="570" y="719" text-anchor="middle" font-size="10.5">+ 对话全文</text>
+  </g>
+
+  <!-- 可迁移注记 -->
+  <g>
+    <rect x="60" y="790" width="520" height="120" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.5"/>
+    <text x="320" y="818" text-anchor="middle" font-size="13.5" font-weight="600" fill="#0b3b36">换公司只改 config 和两个弱接缝</text>
+    <text x="320" y="844" text-anchor="middle" font-size="12" fill="#3d6b66">读者画像、X 数据服务、写进哪个文档都在 config</text>
+    <text x="320" y="866" text-anchor="middle" font-size="12" fill="#3d6b66">技能本体零公司信息、零密钥</text>
+    <text x="320" y="892" text-anchor="middle" font-size="11" fill="#8a6420">看完整条想深挖：新开干净窗口，不在简报窗口裸写长文</text>
+  </g>
+
+  <!-- 图例 -->
+  <g font-size="12" fill="#4b5563">
+    <rect x="60" y="1050" width="16" height="16" rx="3" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.5"/>
+    <text x="82" y="1063">主路径 / 沉淀的方法论</text>
+    <rect x="260" y="1050" width="16" height="16" rx="3" fill="#fdf1dd" stroke="#e8a33d" stroke-width="1.5"/>
+    <text x="282" y="1063">降级策略</text>
+    <rect x="390" y="1050" width="16" height="16" rx="3" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="412" y="1063">被否掉的做法</text>
+  </g>
+</svg>

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="1240" viewBox="0 0 880 1240" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+  <rect width="880" height="1240" fill="#ffffff"/>
+  <text x="40" y="52" font-size="26" font-weight="600" fill="#262b33">机会雷达的一天：宽进、严出，每天留一条痕</text>
+  <text x="40" y="86" font-size="15" fill="#5b6470">数字取自 CHANGELOG 实测口径：0.4.0 入池约 339 条，0.4.1 放宽窗口后 486 条</text>
+
+  <!-- step 1 -->
+  <rect x="40" y="120" width="800" height="96" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="2"/>
+  <text x="64" y="152" font-size="18" font-weight="600" fill="#0b6b55">① 采池：十六个公开结构化源宽召回</text>
+  <text x="64" y="180" font-size="14.5" fill="#0b6b55">默认 5 天窗口、每源容量 60，逐源容错 → 原始池约 486 条</text>
+  <text x="64" y="202" font-size="13.5" fill="#0b6b55">（0.4.1 实测；0.4.0 约 339 条。0.3.x 每天靠通用搜只捞到约 4 条）</text>
+
+  <line x1="440" y1="216" x2="440" y2="248" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <!-- step 2 -->
+  <rect x="40" y="248" width="800" height="80" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="280" font-size="18" font-weight="600" fill="#0b6b55">② 镜头：脚本确定性选当天方向</text>
+  <text x="64" y="308" font-size="14.5" fill="#0b6b55">10 个人群镜头 + 2 个方法道，按日期和历史覆盖轮换，不凭感觉挑</text>
+
+  <line x1="440" y1="328" x2="440" y2="360" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <!-- step 3 -->
+  <rect x="40" y="360" width="800" height="80" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="392" font-size="18" font-weight="600" fill="#0b6b55">③ 取证：对最强 5–8 条补证搜索</text>
+  <text x="64" y="420" font-size="14.5" fill="#0b6b55">差评原话、付费证据、竞品动态；不可达的源不硬搜</text>
+
+  <line x1="440" y1="440" x2="440" y2="472" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <!-- step 4 -->
+  <rect x="40" y="472" width="800" height="80" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="504" font-size="18" font-weight="600" fill="#0b6b55">④ 去重：与历史追踪台判 NEW / DUP / RELATED</text>
+  <text x="64" y="532" font-size="14.5" fill="#0b6b55">相关度阈值收紧到 0.25、八个共同词才判近亲，通用词由词频折扣剔除</text>
+
+  <line x1="440" y1="552" x2="440" y2="584" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <!-- step 5 -->
+  <rect x="40" y="584" width="800" height="80" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="616" font-size="18" font-weight="600" fill="#0b6b55">⑤ 证据对抗自检：分层处理</text>
+  <text x="64" y="644" font-size="14.5" fill="#0b6b55">硬旗（旧日期、垃圾源、坏链接、DUP）挡候选；软旗只提醒补证，不挡新供给</text>
+
+  <line x1="440" y1="664" x2="440" y2="696" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <!-- step 6 output -->
+  <rect x="40" y="696" width="800" height="92" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="2.2"/>
+  <text x="64" y="728" font-size="18" font-weight="600" fill="#0b6b55">⑥ 候选清单：每条挂真链接 + 原话/数据引用</text>
+  <text x="64" y="756" font-size="14.5" fill="#0b6b55">挖不到证据的标 assumption，不伪装成真需求</text>
+  <text x="64" y="778" font-size="13.5" fill="#0b6b55">目标约每 1–2 个工作日出一条值得深挖的机会</text>
+
+  <!-- amber -->
+  <rect x="40" y="816" width="800" height="96" rx="12" fill="#fbf0dd" stroke="#c97a16" stroke-width="1.8"/>
+  <text x="64" y="848" font-size="17" font-weight="600" fill="#9a5a0e">两条取舍写死在脚本里</text>
+  <text x="64" y="876" font-size="14" fill="#9a5a0e">侦察与评估分开：本技能不打分（防止侦察和评估互相污染）；</text>
+  <text x="64" y="898" font-size="14" fill="#9a5a0e">连续静默日自动放宽镜头与补证强度，安静日要自证漏斗各层数量。</text>
+
+  <!-- branch -->
+  <rect x="40" y="936" width="800" height="110" rx="12" fill="#ffffff" stroke="#5b6470" stroke-width="1.6"/>
+  <text x="64" y="968" font-size="17" font-weight="600" fill="#3d444e">留痕三分支（进场自诊断，确定性路径）</text>
+  <text x="64" y="996" font-size="14" fill="#3d444e">full：文档留痕 + 群卡片</text>
+  <text x="64" y="1020" font-size="14" fill="#9a5a0e">degrade-docs：群消息接口无权限时，只写文档痕并回报 blocker（2026-10-16 实跑归档）</text>
+  <text x="64" y="1042" font-size="14" fill="#5b6470">block：文档不可写，留痕失败同样记录</text>
+
+  <!-- gray dashed -->
+  <rect x="40" y="1068" width="800" height="130" rx="12" fill="#f4f6f8" stroke="#9aa3ad" stroke-width="1.5" stroke-dasharray="8 5"/>
+  <text x="64" y="1100" font-size="16" font-weight="600" fill="#5b6470">待补出处与适用前提</text>
+  <text x="64" y="1128" font-size="14" fill="#5b6470">蓝海判据默认面向单人 AI 原生产品；团队用户或竞品研究场景换判据。</text>
+  <text x="64" y="1152" font-size="14" fill="#5b6470">这套源清单与偏好最初来自哪套外部一人产品工作流，库内暂无记录，待作者补。</text>
+  <text x="64" y="1176" font-size="14" fill="#5b6470">「无强机会」日的归因来自版本记录的设计复盘，非单次线上事故。</text>
+
+  <defs>
+    <marker id="t" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0f8a6d"/></marker>
+  </defs>
+</svg>

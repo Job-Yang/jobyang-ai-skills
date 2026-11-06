@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="489.6pt" height="374.4pt" viewBox="0 0 489.6 374.4" xmlns="http://www.w3.org/2000/svg" version="1.1"><title>交易域占四成内存，基础设施合计不足一成</title><desc>合成示例｜数据不代表真实系统；服务相邻不证明因果。</desc>
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 374.4
+L 489.6 374.4
+L 489.6 0
+L 0 0
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 31.72608 310.0032
+L 142.961117 310.0032
+L 142.961117 94.3488
+L 31.72608 94.3488
+z
+" clip-path="url(#p5100a89e4e)" style="fill: #eae2fe; stroke: #7456b2; stroke-width: 1.3; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 142.961117 310.0032
+L 222.822169 310.0032
+L 222.822169 94.3488
+L 142.961117 94.3488
+z
+" clip-path="url(#p5100a89e4e)" style="fill: #dff5e5; stroke: #367747; stroke-width: 1.3; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 222.822169 310.0032
+L 277.013597 310.0032
+L 277.013597 94.3488
+L 222.822169 94.3488
+z
+" clip-path="url(#p5100a89e4e)" style="fill: #fef1ce; stroke: #896b21; stroke-width: 1.3; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 277.013597 310.0032
+L 299.83104 310.0032
+L 299.83104 94.3488
+L 277.013597 94.3488
+z
+" clip-path="url(#p5100a89e4e)" style="fill: #f0f4fc; stroke: #4063a8; stroke-width: 1.3; stroke-linejoin: miter"/>
+   </g>
+   <g id="line2d_1">
+    <path d="M 297.294912 148.55022
+L 315.410112 148.55022
+" clip-path="url(#p5100a89e4e)" style="fill: none; stroke: #646a73; stroke-width: 0.6; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_2">
+    <path d="M 220.286041 228.033669
+L 315.410112 228.033669
+" clip-path="url(#p5100a89e4e)" style="fill: none; stroke: #646a73; stroke-width: 0.6; stroke-linecap: round"/>
+   </g>
+   <g id="line2d_3">
+    <path d="M 297.294912 250.87374
+L 315.410112 250.87374
+" clip-path="url(#p5100a89e4e)" style="fill: none; stroke: #646a73; stroke-width: 0.6; stroke-linecap: round"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #7456b2" x="36.798336" y="102.259816" transform="rotate(-0 36.798336 102.259816)">交易域 390 MiB</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 9.5px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #367747" x="148.033373" y="102.282823" transform="rotate(-0 148.033373 102.282823)">平台域 280 MiB</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 700; font-size: 9px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; fill: #896b21" transform="translate(252.743918 224.433422) rotate(-90)">数据域 190</text>
+   </g>
+   <g id="text_4">
+    <text style="font-weight: 700; font-size: 9px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; fill: #4063a8" transform="translate(291.221635 226.431) rotate(-90)">基础设施 80</text>
+   </g>
+   <g id="patch_6">
+    <path d="M 316.859328 150.79662
+L 323.3808 150.79662
+L 323.3808 146.30382
+L 316.859328 146.30382
+z
+" clip-path="url(#p5100a89e4e)" style="fill: #f0f4fc; stroke: #4063a8; stroke-width: 0.9; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 8.2px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1f2329" x="325.554624" y="151.141068" transform="rotate(-0 325.554624 151.141068)">链路追踪 35 MiB · 4%</text>
+   </g>
+   <g id="patch_7">
+    <path d="M 316.859328 230.280069
+L 323.3808 230.280069
+L 323.3808 225.787269
+L 316.859328 225.787269
+z
+" clip-path="url(#p5100a89e4e)" style="fill: #dff5e5; stroke: #367747; stroke-width: 0.9; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 8.2px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1f2329" x="325.554624" y="230.608501" transform="rotate(-0 325.554624 230.608501)">通知服务 70 MiB · 7%</text>
+   </g>
+   <g id="patch_8">
+    <path d="M 316.859328 253.12014
+L 323.3808 253.12014
+L 323.3808 248.62734
+L 316.859328 248.62734
+z
+" clip-path="url(#p5100a89e4e)" style="fill: #f0f4fc; stroke: #4063a8; stroke-width: 0.9; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 8.2px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1f2329" x="325.554624" y="253.400525" transform="rotate(-0 325.554624 253.400525)">配置中心 45 MiB · 5%</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 9px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2329" x="66.111042" y="224.921251" transform="rotate(-0 66.111042 224.921251)">订单服务</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 8px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #646a73" x="66.111042" y="239.879626" transform="rotate(-0 66.111042 239.879626)">180 MiB</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 9px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2329" x="119.192432" y="224.908595" transform="rotate(-0 119.192432 224.908595)">支付服务</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 8px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #646a73" x="119.192432" y="239.879626" transform="rotate(-0 119.192432 239.879626)">120 MiB</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 9px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2329" x="87.343598" y="122.597731" transform="rotate(-0 87.343598 122.597731)">库存服务</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 8px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #646a73" x="87.343598" y="137.556106" transform="rotate(-0 87.343598 137.556106)">90 MiB</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 9px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2329" x="170.993425" y="223.191006" transform="rotate(-0 170.993425 223.191006)">网关</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 8px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #646a73" x="170.993425" y="238.192974" transform="rotate(-0 170.993425 238.192974)">150 MiB</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 9px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2329" x="182.891643" y="120.845689" transform="rotate(-0 182.891643 120.845689)">认证中心</text>
+   </g>
+   <g id="text_17">
+    <text style="font-size: 8px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #646a73" x="182.891643" y="135.869454" transform="rotate(-0 182.891643 135.869454)">60 MiB</text>
+   </g>
+   <g id="text_18">
+    <text style="font-size: 9px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2329" x="249.917883" y="244.365703" transform="rotate(-0 249.917883 244.365703)">报表服务</text>
+   </g>
+   <g id="text_19">
+    <text style="font-size: 8px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #646a73" x="249.917883" y="259.350093" transform="rotate(-0 249.917883 259.350093)">110 MiB</text>
+   </g>
+   <g id="text_20">
+    <text style="font-size: 9px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #1f2329" x="249.917883" y="142.042183" transform="rotate(-0 249.917883 142.042183)">搜索服务</text>
+   </g>
+   <g id="text_21">
+    <text style="font-size: 8px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #646a73" x="249.917883" y="157.026573" transform="rotate(-0 249.917883 157.026573)">80 MiB</text>
+   </g>
+  </g>
+  <g id="line2d_4">
+   <path d="M 23.0112 334.7136
+L 466.5888 334.7136
+" style="fill: none; stroke: #dee0e3; stroke-width: 0.6; stroke-linecap: round"/>
+  </g>
+  <g id="text_22">
+   <text style="font-size: 9.5px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #646a73" x="23.0112" y="22.464" transform="rotate(-0 23.0112 22.464)">22  /  矩形树图 · 合成数据</text>
+  </g>
+  <g id="text_23">
+   <text style="font-weight: 700; font-size: 18px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1f2329" x="23.0112" y="53.1648" transform="rotate(-0 23.0112 53.1648)">交易域占四成内存，基础设施合计不足一成</text>
+  </g>
+  <g id="text_24">
+   <text style="font-size: 10.2px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #646a73" x="23.0112" y="74.88" transform="rotate(-0 23.0112 74.88)">运行时堆内存占用（MiB）｜按服务进程聚合，2 层分组</text>
+  </g>
+  <g id="text_25">
+   <text style="font-size: 9.1px; font-family: 'Arial Unicode MS', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #646a73" x="23.0112" y="354.9312" transform="rotate(-0 23.0112 354.9312)">合成示例｜数据不代表真实系统；服务相邻不证明因果。</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p5100a89e4e">
+   <rect x="24.48" y="89.856" width="362.304" height="224.64"/>
+  </clipPath>
+ </defs>
+</svg>

@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 1120" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif">
+  <rect width="640" height="1120" fill="#ffffff"/>
+  <text x="320" y="36" text-anchor="middle" font-size="20" font-weight="600" fill="#2b2b2b">内容信息图：压缩文字，不压缩信息</text>
+  <text x="320" y="60" text-anchor="middle" font-size="12.5" fill="#6b7280">把几百字讲清的道理压成一眼懂的画面</text>
+
+  <!-- 被否掉的做法 -->
+  <g font-size="12.5" fill="#6b7280">
+    <rect x="40" y="84" width="262" height="62" rx="8" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="171" y="110" text-anchor="middle" font-weight="600">装饰氛围图</text>
+    <text x="171" y="130" text-anchor="middle" font-size="11">好看没信息量，删了不损失理解</text>
+
+    <rect x="338" y="84" width="262" height="62" rx="8" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="469" y="110" text-anchor="middle" font-weight="600">图文两张皮</text>
+    <text x="469" y="130" text-anchor="middle" font-size="11">图是另一套比喻，和正文对不上</text>
+  </g>
+
+  <!-- 主路径竖线 -->
+  <g font-size="14" fill="#0b3b36">
+    <rect x="170" y="180" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="208" text-anchor="middle" font-weight="600">读全文，定位关键节点</text>
+    <text x="320" y="228" text-anchor="middle" font-size="11.5" fill="#3d6b66">不是每节都配</text>
+
+    <rect x="170" y="300" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="328" text-anchor="middle" font-weight="600">一句话拎出中心判断</text>
+    <text x="320" y="348" text-anchor="middle" font-size="11.5" fill="#3d6b66">找到它锚定的那一两段正文</text>
+
+    <rect x="170" y="420" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="448" text-anchor="middle" font-weight="600">选后端</text>
+    <text x="320" y="468" text-anchor="middle" font-size="11.5" fill="#3d6b66">多标签术语走确定性渲染器</text>
+
+    <rect x="170" y="540" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="568" text-anchor="middle" font-weight="600">渲染 SVG/PNG</text>
+    <text x="320" y="588" text-anchor="middle" font-size="11.5" fill="#3d6b66">真文本永不糊，可改可复核</text>
+
+    <rect x="170" y="660" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="688" text-anchor="middle" font-weight="600">过渡句 + 图文对账</text>
+    <text x="320" y="708" text-anchor="middle" font-size="11.5" fill="#3d6b66">图上每个词都能在正文查到</text>
+  </g>
+
+  <g stroke="#0f9d8f" stroke-width="2.2" fill="#0f9d8f">
+    <line x1="320" y1="244" x2="320" y2="290"/><polygon points="320,300 315,290 325,290"/>
+    <line x1="320" y1="364" x2="320" y2="410"/><polygon points="320,420 315,410 325,410"/>
+    <line x1="320" y1="484" x2="320" y2="530"/><polygon points="320,540 315,530 325,530"/>
+    <line x1="320" y1="604" x2="320" y2="650"/><polygon points="320,660 315,650 325,650"/>
+  </g>
+
+  <!-- 琥珀：代价与例外 -->
+  <g font-size="12.5" fill="#7a5410">
+    <line x1="470" y1="452" x2="516" y2="452" stroke="#e8a33d" stroke-width="2"/>
+    <rect x="516" y="420" width="108" height="66" rx="8" fill="#fdf1dd" stroke="#e8a33d" stroke-width="2"/>
+    <text x="570" y="446" text-anchor="middle" font-weight="600">文生图是例外</text>
+    <text x="570" y="465" text-anchor="middle" font-size="10.5">标签多才具象场景</text>
+    <text x="570" y="479" text-anchor="middle" font-size="10.5">不糊才用</text>
+
+    <line x1="170" y1="692" x2="120" y2="692" stroke="#e8a33d" stroke-width="2"/>
+    <rect x="16" y="660" width="104" height="66" rx="8" fill="#fdf1dd" stroke="#e8a33d" stroke-width="2"/>
+    <text x="68" y="686" text-anchor="middle" font-weight="600">不另起比喻</text>
+    <text x="68" y="705" text-anchor="middle" font-size="10.5">用作者正文</text>
+    <text x="68" y="719" text-anchor="middle" font-size="10.5">里已有的</text>
+  </g>
+
+  <!-- 分工注记 -->
+  <g>
+    <rect x="60" y="790" width="520" height="120" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.5"/>
+    <text x="320" y="818" text-anchor="middle" font-size="13.5" font-weight="600" fill="#0b3b36">它是写作链路的下游，不写正文</text>
+    <text x="320" y="844" text-anchor="middle" font-size="12" fill="#3d6b66">直观 vs 严谨：工程框线图走 engineering-docs</text>
+    <text x="320" y="866" text-anchor="middle" font-size="12" fill="#3d6b66">本技能管「一眼懂的道理」，两者可成对不互替</text>
+    <text x="320" y="892" text-anchor="middle" font-size="11" fill="#8a6420">一张图只讲一件事；超过 7 步或 4 列就拆两张</text>
+  </g>
+
+  <!-- 图例 -->
+  <g font-size="12" fill="#4b5563">
+    <rect x="60" y="1050" width="16" height="16" rx="3" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.5"/>
+    <text x="82" y="1063">主路径</text>
+    <rect x="180" y="1050" width="16" height="16" rx="3" fill="#fdf1dd" stroke="#e8a33d" stroke-width="1.5"/>
+    <text x="202" y="1063">代价与例外</text>
+    <rect x="330" y="1050" width="16" height="16" rx="3" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="352" y="1063">被否掉的做法</text>
+  </g>
+</svg>

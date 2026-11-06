@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="960" viewBox="0 0 390 960" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Source Han Sans SC, sans-serif">
+  <rect width="390" height="960" fill="#ffffff"/>
+  <text x="20" y="32" font-size="16" font-weight="600" fill="#2b2b2b">三条规则谁能动</text>
+  <text x="20" y="52" font-size="11.5" fill="#666666">青绿＝规则层　琥珀＝翻车硬闸　灰虚＝日常不做</text>
+
+  <!-- layer 1 -->
+  <rect x="20" y="72" width="350" height="96" rx="9" fill="#2a9d8f" stroke="#1f5f58" stroke-width="2"/>
+  <text x="36" y="96" font-size="13.5" font-weight="600" fill="#ffffff">第一层 · 宪法</text>
+  <text x="36" y="116" font-size="11.5" fill="#dff3f0">底线三段（保真＞场合＞力度＞风格）</text>
+  <text x="36" y="134" font-size="11.5" fill="#dff3f0">＋四条原则正文；只有作者手工改</text>
+  <text x="36" y="152" font-size="11" fill="#bfe6e0">check_integrity.py 逐段算 sha256</text>
+
+  <g stroke="#555555" stroke-width="1.5" fill="#555555">
+    <line x1="195" y1="168" x2="195" y2="192"/><polygon points="195,195 191,188 199,188"/>
+  </g>
+
+  <!-- layer 2 -->
+  <rect x="20" y="198" width="350" height="78" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="1.8"/>
+  <text x="36" y="222" font-size="13.5" font-weight="600" fill="#1f5f58">第二层 · 稳定判据</text>
+  <text x="36" y="242" font-size="11.5" fill="#333333">references/ 八文件：症状库、受保护跨度、</text>
+  <text x="36" y="260" font-size="11.5" fill="#333333">节奏、造词清单、对照库；增补例子不推翻宪法</text>
+
+  <g stroke="#555555" stroke-width="1.5" fill="#555555">
+    <line x1="195" y1="276" x2="195" y2="300"/><polygon points="195,303 191,296 199,296"/>
+  </g>
+
+  <!-- layer 3 -->
+  <rect x="20" y="306" width="350" height="78" rx="9" fill="#f3faf9" stroke="#2a9d8f" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <text x="36" y="330" font-size="13.5" font-weight="600" fill="#1f5f58">第三层 · 每日细则</text>
+  <text x="36" y="350" font-size="11.5" fill="#333333">daily-learning.md：eval 攒病类、过门禁发布</text>
+  <text x="36" y="368" font-size="11" fill="#555555">干活前读它；跟宪法冲突时宪法赢</text>
+
+  <!-- eval box -->
+  <rect x="20" y="408" width="350" height="118" rx="10" fill="#ffffff" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="36" y="434" font-size="13.5" font-weight="600" fill="#1f5f58">haohao-eval 评测台</text>
+  <text x="36" y="454" font-size="11.5" fill="#333333">每天出题、盲评、逐字核对</text>
+  <text x="36" y="472" font-size="11.5" fill="#333333">攒同类问题 → 候选 → 过门禁发布到第三层</text>
+  <text x="36" y="492" font-size="11" fill="#7a5a12">红线：评测时不改被测版本；</text>
+  <text x="36" y="509" font-size="11" fill="#7a5a12">不做把命中压到 0 的重试</text>
+
+  <g stroke="#2a9d8f" stroke-width="1.6" fill="#2a9d8f">
+    <line x1="195" y1="408" x2="195" y2="388"/><polygon points="195,386 191,393 199,393"/>
+  </g>
+  <text x="206" y="400" font-size="10.5" fill="#1f5f58">只写第三层</text>
+
+  <!-- amber 1 -->
+  <rect x="20" y="548" width="350" height="86" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.6"/>
+  <text x="36" y="572" font-size="13" font-weight="600" fill="#7a5a12">翻车一：靠自觉守不住</text>
+  <text x="36" y="592" font-size="11.5" fill="#333333">模型「感觉自己过了」就没真扫，半角标点</text>
+  <text x="36" y="610" font-size="11.5" fill="#333333">成串漏进成稿 → 写回持久面的成稿加交付硬闸</text>
+
+  <!-- amber 2 -->
+  <rect x="20" y="648" width="350" height="86" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.6"/>
+  <text x="36" y="672" font-size="13" font-weight="600" fill="#7a5a12">翻车二：硬闸在本机先塌</text>
+  <text x="36" y="692" font-size="11.5" fill="#333333">半角标点那条用 grep -P，在 macOS 自带 grep</text>
+  <text x="36" y="710" font-size="11.5" fill="#333333">上报错失效 → 落成纯标准库 quick_scan.py</text>
+
+  <!-- gray dashed -->
+  <rect x="20" y="752" width="350" height="86" rx="9" fill="#f4f5f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="36" y="776" font-size="12" fill="#5f6368">日常写作绝不打分</text>
+  <text x="36" y="796" font-size="11.5" fill="#5f6368">写字靠四条原则和红线，不靠分数；</text>
+  <text x="36" y="814" font-size="11.5" fill="#5f6368">比稿、回归才走 eval，评测和写作拆开。</text>
+</svg>

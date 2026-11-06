@@ -4,7 +4,7 @@
 
 - precedents.json：判例。每例每个工具一条，评语按「我们 / 工具1 / 工具2」原样切开，不改写、不总结。
 - regression_seed.json：回归题。50 条原文，每天轮换抽几条让现用版重跑。
-- clean_seed.json：干净对照。references/before-after-worktext.md 里的改稿和“可以不改”示例，再洗一遍应该基本不动。
+- clean_seed.json：干净对照。references/before-after-worktext.md 里「修好」的五段，已经洗过的稿再洗一遍应该基本不动。
 
 只在更新 cases50.json、labels.json 或对照库之后重跑：python3 scripts/build_seed.py
 """
@@ -78,24 +78,13 @@ def build_regression(cases):
     } for c in cases]
 
 
-def build_clean(shuohua_dir=None):
-    root = shuohua_dir or os.path.join(SKILL, "..", "haohao-shuohua")
-    path = os.path.join(root, "references", "before-after-worktext.md")
+def build_clean():
+    path = os.path.join(SKILL, "..", "haohao-shuohua", "references", "before-after-worktext.md")
     if not os.path.exists(path):
         return []
-    with open(path, encoding="utf-8") as f:
-        text = f.read()
+    text = open(path, encoding="utf-8").read()
     items = []
-    for section in re.split(r"(?m)^##\s+", text)[1:]:
-        sec, _, body = section.partition("\n")
-        match = re.search(r"(?m)^\*\*✅\*\*\s*(.+)$", body)
-        if not match:
-            match = re.search(r"(?m)^改稿：\s*(.+)$", body)
-        if not match and re.search(r"(?m)^处理：\s*保留", body):
-            match = re.search(r"(?m)^原文：\s*(.+)$", body)
-        if not match:
-            continue
-        good = match.group(1)
+    for sec, good in re.findall(r"^## (.+?)\n.*?\*\*✅\*\* (.+?)\n", text, flags=re.S | re.M):
         n = len(items) + 1
         items.append({
             "id": f"clean-ba{n:02d}",

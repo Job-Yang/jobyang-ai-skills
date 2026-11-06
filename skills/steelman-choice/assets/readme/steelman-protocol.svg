@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="1260" viewBox="0 0 880 1260" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+  <rect width="880" height="1260" fill="#ffffff"/>
+  <text x="40" y="52" font-size="26" font-weight="600" fill="#262b33">钢人抉择：把两边立到最强，再决定</text>
+  <text x="40" y="86" font-size="15" fill="#5b6470">理论来自善意原则与钢人论证——批评前先把对方重建到最难反驳的版本</text>
+
+  <rect x="40" y="120" width="800" height="72" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="150" font-size="18" font-weight="600" fill="#0b6b55">输入：两个（或少数几个）都讲得通的选项</text>
+  <text x="64" y="176" font-size="14.5" fill="#0b6b55">只纠结、选项不清时，先一两轮澄清列成互斥选项，不脑补第三个凑数</text>
+
+  <line x1="440" y1="192" x2="440" y2="224" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="224" width="800" height="76" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="254" font-size="18" font-weight="600" fill="#0b6b55">① 重述抉择</text>
+  <text x="64" y="280" font-size="14.5" fill="#0b6b55">一句话写清：决定什么、A/B 各是什么、目标与硬约束</text>
+
+  <line x1="440" y1="300" x2="440" y2="332" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="332" width="800" height="120" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="2"/>
+  <text x="64" y="364" font-size="18" font-weight="600" fill="#0b6b55">② 每边立成钢人（核心步骤，各写五项）</text>
+  <text x="64" y="392" font-size="14.5" fill="#0b6b55">最强理由 · 适用条件 · 最大收益 · 最大风险与代价</text>
+  <text x="64" y="416" font-size="14.5" fill="#0b6b55">最难回答的反对意见 + 当前最好回应（答不上就写「无回应」，不许编）</text>
+  <text x="64" y="440" font-size="13.5" fill="#0b6b55">合格线：支持者看了觉得「这确实是我的意思，而且说得比我好」</text>
+
+  <line x1="440" y1="452" x2="440" y2="484" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="484" width="800" height="92" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="516" font-size="18" font-weight="600" fill="#0b6b55">③ 两边互撞，找三样东西</text>
+  <text x="64" y="544" font-size="14.5" fill="#0b6b55">共同认可的事实 · 真正的分歧（背后的假设/价值差异）· 1–2 个关键变量</text>
+
+  <line x1="440" y1="576" x2="440" y2="608" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="608" width="800" height="92" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="2"/>
+  <text x="64" y="640" font-size="18" font-weight="600" fill="#0b6b55">④ 只问一个翻盘问题</text>
+  <text x="64" y="668" font-size="14.5" fill="#0b6b55">收敛成一个最可能改变结论的问题：答 X → 选 A，答 Y → 选 B</text>
+  <text x="64" y="688" font-size="13.5" fill="#0b6b55">能查的事实先查；问了不影响选择的问题不问</text>
+
+  <line x1="440" y1="700" x2="440" y2="732" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="732" width="800" height="92" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="764" font-size="18" font-weight="600" fill="#0b6b55">⑤ 交还决断</text>
+  <text x="64" y="792" font-size="14.5" fill="#0b6b55">条件化判断 + 推荐与第一步行动 + 选错了的退出信号；拍板权在用户</text>
+
+  <rect x="40" y="848" width="800" height="120" rx="12" fill="#fbf0dd" stroke="#c97a16" stroke-width="1.8"/>
+  <text x="64" y="880" font-size="17" font-weight="600" fill="#9a5a0e">硬规则：防六种假动作</text>
+  <text x="64" y="908" font-size="14" fill="#9a5a0e">稻草人 · 假平衡（证据一边倒不许各打五十大板）· 假独立角色扮演 ·</text>
+  <text x="64" y="932" font-size="14" fill="#9a5a0e">虚构回应 · 中庸和稀泥硬凑第三方案 · 无限追问（最多一个翻盘问题）</text>
+
+  <rect x="40" y="992" width="800" height="140" rx="12" fill="#f4f6f8" stroke="#9aa3ad" stroke-width="1.5" stroke-dasharray="8 5"/>
+  <text x="64" y="1024" font-size="16" font-weight="600" fill="#5b6470">成熟度与待补</text>
+  <text x="64" y="1052" font-size="14" fill="#5b6470">2026-10-20 随思维技能批次创建，目前状态为「已建待盲测」：</text>
+  <text x="64" y="1076" font-size="14" fill="#5b6470">触发盲测、真实样本端到端、对抗软肋三关均未跑，不夸已成熟。</text>
+  <text x="64" y="1100" font-size="14" fill="#5b6470">为什么先做这个技能、触发边界如何取舍，没有单独动机文档，待作者补。</text>
+
+  <defs>
+    <marker id="t" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0f8a6d"/></marker>
+  </defs>
+</svg>

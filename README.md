@@ -27,17 +27,38 @@ AI 时代最容易被低估的，是那些能反复起作用的工作方式。�
 | [engineering-docs](./skills/engineering-docs/) | 研发技术文档统一入口：读取上下文、协作成文、形成工程决定，按需生成图示并验证可实施性。 |
 | [outside-view](./skills/outside-view/) | 兼听：只补会改变决定的外部证据，判断来源与冲突，并及时停止无效检索。 |
 | [sansi-erhouxing](./skills/sansi-erhouxing/) | 三思而后行：改任何成形文档前先通读全文骨架，别只盯一段、别补丁摞补丁。 |
+| [reverse-teardown](./skills/reverse-teardown/) | 反向拆解：从优秀成品里还原结构与关键选择，分清可迁移规律和仅适用本案的细节，落成操作清单与最小练习。 |
+| [steelman-choice](./skills/steelman-choice/) | 钢人抉择：两个方案都讲得通时，先把两边各立到最强（善意原则/钢人论证），逼出真正分歧与一个翻盘问题再决定。 |
+| [claim-check](./skills/claim-check/) | 说法核查：把一条说法拆成事实/结论/价值，对事实验真给五级可信度，再审计推理链有没有漏洞。 |
+| [argument-reading](./skills/argument-reading/) | 论证精读：把整篇文章重建为论证地图，先善意重建再评价证据、隐藏前提与失效条件。 |
+| [skill-library-keeper](./skills/skill-library-keeper/) | 技能管家：库级治理——准入五问决定要不要建、健康体检查撞车/孤儿/硬绑定、外部技能直接用/炼化/重造决策；库位置自动发现，零平台强绑定。 |
+| [root-rethink](./skills/root-rethink/) | 归本重推：第一性原理向内重推＋跨领域借解向外，把问题拆回基本事实/假设/目标/约束，跳出补丁循环。 |
+| [minimum-experiment](./skills/minimum-experiment/) | 最小实验：锁定最致命、最不确定的假设，用低成本可逆实验和预先定好的继续/停止信号拿到真实反馈。 |
 | [video-reader](./skills/video-reader/) | 把视频转成带时间戳的关键帧和运动时间线，让只能看图的大模型也能判断第几秒发生了什么。 |
-| [png-compress](./skills/png-compress-skill/) | 在本地批量压缩 App 工程里的 PNG：增量缓存、质量门禁、失败回退，不依赖在线 API。 |
+| [png-compress](./skills/png-compress/) | 在本地批量压缩 App 工程里的 PNG：增量缓存、质量门禁、失败回退，不依赖在线 API。 |
 
 可以把这些 Skill 看成几组能力：
 
-- **判断与验证**：VDD、兼听、好好说话评测台。
-- **产品形成**：机会雷达、机会评分卡、产品需求与计划、设计罗盘。
+- **判断与验证**：VDD、兼听、好好说话评测台、钢人抉择、说法核查、论证精读。
+- **产品形成**：机会雷达、机会评分卡、产品需求与计划、设计罗盘、反向拆解（成品学习）。
 - **工程交付**：研发技术文档、PNG 压缩、视频读取。
 - **写作表达**：好好说话、淬火、汤山体、费曼讲解、三思而后行。
 
 每个 Skill 的 README 负责讲清功能、用法、设计理由、实测结果和边界；`SKILL.md` 是 Agent 真正执行时读取的入口。复杂 Skill 还会附带 references、脚本、模板或运行资产，按任务需要加载。
+
+## 技能体系（一张图看清怎么配合）
+
+这些技能不是孤立的技巧，而是串成几条可复用链路：任务 → 技能 → 共用枢纽 → 产出；带子越宽表示承接的任务越多，多股流合进同一处就是共用枢纽（如「取证·兼听」「产品需求/设计」）。
+
+[![技能库流向图](./docs/skill-map.png)](./docs/skill-map.html)
+
+▸ 点图打开**可交互版**：悬停节点高亮整条上下游、点击查看每个技能的定位与好坏信号、按产品线/思维线/写作线/工具线筛选，右侧还有逐链路导览。
+
+- [SKILL-MAP.md](./docs/SKILL-MAP.md)：定位、独立收益与配合边界的详表
+- [SKILL-QUALITY-CARD.md](./docs/SKILL-QUALITY-CARD.md)：怎么判断每个思维技能触发没有、做得好不好
+- [SKILL-GAP-AUDIT.md](./docs/SKILL-GAP-AUDIT.md)：从全局图反推还缺什么——缺口从图里长出来，不预造技能
+
+新增或修改 Skill 前，先过一遍上面的图和缺口体检，确认定位唯一、触发不撞车、零环境依赖。
 
 ## 为什么要有这个仓库
 
@@ -94,8 +115,14 @@ cp -R jobyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
     ├── engineering-docs/
     ├── outside-view/
     ├── sansi-erhouxing/
+    ├── reverse-teardown/
+    ├── steelman-choice/
+    ├── claim-check/
+    ├── argument-reading/
+    ├── root-rethink/
+    ├── minimum-experiment/
     ├── video-reader/
-    └── png-compress-skill/
+    └── png-compress/
 ```
 
 每个技能目录都以 `SKILL.md` 为入口，部分带 `references/`、`scripts/` 或 `assets/`。

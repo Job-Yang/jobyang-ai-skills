@@ -1,0 +1,21 @@
+{
+  "topic": "example-foundation-reject",
+  "one_liner": "边界样例：地基门命中（命题自相矛盾），分数再高也必须 reject",
+  "upstream": null,
+  "profile": {"form": "示例", "endpoint": "示例", "market": "未调研", "monetization": "未调研", "competitors": []},
+  "foundation": {"pass": false, "reason": "假设：价值主张自相矛盾——号称对核心患者永久免费，又声明靠同一批人订阅养活，两条不能同时成立"},
+  "dimensions": [
+    {"name": "痛点强度", "score": 8.0, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "离钱近", "score": 7.5, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "单位经济健康度", "score": 7.0, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "一人可交付", "score": 7.5, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "自然分发", "score": 6.5, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "护城河", "score": 6.0, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "市场趋势", "score": 7.0, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "可验证性", "score": 8.0, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "时机(Why now)", "score": 6.5, "evidence": "假设：占位验证用，无真实市场证据"},
+    {"name": "AI-native契合度", "score": 7.5, "evidence": "假设：占位验证用，无真实市场证据"}
+  ],
+  "diagnosis": "预期输出：verdict=reject、dark_horse=false，无论综合分多高",
+  "rebuttal": {"claim": "", "blindspot": ""}
+}

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="1220" viewBox="0 0 880 1220" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+  <rect width="880" height="1220" fill="#ffffff"/>
+  <text x="40" y="52" font-size="26" font-weight="600" fill="#262b33">机会评估的三层尺子：先问立不立得住，再算值不值得验</text>
+  <text x="40" y="86" font-size="15" fill="#5b6470">综合分、档位、黑马标记一律由 score.py 脚本产出，模型不手算</text>
+
+  <rect x="40" y="120" width="800" height="72" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="150" font-size="18" font-weight="600" fill="#0b6b55">输入：雷达候选 / 用户直给的一句话</text>
+  <text x="64" y="176" font-size="14.5" fill="#0b6b55">先确认本次决策范围，再判断十维量表适不适用</text>
+
+  <line x1="440" y1="192" x2="440" y2="224" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="224" width="800" height="110" rx="12" fill="#fbf0dd" stroke="#c97a16" stroke-width="2"/>
+  <text x="64" y="256" font-size="18" font-weight="600" fill="#9a5a0e">第一层 · 地基层硬门（极窄，命中即 reject）</text>
+  <text x="64" y="284" font-size="14.5" fill="#9a5a0e">三条任一命中：价值主张自相矛盾 / 依赖做不到的前提 / 目标市场可证明为空</text>
+  <text x="64" y="308" font-size="14.5" fill="#9a5a0e">否决优先于分数，不给黑马；不删条目，去留人定。程度问题不进这层</text>
+
+  <line x1="440" y1="334" x2="440" y2="366" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="366" width="800" height="110" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="2"/>
+  <text x="64" y="398" font-size="18" font-weight="600" fill="#0b6b55">第二层 · 潜力层：10 维取证打分</text>
+  <text x="64" y="426" font-size="14.5" fill="#0b6b55">每维先取证再给分；取不到证据压低分并注明假设，不留空</text>
+  <text x="64" y="450" font-size="14.5" fill="#0b6b55">权重：离钱近 / 单位经济健康度 / 护城河 1.5，其余 7 维 1.0</text>
+
+  <line x1="440" y1="476" x2="440" y2="508" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="508" width="800" height="92" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="540" font-size="18" font-weight="600" fill="#0b6b55">脚本算分：综合分 = Σ(维度分 × 权重) ÷ 11.5</text>
+  <text x="64" y="568" font-size="14.5" fill="#0b6b55">最小步长 0.5；手心算、改维度名、凑小数都会被脚本打回</text>
+
+  <line x1="440" y1="600" x2="440" y2="632" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="632" width="800" height="92" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="2"/>
+  <text x="64" y="664" font-size="18" font-weight="600" fill="#0b6b55">第三层 · 四档结果</text>
+  <text x="64" y="692" font-size="14.5" fill="#0b6b55">≥6.5 validate · ≥5.0 refine · ≥3.5 caution · &lt;3.5 reject</text>
+  <text x="64" y="714" font-size="14.5" fill="#0b6b55">低分若主要来自缺资料，注明是保守暂评，不代表机会已被证明差</text>
+
+  <line x1="440" y1="724" x2="440" y2="756" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="756" width="800" height="92" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="788" font-size="18" font-weight="600" fill="#0b6b55">非共识逃生舱（黑马）</text>
+  <text x="64" y="816" font-size="14.5" fill="#0b6b55">地基没否 · 综合分 &lt; 6.5 · 申辩写清 claim + blindspot，标记交人复看</text>
+
+  <rect x="40" y="872" width="800" height="110" rx="12" fill="#fbf0dd" stroke="#c97a16" stroke-width="1.8"/>
+  <text x="64" y="904" font-size="17" font-weight="600" fill="#9a5a0e">写死的风险条款</text>
+  <text x="64" y="932" font-size="14" fill="#9a5a0e">证据同料复用、无链接不可验证措辞 → 卡片列证据警告，只警告不阻断，真伪复核靠人。</text>
+  <text x="64" y="956" font-size="14" fill="#9a5a0e">量表不适配时出定性评估，不删维度、不改权重、不拿中间分填空。</text>
+
+  <rect x="40" y="1002" width="800" height="150" rx="12" fill="#f4f6f8" stroke="#9aa3ad" stroke-width="1.5" stroke-dasharray="8 5"/>
+  <text x="64" y="1034" font-size="16" font-weight="600" fill="#5b6470">尺子的诚实声明（每张卡末尾固定带）</text>
+  <text x="64" y="1062" font-size="14" fill="#5b6470">权重、档位、地基门、黑马规则来自先验经验判断，不是统计显著结论；</text>
+  <text x="64" y="1086" font-size="14" fill="#5b6470">综合分只辅助排序，不当数据结论引用。十维权重的逐条定标过程待作者补。</text>
+  <text x="64" y="1110" font-size="14" fill="#5b6470">样例与回归为合成数据与测试覆盖，不代表真实项目的评分分布。</text>
+
+  <defs>
+    <marker id="t" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0f8a6d"/></marker>
+  </defs>
+</svg>

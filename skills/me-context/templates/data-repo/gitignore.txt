@@ -1,0 +1,12 @@
+# me-context 数据仓 .gitignore（init.py 写入数据仓根目录）
+# 只在你自己用 git 管理数据仓时生效；技能不调 git。推不推远端由你自己决定。
+# L4 秘密层永不入版本库
+private/
+# 未确认的草稿不入版本库
+inbox/
+# 可再生的产物与迁移备份
+exports/
+.migrate-backup/
+*.local.md
+*.tmp
+.DS_Store

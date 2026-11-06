@@ -1,0 +1,6213 @@
+[
+  {
+    "id": "system-architecture",
+    "type": "系统架构图",
+    "layout": "layers",
+    "source": "system-architecture.svg",
+    "boxes": {
+      "g0-0": [
+        50.0,
+        197,
+        184.0,
+        55
+      ],
+      "g0-1": [
+        248.0,
+        197,
+        184.0,
+        55
+      ],
+      "g0-2": [
+        446.0,
+        197,
+        184.0,
+        55
+      ],
+      "g1-0": [
+        50.0,
+        356,
+        184.0,
+        55
+      ],
+      "g1-1": [
+        248.0,
+        356,
+        184.0,
+        55
+      ],
+      "g1-2": [
+        446.0,
+        356,
+        184.0,
+        55
+      ],
+      "g2-0": [
+        50.0,
+        515,
+        184.0,
+        55
+      ],
+      "g2-1": [
+        248.0,
+        515,
+        184.0,
+        55
+      ],
+      "g2-2": [
+        446.0,
+        515,
+        184.0,
+        55
+      ],
+      "g3-0": [
+        50.0,
+        674,
+        184.0,
+        55
+      ],
+      "g3-1": [
+        248.0,
+        674,
+        184.0,
+        55
+      ],
+      "g3-2": [
+        446.0,
+        674,
+        184.0,
+        55
+      ]
+    },
+    "labels": [
+      {
+        "text": "系统架构图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "知识服务按职责分层",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 234,
+        "anchor": "start"
+      },
+      {
+        "text": "整体结构 · 包围关系表示归属，层间调用需另画关系图",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 346.36,
+        "anchor": "start"
+      },
+      {
+        "text": "用户入口",
+        "x": 50,
+        "y": 177.0,
+        "size": 17,
+        "width": 68,
+        "anchor": "start"
+      },
+      {
+        "text": "桌面工作台",
+        "x": 62.0,
+        "y": 222.0,
+        "size": 15,
+        "width": 75,
+        "anchor": "start"
+      },
+      {
+        "text": "移动客户端",
+        "x": 260.0,
+        "y": 222.0,
+        "size": 15,
+        "width": 75,
+        "anchor": "start"
+      },
+      {
+        "text": "开放接口",
+        "x": 458.0,
+        "y": 222.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "业务能力",
+        "x": 50,
+        "y": 336.0,
+        "size": 17,
+        "width": 68,
+        "anchor": "start"
+      },
+      {
+        "text": "内容管理",
+        "x": 62.0,
+        "y": 381.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "检索与问答",
+        "x": 260.0,
+        "y": 381.0,
+        "size": 15,
+        "width": 75,
+        "anchor": "start"
+      },
+      {
+        "text": "权限校验",
+        "x": 458.0,
+        "y": 381.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "共享服务",
+        "x": 50,
+        "y": 495.0,
+        "size": 17,
+        "width": 68,
+        "anchor": "start"
+      },
+      {
+        "text": "全文索引",
+        "x": 62.0,
+        "y": 540.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "异步任务",
+        "x": 260.0,
+        "y": 540.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "审计记录",
+        "x": 458.0,
+        "y": 540.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "数据与基础设施",
+        "x": 50,
+        "y": 654.0,
+        "size": 17,
+        "width": 119,
+        "anchor": "start"
+      },
+      {
+        "text": "元数据存储",
+        "x": 62.0,
+        "y": 699.0,
+        "size": 15,
+        "width": 75,
+        "anchor": "start"
+      },
+      {
+        "text": "文件存储",
+        "x": 260.0,
+        "y": 699.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "指标与告警",
+        "x": 458.0,
+        "y": 699.0,
+        "size": 15,
+        "width": 75,
+        "anchor": "start"
+      },
+      {
+        "text": "四层均为逻辑职责；本图不表达部署数量或调用方向。",
+        "x": 32,
+        "y": 826.0,
+        "size": 13,
+        "width": 312,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 858.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 870
+  },
+  {
+    "id": "capability-grid",
+    "type": "网格分组图",
+    "layout": "grid",
+    "source": "capability-grid.svg",
+    "boxes": {},
+    "labels": [
+      {
+        "text": "网格分组图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "研发平台的能力分区",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 234,
+        "anchor": "start"
+      },
+      {
+        "text": "六类能力并列展示 · 格子大小不代表投入比例",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 290.36,
+        "anchor": "start"
+      },
+      {
+        "text": "需求",
+        "x": 48.0,
+        "y": 177.0,
+        "size": 17,
+        "width": 34,
+        "anchor": "start"
+      },
+      {
+        "text": "需求澄清",
+        "x": 48.0,
+        "y": 214.0,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "验收标准",
+        "x": 48.0,
+        "y": 245.6,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "变更追踪",
+        "x": 48.0,
+        "y": 277.2,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "设计",
+        "x": 258.66666666666663,
+        "y": 177.0,
+        "size": 17,
+        "width": 34,
+        "anchor": "start"
+      },
+      {
+        "text": "交互原型",
+        "x": 258.66666666666663,
+        "y": 214.0,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "技术方案",
+        "x": 258.66666666666663,
+        "y": 245.6,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "方案评审",
+        "x": 258.66666666666663,
+        "y": 277.2,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "开发",
+        "x": 469.3333333333333,
+        "y": 177.0,
+        "size": 17,
+        "width": 34,
+        "anchor": "start"
+      },
+      {
+        "text": "代码实现",
+        "x": 469.3333333333333,
+        "y": 214.0,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "单元测试",
+        "x": 469.3333333333333,
+        "y": 245.6,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "合入检查",
+        "x": 469.3333333333333,
+        "y": 277.2,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "验证",
+        "x": 48.0,
+        "y": 365.0,
+        "size": 17,
+        "width": 34,
+        "anchor": "start"
+      },
+      {
+        "text": "功能回归",
+        "x": 48.0,
+        "y": 402.0,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "容量验证",
+        "x": 48.0,
+        "y": 433.6,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "风险复核",
+        "x": 48.0,
+        "y": 465.20000000000005,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "交付",
+        "x": 258.66666666666663,
+        "y": 365.0,
+        "size": 17,
+        "width": 34,
+        "anchor": "start"
+      },
+      {
+        "text": "发布准入",
+        "x": 258.66666666666663,
+        "y": 402.0,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "渐进放量",
+        "x": 258.66666666666663,
+        "y": 433.6,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "版本回退",
+        "x": 258.66666666666663,
+        "y": 465.20000000000005,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "运行",
+        "x": 469.3333333333333,
+        "y": 365.0,
+        "size": 17,
+        "width": 34,
+        "anchor": "start"
+      },
+      {
+        "text": "指标观测",
+        "x": 469.3333333333333,
+        "y": 402.0,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "故障响应",
+        "x": 469.3333333333333,
+        "y": 433.6,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "反馈复盘",
+        "x": 469.3333333333333,
+        "y": 465.20000000000005,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "按用户任务分组；未画出的关系不能推断为不存在。",
+        "x": 32,
+        "y": 566.0,
+        "size": 13,
+        "width": 299,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 598.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 610
+  },
+  {
+    "id": "organization",
+    "type": "组织架构图",
+    "layout": "tree",
+    "source": "organization.svg",
+    "boxes": {
+      "group": [
+        260.0,
+        155,
+        160,
+        83
+      ],
+      "product": [
+        60.0,
+        291,
+        160,
+        83
+      ],
+      "pm": [
+        46.0,
+        427,
+        88.0,
+        83
+      ],
+      "design": [
+        146.0,
+        427,
+        88.0,
+        83
+      ],
+      "engineering": [
+        260.0,
+        291,
+        160,
+        83
+      ],
+      "client": [
+        246.0,
+        427,
+        88.0,
+        83
+      ],
+      "service": [
+        346.0,
+        427,
+        88.0,
+        83
+      ],
+      "operations": [
+        460.0,
+        291,
+        160,
+        83
+      ],
+      "qa": [
+        446.0,
+        427,
+        88.0,
+        83
+      ],
+      "ops": [
+        546.0,
+        427,
+        88.0,
+        83
+      ]
+    },
+    "labels": [
+      {
+        "text": "组织架构图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "一个产品组的职责归属",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 260,
+        "anchor": "start"
+      },
+      {
+        "text": "连线表示管理归属 · 横向位置不表示职级",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 262.36,
+        "anchor": "start"
+      },
+      {
+        "text": "产品组",
+        "x": 272.0,
+        "y": 180.0,
+        "size": 15,
+        "width": 45,
+        "anchor": "start"
+      },
+      {
+        "text": "产品与设计",
+        "x": 72.0,
+        "y": 316.0,
+        "size": 15,
+        "width": 75,
+        "anchor": "start"
+      },
+      {
+        "text": "产品",
+        "x": 58.0,
+        "y": 452.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "设计",
+        "x": 158.0,
+        "y": 452.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "工程",
+        "x": 272.0,
+        "y": 316.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "客户端",
+        "x": 258.0,
+        "y": 452.0,
+        "size": 15,
+        "width": 45,
+        "anchor": "start"
+      },
+      {
+        "text": "服务端",
+        "x": 358.0,
+        "y": 452.0,
+        "size": 15,
+        "width": 45,
+        "anchor": "start"
+      },
+      {
+        "text": "交付与运营",
+        "x": 472.0,
+        "y": 316.0,
+        "size": 15,
+        "width": 75,
+        "anchor": "start"
+      },
+      {
+        "text": "质量",
+        "x": 458.0,
+        "y": 452.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "运营",
+        "x": 558.0,
+        "y": 452.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "这是单一管理关系树；矩阵汇报应使用关系图。",
+        "x": 32,
+        "y": 568.0,
+        "size": 13,
+        "width": 273,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 600.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 612
+  },
+  {
+    "id": "hierarchy",
+    "type": "层次结构图",
+    "layout": "tree",
+    "source": "hierarchy.svg",
+    "boxes": {
+      "space": [
+        260.0,
+        155,
+        160,
+        83
+      ],
+      "product": [
+        110.0,
+        291,
+        160,
+        83
+      ],
+      "research": [
+        46.0,
+        427,
+        138.0,
+        83
+      ],
+      "requirements": [
+        196.0,
+        427,
+        138.0,
+        83
+      ],
+      "tech": [
+        410.0,
+        291,
+        160,
+        83
+      ],
+      "design": [
+        346.0,
+        427,
+        138.0,
+        83
+      ],
+      "runbook": [
+        496.0,
+        427,
+        138.0,
+        83
+      ]
+    },
+    "labels": [
+      {
+        "text": "层次结构图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "文档空间的内容层次",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 234,
+        "anchor": "start"
+      },
+      {
+        "text": "父节点包含子节点 · 连线不表示操作先后",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 262.36,
+        "anchor": "start"
+      },
+      {
+        "text": "知识空间",
+        "x": 272.0,
+        "y": 180.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "产品资料",
+        "x": 122.0,
+        "y": 316.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "用户研究",
+        "x": 58.0,
+        "y": 452.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "需求定义",
+        "x": 208.0,
+        "y": 452.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "工程资料",
+        "x": 422.0,
+        "y": 316.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "技术设计",
+        "x": 358.0,
+        "y": 452.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "运行手册",
+        "x": 508.0,
+        "y": 452.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "同一文档若属于多个集合，应使用集合图或多对多关系图。",
+        "x": 32,
+        "y": 568.0,
+        "size": 13,
+        "width": 338,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 600.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 612
+  },
+  {
+    "id": "mind-map",
+    "type": "思维导图",
+    "layout": "mindmap",
+    "source": "mind-map.svg",
+    "boxes": {
+      "root": [
+        247,
+        328,
+        186,
+        82
+      ],
+      "branch0": [
+        32,
+        152,
+        188,
+        110
+      ],
+      "branch1": [
+        460,
+        152,
+        188,
+        110
+      ],
+      "branch2": [
+        32,
+        296,
+        188,
+        110
+      ],
+      "branch3": [
+        460,
+        296,
+        188,
+        110
+      ],
+      "branch4": [
+        32,
+        440,
+        188,
+        110
+      ],
+      "branch5": [
+        460,
+        440,
+        188,
+        110
+      ]
+    },
+    "labels": [
+      {
+        "text": "思维导图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "发布前需要回答哪些问题",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 286,
+        "anchor": "start"
+      },
+      {
+        "text": "主题拆解 · 曲线只表示归属，不表示执行顺序",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 290.36,
+        "anchor": "start"
+      },
+      {
+        "text": "发布准备",
+        "x": 259,
+        "y": 353.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "功能",
+        "x": 44,
+        "y": 177.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "验收范围",
+        "x": 44,
+        "y": 203.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "已知限制",
+        "x": 44,
+        "y": 221.2,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "质量",
+        "x": 472,
+        "y": 177.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "回归结果",
+        "x": 472,
+        "y": 203.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "风险评估",
+        "x": 472,
+        "y": 221.2,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "交付",
+        "x": 44,
+        "y": 321.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "发布窗口",
+        "x": 44,
+        "y": 347.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "版本产物",
+        "x": 44,
+        "y": 365.2,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "运行",
+        "x": 472,
+        "y": 321.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "观测指标",
+        "x": 472,
+        "y": 347.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "值守安排",
+        "x": 472,
+        "y": 365.2,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "恢复",
+        "x": 44,
+        "y": 465.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "回退条件",
+        "x": 44,
+        "y": 491.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "恢复演练",
+        "x": 44,
+        "y": 509.2,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "沟通",
+        "x": 472,
+        "y": 465.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "变更说明",
+        "x": 472,
+        "y": 491.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "责任人",
+        "x": 472,
+        "y": 509.2,
+        "size": 13,
+        "width": 39,
+        "anchor": "start"
+      },
+      {
+        "text": "思维导图适合探索范围；真实发布顺序见发布流程。",
+        "x": 32,
+        "y": 638.0,
+        "size": 13,
+        "width": 299,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 670.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 682
+  },
+  {
+    "id": "horizontal-timeline",
+    "type": "水平时间线",
+    "layout": "timeline",
+    "source": "horizontal-timeline.svg",
+    "boxes": {
+      "event0": [
+        32,
+        153,
+        168,
+        110
+      ],
+      "event1": [
+        128.0,
+        358,
+        168,
+        110
+      ],
+      "event2": [
+        298.6666666666667,
+        153,
+        168,
+        110
+      ],
+      "event3": [
+        480,
+        358,
+        168,
+        110
+      ]
+    },
+    "labels": [
+      {
+        "text": "水平时间线",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "迁移分四个时间点推进",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 260,
+        "anchor": "start"
+      },
+      {
+        "text": "横轴为项目日 D · 位置按实际时间间隔计算",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 278.59999999999997,
+        "anchor": "start"
+      },
+      {
+        "text": "D0 · 基线确认",
+        "x": 44,
+        "y": 178.0,
+        "size": 15,
+        "width": 103.5,
+        "anchor": "start"
+      },
+      {
+        "text": "冻结当前口径",
+        "x": 44,
+        "y": 204.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "0",
+        "x": 84.0,
+        "y": 340.0,
+        "size": 13,
+        "width": 7.539999999999999,
+        "anchor": "middle"
+      },
+      {
+        "text": "D3 · 双写验证",
+        "x": 140.0,
+        "y": 383.0,
+        "size": 15,
+        "width": 103.5,
+        "anchor": "start"
+      },
+      {
+        "text": "比较两侧结果",
+        "x": 140.0,
+        "y": 409.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "3",
+        "x": 212.0,
+        "y": 340.0,
+        "size": 13,
+        "width": 7.539999999999999,
+        "anchor": "middle"
+      },
+      {
+        "text": "D7 · 小流量切换",
+        "x": 310.6666666666667,
+        "y": 178.0,
+        "size": 15,
+        "width": 118.5,
+        "anchor": "start"
+      },
+      {
+        "text": "验证真实负载",
+        "x": 310.6666666666667,
+        "y": 204.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "7",
+        "x": 382.6666666666667,
+        "y": 340.0,
+        "size": 13,
+        "width": 7.539999999999999,
+        "anchor": "middle"
+      },
+      {
+        "text": "D12 · 迁移完成",
+        "x": 492,
+        "y": 383.0,
+        "size": 15,
+        "width": 112.2,
+        "anchor": "start"
+      },
+      {
+        "text": "关闭旧写入",
+        "x": 492,
+        "y": 409.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "12",
+        "x": 596.0,
+        "y": 340.0,
+        "size": 13,
+        "width": 15.079999999999998,
+        "anchor": "middle"
+      },
+      {
+        "text": "事件是时间点；持续工作与依赖应另用甘特图。",
+        "x": 32,
+        "y": 531.0,
+        "size": 13,
+        "width": 273,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 563.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 575
+  },
+  {
+    "id": "vertical-timeline",
+    "type": "垂直时间线",
+    "layout": "timeline",
+    "source": "vertical-timeline.svg",
+    "boxes": {
+      "event0": [
+        32,
+        147.0,
+        276,
+        108
+      ],
+      "event1": [
+        372,
+        258.66666666666663,
+        276,
+        108
+      ],
+      "event2": [
+        32,
+        415.0,
+        276,
+        108
+      ],
+      "event3": [
+        372,
+        593.6666666666666,
+        276,
+        108
+      ],
+      "event4": [
+        32,
+        817.0,
+        276,
+        108
+      ]
+    },
+    "labels": [
+      {
+        "text": "垂直时间线",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "一次故障的处置时间线",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 260,
+        "anchor": "start"
+      },
+      {
+        "text": "纵轴为起点后的分钟数 · 时间从上向下",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 248.36,
+        "anchor": "start"
+      },
+      {
+        "text": "00 分 · 告警触发",
+        "x": 44,
+        "y": 172.0,
+        "size": 15,
+        "width": 127.2,
+        "anchor": "start"
+      },
+      {
+        "text": "错误率超过阈值",
+        "x": 44,
+        "y": 198.0,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "05 分 · 确认影响",
+        "x": 384,
+        "y": 283.66666666666663,
+        "size": 15,
+        "width": 127.2,
+        "anchor": "start"
+      },
+      {
+        "text": "读请求出现超时",
+        "x": 384,
+        "y": 309.66666666666663,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "12 分 · 执行回退",
+        "x": 44,
+        "y": 440.0,
+        "size": 15,
+        "width": 127.2,
+        "anchor": "start"
+      },
+      {
+        "text": "恢复上一版本",
+        "x": 44,
+        "y": 466.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "20 分 · 指标恢复",
+        "x": 384,
+        "y": 618.6666666666666,
+        "size": 15,
+        "width": 127.2,
+        "anchor": "start"
+      },
+      {
+        "text": "继续观察稳定性",
+        "x": 384,
+        "y": 644.6666666666666,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "30 分 · 处置结束",
+        "x": 44,
+        "y": 842.0,
+        "size": 15,
+        "width": 127.2,
+        "anchor": "start"
+      },
+      {
+        "text": "进入根因复盘",
+        "x": 44,
+        "y": 868.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "间隔按分钟比例绘制；事件描述不等于因果判断。",
+        "x": 32,
+        "y": 976.0,
+        "size": 13,
+        "width": 286,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 1008.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 1020
+  },
+  {
+    "id": "milestone-roadmap",
+    "type": "阶段里程碑",
+    "layout": "stages",
+    "source": "milestone-roadmap.svg",
+    "boxes": {
+      "stage0": [
+        220,
+        153,
+        428,
+        84
+      ],
+      "stage1": [
+        220,
+        263,
+        428,
+        84
+      ],
+      "stage2": [
+        220,
+        373,
+        428,
+        84
+      ],
+      "stage3": [
+        220,
+        483,
+        428,
+        84
+      ]
+    },
+    "labels": [
+      {
+        "text": "阶段里程碑",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "每个阶段交付什么结果",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 260,
+        "anchor": "start"
+      },
+      {
+        "text": "阶段顺序图 · 等距排布，不表示工期",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 234.36,
+        "anchor": "start"
+      },
+      {
+        "text": "定义完成",
+        "x": 114,
+        "y": 191.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "middle"
+      },
+      {
+        "text": "范围与验收口径确定",
+        "x": 232,
+        "y": 178.0,
+        "size": 15,
+        "width": 135,
+        "anchor": "start"
+      },
+      {
+        "text": "输出需求基线",
+        "x": 232,
+        "y": 204.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "方案通过",
+        "x": 114,
+        "y": 301.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "middle"
+      },
+      {
+        "text": "主要技术风险已验证",
+        "x": 232,
+        "y": 288.0,
+        "size": 15,
+        "width": 135,
+        "anchor": "start"
+      },
+      {
+        "text": "输出评审结论",
+        "x": 232,
+        "y": 314.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "试点通过",
+        "x": 114,
+        "y": 411.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "middle"
+      },
+      {
+        "text": "真实使用链路得到验证",
+        "x": 232,
+        "y": 398.0,
+        "size": 15,
+        "width": 150,
+        "anchor": "start"
+      },
+      {
+        "text": "输出试点记录",
+        "x": 232,
+        "y": 424.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "正式交付",
+        "x": 114,
+        "y": 521.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "middle"
+      },
+      {
+        "text": "验收通过且恢复路径可用",
+        "x": 232,
+        "y": 508.0,
+        "size": 15,
+        "width": 165,
+        "anchor": "start"
+      },
+      {
+        "text": "输出交付记录",
+        "x": 232,
+        "y": 534.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "真正的日期与依赖请用时间线或甘特图表达。",
+        "x": 32,
+        "y": 646.0,
+        "size": 13,
+        "width": 260,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 678.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 690
+  },
+  {
+    "id": "cycle",
+    "type": "循环图",
+    "layout": "cycle",
+    "source": "cycle.svg",
+    "boxes": {
+      "cycle0": [
+        252,
+        153,
+        176,
+        90
+      ],
+      "cycle1": [
+        472,
+        345,
+        176,
+        90
+      ],
+      "cycle2": [
+        252,
+        537,
+        176,
+        90
+      ],
+      "cycle3": [
+        32,
+        345,
+        176,
+        90
+      ]
+    },
+    "labels": [
+      {
+        "text": "循环图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 39,
+        "anchor": "start"
+      },
+      {
+        "text": "改进通过反馈继续推进",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 260,
+        "anchor": "start"
+      },
+      {
+        "text": "四个阶段顺时针循环 · 完成复盘后回到计划",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 276.36,
+        "anchor": "start"
+      },
+      {
+        "text": "持续改进",
+        "x": 340,
+        "y": 385.0,
+        "size": 20,
+        "width": 80,
+        "anchor": "middle"
+      },
+      {
+        "text": "按箭头方向循环",
+        "x": 340,
+        "y": 414.0,
+        "size": 13,
+        "width": 91,
+        "anchor": "middle"
+      },
+      {
+        "text": "计划",
+        "x": 264,
+        "y": 178.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "确定问题与指标",
+        "x": 264,
+        "y": 204.0,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "执行",
+        "x": 484,
+        "y": 370.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "实施有限改动",
+        "x": 484,
+        "y": 396.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "检查",
+        "x": 264,
+        "y": 562.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "对照实际结果",
+        "x": 264,
+        "y": 588.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "调整",
+        "x": 44,
+        "y": 370.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "保留或修正方案",
+        "x": 44,
+        "y": 396.0,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "箭头表示下一阶段；本图不表达阶段耗时。",
+        "x": 32,
+        "y": 716.0,
+        "size": 13,
+        "width": 247,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 748.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 760
+  },
+  {
+    "id": "growth-flywheel",
+    "type": "增长飞轮",
+    "layout": "cycle",
+    "source": "growth-flywheel.svg",
+    "boxes": {
+      "cycle0": [
+        252,
+        153,
+        176,
+        90
+      ],
+      "cycle1": [
+        444,
+        507,
+        176,
+        90
+      ],
+      "cycle2": [
+        60,
+        507,
+        176,
+        90
+      ]
+    },
+    "labels": [
+      {
+        "text": "增长飞轮",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "内容价值能否形成正反馈",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 286,
+        "anchor": "start"
+      },
+      {
+        "text": "待验证的机制假设 · 顺时针阅读",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 206.36,
+        "anchor": "start"
+      },
+      {
+        "text": "价值循环",
+        "x": 340,
+        "y": 385.0,
+        "size": 20,
+        "width": 80,
+        "anchor": "middle"
+      },
+      {
+        "text": "按箭头方向循环",
+        "x": 340,
+        "y": 414.0,
+        "size": 13,
+        "width": 91,
+        "anchor": "middle"
+      },
+      {
+        "text": "有用内容",
+        "x": 264,
+        "y": 178.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "解决实际问题",
+        "x": 264,
+        "y": 204.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "读者使用",
+        "x": 456,
+        "y": 532.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "产生使用反馈",
+        "x": 456,
+        "y": 558.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "内容改进",
+        "x": 72,
+        "y": 532.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "吸收有效反馈",
+        "x": 72,
+        "y": 558.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "正反馈关系仍需数据验证，不能只凭环形布局成立。",
+        "x": 32,
+        "y": 716.0,
+        "size": 13,
+        "width": 299,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 748.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 760
+  },
+  {
+    "id": "pyramid",
+    "type": "金字塔列表",
+    "layout": "pyramid",
+    "source": "pyramid.svg",
+    "boxes": {},
+    "labels": [
+      {
+        "text": "金字塔列表",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "能力建设从基础逐层向上",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 286,
+        "anchor": "start"
+      },
+      {
+        "text": "底层提供支撑 · 数字是层级编号",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 206.36,
+        "anchor": "start"
+      },
+      {
+        "text": "1",
+        "x": 194,
+        "y": 219.0,
+        "size": 15,
+        "width": 8.7,
+        "anchor": "middle"
+      },
+      {
+        "text": "持续改进",
+        "x": 422,
+        "y": 191.0,
+        "size": 17,
+        "width": 68,
+        "anchor": "start"
+      },
+      {
+        "text": "从反馈中调整能力",
+        "x": 422,
+        "y": 218.0,
+        "size": 13,
+        "width": 104,
+        "anchor": "start"
+      },
+      {
+        "text": "2",
+        "x": 194,
+        "y": 308.0,
+        "size": 15,
+        "width": 8.7,
+        "anchor": "middle"
+      },
+      {
+        "text": "稳定交付",
+        "x": 422,
+        "y": 280.0,
+        "size": 17,
+        "width": 68,
+        "anchor": "start"
+      },
+      {
+        "text": "能验证，也能恢复",
+        "x": 422,
+        "y": 307.0,
+        "size": 13,
+        "width": 104,
+        "anchor": "start"
+      },
+      {
+        "text": "3",
+        "x": 194,
+        "y": 397.0,
+        "size": 15,
+        "width": 8.7,
+        "anchor": "middle"
+      },
+      {
+        "text": "工程方法",
+        "x": 422,
+        "y": 369.0,
+        "size": 17,
+        "width": 68,
+        "anchor": "start"
+      },
+      {
+        "text": "定义、设计与实现",
+        "x": 422,
+        "y": 396.0,
+        "size": 13,
+        "width": 104,
+        "anchor": "start"
+      },
+      {
+        "text": "4",
+        "x": 194,
+        "y": 486.0,
+        "size": 15,
+        "width": 8.7,
+        "anchor": "middle"
+      },
+      {
+        "text": "事实基础",
+        "x": 422,
+        "y": 458.0,
+        "size": 17,
+        "width": 68,
+        "anchor": "start"
+      },
+      {
+        "text": "数据、证据与上下文",
+        "x": 422,
+        "y": 485.0,
+        "size": 13,
+        "width": 117,
+        "anchor": "start"
+      },
+      {
+        "text": "宽度只表现层次，不代表人数、成本或完成比例。",
+        "x": 32,
+        "y": 572.0,
+        "size": 13,
+        "width": 286,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 604.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 616
+  },
+  {
+    "id": "brand-house",
+    "type": "品牌屋",
+    "layout": "house",
+    "source": "brand-house.svg",
+    "boxes": {
+      "pillar0": [
+        50.0,
+        339,
+        185.33333333333334,
+        146
+      ],
+      "pillar1": [
+        247.33333333333334,
+        339,
+        185.33333333333334,
+        146
+      ],
+      "pillar2": [
+        444.6666666666667,
+        339,
+        185.33333333333334,
+        146
+      ]
+    },
+    "labels": [
+      {
+        "text": "品牌屋",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 39,
+        "anchor": "start"
+      },
+      {
+        "text": "产品主张由哪些能力支撑",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 286,
+        "anchor": "start"
+      },
+      {
+        "text": "屋顶是主张，立柱是支撑，地基是共同原则",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 266,
+        "anchor": "start"
+      },
+      {
+        "text": "让团队更容易找到可信知识",
+        "x": 340,
+        "y": 215.0,
+        "size": 20,
+        "width": 240,
+        "anchor": "middle"
+      },
+      {
+        "text": "从资料到答案，保留可追溯依据",
+        "x": 340,
+        "y": 297.0,
+        "size": 17,
+        "width": 238,
+        "anchor": "middle"
+      },
+      {
+        "text": "找得到",
+        "x": 62.0,
+        "y": 364.0,
+        "size": 15,
+        "width": 45,
+        "anchor": "start"
+      },
+      {
+        "text": "统一检索",
+        "x": 62.0,
+        "y": 390.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "清楚分类",
+        "x": 62.0,
+        "y": 408.2,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "信得过",
+        "x": 259.33333333333337,
+        "y": 364.0,
+        "size": 15,
+        "width": 45,
+        "anchor": "start"
+      },
+      {
+        "text": "标注来源",
+        "x": 259.33333333333337,
+        "y": 390.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "及时更新",
+        "x": 259.33333333333337,
+        "y": 408.2,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "用得上",
+        "x": 456.6666666666667,
+        "y": 364.0,
+        "size": 15,
+        "width": 45,
+        "anchor": "start"
+      },
+      {
+        "text": "贴近任务",
+        "x": 456.6666666666667,
+        "y": 390.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "方便复用",
+        "x": 456.6666666666667,
+        "y": 408.2,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "共同基础：权限清晰、内容可维护、变更可追溯",
+        "x": 340,
+        "y": 538.0,
+        "size": 16,
+        "width": 336,
+        "anchor": "middle"
+      },
+      {
+        "text": "表达定位与支撑关系，不代表已经验证的市场效果。",
+        "x": 32,
+        "y": 621.0,
+        "size": 13,
+        "width": 299,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 653.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 665
+  },
+  {
+    "id": "grid-matrix",
+    "type": "网格矩阵图",
+    "layout": "matrix",
+    "source": "grid-matrix.svg",
+    "boxes": {},
+    "labels": [
+      {
+        "text": "网格矩阵图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "不同阶段需要哪些证据",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 260,
+        "anchor": "start"
+      },
+      {
+        "text": "横向是证据类型，纵向是交付阶段",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 210,
+        "anchor": "start"
+      },
+      {
+        "text": "功能",
+        "x": 238.83333333333331,
+        "y": 181.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "middle"
+      },
+      {
+        "text": "运行",
+        "x": 401.49999999999994,
+        "y": 181.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "middle"
+      },
+      {
+        "text": "恢复",
+        "x": 564.1666666666666,
+        "y": 181.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "middle"
+      },
+      {
+        "text": "方案评审",
+        "x": 32,
+        "y": 251.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "验收口径",
+        "x": 172.0,
+        "y": 244.0,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "容量假设",
+        "x": 334.66666666666663,
+        "y": 244.0,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "回退设计",
+        "x": 497.3333333333333,
+        "y": 244.0,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "试点发布",
+        "x": 32,
+        "y": 339.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "链路回归",
+        "x": 172.0,
+        "y": 332.0,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "试点指标",
+        "x": 334.66666666666663,
+        "y": 332.0,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "恢复演练",
+        "x": 497.3333333333333,
+        "y": 332.0,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "全量交付",
+        "x": 32,
+        "y": 427.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "验收记录",
+        "x": 172.0,
+        "y": 420.0,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "观测结果",
+        "x": 334.66666666666663,
+        "y": 420.0,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "回退可用",
+        "x": 497.3333333333333,
+        "y": 420.0,
+        "size": 14,
+        "width": 56,
+        "anchor": "start"
+      },
+      {
+        "text": "文字矩阵用于交叉核对；数值强弱应改用热力图。",
+        "x": 32,
+        "y": 510.0,
+        "size": 13,
+        "width": 286,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 542.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 554
+  },
+  {
+    "id": "two-axis",
+    "type": "二维坐标图",
+    "layout": "quadrant",
+    "source": "two-axis.svg",
+    "statistics": {
+      "points": [
+        {
+          "label": "检索改进",
+          "x": 3,
+          "y": 8
+        },
+        {
+          "label": "数据迁移",
+          "x": 7,
+          "y": 7
+        },
+        {
+          "label": "文案修正",
+          "x": 2,
+          "y": 3
+        },
+        {
+          "label": "旧页重做",
+          "x": 7,
+          "y": 2
+        }
+      ]
+    },
+    "font": "Arial Unicode MS",
+    "matplotlib": "3.11.2"
+  },
+  {
+    "id": "bubble-quadrant",
+    "type": "四象限气泡图",
+    "layout": "bubble",
+    "source": "bubble-quadrant.svg",
+    "statistics": {
+      "points": [
+        {
+          "label": "甲 · 8百人",
+          "x": 2.5,
+          "y": 7.5,
+          "size": 8
+        },
+        {
+          "label": "乙 · 20百人",
+          "x": 7,
+          "y": 7,
+          "size": 20
+        },
+        {
+          "label": "丙 · 4百人",
+          "x": 3,
+          "y": 3,
+          "size": 4
+        },
+        {
+          "label": "丁 · 12百人",
+          "x": 7,
+          "y": 2.5,
+          "size": 12
+        }
+      ]
+    },
+    "font": "Arial Unicode MS",
+    "matplotlib": "3.11.2"
+  },
+  {
+    "id": "release-train",
+    "type": "火车发布上线流程图",
+    "layout": "release",
+    "source": "release-train.svg",
+    "boxes": {
+      "gate0": [
+        32,
+        311,
+        145,
+        95
+      ],
+      "gate1": [
+        189,
+        311,
+        145,
+        95
+      ],
+      "gate2": [
+        346,
+        311,
+        145,
+        95
+      ],
+      "gate3": [
+        503,
+        311,
+        145,
+        95
+      ],
+      "featureA": [
+        32,
+        157,
+        195,
+        88
+      ],
+      "featureB": [
+        253,
+        157,
+        195,
+        88
+      ],
+      "next": [
+        479,
+        157,
+        169,
+        88
+      ],
+      "block": [
+        203,
+        481,
+        274,
+        79
+      ],
+      "monitor": [
+        32,
+        605,
+        250,
+        63
+      ],
+      "rollback": [
+        418,
+        605,
+        230,
+        63
+      ]
+    },
+    "labels": [
+      {
+        "text": "火车发布上线流程图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 117,
+        "anchor": "start"
+      },
+      {
+        "text": "按发布窗口组织功能上车",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 286,
+        "anchor": "start"
+      },
+      {
+        "text": "准出通过才上线 · 未就绪延期，准出失败阻断",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 290.36,
+        "anchor": "start"
+      },
+      {
+        "text": "集成入列",
+        "x": 44,
+        "y": 336.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "核对版本与依赖",
+        "x": 44,
+        "y": 362.0,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "候选构建",
+        "x": 201,
+        "y": 336.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "产出可追溯版本",
+        "x": 201,
+        "y": 362.0,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "准出检查",
+        "x": 358,
+        "y": 336.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "回归与风险验证",
+        "x": 358,
+        "y": 362.0,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "发布上线",
+        "x": 515,
+        "y": 336.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "按窗口逐步放量",
+        "x": 515,
+        "y": 362.0,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "已就绪功能",
+        "x": 44,
+        "y": 182.0,
+        "size": 15,
+        "width": 75,
+        "anchor": "start"
+      },
+      {
+        "text": "验收通过，依赖已满足",
+        "x": 44,
+        "y": 208.0,
+        "size": 13,
+        "width": 130,
+        "anchor": "start"
+      },
+      {
+        "text": "未就绪功能",
+        "x": 265,
+        "y": 182.0,
+        "size": 15,
+        "width": 75,
+        "anchor": "start"
+      },
+      {
+        "text": "保留原范围，不强行上车",
+        "x": 265,
+        "y": 208.0,
+        "size": 13,
+        "width": 143,
+        "anchor": "start"
+      },
+      {
+        "text": "满足上车条件",
+        "x": 152,
+        "y": 279.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "middle"
+      },
+      {
+        "text": "下一班列车",
+        "x": 491,
+        "y": 182.0,
+        "size": 15,
+        "width": 75,
+        "anchor": "start"
+      },
+      {
+        "text": "重新满足准入条件",
+        "x": 491,
+        "y": 208.0,
+        "size": 13,
+        "width": 104,
+        "anchor": "start"
+      },
+      {
+        "text": "准出失败：阻断本次发布",
+        "x": 215,
+        "y": 506.0,
+        "size": 15,
+        "width": 165,
+        "anchor": "start"
+      },
+      {
+        "text": "修复并重新验证，不自动跳过",
+        "x": 215,
+        "y": 532.0,
+        "size": 13,
+        "width": 169,
+        "anchor": "start"
+      },
+      {
+        "text": "不满足条件",
+        "x": 428,
+        "y": 446.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "middle"
+      },
+      {
+        "text": "上线后按观测窗口确认",
+        "x": 44,
+        "y": 630.0,
+        "size": 15,
+        "width": 150,
+        "anchor": "start"
+      },
+      {
+        "text": "执行预先验证的回退",
+        "x": 430,
+        "y": 630.0,
+        "size": 15,
+        "width": 135,
+        "anchor": "start"
+      },
+      {
+        "text": "触发回退条件",
+        "x": 349,
+        "y": 631.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "middle"
+      },
+      {
+        "text": "上线后异常按预定条件回退；正式流程需补实际门槛。",
+        "x": 32,
+        "y": 736.0,
+        "size": 13,
+        "width": 312,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 768.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 780
+  },
+  {
+    "id": "product-development",
+    "type": "产品研发流程图",
+    "layout": "workflow",
+    "source": "product-development.svg",
+    "boxes": {
+      "req": [
+        47.0,
+        208,
+        165.33333333333334,
+        73
+      ],
+      "fork": [
+        252.33333333333334,
+        315,
+        165.33333333333334,
+        73
+      ],
+      "code": [
+        47.0,
+        422,
+        165.33333333333334,
+        73
+      ],
+      "cases": [
+        457.6666666666667,
+        422,
+        165.33333333333334,
+        73
+      ],
+      "join": [
+        252.33333333333334,
+        529,
+        165.33333333333334,
+        73
+      ],
+      "test": [
+        457.6666666666667,
+        636,
+        165.33333333333334,
+        73
+      ],
+      "accept": [
+        47.0,
+        743,
+        165.33333333333334,
+        73
+      ]
+    },
+    "labels": [
+      {
+        "text": "产品研发流程图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "开发与用例准备并行推进",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 286,
+        "anchor": "start"
+      },
+      {
+        "text": "并行分支全部完成后，才能进入集成回归",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 252,
+        "anchor": "start"
+      },
+      {
+        "text": "产品与研发",
+        "x": 48.0,
+        "y": 180.0,
+        "size": 16,
+        "width": 80,
+        "anchor": "start"
+      },
+      {
+        "text": "项目协调",
+        "x": 253.33333333333334,
+        "y": 180.0,
+        "size": 16,
+        "width": 64,
+        "anchor": "start"
+      },
+      {
+        "text": "质量验证",
+        "x": 458.6666666666667,
+        "y": 180.0,
+        "size": 16,
+        "width": 64,
+        "anchor": "start"
+      },
+      {
+        "text": "范围与验收确认",
+        "x": 59.0,
+        "y": 233.0,
+        "size": 15,
+        "width": 105,
+        "anchor": "start"
+      },
+      {
+        "text": "并行开始（AND）",
+        "x": 264.33333333333337,
+        "y": 340.0,
+        "size": 15,
+        "width": 116.10000000000001,
+        "anchor": "start"
+      },
+      {
+        "text": "实现与单元测试",
+        "x": 59.0,
+        "y": 447.0,
+        "size": 15,
+        "width": 105,
+        "anchor": "start"
+      },
+      {
+        "text": "准备回归用例",
+        "x": 469.6666666666667,
+        "y": 447.0,
+        "size": 15,
+        "width": 90,
+        "anchor": "start"
+      },
+      {
+        "text": "全部完成（AND）",
+        "x": 264.33333333333337,
+        "y": 554.0,
+        "size": 15,
+        "width": 116.10000000000001,
+        "anchor": "start"
+      },
+      {
+        "text": "执行集成回归",
+        "x": 469.6666666666667,
+        "y": 661.0,
+        "size": 15,
+        "width": 90,
+        "anchor": "start"
+      },
+      {
+        "text": "核对验收结果",
+        "x": 59.0,
+        "y": 768.0,
+        "size": 15,
+        "width": 90,
+        "anchor": "start"
+      },
+      {
+        "text": "本图展开成功路径；失败后的修正需另画局部流程。",
+        "x": 32,
+        "y": 883.0,
+        "size": 13,
+        "width": 299,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 915.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 927
+  },
+  {
+    "id": "vertical-swimlane",
+    "type": "垂直泳道图",
+    "layout": "workflow",
+    "source": "vertical-swimlane.svg",
+    "boxes": {
+      "a": [
+        47.0,
+        208,
+        165.33333333333334,
+        73
+      ],
+      "b": [
+        252.33333333333334,
+        315,
+        165.33333333333334,
+        73
+      ],
+      "c": [
+        457.6666666666667,
+        422,
+        165.33333333333334,
+        73
+      ],
+      "d": [
+        47.0,
+        529,
+        165.33333333333334,
+        73
+      ]
+    },
+    "labels": [
+      {
+        "text": "垂直泳道图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "资料申请在责任方之间流转",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 312,
+        "anchor": "start"
+      },
+      {
+        "text": "泳道表示责任方 · 时间从上向下",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 206.36,
+        "anchor": "start"
+      },
+      {
+        "text": "申请人",
+        "x": 48.0,
+        "y": 180.0,
+        "size": 16,
+        "width": 48,
+        "anchor": "start"
+      },
+      {
+        "text": "资料负责人",
+        "x": 253.33333333333334,
+        "y": 180.0,
+        "size": 16,
+        "width": 80,
+        "anchor": "start"
+      },
+      {
+        "text": "系统",
+        "x": 458.6666666666667,
+        "y": 180.0,
+        "size": 16,
+        "width": 32,
+        "anchor": "start"
+      },
+      {
+        "text": "提交使用说明",
+        "x": 59.0,
+        "y": 233.0,
+        "size": 15,
+        "width": 90,
+        "anchor": "start"
+      },
+      {
+        "text": "核对范围与期限",
+        "x": 264.33333333333337,
+        "y": 340.0,
+        "size": 15,
+        "width": 105,
+        "anchor": "start"
+      },
+      {
+        "text": "授予限定权限",
+        "x": 469.6666666666667,
+        "y": 447.0,
+        "size": 15,
+        "width": 90,
+        "anchor": "start"
+      },
+      {
+        "text": "收到申请结果",
+        "x": 59.0,
+        "y": 554.0,
+        "size": 15,
+        "width": 90,
+        "anchor": "start"
+      },
+      {
+        "text": "批准",
+        "x": 437.6666666666667,
+        "y": 399.0,
+        "size": 13,
+        "width": 26,
+        "anchor": "middle"
+      },
+      {
+        "text": "展示申请通过的路径；拒绝和补充材料应另列分支。",
+        "x": 32,
+        "y": 669.0,
+        "size": 13,
+        "width": 299,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 701.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 713
+  },
+  {
+    "id": "horizontal-swimlane",
+    "type": "水平泳道图",
+    "layout": "workflow",
+    "source": "horizontal-swimlane.svg",
+    "boxes": {
+      "a": [
+        136.0,
+        160.0,
+        117.5,
+        47
+      ],
+      "b": [
+        265.5,
+        243.0,
+        117.5,
+        47
+      ],
+      "c": [
+        395.0,
+        326.0,
+        117.5,
+        47
+      ],
+      "d": [
+        524.5,
+        160.0,
+        117.5,
+        47
+      ]
+    },
+    "labels": [
+      {
+        "text": "水平泳道图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "变更说明随交付一起确认",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 286,
+        "anchor": "start"
+      },
+      {
+        "text": "泳道表示责任方 · 时间从左向右",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 206.36,
+        "anchor": "start"
+      },
+      {
+        "text": "研发",
+        "x": 46,
+        "y": 188.5,
+        "size": 14,
+        "width": 28,
+        "anchor": "start"
+      },
+      {
+        "text": "质量",
+        "x": 46,
+        "y": 271.5,
+        "size": 14,
+        "width": 28,
+        "anchor": "start"
+      },
+      {
+        "text": "运营",
+        "x": 46,
+        "y": 354.5,
+        "size": 14,
+        "width": 28,
+        "anchor": "start"
+      },
+      {
+        "text": "提交版本",
+        "x": 148.0,
+        "y": 185.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "核对回归",
+        "x": 277.5,
+        "y": 268.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "确认说明",
+        "x": 407.0,
+        "y": 351.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "执行发布",
+        "x": 536.5,
+        "y": 185.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "只展示正常交付路径，箭头表示交接。",
+        "x": 32,
+        "y": 431.0,
+        "size": 13,
+        "width": 221,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 463.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 475
+  },
+  {
+    "id": "pie",
+    "type": "饼图",
+    "layout": "pie",
+    "source": "pie.svg",
+    "statistics": {
+      "shares": [
+        0.45,
+        0.3,
+        0.2,
+        0.05
+      ],
+      "angles": [
+        162.0,
+        108.0,
+        71.99999999999997,
+        18.00000000000003
+      ]
+    },
+    "font": "Arial Unicode MS",
+    "matplotlib": "3.11.2"
+  },
+  {
+    "id": "donut",
+    "type": "环形图",
+    "layout": "donut",
+    "source": "donut.svg",
+    "statistics": {
+      "shares": [
+        0.72,
+        0.12,
+        0.1,
+        0.06
+      ],
+      "angles": [
+        259.2,
+        43.19999999999999,
+        36.0,
+        21.600000000000023
+      ],
+      "order": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "theta1": [
+        -169.2,
+        -212.4,
+        -248.4,
+        -270.0
+      ],
+      "theta2": [
+        90.0,
+        -169.2,
+        -212.4,
+        -248.4
+      ],
+      "inner_ratio": 0.78
+    },
+    "font": "Arial Unicode MS",
+    "matplotlib": "3.11.2"
+  },
+  {
+    "id": "funnel",
+    "type": "漏斗图",
+    "layout": "funnel",
+    "source": "funnel.svg",
+    "statistics": {
+      "overall_conversion": 0.32,
+      "widths": [
+        1000.0,
+        720.0,
+        460.0,
+        320.0
+      ]
+    },
+    "font": "Arial Unicode MS",
+    "matplotlib": "3.11.2"
+  },
+  {
+    "id": "radar",
+    "type": "雷达图",
+    "layout": "radar",
+    "source": "radar.svg",
+    "statistics": {
+      "maximum": 5.0
+    },
+    "font": "Arial Unicode MS",
+    "matplotlib": "3.11.2"
+  },
+  {
+    "id": "business-canvas",
+    "type": "商业模式画布",
+    "layout": "business",
+    "source": "business-canvas.svg",
+    "boxes": {
+      "cell0": [
+        32,
+        148,
+        113,
+        350
+      ],
+      "cell1": [
+        154,
+        148,
+        113,
+        170
+      ],
+      "cell2": [
+        154,
+        328,
+        113,
+        170
+      ],
+      "cell3": [
+        276,
+        148,
+        128,
+        350
+      ],
+      "cell4": [
+        413,
+        148,
+        113,
+        170
+      ],
+      "cell5": [
+        413,
+        328,
+        113,
+        170
+      ],
+      "cell6": [
+        535,
+        148,
+        113,
+        350
+      ],
+      "cell7": [
+        32,
+        513,
+        301,
+        93
+      ],
+      "cell8": [
+        347,
+        513,
+        301,
+        93
+      ]
+    },
+    "labels": [
+      {
+        "text": "商业模式画布",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "知识服务的业务假设概览",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 286,
+        "anchor": "start"
+      },
+      {
+        "text": "九格用于核对假设是否相互支撑",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 196,
+        "anchor": "start"
+      },
+      {
+        "text": "重要伙伴",
+        "x": 44,
+        "y": 173.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "内容提供方",
+        "x": 44,
+        "y": 199.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "集成伙伴",
+        "x": 44,
+        "y": 217.2,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "关键活动",
+        "x": 166,
+        "y": 173.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "内容维护",
+        "x": 166,
+        "y": 199.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "服务交付",
+        "x": 166,
+        "y": 217.2,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "核心资源",
+        "x": 166,
+        "y": 353.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "可信资料",
+        "x": 166,
+        "y": 379.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "检索能力",
+        "x": 166,
+        "y": 397.2,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "价值主张",
+        "x": 288,
+        "y": 173.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "缩短查找时间",
+        "x": 288,
+        "y": 199.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "保留来源依据",
+        "x": 288,
+        "y": 217.2,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "客户关系",
+        "x": 425,
+        "y": 173.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "自助使用",
+        "x": 425,
+        "y": 199.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "团队支持",
+        "x": 425,
+        "y": 217.2,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "渠道通路",
+        "x": 425,
+        "y": 353.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "工作台",
+        "x": 425,
+        "y": 379.0,
+        "size": 13,
+        "width": 39,
+        "anchor": "start"
+      },
+      {
+        "text": "团队集成",
+        "x": 425,
+        "y": 397.2,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "客户细分",
+        "x": 547,
+        "y": 173.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "研发团队",
+        "x": 547,
+        "y": 199.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "知识运营",
+        "x": 547,
+        "y": 217.2,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "成本结构",
+        "x": 44,
+        "y": 538.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "内容维护、计算与服务成本",
+        "x": 44,
+        "y": 564.0,
+        "size": 13,
+        "width": 156,
+        "anchor": "start"
+      },
+      {
+        "text": "收入来源",
+        "x": 359,
+        "y": 538.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "团队订阅、增值服务",
+        "x": 359,
+        "y": 564.0,
+        "size": 13,
+        "width": 117,
+        "anchor": "start"
+      },
+      {
+        "text": "全部为合成假设；尚未验证需求、收入和成本。",
+        "x": 32,
+        "y": 661.0,
+        "size": 13,
+        "width": 273,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 693.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 705
+  },
+  {
+    "id": "venn",
+    "type": "韦恩图",
+    "layout": "venn",
+    "source": "venn.svg",
+    "boxes": {},
+    "labels": [
+      {
+        "text": "韦恩图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 39,
+        "anchor": "start"
+      },
+      {
+        "text": "优先验证同时满足三项的想法",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 338,
+        "anchor": "start"
+      },
+      {
+        "text": "重叠区域表达集合交集",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 140,
+        "anchor": "start"
+      },
+      {
+        "text": "用户需要",
+        "x": 215,
+        "y": 250.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "middle"
+      },
+      {
+        "text": "技术可行",
+        "x": 465,
+        "y": 250.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "middle"
+      },
+      {
+        "text": "资源允许",
+        "x": 340,
+        "y": 448.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "middle"
+      },
+      {
+        "text": "优先验证",
+        "x": 340,
+        "y": 348.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "middle"
+      },
+      {
+        "text": "圆和交集面积不编码数量，大小相近不代表规模相近。",
+        "x": 32,
+        "y": 586.0,
+        "size": 13,
+        "width": 312,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 618.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 630
+  },
+  {
+    "id": "nested-sets",
+    "type": "嵌套集合图",
+    "layout": "venn",
+    "source": "nested-sets.svg",
+    "boxes": {},
+    "labels": [
+      {
+        "text": "嵌套集合图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "灰度范围逐级包含",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 208,
+        "anchor": "start"
+      },
+      {
+        "text": "内圈是外圈的子集",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 112,
+        "anchor": "start"
+      },
+      {
+        "text": "全部用户",
+        "x": 490,
+        "y": 195.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "符合条件",
+        "x": 490,
+        "y": 230.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "获邀用户",
+        "x": 490,
+        "y": 265.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "已参与用户",
+        "x": 490,
+        "y": 300.0,
+        "size": 15,
+        "width": 75,
+        "anchor": "start"
+      },
+      {
+        "text": "圆面积不代表人数；实际放量比例请另标数据。",
+        "x": 32,
+        "y": 586.0,
+        "size": 13,
+        "width": 273,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 618.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 630
+  },
+  {
+    "id": "sg-stage-gate",
+    "type": "阶段门图",
+    "layout": "stage_gate",
+    "source": "sg-stage-gate.svg",
+    "boxes": {
+      "stage-req": [
+        32.0,
+        140,
+        150,
+        86
+      ],
+      "stage-integ": [
+        265.0,
+        140,
+        150,
+        86
+      ],
+      "stage-acc": [
+        498.0,
+        140,
+        150,
+        86
+      ],
+      "block-g2": [
+        391.5,
+        270,
+        130,
+        44
+      ]
+    },
+    "labels": [
+      {
+        "text": "阶段门图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "从需求到交付的三道门禁",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 286,
+        "anchor": "start"
+      },
+      {
+        "text": "横向推进 · 每道门禁标明准入与准出条件",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 262.36,
+        "anchor": "start"
+      },
+      {
+        "text": "需求冻结",
+        "x": 44.0,
+        "y": 165.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "准入：口径签字",
+        "x": 44.0,
+        "y": 191.0,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "准出：基线入库",
+        "x": 44.0,
+        "y": 209.2,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "联调集成",
+        "x": 277.0,
+        "y": 165.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "准入：环境就绪",
+        "x": 277.0,
+        "y": 191.0,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "准出：联调通过",
+        "x": 277.0,
+        "y": 209.2,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "验收交付",
+        "x": 510.0,
+        "y": 165.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "准入：用例通过",
+        "x": 510.0,
+        "y": 191.0,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "准出：签字交付",
+        "x": 510.0,
+        "y": 209.2,
+        "size": 13,
+        "width": 91,
+        "anchor": "start"
+      },
+      {
+        "text": "✓",
+        "x": 223.5,
+        "y": 190.0,
+        "size": 20,
+        "width": 11.6,
+        "anchor": "middle"
+      },
+      {
+        "text": "方案评审 · 通过",
+        "x": 223.5,
+        "y": 149.0,
+        "size": 12,
+        "width": 92.88,
+        "anchor": "middle"
+      },
+      {
+        "text": "×",
+        "x": 456.5,
+        "y": 190.0,
+        "size": 20,
+        "width": 11.6,
+        "anchor": "middle"
+      },
+      {
+        "text": "准出检查 · 阻断",
+        "x": 456.5,
+        "y": 149.0,
+        "size": 12,
+        "width": 92.88,
+        "anchor": "middle"
+      },
+      {
+        "text": "阻断：修复后重验",
+        "x": 401.5,
+        "y": 295.0,
+        "size": 12,
+        "width": 96,
+        "anchor": "start"
+      },
+      {
+        "text": "门禁状态是当前真实结论；未通过即阻断，须修复后重验。",
+        "x": 32,
+        "y": 376.0,
+        "size": 13,
+        "width": 338,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 408.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 420
+  },
+  {
+    "id": "cc-causal-chain",
+    "type": "因果链图",
+    "layout": "causal_chain",
+    "source": "cc-causal-chain.svg",
+    "boxes": {
+      "cause-traffic": [
+        32.0,
+        210,
+        110,
+        58
+      ],
+      "cause-dep": [
+        285.0,
+        210,
+        110,
+        58
+      ],
+      "cause-err": [
+        538.0,
+        210,
+        110,
+        58
+      ],
+      "branch-dep": [
+        285.0,
+        130,
+        110,
+        64
+      ]
+    },
+    "labels": [
+      {
+        "text": "因果链图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "一次线上投诉的因果链",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 260,
+        "anchor": "start"
+      },
+      {
+        "text": "左到右因果传递 · 绿=增强，红=抑制",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 236.59999999999997,
+        "anchor": "start"
+      },
+      {
+        "text": "流量上升",
+        "x": 44.0,
+        "y": 235.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "依赖超时",
+        "x": 297.0,
+        "y": 235.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "错误率上升",
+        "x": 550.0,
+        "y": 235.0,
+        "size": 15,
+        "width": 75,
+        "anchor": "start"
+      },
+      {
+        "text": "+ 增强",
+        "x": 213.5,
+        "y": 267.0,
+        "size": 12,
+        "width": 37.92,
+        "anchor": "middle"
+      },
+      {
+        "text": "+ 增强 · 约十分钟",
+        "x": 466.5,
+        "y": 267.0,
+        "size": 12,
+        "width": 106.80000000000001,
+        "anchor": "middle"
+      },
+      {
+        "text": "缓存命中下",
+        "x": 297.0,
+        "y": 155.0,
+        "size": 15,
+        "width": 75,
+        "anchor": "start"
+      },
+      {
+        "text": "降",
+        "x": 297.0,
+        "y": 176.0,
+        "size": 15,
+        "width": 15,
+        "anchor": "start"
+      },
+      {
+        "text": "− 抑制",
+        "x": 340.0,
+        "y": 202.0,
+        "size": 12,
+        "width": 37.92,
+        "anchor": "middle"
+      },
+      {
+        "text": "极性是待验证假设；延迟为经验值，不表示精确耗时。",
+        "x": 32,
+        "y": 311.0,
+        "size": 13,
+        "width": 312,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 343.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 355
+  },
+  {
+    "id": "fl-feedback-loop",
+    "type": "反馈回路图",
+    "layout": "feedback_loop",
+    "source": "fl-feedback-loop.svg",
+    "boxes": {
+      "fl-process": [
+        240,
+        165,
+        200,
+        90
+      ],
+      "fl-in": [
+        48,
+        195,
+        110,
+        44
+      ],
+      "fl-out": [
+        520,
+        195,
+        110,
+        44
+      ],
+      "fl-inject": [
+        430,
+        302,
+        140,
+        36
+      ]
+    },
+    "labels": [
+      {
+        "text": "反馈回路图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "回答质量如何自我收敛",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 260,
+        "anchor": "start"
+      },
+      {
+        "text": "回环走外围 · 虚线表示反馈通道",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 206.36,
+        "anchor": "start"
+      },
+      {
+        "text": "检索与生成回答",
+        "x": 252,
+        "y": 190.0,
+        "size": 15,
+        "width": 105,
+        "anchor": "start"
+      },
+      {
+        "text": "用户提问",
+        "x": 60,
+        "y": 220.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "回答",
+        "x": 532,
+        "y": 220.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "负反馈 · 自我收敛 · 触发：质量低于阈值",
+        "x": 240,
+        "y": 308.0,
+        "size": 12,
+        "width": 233.76,
+        "anchor": "middle"
+      },
+      {
+        "text": "人工标注修正",
+        "x": 440,
+        "y": 323.0,
+        "size": 12,
+        "width": 72,
+        "anchor": "start"
+      },
+      {
+        "text": "负反馈意味着系统趋向稳定；干预点是人工修正入口。",
+        "x": 32,
+        "y": 381.0,
+        "size": 13,
+        "width": 312,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 413.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 425
+  },
+  {
+    "id": "sm-state-machine",
+    "type": "状态机图",
+    "layout": "state_machine",
+    "source": "sm-state-machine.svg",
+    "boxes": {
+      "sm-work": [
+        76.0,
+        216,
+        100,
+        46
+      ],
+      "sm-done": [
+        548.0,
+        216,
+        100,
+        46
+      ],
+      "sm-fail": [
+        76.0,
+        306,
+        100,
+        46
+      ]
+    },
+    "labels": [
+      {
+        "text": "状态机图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "start"
+      },
+      {
+        "text": "一次任务的状态生命周期",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 286,
+        "anchor": "start"
+      },
+      {
+        "text": "实心圆为起点 · 双线为终态",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 178.36,
+        "anchor": "start"
+      },
+      {
+        "text": "处理中",
+        "x": 126.0,
+        "y": 244.0,
+        "size": 13,
+        "width": 39,
+        "anchor": "middle"
+      },
+      {
+        "text": "完成",
+        "x": 598.0,
+        "y": 244.0,
+        "size": 13,
+        "width": 26,
+        "anchor": "middle"
+      },
+      {
+        "text": "失败",
+        "x": 126.0,
+        "y": 334.0,
+        "size": 13,
+        "width": 26,
+        "anchor": "middle"
+      },
+      {
+        "text": "提交",
+        "x": 70.5,
+        "y": 224.0,
+        "size": 12,
+        "width": 24,
+        "anchor": "middle"
+      },
+      {
+        "text": "成功",
+        "x": 362.0,
+        "y": 224.0,
+        "size": 12,
+        "width": 24,
+        "anchor": "middle"
+      },
+      {
+        "text": "异常/退避",
+        "x": 86.52,
+        "y": 284.0,
+        "size": 12,
+        "width": 54.96,
+        "anchor": "middle"
+      },
+      {
+        "text": "重试",
+        "x": 105.0,
+        "y": 378.0,
+        "size": 12,
+        "width": 24,
+        "anchor": "middle"
+      },
+      {
+        "text": "迁移标签为 事件[条件]/动作；重试是唯一回退边。",
+        "x": 32,
+        "y": 450.0,
+        "size": 13,
+        "width": 303.16,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 482.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 494
+  },
+  {
+    "id": "ia-sample-review",
+    "type": "截图标注图",
+    "layout": "image_annotate",
+    "source": "ia-sample-review.svg",
+    "boxes": {
+      "ev-1": [
+        462,
+        176,
+        186,
+        26
+      ],
+      "ac-1": [
+        462,
+        206,
+        186,
+        26
+      ],
+      "ev-2": [
+        462,
+        240,
+        186,
+        26
+      ],
+      "ac-2": [
+        462,
+        270,
+        186,
+        26
+      ],
+      "ev-3": [
+        462,
+        304,
+        186,
+        26
+      ],
+      "ac-3": [
+        462,
+        334,
+        186,
+        26
+      ]
+    },
+    "labels": [
+      {
+        "text": "截图标注图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "复审截图发现的三处问题",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 286,
+        "anchor": "start"
+      },
+      {
+        "text": "红框圈出问题 · 右侧图例给动作",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 206.36,
+        "anchor": "start"
+      },
+      {
+        "text": "1",
+        "x": 80.4375,
+        "y": 208.84375,
+        "size": 11,
+        "width": 6.38,
+        "anchor": "middle"
+      },
+      {
+        "text": "2",
+        "x": 272.625,
+        "y": 285.71875,
+        "size": 11,
+        "width": 6.38,
+        "anchor": "middle"
+      },
+      {
+        "text": "3",
+        "x": 99.65625,
+        "y": 324.15625,
+        "size": 11,
+        "width": 6.38,
+        "anchor": "middle"
+      },
+      {
+        "text": "问题与动作",
+        "x": 462,
+        "y": 158.0,
+        "size": 14,
+        "width": 70,
+        "anchor": "start"
+      },
+      {
+        "text": "问题：主按钮被导航遮挡",
+        "x": 472,
+        "y": 192.0,
+        "size": 12,
+        "width": 132,
+        "anchor": "start"
+      },
+      {
+        "text": "动作：下移并加宽点击区",
+        "x": 472,
+        "y": 222.0,
+        "size": 12,
+        "width": 132,
+        "anchor": "start"
+      },
+      {
+        "text": "问题：表单校验无错误提示",
+        "x": 472,
+        "y": 256.0,
+        "size": 12,
+        "width": 144,
+        "anchor": "start"
+      },
+      {
+        "text": "动作：改为行内红字提示",
+        "x": 472,
+        "y": 286.0,
+        "size": 12,
+        "width": 132,
+        "anchor": "start"
+      },
+      {
+        "text": "问题：加载态缺失骨架屏",
+        "x": 472,
+        "y": 320.0,
+        "size": 12,
+        "width": 132,
+        "anchor": "start"
+      },
+      {
+        "text": "动作：补骨架屏占位",
+        "x": 472,
+        "y": 350.0,
+        "size": 12,
+        "width": 108,
+        "anchor": "start"
+      },
+      {
+        "text": "底图为合成示例；编号与图例一一对应。",
+        "x": 32,
+        "y": 431.625,
+        "size": 13,
+        "width": 234,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 463.625,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 475.625
+  },
+  {
+    "id": "lane-three-handoff",
+    "type": "三角色泳道图",
+    "layout": "workflow",
+    "source": "lane-three-handoff.svg",
+    "boxes": {
+      "a": [
+        136.0,
+        160.0,
+        117.5,
+        47
+      ],
+      "b": [
+        265.5,
+        243.0,
+        117.5,
+        68
+      ],
+      "c": [
+        395.0,
+        347.0,
+        117.5,
+        47
+      ],
+      "d": [
+        524.5,
+        160.0,
+        117.5,
+        47
+      ]
+    },
+    "labels": [
+      {
+        "text": "三角色泳道图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "一次请求在前端、网关与服务端之间交接",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 468,
+        "anchor": "start"
+      },
+      {
+        "text": "横向泳道 · 时间从左向右推进",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 192.36,
+        "anchor": "start"
+      },
+      {
+        "text": "前端",
+        "x": 46,
+        "y": 188.5,
+        "size": 14,
+        "width": 28,
+        "anchor": "start"
+      },
+      {
+        "text": "网关",
+        "x": 46,
+        "y": 282.0,
+        "size": 14,
+        "width": 28,
+        "anchor": "start"
+      },
+      {
+        "text": "服务端",
+        "x": 46,
+        "y": 375.5,
+        "size": 14,
+        "width": 42,
+        "anchor": "start"
+      },
+      {
+        "text": "提交静态资源",
+        "x": 148.0,
+        "y": 185.0,
+        "size": 15,
+        "width": 90,
+        "anchor": "start"
+      },
+      {
+        "text": "校验签名与限",
+        "x": 277.5,
+        "y": 268.0,
+        "size": 15,
+        "width": 90,
+        "anchor": "start"
+      },
+      {
+        "text": "流",
+        "x": 277.5,
+        "y": 289.0,
+        "size": 15,
+        "width": 15,
+        "anchor": "start"
+      },
+      {
+        "text": "查询与落库",
+        "x": 407.0,
+        "y": 372.0,
+        "size": 15,
+        "width": 75,
+        "anchor": "start"
+      },
+      {
+        "text": "渲染结果",
+        "x": 536.5,
+        "y": 185.0,
+        "size": 15,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "鉴权后转发",
+        "x": 453.75,
+        "y": 322.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "middle"
+      },
+      {
+        "text": "只展示成功路径；鉴权失败应另画分支。",
+        "x": 32,
+        "y": 452.0,
+        "size": 13,
+        "width": 234,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 484.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 496
+  },
+  {
+    "id": "sm-order-fulfillment",
+    "type": "复杂状态机",
+    "layout": "state_machine",
+    "source": "sm-order-fulfillment.svg",
+    "boxes": {
+      "sm-paying": [
+        76.0,
+        216,
+        100,
+        46
+      ],
+      "sm-paid": [
+        233.33333333333334,
+        216,
+        100,
+        46
+      ],
+      "sm-fulfilling": [
+        390.6666666666667,
+        216,
+        100,
+        46
+      ],
+      "sm-done": [
+        548.0,
+        216,
+        100,
+        46
+      ],
+      "sm-payfailed": [
+        76.0,
+        306,
+        100,
+        46
+      ],
+      "sm-timeout": [
+        76.0,
+        130,
+        100,
+        46
+      ]
+    },
+    "labels": [
+      {
+        "text": "复杂状态机",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "start"
+      },
+      {
+        "text": "订单支付履约的状态生命周期",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 338,
+        "anchor": "start"
+      },
+      {
+        "text": "主干一条线 · 失败/超时为短分叉 · 重试走外侧回退通道",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 364.84,
+        "anchor": "start"
+      },
+      {
+        "text": "支付处理中",
+        "x": 126.0,
+        "y": 244.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "middle"
+      },
+      {
+        "text": "已支付",
+        "x": 283.33333333333337,
+        "y": 244.0,
+        "size": 13,
+        "width": 39,
+        "anchor": "middle"
+      },
+      {
+        "text": "履约中",
+        "x": 440.6666666666667,
+        "y": 244.0,
+        "size": 13,
+        "width": 39,
+        "anchor": "middle"
+      },
+      {
+        "text": "已完成",
+        "x": 598.0,
+        "y": 244.0,
+        "size": 13,
+        "width": 39,
+        "anchor": "middle"
+      },
+      {
+        "text": "支付失败",
+        "x": 126.0,
+        "y": 334.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "middle"
+      },
+      {
+        "text": "超时关闭",
+        "x": 126.0,
+        "y": 158.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "middle"
+      },
+      {
+        "text": "发起支付",
+        "x": 70.5,
+        "y": 224.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "middle"
+      },
+      {
+        "text": "支付成功",
+        "x": 204.66666666666669,
+        "y": 224.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "middle"
+      },
+      {
+        "text": "通知履约",
+        "x": 362.0,
+        "y": 224.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "middle"
+      },
+      {
+        "text": "履约完成",
+        "x": 519.3333333333334,
+        "y": 224.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "middle"
+      },
+      {
+        "text": "支付失败",
+        "x": 72.0,
+        "y": 284.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "middle"
+      },
+      {
+        "text": "超过30分钟",
+        "x": 83.03999999999999,
+        "y": 196.0,
+        "size": 12,
+        "width": 61.92,
+        "anchor": "middle"
+      },
+      {
+        "text": "重试支付",
+        "x": 180.0,
+        "y": 289.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "middle"
+      },
+      {
+        "text": "回退通道在卡片最外侧；迁移标签为事件/条件。",
+        "x": 32,
+        "y": 400.0,
+        "size": 13,
+        "width": 280.53999999999996,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 432.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 444
+  },
+  {
+    "id": "seq-agent-dispatch",
+    "type": "时序图",
+    "layout": "sequence",
+    "source": "seq-agent-dispatch.svg",
+    "boxes": {
+      "seq-you": [
+        43.0,
+        140,
+        132,
+        44
+      ],
+      "seq-core": [
+        197.0,
+        140,
+        132,
+        44
+      ],
+      "seq-adp": [
+        351.0,
+        140,
+        132,
+        44
+      ],
+      "seq-agent": [
+        505.0,
+        140,
+        132,
+        44
+      ]
+    },
+    "labels": [
+      {
+        "text": "时序图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 39,
+        "anchor": "start"
+      },
+      {
+        "text": "Agent 的请求先由管家消化，验收通过才算完成",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 558.48,
+        "anchor": "start"
+      },
+      {
+        "text": "一次任务的成功路径 · 纵向只表示先后",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 248.36,
+        "anchor": "start"
+      },
+      {
+        "text": "派活",
+        "x": 36,
+        "y": 211.0,
+        "size": 12,
+        "width": 24,
+        "anchor": "start"
+      },
+      {
+        "text": "执行中",
+        "x": 36,
+        "y": 407.0,
+        "size": 12,
+        "width": 36,
+        "anchor": "start"
+      },
+      {
+        "text": "验收",
+        "x": 36,
+        "y": 643.0,
+        "size": 12,
+        "width": 24,
+        "anchor": "start"
+      },
+      {
+        "text": "你",
+        "x": 109.0,
+        "y": 168.0,
+        "size": 14,
+        "width": 14,
+        "anchor": "middle"
+      },
+      {
+        "text": "管家",
+        "x": 263.0,
+        "y": 168.0,
+        "size": 14,
+        "width": 28,
+        "anchor": "middle"
+      },
+      {
+        "text": "执行 Adapter",
+        "x": 417.0,
+        "y": 168.0,
+        "size": 14,
+        "width": 92.96,
+        "anchor": "middle"
+      },
+      {
+        "text": "外部 Agent",
+        "x": 571.0,
+        "y": 168.0,
+        "size": 14,
+        "width": 76.72,
+        "anchor": "middle"
+      },
+      {
+        "text": "拆任务图、配上下文",
+        "x": 297.0,
+        "y": 255.0,
+        "size": 12,
+        "width": 108,
+        "anchor": "start"
+      },
+      {
+        "text": "首次拆解请确认",
+        "x": 186.0,
+        "y": 287.0,
+        "size": 13,
+        "width": 91,
+        "anchor": "middle"
+      },
+      {
+        "text": "确认",
+        "x": 186.0,
+        "y": 327.0,
+        "size": 13,
+        "width": 26,
+        "anchor": "middle"
+      },
+      {
+        "text": "任务信封",
+        "x": 340.0,
+        "y": 367.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "middle"
+      },
+      {
+        "text": "启动会话",
+        "x": 494.0,
+        "y": 429.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "middle"
+      },
+      {
+        "text": "要权限",
+        "x": 494.0,
+        "y": 469.0,
+        "size": 13,
+        "width": 39,
+        "anchor": "middle"
+      },
+      {
+        "text": "审批事件",
+        "x": 340.0,
+        "y": 509.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "middle"
+      },
+      {
+        "text": "按放权规则判定",
+        "x": 297.0,
+        "y": 571.0,
+        "size": 12,
+        "width": 84,
+        "anchor": "start"
+      },
+      {
+        "text": "批准",
+        "x": 340.0,
+        "y": 603.0,
+        "size": 13,
+        "width": 26,
+        "anchor": "middle"
+      },
+      {
+        "text": "结束与产物",
+        "x": 494.0,
+        "y": 665.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "middle"
+      },
+      {
+        "text": "结束事件",
+        "x": 340.0,
+        "y": 705.0,
+        "size": 13,
+        "width": 52,
+        "anchor": "middle"
+      },
+      {
+        "text": "验收结果摘要",
+        "x": 186.0,
+        "y": 745.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "middle"
+      },
+      {
+        "text": "实线：同步调用    虚线：异步消息或返回    折回箭头：自身处理",
+        "x": 32,
+        "y": 804.0,
+        "size": 12,
+        "width": 367.68,
+        "anchor": "start"
+      },
+      {
+        "text": "规则内的权限请求管家自己批；结束事件只触发验收。",
+        "x": 32,
+        "y": 858.0,
+        "size": 13,
+        "width": 312,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 890.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 902
+  },
+  {
+    "id": "er-task-graph",
+    "type": "ER 图",
+    "layout": "er",
+    "source": "er-task-graph.svg",
+    "boxes": {
+      "er-goal": [
+        58.0,
+        150,
+        153.33333333333334,
+        78
+      ],
+      "er-type": [
+        468.6666666666667,
+        150,
+        153.33333333333334,
+        78
+      ],
+      "er-task": [
+        263.33333333333337,
+        294,
+        153.33333333333334,
+        97
+      ],
+      "er-edge": [
+        58.0,
+        294,
+        153.33333333333334,
+        78
+      ],
+      "er-run": [
+        263.33333333333337,
+        457,
+        153.33333333333334,
+        97
+      ],
+      "er-rev": [
+        468.6666666666667,
+        294,
+        153.33333333333334,
+        78
+      ],
+      "er-art": [
+        263.33333333333337,
+        620,
+        153.33333333333334,
+        59
+      ],
+      "er-review": [
+        468.6666666666667,
+        620,
+        153.33333333333334,
+        59
+      ]
+    },
+    "labels": [
+      {
+        "text": "ER 图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 35.62,
+        "anchor": "start"
+      },
+      {
+        "text": "一个任务可以多次执行，每次修改都留版本",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 494,
+        "anchor": "start"
+      },
+      {
+        "text": "任务图对象模型 · 只画实体、键和基数",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 248.36,
+        "anchor": "start"
+      },
+      {
+        "text": "Goal 目标组",
+        "x": 68.0,
+        "y": 170.0,
+        "size": 13,
+        "width": 76.7,
+        "anchor": "start"
+      },
+      {
+        "text": "goal_id",
+        "x": 68.0,
+        "y": 198.0,
+        "size": 12,
+        "width": 48.72,
+        "anchor": "start"
+      },
+      {
+        "text": "验收标准",
+        "x": 68.0,
+        "y": 217.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "start"
+      },
+      {
+        "text": "TaskType 任务类型",
+        "x": 478.6666666666667,
+        "y": 170.0,
+        "size": 13,
+        "width": 119.85999999999999,
+        "anchor": "start"
+      },
+      {
+        "text": "type_id",
+        "x": 478.6666666666667,
+        "y": 198.0,
+        "size": 12,
+        "width": 48.72,
+        "anchor": "start"
+      },
+      {
+        "text": "上下文配方",
+        "x": 478.6666666666667,
+        "y": 217.0,
+        "size": 12,
+        "width": 60,
+        "anchor": "start"
+      },
+      {
+        "text": "Task 任务节点",
+        "x": 273.33333333333337,
+        "y": 314.0,
+        "size": 13,
+        "width": 89.7,
+        "anchor": "start"
+      },
+      {
+        "text": "task_id",
+        "x": 273.33333333333337,
+        "y": 342.0,
+        "size": 12,
+        "width": 48.72,
+        "anchor": "start"
+      },
+      {
+        "text": "状态（事件推导）",
+        "x": 273.33333333333337,
+        "y": 361.0,
+        "size": 12,
+        "width": 96,
+        "anchor": "start"
+      },
+      {
+        "text": "rev",
+        "x": 273.33333333333337,
+        "y": 380.0,
+        "size": 12,
+        "width": 20.879999999999995,
+        "anchor": "start"
+      },
+      {
+        "text": "Edge 边",
+        "x": 68.0,
+        "y": 314.0,
+        "size": 13,
+        "width": 50.699999999999996,
+        "anchor": "start"
+      },
+      {
+        "text": "from / to",
+        "x": 68.0,
+        "y": 342.0,
+        "size": 12,
+        "width": 62.64,
+        "anchor": "start"
+      },
+      {
+        "text": "阻塞 父子 引出",
+        "x": 68.0,
+        "y": 361.0,
+        "size": 12,
+        "width": 85.92,
+        "anchor": "start"
+      },
+      {
+        "text": "Run 执行实例",
+        "x": 273.33333333333337,
+        "y": 477.0,
+        "size": 13,
+        "width": 82.16,
+        "anchor": "start"
+      },
+      {
+        "text": "run_id",
+        "x": 273.33333333333337,
+        "y": 505.0,
+        "size": 12,
+        "width": 41.75999999999999,
+        "anchor": "start"
+      },
+      {
+        "text": "adapter",
+        "x": 273.33333333333337,
+        "y": 524.0,
+        "size": 12,
+        "width": 48.72,
+        "anchor": "start"
+      },
+      {
+        "text": "session_id",
+        "x": 273.33333333333337,
+        "y": 543.0,
+        "size": 12,
+        "width": 69.6,
+        "anchor": "start"
+      },
+      {
+        "text": "Revision 版本",
+        "x": 478.6666666666667,
+        "y": 314.0,
+        "size": 13,
+        "width": 93.86,
+        "anchor": "start"
+      },
+      {
+        "text": "rev",
+        "x": 478.6666666666667,
+        "y": 342.0,
+        "size": 12,
+        "width": 20.879999999999995,
+        "anchor": "start"
+      },
+      {
+        "text": "谁改 为什么",
+        "x": 478.6666666666667,
+        "y": 361.0,
+        "size": 12,
+        "width": 66.96000000000001,
+        "anchor": "start"
+      },
+      {
+        "text": "Artifact 产物",
+        "x": 273.33333333333337,
+        "y": 640.0,
+        "size": 13,
+        "width": 93.86,
+        "anchor": "start"
+      },
+      {
+        "text": "path / link",
+        "x": 273.33333333333337,
+        "y": 668.0,
+        "size": 12,
+        "width": 76.56,
+        "anchor": "start"
+      },
+      {
+        "text": "Review 验收",
+        "x": 478.6666666666667,
+        "y": 640.0,
+        "size": 13,
+        "width": 78.78,
+        "anchor": "start"
+      },
+      {
+        "text": "通过 / 退回",
+        "x": 478.6666666666667,
+        "y": 668.0,
+        "size": 12,
+        "width": 68.88,
+        "anchor": "start"
+      },
+      {
+        "text": "1",
+        "x": 216.33333333333334,
+        "y": 166.0,
+        "size": 12,
+        "width": 6.959999999999999,
+        "anchor": "start"
+      },
+      {
+        "text": "1..*",
+        "x": 308.66666666666674,
+        "y": 286.0,
+        "size": 12,
+        "width": 27.839999999999996,
+        "anchor": "start"
+      },
+      {
+        "text": "包含",
+        "x": 256.50000000000006,
+        "y": 189.0,
+        "size": 12,
+        "width": 24,
+        "anchor": "middle"
+      },
+      {
+        "text": "1",
+        "x": 463.6666666666667,
+        "y": 166.0,
+        "size": 12,
+        "width": 6.959999999999999,
+        "anchor": "end"
+      },
+      {
+        "text": "0..*",
+        "x": 385.33333333333337,
+        "y": 286.0,
+        "size": 12,
+        "width": 27.839999999999996,
+        "anchor": "start"
+      },
+      {
+        "text": "决定配方",
+        "x": 423.5,
+        "y": 189.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "middle"
+      },
+      {
+        "text": "1",
+        "x": 347.00000000000006,
+        "y": 406.0,
+        "size": 12,
+        "width": 6.959999999999999,
+        "anchor": "start"
+      },
+      {
+        "text": "0..*",
+        "x": 347.00000000000006,
+        "y": 451.0,
+        "size": 12,
+        "width": 27.839999999999996,
+        "anchor": "start"
+      },
+      {
+        "text": "执行",
+        "x": 332.00000000000006,
+        "y": 428.0,
+        "size": 12,
+        "width": 24,
+        "anchor": "end"
+      },
+      {
+        "text": "1",
+        "x": 257.33333333333337,
+        "y": 334.0,
+        "size": 12,
+        "width": 6.959999999999999,
+        "anchor": "end"
+      },
+      {
+        "text": "0..*",
+        "x": 217.33333333333334,
+        "y": 334.0,
+        "size": 12,
+        "width": 27.839999999999996,
+        "anchor": "start"
+      },
+      {
+        "text": "连接",
+        "x": 237.33333333333337,
+        "y": 357.0,
+        "size": 12,
+        "width": 24,
+        "anchor": "middle"
+      },
+      {
+        "text": "1",
+        "x": 422.66666666666674,
+        "y": 334.0,
+        "size": 12,
+        "width": 6.959999999999999,
+        "anchor": "start"
+      },
+      {
+        "text": "1..*",
+        "x": 462.6666666666667,
+        "y": 334.0,
+        "size": 12,
+        "width": 27.839999999999996,
+        "anchor": "end"
+      },
+      {
+        "text": "留版",
+        "x": 442.66666666666674,
+        "y": 357.0,
+        "size": 12,
+        "width": 24,
+        "anchor": "middle"
+      },
+      {
+        "text": "1",
+        "x": 347.00000000000006,
+        "y": 569.0,
+        "size": 12,
+        "width": 6.959999999999999,
+        "anchor": "start"
+      },
+      {
+        "text": "0..*",
+        "x": 347.00000000000006,
+        "y": 614.0,
+        "size": 12,
+        "width": 27.839999999999996,
+        "anchor": "start"
+      },
+      {
+        "text": "产出",
+        "x": 332.00000000000006,
+        "y": 591.0,
+        "size": 12,
+        "width": 24,
+        "anchor": "end"
+      },
+      {
+        "text": "1..*",
+        "x": 422.66666666666674,
+        "y": 660.0,
+        "size": 12,
+        "width": 27.839999999999996,
+        "anchor": "start"
+      },
+      {
+        "text": "1",
+        "x": 462.6666666666667,
+        "y": 660.0,
+        "size": 12,
+        "width": 6.959999999999999,
+        "anchor": "end"
+      },
+      {
+        "text": "提交",
+        "x": 442.66666666666674,
+        "y": 683.0,
+        "size": 12,
+        "width": 24,
+        "anchor": "middle"
+      },
+      {
+        "text": "数字为关系两端的基数：1 恰好一个，0..* 零个或多个",
+        "x": 32,
+        "y": 719.0,
+        "size": 12,
+        "width": 300.71999999999997,
+        "anchor": "start"
+      },
+      {
+        "text": "重试、换 Agent 只新增 Run，任务历史不丢。",
+        "x": 32,
+        "y": 785.0,
+        "size": 13,
+        "width": 277.94000000000005,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 817.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 829
+  },
+  {
+    "id": "sm-task-lifecycle",
+    "type": "状态图（多回退）",
+    "layout": "state_machine",
+    "source": "sm-task-lifecycle.svg",
+    "boxes": {
+      "sm-todo": [
+        76.0,
+        216,
+        100,
+        46
+      ],
+      "sm-running": [
+        233.33333333333334,
+        216,
+        100,
+        46
+      ],
+      "sm-review": [
+        390.6666666666667,
+        216,
+        100,
+        46
+      ],
+      "sm-done": [
+        548.0,
+        216,
+        100,
+        46
+      ],
+      "sm-dropped": [
+        76.0,
+        306,
+        100,
+        46
+      ],
+      "sm-waiting": [
+        233.33333333333334,
+        130,
+        100,
+        46
+      ],
+      "sm-recalc": [
+        390.6666666666667,
+        306,
+        100,
+        46
+      ]
+    },
+    "labels": [
+      {
+        "text": "状态图（多回退）",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 104,
+        "anchor": "start"
+      },
+      {
+        "text": "任务要过验收才算完成",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 260,
+        "anchor": "start"
+      },
+      {
+        "text": "状态由事件推导 · 上游被改则下游待重算",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 262.36,
+        "anchor": "start"
+      },
+      {
+        "text": "待办",
+        "x": 126.0,
+        "y": 244.0,
+        "size": 13,
+        "width": 26,
+        "anchor": "middle"
+      },
+      {
+        "text": "进行中",
+        "x": 283.33333333333337,
+        "y": 244.0,
+        "size": 13,
+        "width": 39,
+        "anchor": "middle"
+      },
+      {
+        "text": "待验收",
+        "x": 440.6666666666667,
+        "y": 244.0,
+        "size": 13,
+        "width": 39,
+        "anchor": "middle"
+      },
+      {
+        "text": "已完成",
+        "x": 598.0,
+        "y": 244.0,
+        "size": 13,
+        "width": 39,
+        "anchor": "middle"
+      },
+      {
+        "text": "已放弃",
+        "x": 126.0,
+        "y": 334.0,
+        "size": 13,
+        "width": 39,
+        "anchor": "middle"
+      },
+      {
+        "text": "等待",
+        "x": 283.33333333333337,
+        "y": 158.0,
+        "size": 13,
+        "width": 26,
+        "anchor": "middle"
+      },
+      {
+        "text": "待重算",
+        "x": 440.6666666666667,
+        "y": 334.0,
+        "size": 13,
+        "width": 39,
+        "anchor": "middle"
+      },
+      {
+        "text": "你确认",
+        "x": 70.5,
+        "y": 224.0,
+        "size": 12,
+        "width": 36,
+        "anchor": "middle"
+      },
+      {
+        "text": "派出实例",
+        "x": 204.66666666666669,
+        "y": 224.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "middle"
+      },
+      {
+        "text": "实例结束",
+        "x": 362.0,
+        "y": 224.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "middle"
+      },
+      {
+        "text": "验收通过",
+        "x": 519.3333333333334,
+        "y": 224.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "middle"
+      },
+      {
+        "text": "决定不做",
+        "x": 90.0,
+        "y": 284.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "middle"
+      },
+      {
+        "text": "等你/外部",
+        "x": 225.85333333333335,
+        "y": 196.0,
+        "size": 12,
+        "width": 54.96,
+        "anchor": "middle"
+      },
+      {
+        "text": "上游被改",
+        "x": 404.6666666666667,
+        "y": 284.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "middle"
+      },
+      {
+        "text": "条件满足",
+        "x": 337.33333333333337,
+        "y": 201.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "middle"
+      },
+      {
+        "text": "退回重跑",
+        "x": 401.33333333333337,
+        "y": 378.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "middle"
+      },
+      {
+        "text": "重新规划",
+        "x": 338.6666666666667,
+        "y": 404.0,
+        "size": 12,
+        "width": 48,
+        "anchor": "middle"
+      },
+      {
+        "text": "执行实例结束只进入待验收；退回会新建实例重跑。",
+        "x": 32,
+        "y": 476.0,
+        "size": 13,
+        "width": 299,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 508.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 520
+  },
+  {
+    "id": "deep-lane-6-roles",
+    "type": "深泳道压力图",
+    "layout": "workflow",
+    "source": "deep-lane-6-roles.svg",
+    "boxes": {
+      "a": [
+        136.0,
+        160.0,
+        62.0,
+        68
+      ],
+      "b": [
+        210.0,
+        264.0,
+        62.0,
+        68
+      ],
+      "c": [
+        284.0,
+        368.0,
+        62.0,
+        68
+      ],
+      "d": [
+        358.0,
+        472.0,
+        62.0,
+        68
+      ],
+      "e": [
+        432.0,
+        576.0,
+        62.0,
+        68
+      ],
+      "p": [
+        506.0,
+        680.0,
+        62.0,
+        68
+      ],
+      "f": [
+        506.0,
+        368.0,
+        62.0,
+        68
+      ],
+      "g": [
+        580.0,
+        264.0,
+        62.0,
+        68
+      ],
+      "h": [
+        580.0,
+        160.0,
+        62.0,
+        68
+      ],
+      "p2": [
+        580.0,
+        680.0,
+        62.0,
+        68
+      ],
+      "e2": [
+        580.0,
+        576.0,
+        62.0,
+        68
+      ],
+      "d2": [
+        580.0,
+        472.0,
+        62.0,
+        68
+      ]
+    },
+    "labels": [
+      {
+        "text": "深泳道压力图",
+        "x": 32,
+        "y": 31.0,
+        "size": 13,
+        "width": 78,
+        "anchor": "start"
+      },
+      {
+        "text": "一次请求流经六个职责方并含支付回退复核",
+        "x": 32,
+        "y": 74.0,
+        "size": 26,
+        "width": 494,
+        "anchor": "start"
+      },
+      {
+        "text": "横向泳道 · 时间从左向右 · 支付失败回退到鉴权复核",
+        "x": 32,
+        "y": 105.0,
+        "size": 14,
+        "width": 342.72,
+        "anchor": "start"
+      },
+      {
+        "text": "前端",
+        "x": 46,
+        "y": 199.0,
+        "size": 14,
+        "width": 28,
+        "anchor": "start"
+      },
+      {
+        "text": "网关",
+        "x": 46,
+        "y": 303.0,
+        "size": 14,
+        "width": 28,
+        "anchor": "start"
+      },
+      {
+        "text": "鉴权",
+        "x": 46,
+        "y": 407.0,
+        "size": 14,
+        "width": 28,
+        "anchor": "start"
+      },
+      {
+        "text": "订单",
+        "x": 46,
+        "y": 511.0,
+        "size": 14,
+        "width": 28,
+        "anchor": "start"
+      },
+      {
+        "text": "库存",
+        "x": 46,
+        "y": 615.0,
+        "size": 14,
+        "width": 28,
+        "anchor": "start"
+      },
+      {
+        "text": "支付",
+        "x": 46,
+        "y": 719.0,
+        "size": 14,
+        "width": 28,
+        "anchor": "start"
+      },
+      {
+        "text": "打开",
+        "x": 148.0,
+        "y": 185.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "页面",
+        "x": 148.0,
+        "y": 206.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "签名",
+        "x": 222.0,
+        "y": 289.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "限流",
+        "x": 222.0,
+        "y": 310.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "校验",
+        "x": 296.0,
+        "y": 393.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "令牌",
+        "x": 296.0,
+        "y": 414.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "创建",
+        "x": 370.0,
+        "y": 497.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "订单",
+        "x": 370.0,
+        "y": 518.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "预占",
+        "x": 444.0,
+        "y": 601.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "库存",
+        "x": 444.0,
+        "y": 622.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "发起",
+        "x": 518.0,
+        "y": 705.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "扣款",
+        "x": 518.0,
+        "y": 726.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "复核",
+        "x": 518.0,
+        "y": 393.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "令牌",
+        "x": 518.0,
+        "y": 414.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "回源",
+        "x": 592.0,
+        "y": 289.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "校验",
+        "x": 592.0,
+        "y": 310.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "渲染",
+        "x": 592.0,
+        "y": 185.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "结果",
+        "x": 592.0,
+        "y": 206.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "记录",
+        "x": 592.0,
+        "y": 705.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "流水",
+        "x": 592.0,
+        "y": 726.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "释放",
+        "x": 592.0,
+        "y": 601.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "库存",
+        "x": 592.0,
+        "y": 622.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "超时",
+        "x": 592.0,
+        "y": 497.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "关单",
+        "x": 592.0,
+        "y": 518.0,
+        "size": 15,
+        "width": 30,
+        "anchor": "start"
+      },
+      {
+        "text": "支付后复核",
+        "x": 537.0,
+        "y": 676.0,
+        "size": 13,
+        "width": 65,
+        "anchor": "middle"
+      },
+      {
+        "text": "压力样例：6 条泳道、12 张卡片、含跨多道回退；只画主成功与回退复核路径。",
+        "x": 32,
+        "y": 806.0,
+        "size": 13,
+        "width": 466.7,
+        "anchor": "start"
+      },
+      {
+        "text": "合成示例 · document-neutral",
+        "x": 32,
+        "y": 838.0,
+        "size": 12,
+        "width": 180.24,
+        "anchor": "start"
+      }
+    ],
+    "width": 680,
+    "height": 850
+  },
+  {
+    "id": "donut-big-share",
+    "type": "环形图-单一大占比",
+    "layout": "donut",
+    "source": "donut-big-share.svg",
+    "statistics": {
+      "shares": [
+        0.64,
+        0.12,
+        0.09,
+        0.06,
+        0.05,
+        0.04
+      ],
+      "angles": [
+        230.4,
+        43.19999999999999,
+        32.400000000000006,
+        21.599999999999966,
+        18.00000000000003,
+        14.400000000000006
+      ],
+      "order": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theta1": [
+        -140.4,
+        -183.6,
+        -216.0,
+        -237.6,
+        -255.6,
+        -270.0
+      ],
+      "theta2": [
+        90.0,
+        -140.4,
+        -183.6,
+        -216.0,
+        -237.6,
+        -255.6
+      ],
+      "inner_ratio": 0.78
+    },
+    "font": "Arial Unicode MS",
+    "matplotlib": "3.11.2"
+  },
+  {
+    "id": "donut-even",
+    "type": "环形图-均匀多项",
+    "layout": "donut",
+    "source": "donut-even.svg",
+    "statistics": {
+      "shares": [
+        0.18,
+        0.17,
+        0.15,
+        0.14,
+        0.13,
+        0.12,
+        0.11
+      ],
+      "angles": [
+        64.8,
+        61.2,
+        54.0,
+        50.400000000000006,
+        46.80000000000001,
+        43.19999999999999,
+        39.599999999999994
+      ],
+      "order": [
+        0,
+        6,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theta1": [
+        25.2,
+        -36.0,
+        -90.0,
+        -140.4,
+        -187.2,
+        -230.4,
+        -270.0
+      ],
+      "theta2": [
+        90.0,
+        25.2,
+        -36.0,
+        -90.0,
+        -140.4,
+        -187.2,
+        -230.4
+      ],
+      "inner_ratio": 0.78
+    },
+    "font": "Arial Unicode MS",
+    "matplotlib": "3.11.2"
+  }
+]

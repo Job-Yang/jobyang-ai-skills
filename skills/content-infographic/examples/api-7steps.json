@@ -1,0 +1,23 @@
+{
+  "layout": "pipeline",
+  "kicker": "序章 · 一次 API 调用里发生了什么",
+  "title": "一次 API 调用的 7 步",
+  "subtitle": "从按下回车到拿到回复，模型内部依次发生的七件事；前半段决定首字延迟，后半段决定吐字速度。",
+  "footer": "写给 RD 的 AI 底层原理 · 序章",
+  "data": {
+    "icons": ["doc", "db", "wave", "blocks", "bars", "loop", "check_doc"],
+    "steps": [
+      {"title": "Tokenizer 分词", "desc": "字符串切成 token 子词，再映射成整数 ID"},
+      {"title": "Embedding 查表", "desc": "token ID 查出高维向量，文字变数字"},
+      {"title": "加位置编码", "desc": "用 RoPE 把「排第几位」注入向量"},
+      {"title": "N 层 Transformer", "desc": "逐层做 Self-Attention 加 FFN"},
+      {"title": "Softmax 采样", "desc": "输出下一个 token 的概率分布并采样"},
+      {"title": "自回归循环", "desc": "新 token 拼回输入尾巴，逐词生成"},
+      {"title": "De-tokenize", "desc": "token 序列还原成人读得懂的字符串"}
+    ],
+    "span_labels": [
+      {"from": 0, "to": 3, "label": "Prefill → TTFT 首字延迟", "color": "blue"},
+      {"from": 4, "to": 6, "label": "Decode → TPS 吐字速度", "color": "accent"}
+    ]
+  }
+}

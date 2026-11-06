@@ -1,0 +1,23 @@
+{
+  "cards_version": "opc-radar-cards/v1",
+  "note": "每日雷达留痕卡片模板。渲染由 scripts/preflight.py render-card 完成；渲染出的 JSON 直接喂宿主 im 发送能力。技能包内不内置 token、不自建 app，发送动作归宿主。",
+  "no_opportunity": {
+    "title": "雷达 {date}：无强机会",
+    "elements": [
+      "结论：{conclusion}",
+      "近亲信号（判 RELATED/DUP，不深挖）：{related_list}",
+      "时效/证据不足（不立条）：{stale_list}",
+      "群通道状态：{group_status}"
+    ],
+    "required_fields": ["date", "conclusion", "related_list", "stale_list", "group_status"]
+  },
+  "strong_opportunity": {
+    "title": "雷达 {date}：发现 {n_strong} 条强机会，建议打分",
+    "elements": [
+      "强机会清单：{strong_list}",
+      "近亲信号（不深挖）：{related_list}",
+      "下一步：交 opportunity-scorecard 出卡"
+    ],
+    "required_fields": ["date", "n_strong", "strong_list", "related_list"]
+  }
+}

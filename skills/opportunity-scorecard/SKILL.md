@@ -1,12 +1,13 @@
 ---
 name: "opportunity-scorecard"
-description: "为产品想法取证，判断是否值得继续验证或投入；适用时用十维评分卡，脚本确定性算分。用户要评判想法、打分或判断机会值不值得做时调用。可独立运行；OPC 内服从既有审批和编排。"
-license: MIT
+description: "为产品想法取证并评分，判断值不值得继续验证。用户要评判想法、打分或判断机会（如「帮我给这个想法打个分」「这个机会值不值得做」）时调用；不发现机会、不写 PRD。综合分一律脚本机器产出。"
 ---
 
 # Opportunity Scorecard · 机会评估
 
-先读包内 `references/handoff.md`。版本 0.2.2；数值评分需要 Python 3.9+，无第三方依赖。独立调用不要求雷达文件，也不自动启动 PRD。
+先读包内 `references/handoff.md`。数值评分需要 Python 3.9+，无第三方依赖。独立调用不要求雷达文件，也不自动启动 PRD。
+
+版本口径（2026-10-16 起）：信封 schema 版本 0.2.0，由冻结的 `scripts/artifact_io.py` seal 出，代表信封结构；本 kit（技能包）版本 0.3.0，见 CHANGELOG.md。score.py 渲染卡片时信封写 0.2.0，不再用旧的 0.2.2——信封版本和 kit 版本不是一回事。
 
 ## 这个 kit 是什么
 
@@ -119,16 +120,30 @@ python3 scripts/score.py --input _scoring-<topic>.json --out assess-<topic>.md -
 ```
 opportunity-scorecard/
 ├── SKILL.md                    # 本文件：方法论 + JSON 契约 + 怎么跑
+├── CHANGELOG.md                # 版本记录
 ├── references/
 │   └── scoring-method.md       # 三层尺子的判据/权重/锚点（可移植方法论）
+├── examples/
+│   ├── scoring.synthetic.json        # 中性合成样例（全维 6.5）
+│   ├── scoring.foundation-reject.json # 边界：地基门命中，分数再高也 reject
+│   └── scoring.dark-horse.json        # 边界：机械分低但申辩有形状，dark_horse=true
+├── tests/test_scorecard_regression.py # 回归测试（python3 -m unittest discover -s tests -v）
 └── scripts/
-    ├── score.py                # 确定性打分内核
-    ├── artifact_io.py          # 独立校验、整包交接
-    └── scoring-rules.json      # 从内核生成，禁止手工维护第二份数值
+    ├── score.py                # 确定性打分内核（本包唯一可执行算法）
+    ├── artifact_io.py          # opc-envelope 0.2.0 公共副本：校验、整包交接（冻结）
+    ├── scoring-rules.json      # opc-envelope 0.2.0 公共副本（冻结）
+    ├── check_vendored.py       # 公共副本一致性自检
+    └── vendor-manifest.json    # 本包携带的公共副本清单
 ```
-> 评分算法只维护技能仓的 `scripts/score.py`，安装包和 OPC 内置副本由发布工具生成；OPC 的 `patterns/score.py` 只加载其固定副本。更新需显式发布，运行时不追随外部技能变化。包内 scoring-rules.json 从算法常量生成，不能手改第二份数值。
+> 评分算法只维护 `scripts/score.py` 的 DIMENSIONS 常量。`scoring-rules.json` 是冻结的公共副本，artifact_io 的交接包复算读它；改 DIMENSIONS 后必须由 canonical 统一重新生成并同步全部 5 个包，不能在本包手改第二份数值（本轮它冻结，不生成）。
 
-`examples/scoring.synthetic.json` 是可运行的合成样例，所有证据均标假设，仅供检查脚本和交接，不能作为市场建议。
+`examples/` 都是可运行的合成样例，所有证据均标假设，仅供检查脚本和交接，不能作为市场建议：`scoring.synthetic.json`（中性）、`scoring.foundation-reject.json`（地基门）、`scoring.dark-horse.json`（黑马逃生舱），以及三个对抗样例 `scoring.all-ten.json`（全 10 分不溢出）、`scoring.all-one.json`（全 1 分落 reject）、`scoring.contradictory.json`（维度矛盾+证据复用，验证不崩溃）。打分最小步长 0.5，6.75 这类小数会被脚本打回（见 `references/scoring-method.md`）。
+
+出卡末尾固定带"尺子置信度声明"：权重/档位/地基门/dark_horse 是先验经验判断、非统计显著，composite 只辅助排序——不要把它当数据结论引用。证据被脚本发现"同料复用"或"无链接不可验证措辞"时，卡片会列"证据警告"，需人复核真伪（脚本不判断真伪，只抓结构异常）。
+
+## 维护说明
+
+本包自带 opc-envelope 0.2.0 公共文件副本（`scripts/artifact_io.py`、`scripts/scoring-rules.json`，见 `scripts/vendor-manifest.json`），本轮冻结不改内容。发布前跑 `python3 scripts/check_vendored.py` 和 `python3 -m unittest discover -s tests -v`；与其他流水线包并排时跑 `python3 scripts/check_vendored.py --drift <各技能根>` 确认无漂移。
 
 ## 在不同环境怎么跑
 

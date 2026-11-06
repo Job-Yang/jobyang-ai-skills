@@ -13,7 +13,7 @@ from typing import Dict, List, Set, Tuple
 
 
 WORKSPACE_LAYOUT = "spatial-studio/v1"
-REQUIRED_STAGES = ("structure", "interaction", "visual-final", "delivery")
+REQUIRED_STAGES = ("structure", "interaction", "final", "delivery")
 REQUIRED_LEFT_RESOURCES = ("pages", "states", "assets", "outputs")
 REQUIRED_REVIEW_MODES = ("experience", "explain", "comment", "compare")
 REQUIRED_ROLES = {
@@ -103,7 +103,7 @@ def inspect_workspace(path: Path) -> Tuple[Dict, List[str]]:
     )
     if stage_ids != REQUIRED_STAGES:
         errors.append(
-            "stages 必须依次为 structure/interaction/visual-final/delivery"
+            "stages 必须依次为 structure/interaction/final/delivery"
         )
 
     for label, required, actual in (

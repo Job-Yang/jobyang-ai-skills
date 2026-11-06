@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import signal
 import threading
 from datetime import datetime, timezone
 from http import HTTPStatus
@@ -144,6 +145,21 @@ class ReviewHandler(SimpleHTTPRequestHandler):
     def _api_path(self) -> str:
         return unquote(urlparse(self.path).path)
 
+    def _origin_allowed(self) -> bool:
+        """写接口做同源白名单：只放行本服务页面和 file:// 直开，拦跨 Origin 网页 CSRF。
+
+        无 Origin（命令行/Agent 脚本）放行；Origin: null（file:// 或沙箱 iframe）放行；
+        其余 Origin 一律 403——用户浏览任意恶意网页时，它的 JS 不能往评审数据写假评论。
+        """
+        origin = self.headers.get("Origin")
+        if not origin or origin == "null":
+            return True
+        allowed = (
+            f"http://127.0.0.1:{self.server.server_port}",
+            f"http://localhost:{self.server.server_port}",
+        )
+        return origin in allowed
+
     def do_GET(self) -> None:  # noqa: N802
         path = self._api_path()
         if path == "/api/health":
@@ -170,6 +186,9 @@ class ReviewHandler(SimpleHTTPRequestHandler):
     def do_POST(self) -> None:  # noqa: N802
         if self._api_path() != "/api/comments":
             self._send_json({"error": "not_found"}, HTTPStatus.NOT_FOUND)
+            return
+        if not self._origin_allowed():
+            self._send_json({"error": "cross_origin_rejected"}, HTTPStatus.FORBIDDEN)
             return
         try:
             comment = self._read_json()
@@ -201,6 +220,9 @@ class ReviewHandler(SimpleHTTPRequestHandler):
 
     def do_PATCH(self) -> None:  # noqa: N802
         path = self._api_path()
+        if not self._origin_allowed():
+            self._send_json({"error": "cross_origin_rejected"}, HTTPStatus.FORBIDDEN)
+            return
         if path == "/api/workflow":
             try:
                 workflow = self._read_json()
@@ -298,14 +320,20 @@ def main() -> None:
         )
 
     server = ThreadingHTTPServer((args.bind, args.port), handler)
+    server.daemon_threads = True
+
+    def _graceful_shutdown(signum, frame):
+        # shutdown 必须在另一个线程跑：它会阻塞等 serve_forever 退出。
+        threading.Thread(target=server.shutdown, daemon=True).start()
+
+    signal.signal(signal.SIGTERM, _graceful_shutdown)
+    signal.signal(signal.SIGINT, _graceful_shutdown)
     print(f"[review-server] root={root}")
     print(f"[review-server] comments={data_file}")
     print(f"[review-server] workflow={workflow_file}")
     print(f"[review-server] url=http://{args.bind}:{args.port}/")
     try:
         server.serve_forever()
-    except KeyboardInterrupt:
-        pass
     finally:
         server.server_close()
 

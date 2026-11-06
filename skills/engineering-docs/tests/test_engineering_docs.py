@@ -20,23 +20,36 @@ SPEC.loader.exec_module(MODULE)
 
 COMPLETE_DOCUMENT = """# 示例方案
 
-## 建议采用托管存储
+> **方案主张：** 会话服务通过适配层使用托管存储，消除人工扩容。
+>
+> **当前范围：** 保持客户端协议不变，只改服务端存储链路。
 
-采用方案 A，并接受额外运维成本。
+当前存储无法自动应对流量峰值，请技术负责人批准方案，研发和测试据此实施。
 
-## 当前扩容依赖人工处理
+## 总体设计
 
-当前链路无法满足目标。
+会话服务先经过存储适配层，再读写托管存储。两个节点分别隔离协议变化和承担自动扩容。
 
-## 改动集中在存储适配层
+| 节点 | 责任 | 下钻 |
+| --- | --- | --- |
+| 存储适配层 | 保持客户端协议并切换存储 | 见“存储适配层” |
+| 托管存储 | 自动扩容并持久化会话 | 见“托管存储” |
 
-方案 A 在统一标准下更适合当前约束。
+## 人工扩容约束
 
-改造服务入口和存储适配层。
+当前链路依赖人工扩容，无法满足峰值期间的可用性目标。
 
-## 先压测和对账，再按租户灰度
+## 存储适配层
 
-按验证、监控、灰度和回退计划实施。
+适配层保持现有客户端协议，把读写切换到托管存储；超时返回可重试错误。
+
+## 托管存储
+
+托管存储承担自动扩容和会话持久化，代价是服务费用增加。
+
+## 发布与回退
+
+适配层和托管存储通过压测及双写对账后按租户灰度，异常时切回旧存储。
 """
 
 
@@ -128,6 +141,78 @@ def make_complete_record():
             "accepted_at": "2026-09-22T08:00:00+00:00",
         }
     )
+    record["reading"].update(
+        {
+            "orientation": {
+                "thesis": "会话服务通过适配层使用托管存储",
+                "why_now": "当前存储无法自动应对流量峰值",
+                "scope": "保持客户端协议不变，只改服务端存储链路",
+                "reader_actions": ["技术负责人批准", "研发和测试实施"],
+            },
+            "overview": {
+                "required": True,
+                "exemption_reason": "",
+                "heading": "总体设计",
+                "summary": "会话服务经适配层读写托管存储",
+                "format": "table",
+                "source_ref": "",
+                "nodes": [
+                    {
+                        "id": "adapter",
+                        "name": "存储适配层",
+                        "responsibility": "保持协议并切换存储",
+                        "relation": "调用托管存储",
+                        "chapter": "adapter",
+                    },
+                    {
+                        "id": "managed",
+                        "name": "托管存储",
+                        "responsibility": "自动扩容并持久化会话",
+                        "relation": "接收适配层读写",
+                        "chapter": "managed",
+                    },
+                ],
+            },
+            "chapters": [
+                {
+                    "id": "problem",
+                    "parent": "overview",
+                    "heading": "人工扩容约束",
+                    "summary": "现有链路无法满足峰值目标",
+                    "role": "orientation",
+                    "level": 2,
+                    "supports": [],
+                },
+                {
+                    "id": "adapter",
+                    "parent": "overview",
+                    "heading": "存储适配层",
+                    "summary": "保持客户端协议并切换存储",
+                    "role": "core",
+                    "level": 2,
+                    "supports": [],
+                },
+                {
+                    "id": "managed",
+                    "parent": "overview",
+                    "heading": "托管存储",
+                    "summary": "自动扩容并持久化会话",
+                    "role": "core",
+                    "level": 2,
+                    "supports": [],
+                },
+                {
+                    "id": "rollout",
+                    "parent": "overview",
+                    "heading": "发布与回退",
+                    "summary": "两个节点共同通过压测、对账和灰度交付",
+                    "role": "crosscutting",
+                    "level": 2,
+                    "supports": ["adapter", "managed"],
+                },
+            ],
+        }
+    )
     record["design"].update(
         {
             "system_boundary": ["会话服务", "托管存储"],
@@ -158,6 +243,44 @@ def make_complete_record():
         }
     record["reader_test"].update(
         {
+            "overview": {
+                "answers_locked": True,
+                "answers": {
+                    "problem": "人工扩容无法应对峰值",
+                    "top_nodes": "存储适配层和托管存储",
+                    "relations": "适配层调用托管存储",
+                    "expanded_nodes": "两个节点分别在正文展开",
+                    "reader_action": "批准方案并实施",
+                },
+                "completed": True,
+                "result": "pass",
+                "findings": [],
+            },
+            "outline": {
+                "answers_locked": True,
+                "answers": {
+                    "story": "人工扩容无法满足目标，因此改造存储适配层并通过压测、对账和灰度交付",
+                    "node_mapping": "存储适配层和托管存储一一对应主章节",
+                    "crosscutting": "发布与回退连接两个核心节点",
+                    "detail_routes": "当前示例不需要附录",
+                },
+                "completed": True,
+                "result": "pass",
+                "findings": [],
+            },
+            "drilldown": {
+                "answers_locked": True,
+                "sample_node": "adapter",
+                "answers": {
+                    "responsibility": "保持协议并切换存储",
+                    "boundary": "不改客户端协议",
+                    "children": "当前示例不继续拆分",
+                    "detail_routes": "当前示例不需要附录",
+                },
+                "completed": True,
+                "result": "pass",
+                "findings": [],
+            },
             "answers_locked": True,
             "approved_by": "技术负责人",
             "answers": {
@@ -181,11 +304,32 @@ class EngineeringDocsTests(unittest.TestCase):
             Path(__file__).resolve().parents[1] / "SKILL.md"
         ).read_text(encoding="utf-8")
 
-        self.assertIn("创建、更新和评审研发技术文档", skill_text)
-        self.assertIn("协作成文", skill_text)
-        self.assertIn("写技术方案、设计文档、RFC、ADR", skill_text)
+        self.assertIn("写、改、评审研发技术文档", skill_text)
+        self.assertIn("主次分明", skill_text)
+        self.assertIn("技术方案、系统设计、RFC、ADR", skill_text)
+        self.assertIn("平台通用", skill_text)
+        self.assertIn("发布到某个平台只是可选的最后一步", skill_text)
         self.assertIn("纯润色", skill_text)
         self.assertIn("非技术文档不用", skill_text)
+
+    def test_engineering_diagrams_are_owned_even_without_explicit_invocation(self):
+        skill_text = (
+            Path(__file__).resolve().parents[1] / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        # Ownership must trigger on the task ("drawing in a doc"), not on being named.
+        self.assertIn("不需要用户点名", skill_text)
+        self.assertIn("更新已有文档", skill_text)
+        # Engineering-relationship diagrams are diagram_kit territory ...
+        self.assertIn("diagram_kit", skill_text)
+        # ... and must not silently route to generic visualization, hand-written
+        # mermaid, or a whiteboard DSL.
+        self.assertIn("手写 mermaid", skill_text)
+        self.assertIn("从零摆节点", skill_text)
+        self.assertIn("通用可视化", skill_text)
+        self.assertIn("发布适配器", skill_text)
+        portable = (Path(__file__).resolve().parents[1] / "references"
+                    / "portable-delivery.md").read_text(encoding="utf-8")
+        self.assertIn("图的归属", portable)
 
     def test_coauthoring_is_integrated_without_mandatory_ceremony(self):
         skill_dir = Path(__file__).resolve().parents[1]
@@ -252,8 +396,11 @@ class EngineeringDocsTests(unittest.TestCase):
 
             self.assertTrue(report.ok, report.errors)
             self.assertEqual(record["document"]["status"], "draft")
+            self.assertEqual(record["schema_version"], 3)
             self.assertEqual(len(record["gates"]), 13)
-            self.assertIn("## 建议与依据", document_text)
+            self.assertIn("> **方案主张：**", document_text)
+            self.assertIn("> **当前范围：**", document_text)
+            self.assertIn("总体设计", document_text)
             self.assertNotIn("非目标", document_text)
 
     def test_complete_record_passes_implementable_validation(self):
@@ -265,6 +412,437 @@ class EngineeringDocsTests(unittest.TestCase):
         )
 
         self.assertTrue(report.ok, report.errors)
+
+    def test_orientation_is_required_for_new_formal_documents(self):
+        record = make_complete_record()
+        document = COMPLETE_DOCUMENT.replace(
+            "> **方案主张：** 会话服务通过适配层使用托管存储，消除人工扩容。\n>\n"
+            "> **当前范围：** 保持客户端协议不变，只改服务端存储链路。\n\n",
+            "",
+        )
+        report = MODULE.validate_record(record, document, "implementable")
+
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("开场缺少" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_generic_heading_is_rejected_from_new_formal_documents(self):
+        record = make_complete_record()
+        record["reading"]["chapters"][0]["heading"] = "背景"
+        document = COMPLETE_DOCUMENT.replace(
+            "## 人工扩容约束",
+            "## 背景",
+        )
+        report = MODULE.validate_record(record, document, "implementable")
+
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("标题信息不足" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_context_dependent_heading_is_rejected(self):
+        record = make_complete_record()
+        record["reading"]["chapters"][0]["heading"] = "三条线在版本中汇合"
+        document = COMPLETE_DOCUMENT.replace(
+            "## 人工扩容约束",
+            "## 三条线在版本中汇合",
+        )
+        report = MODULE.validate_record(record, document, "implementable")
+
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("标题信息不足" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_empty_group_heading_is_rejected(self):
+        record = make_complete_record()
+        document = COMPLETE_DOCUMENT.replace(
+            "## 存储适配层\n\n适配层保持现有客户端协议，把读写切换到托管存储；超时返回可重试错误。",
+            "## 存储适配层\n\n### 输入\n\n适配层接收现有协议。",
+        )
+        report = MODULE.validate_record(record, document, "implementable")
+
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("黑盒摘要" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_overview_nodes_are_required_for_formal_documents(self):
+        record = make_complete_record()
+        record["reading"]["overview"]["nodes"] = []
+        report = MODULE.validate_record(
+            record,
+            COMPLETE_DOCUMENT,
+            "implementable",
+        )
+
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("总体模型必须包含节点" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_overview_reader_failure_blocks_implementable(self):
+        record = make_complete_record()
+        record["reader_test"]["overview"]["result"] = "fail"
+        report = MODULE.validate_record(
+            record,
+            COMPLETE_DOCUMENT,
+            "implementable",
+        )
+
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("overview 结果必须为 pass" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_overview_outline_and_drilldown_tests_block_review(self):
+        record = make_complete_record()
+        record["document"]["status"] = "in_review"
+        record["reader_test"]["overview"]["completed"] = False
+        record["reader_test"]["outline"]["result"] = "fail"
+        record["reader_test"]["drilldown"]["result"] = "fail"
+        report = MODULE.validate_record(
+            record,
+            COMPLETE_DOCUMENT,
+            "in_review",
+        )
+
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("overview 尚未完成" in error for error in report.errors),
+            report.errors,
+        )
+        self.assertTrue(
+            any("outline 结果必须为 pass" in error for error in report.errors),
+            report.errors,
+        )
+        self.assertTrue(
+            any("drilldown 结果必须为 pass" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_readability_audit_exposes_scan_path_and_density(self):
+        audit = MODULE.readability_audit(
+            COMPLETE_DOCUMENT,
+            make_complete_record(),
+        )
+
+        self.assertTrue(audit["orientation"]["has_thesis"])
+        self.assertTrue(audit["orientation"]["has_scope"])
+        self.assertEqual([], audit["generic_headings"])
+        self.assertEqual([], audit["hierarchy_skips"])
+        self.assertEqual(
+            [
+                "示例方案",
+                "总体设计",
+                "人工扩容约束",
+                "存储适配层",
+                "托管存储",
+                "发布与回退",
+            ],
+            [item["text"] for item in audit["headings"]],
+        )
+        self.assertTrue(audit["overview"]["found"])
+        self.assertEqual(2, audit["overview"]["nodes"])
+
+    def test_contextual_h3_can_use_a_short_local_label(self):
+        record = make_complete_record()
+        record["reading"]["chapters"].append(
+            {
+                "id": "adapter-input",
+                "parent": "adapter",
+                "heading": "输入",
+                "summary": "接收现有客户端协议",
+                "role": "detail",
+                "level": 3,
+                "supports": [],
+            }
+        )
+        document = COMPLETE_DOCUMENT.replace(
+            "适配层保持现有客户端协议，把读写切换到托管存储；超时返回可重试错误。",
+            "适配层保持现有客户端协议，把读写切换到托管存储；超时返回可重试错误。\n\n"
+            "### 输入\n\n接收现有客户端协议。",
+        )
+        report = MODULE.validate_record(record, document, "implementable")
+
+        self.assertTrue(report.ok, report.errors)
+
+    def test_long_h2_is_rejected_instead_of_forcing_a_sentence_into_navigation(self):
+        record = make_complete_record()
+        long_heading = "存储适配层负责保持现有客户端协议并把全部读写安全切换到托管存储"
+        record["reading"]["overview"]["nodes"][0]["name"] = long_heading
+        record["reading"]["chapters"][1]["heading"] = long_heading
+        document = COMPLETE_DOCUMENT.replace(
+            "| 存储适配层 |",
+            f"| {long_heading} |",
+        ).replace(
+            "## 存储适配层",
+            f"## {long_heading}",
+        )
+        report = MODULE.validate_record(record, document, "implementable")
+
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("H1/H2 过长" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_core_chapter_must_map_to_an_overview_node(self):
+        record = make_complete_record()
+        record["reading"]["chapters"].append(
+            {
+                "id": "orphan",
+                "parent": "overview",
+                "heading": "孤立核心章节",
+                "summary": "没有出现在总体模型中",
+                "role": "core",
+                "level": 2,
+                "supports": [],
+            }
+        )
+        document = COMPLETE_DOCUMENT + (
+            "\n## 孤立核心章节\n\n这段没有对应总体节点。\n"
+        )
+        report = MODULE.validate_record(record, document, "implementable")
+
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("不属于总体模型" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_overview_must_show_every_node_with_same_chapter_name(self):
+        record = make_complete_record()
+        record["reading"]["overview"]["nodes"][0]["name"] = "协议转换层"
+        report = MODULE.validate_record(
+            record,
+            COMPLETE_DOCUMENT,
+            "implementable",
+        )
+
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("名称必须与主章节标题一致" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_overview_body_must_name_every_node(self):
+        record = make_complete_record()
+        document = COMPLETE_DOCUMENT.replace(
+            "| 托管存储 | 自动扩容并持久化会话 | 见“托管存储” |\n",
+            "",
+        ).replace(
+            "会话服务先经过存储适配层，再读写托管存储。两个节点分别隔离协议变化和承担自动扩容。",
+            "会话服务先经过存储适配层，再读写第二节点。",
+        )
+        report = MODULE.validate_record(record, document, "implementable")
+
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("总体模型正文未展示节点" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_core_chapter_order_must_follow_overview(self):
+        record = make_complete_record()
+        adapter = (
+            "## 存储适配层\n\n"
+            "适配层保持现有客户端协议，把读写切换到托管存储；超时返回可重试错误。\n\n"
+        )
+        managed = (
+            "## 托管存储\n\n"
+            "托管存储承担自动扩容和会话持久化，代价是服务费用增加。\n\n"
+        )
+        document = COMPLETE_DOCUMENT.replace(adapter + managed, managed + adapter)
+        report = MODULE.validate_record(record, document, "implementable")
+
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("核心章节顺序" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_multi_node_design_cannot_use_only_prose_as_overview(self):
+        record = make_complete_record()
+        record["reading"]["overview"]["format"] = "prose"
+        report = MODULE.validate_record(
+            record,
+            COMPLETE_DOCUMENT,
+            "implementable",
+        )
+
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("不能只用连续文字" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_overview_must_appear_before_core_chapters(self):
+        record = make_complete_record()
+        overview = (
+            "## 总体设计\n\n"
+            "会话服务先经过存储适配层，再读写托管存储。两个节点分别隔离协议变化和承担自动扩容。\n\n"
+            "| 节点 | 责任 | 下钻 |\n"
+            "| --- | --- | --- |\n"
+            "| 存储适配层 | 保持客户端协议并切换存储 | 见“存储适配层” |\n"
+            "| 托管存储 | 自动扩容并持久化会话 | 见“托管存储” |\n\n"
+        )
+        document = COMPLETE_DOCUMENT.replace(overview, "")
+        document = document.replace(
+            "## 发布与回退",
+            overview + "## 发布与回退",
+        )
+        report = MODULE.validate_record(record, document, "implementable")
+
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("总体模型必须出现在" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_crosscutting_chapter_must_name_supported_nodes(self):
+        record = make_complete_record()
+        record["reading"]["chapters"][-1]["supports"] = ["unknown"]
+        report = MODULE.validate_record(
+            record,
+            COMPLETE_DOCUMENT,
+            "implementable",
+        )
+
+        self.assertFalse(report.ok)
+        self.assertTrue(
+            any("未知节点" in error for error in report.errors),
+            report.errors,
+        )
+
+    def test_simple_document_can_exempt_a_separate_overview_with_reason(self):
+        record = make_complete_record()
+        record["reading"]["overview"].update(
+            {
+                "required": False,
+                "exemption_reason": "单点配置修改，两段正文即可说明",
+                "heading": "",
+                "summary": "只调整存储适配层超时",
+                "format": "prose",
+                "source_ref": "",
+                "nodes": [],
+            }
+        )
+        record["reading"]["chapters"] = [
+            {
+                "id": "change",
+                "parent": "overview",
+                "heading": "存储超时调整",
+                "summary": "仅调整超时，不改变协议",
+                "role": "orientation",
+                "level": 2,
+                "supports": [],
+            }
+        ]
+        document = """# 存储超时调整
+
+> **方案主张：** 延长存储超时，减少峰值误判。
+>
+> **当前范围：** 只改超时时间，不改协议。
+
+## 存储超时调整
+
+本次只调整超时参数，两段正文即可说明，不需要独立架构总览。
+"""
+        report = MODULE.validate_record(record, document, "implementable")
+
+        self.assertTrue(report.ok, report.errors)
+
+    def test_schema_v2_remains_compatible(self):
+        record = make_complete_record()
+        record["schema_version"] = 2
+        record["reading"] = {
+            "first_screen": {
+                "decision": "采用托管存储",
+                "why_now": "人工扩容无法满足目标",
+                "boundary": "保持客户端协议不变",
+                "reader_actions": ["批准并实施"],
+            },
+            "named_parts": [],
+            "section_map": [
+                {
+                    "heading": item["heading"],
+                    "point": item["summary"],
+                    "layer": "detail" if item["role"] == "appendix" else "main",
+                }
+                for item in make_complete_record()["reading"]["chapters"]
+            ] + [
+                {
+                    "heading": "总体设计",
+                    "point": "适配层连接托管存储",
+                    "layer": "main",
+                }
+            ],
+        }
+        record["reader_test"] = {
+            "first_screen": {
+                "answers_locked": True,
+                "answers": {
+                    "decision": "采用托管存储",
+                    "why_now": "人工扩容",
+                    "boundary": "协议不变",
+                    "named_parts": "两个节点",
+                    "reader_action": "批准",
+                },
+                "completed": True,
+                "result": "pass",
+                "findings": [],
+            },
+            "mainline": {
+                "answers_locked": True,
+                "answers": {
+                    "story": "适配层连接托管存储",
+                    "detail_routes": "无附录",
+                },
+                "completed": True,
+                "result": "pass",
+                "findings": [],
+            },
+            "answers_locked": True,
+            "approved_by": "技术负责人",
+            "answers": {f"Q{i}": "已回答" for i in range(1, 6)},
+            "completed": True,
+            "result": "pass",
+            "findings": [],
+        }
+        document = COMPLETE_DOCUMENT.replace("方案主张", "结论").replace(
+            "当前范围", "读者动作"
+        )
+        report = MODULE.validate_record(record, document, "implementable")
+
+        self.assertTrue(report.ok, report.errors)
+
+    def test_schema_v1_remains_compatible_with_warning(self):
+        record = make_complete_record()
+        record["schema_version"] = 1
+        del record["reading"]
+        del record["reader_test"]["overview"]
+        del record["reader_test"]["outline"]
+        del record["reader_test"]["drilldown"]
+
+        report = MODULE.validate_record(
+            record,
+            COMPLETE_DOCUMENT,
+            "implementable",
+        )
+
+        self.assertTrue(report.ok, report.errors)
+        self.assertTrue(
+            any("schema v1" in warning for warning in report.warnings),
+            report.warnings,
+        )
 
     def test_record_without_visuals_remains_compatible(self):
         record = make_complete_record()
@@ -299,7 +877,8 @@ class EngineeringDocsTests(unittest.TestCase):
             self.assertIn(f"### {heading}", guidance)
         self.assertIn("一图一问", guidance)
         self.assertIn("真实渲染", guidance)
-        self.assertIn("680 至 900 像素", guidance)
+        self.assertIn("800 像素文档宽度", guidance)
+        self.assertNotIn("680 至 900 像素", guidance)
         self.assertIn("6 条生命线", guidance)
         self.assertIn("70% 以下", guidance)
         self.assertIn("loop + alt + par", guidance)
@@ -307,11 +886,12 @@ class EngineeringDocsTests(unittest.TestCase):
         self.assertIn("每张图都要有自己的图前说明和图后结论", guidance)
         self.assertIn("属于内部制图过程", guidance)
         self.assertIn("不能写成“消费者组”", guidance)
-        self.assertIn("高度超过宽度两倍", guidance)
+        self.assertIn("高宽比超过 1.3", guidance)
         self.assertIn("edgeLabelBackground", guidance)
         self.assertIn("返回路径也要保持同一调用边界", guidance)
         self.assertIn("不能用分组边框代替内部节点", guidance)
-        self.assertIn("主要文字不得小于约 12 像素", guidance)
+        self.assertIn("主要文字不小于约 12 像素", guidance)
+        self.assertIn("辅助文字不小于约 9 像素", guidance)
         self.assertIn("不能从 `Inventory`、`Billing` 等名称自行推出", guidance)
         self.assertIn("中文通常不超过 8 个字", guidance)
         self.assertIn("不能出现孤立括号或尾字换行", guidance)
@@ -626,6 +1206,83 @@ flowchart LR
             self.assertEqual(MODULE.transition_command(transition_args), 0)
             rejected = MODULE.load_json(record_path)
             self.assertEqual(rejected["document"]["status"], "rejected")
+
+
+class HeadingStyleTests(unittest.TestCase):
+    """Titles are short topics (TOC directions), never numbered steps or sentences,
+    and conversation provenance / personal data never leak into the document."""
+
+    DOC = (
+        "# 示例方案\n\n结论：现在改造，降低发布故障。\n\n"
+        "## 聚合校验\n\n本章给出结论。\n\n"
+        "## 发布与回退\n\n回退策略明确。\n\n"
+        "## 数据采集\n\n采集口径如下。\n"
+    )
+
+    def _audit(self, document):
+        return MODULE.readability_audit(document)
+
+    def test_short_keyword_headings_pass(self):
+        audit = self._audit(self.DOC)
+        self.assertEqual(audit["numbered_headings"], [])
+        self.assertEqual(audit["sentence_headings"], [])
+        self.assertEqual(audit["conversation_leaks"], [])
+        self.assertEqual(audit["personal_leaks"], [])
+        for title in ("聚合校验", "tag T+1", "发布与回退", "数据采集", "背景与目标", "缓存组件明细"):
+            self.assertFalse(MODULE._heading_reads_like_sentence(title), title)
+
+    def test_sentence_headings_from_real_edits_are_rejected(self):
+        for title in (
+            "聚合校验是什么，为什么会被下掉",
+            "tag T+1 的两条数据线怎么对照验收",
+            "一条指标数据的旅程：从研发按一次构建，到看板上一个点",
+            "被裁业务在手机上到底表现成什么样",
+        ):
+            doc = self.DOC.replace("## 聚合校验", f"## {title}")
+            audit = self._audit(doc)
+            self.assertIn(title, audit["sentence_headings"], title)
+
+    def test_numbered_headings_are_rejected(self):
+        for title in ("第3步 数据采集", "1. 数据采集", "一、数据采集", "(2) 发布与回退"):
+            doc = self.DOC.replace("## 聚合校验", f"## {title}")
+            audit = self._audit(doc)
+            self.assertIn(title, audit["numbered_headings"], title)
+
+    def test_conversation_provenance_is_rejected(self):
+        for line in (
+            "老板和同学问这个数据哪来的。",
+            "同事说先回滚再排查。",
+            "你之前让我对比两条数据线。",
+        ):
+            audit = self._audit(self.DOC + "\n" + line + "\n")
+            self.assertTrue(audit["conversation_leaks"], line)
+
+    def test_role_words_alone_are_not_personal_data(self):
+        audit = self._audit(self.DOC + "\n请同事评审，领导同意后发布。\n")
+        self.assertEqual(audit["conversation_leaks"], [])
+        self.assertEqual(audit["personal_leaks"], [])
+
+    def test_personal_info_is_rejected(self):
+        # 构造隐私格式测试数据，不保存真实电话或邮箱。
+        phone = "138" + "12345678"
+        email = "tester" + "@" + "example.invalid"
+        for line, needle in (
+            (f"联系 {phone} 处理。", phone),
+            (f"发 {email}。", "@"),
+            ("找李明老师确认口径。", "李明老师"),
+        ):
+            audit = self._audit(self.DOC + "\n" + line + "\n")
+            self.assertTrue(any(needle in p for p in audit["personal_leaks"]), line)
+
+    def test_validate_record_surfaces_heading_and_leak_errors(self):
+        record = make_complete_record()
+        title = "聚合校验是什么，为什么会被下掉"
+        record["reading"]["overview"]["nodes"][0]["name"] = "聚合校验"
+        record["reading"]["chapters"][1]["heading"] = "聚合校验"
+        document = COMPLETE_DOCUMENT.replace("## 存储适配层", f"## {title}")
+        report = MODULE.validate_record(record, document, "implementable")
+        self.assertFalse(report.ok)
+        self.assertTrue(any("短关键词" in e for e in report.errors), report.errors)
 
 
 if __name__ == "__main__":

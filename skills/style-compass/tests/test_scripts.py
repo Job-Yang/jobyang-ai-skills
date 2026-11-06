@@ -2,13 +2,16 @@
 """style-compass 脚本测试。运行：python3 -m unittest discover -s tests -v（在技能根目录）。"""
 
 import copy
+import http.client
 import json
 import os
 import re
 import subprocess
 import sys
 import tempfile
+import threading
 import unittest
+from http.server import ThreadingHTTPServer
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -18,6 +21,7 @@ sys.path.insert(0, str(SCRIPTS))
 import design_memory  # noqa: E402
 import export_tokens  # noqa: E402
 import lint_design  # noqa: E402
+import review_server  # noqa: E402
 import token_utils  # noqa: E402
 import validate_stage_contract  # noqa: E402
 
@@ -113,7 +117,7 @@ def contract_html(contract):
     ids = {name: [item["id"] for item in contract[name]] for name in ("pages", "journeys", "actions", "states")}
     parts = [section("interaction", "base", ids["pages"], ids["journeys"], ids["actions"], ids["states"])]
     for variant in contract["variants"]:
-        parts.append(section("visual-direction", variant["id"], variant["pageIds"], variant["journeyIds"],
+        parts.append(section("direction", variant["id"], variant["pageIds"], variant["journeyIds"],
                              variant["actionIds"], variant["stateIds"]))
     return '<!doctype html><html lang="zh-CN"><body>' + "".join(parts) + "</body></html>"
 
@@ -280,7 +284,7 @@ class LintDesignTest(unittest.TestCase):
 <button class="shell"><svg></svg></button>
 <article data-review-artboard="s1" data-review-stage="structure" data-review-variant="base">
 <p style="color:#999">灰阶线框里的说明文字，灰阶线框里的说明文字。</p><p style="color:#0B7A75">彩色</p></article>
-<article data-review-artboard="v1" data-review-stage="visual-final" data-review-variant="direction-a">
+<article data-review-artboard="v1" data-review-stage="final" data-review-variant="direction-a">
 <p style="color:#C23B3B">视觉方案里的颜色，不算结构关的问题。</p></article></body></html>"""
         report = lint_design.lint_page(page, "structure", None)
         gray = [f for f in report["findings"] if f["rule"] == "GRAY-PHASE-COLOR"]
@@ -652,6 +656,16 @@ class StageContractTest(unittest.TestCase):
         self.assertTrue(report["passed"], report["errors"])
         self.assertEqual(report["warnings"], [])
 
+    def test_legacy_boundary_names_no_longer_pass(self):
+        """旧拼写 visualDirection/visualFinal 已废弃：契约必须用 direction/final，不得静默通过。"""
+        legacy = copy.deepcopy(EXAMPLE_CONTRACT)
+        boundaries = legacy["stageBoundaries"]
+        boundaries["visualDirection"] = boundaries.pop("direction")
+        boundaries["visualFinal"] = boundaries.pop("final")
+        report = validate_stage_contract.validate(legacy, contract_html(legacy), "direction")
+        self.assertFalse(report["passed"], report["errors"])
+        self.assertIn("缺少阶段边界：direction", "\n".join(report["errors"]))
+
     def test_legacy_contract_still_passes(self):
         legacy = copy.deepcopy(EXAMPLE_CONTRACT)
         legacy["requirements"] = legacy["requirements"][:1]
@@ -719,6 +733,20 @@ class WorkbenchRegressionTest(unittest.TestCase):
                 self.assertNotIn("Traceback", result.stderr)
             self.assertEqual(sorted(p.name for p in tmp.iterdir()), ["bad.json", "page.html"])
 
+    def test_compare_variants_rejects_cross_dir_by_default(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            (tmp / "variant").mkdir()
+            (tmp / "variant" / "a.html").write_text("<!doctype html><html><body>a</body></html>", encoding="utf-8")
+            out = tmp / "out" / "compare.html"
+            out.parent.mkdir()
+            rejected = run("compare_variants.py", tmp / "variant" / "a.html", "-o", out)
+            self.assertNotEqual(rejected.returncode, 0)
+            self.assertFalse(out.exists())
+            allowed = run("compare_variants.py", tmp / "variant" / "a.html",
+                           "-o", tmp / "variant" / "compare.html")
+            self.assertEqual(allowed.returncode, 0, allowed.stdout + allowed.stderr)
+
     def test_export_spec_reads_linked_tokens(self):
         with tempfile.TemporaryDirectory() as tmp:
             tmp = Path(tmp)
@@ -781,6 +809,90 @@ class WorkbenchRegressionTest(unittest.TestCase):
                 result = run("export_spec.py", page, "--tokens", tokens_arg, "-o", other / "s.md")
                 self.assertEqual(result.returncode, 2, result.stdout)
                 self.assertNotIn("Traceback", result.stderr)
+
+
+class ReviewServerSecurityTest(unittest.TestCase):
+    """评审服务：同源写接口白名单、跨 Origin 拦截、优雅停机后端口释放。"""
+
+    def start_server(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name) / "proto"
+        root.mkdir()
+        (root / "index.html").write_text("<!doctype html><html><body></body></html>", encoding="utf-8")
+        data_file = root / "review-data" / "comments.json"
+        workflow_file = root / "review-data" / "workflow.json"
+
+        def factory(*args, **kwargs):
+            return review_server.ReviewHandler(
+                *args, directory=str(root), data_file=data_file,
+                workflow_file=workflow_file, **kwargs)
+
+        server = ThreadingHTTPServer(("127.0.0.1", 0), factory)
+        server.daemon_threads = True
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        return server, server.server_address[1]
+
+    def request(self, method, path, body=None, origin=None):
+        server, port = self._server
+        conn = http.client.HTTPConnection("127.0.0.1", port, timeout=5)
+        headers = {"Content-Type": "application/json"}
+        if origin is not None:
+            headers["Origin"] = origin
+        payload = json.dumps(body) if body is not None else "{}"
+        conn.request(method, path, body=payload, headers=headers)
+        resp = conn.getresponse()
+        resp.read()
+        conn.close()
+        return resp.status
+
+    def setUp(self):
+        self._server = self.start_server()
+
+    def tearDown(self):
+        server, _ = self._server
+        server.shutdown()
+        server.server_close()
+
+    def test_cross_origin_post_rejected(self):
+        status = self.request("POST", "/api/comments",
+                              body={"id": "c1", "projectId": "p", "stageId": "final",
+                                    "pageId": "home", "anchor": "x", "text": "污染评论"},
+                              origin="https://evil.example")
+        self.assertEqual(status, 403)
+
+    def test_cross_origin_patch_rejected(self):
+        status = self.request("PATCH", "/api/workflow",
+                              body={"stages": {}, "selections": {}},
+                              origin="https://evil.example")
+        self.assertEqual(status, 403)
+
+    def test_same_origin_post_ok(self):
+        _, port = self._server
+        status = self.request("POST", "/api/comments",
+                              body={"id": "c1", "projectId": "p", "stageId": "final",
+                                    "pageId": "home", "anchor": "x", "text": "好"},
+                              origin=f"http://127.0.0.1:{port}")
+        self.assertEqual(status, 201)
+
+    def test_no_origin_post_ok(self):
+        # Agent 脚本/curl 不带 Origin，写接口必须照常可用。
+        status = self.request("POST", "/api/comments",
+                              body={"id": "c2", "projectId": "p", "stageId": "final",
+                                    "pageId": "home", "anchor": "x", "text": "命令行评论"})
+        self.assertEqual(status, 201)
+
+    def test_port_released_after_shutdown(self):
+        import socket
+        server, port = self._server
+        server.shutdown()
+        server.server_close()
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            sock.bind(("127.0.0.1", port))
+        finally:
+            sock.close()
 
 
 if __name__ == "__main__":

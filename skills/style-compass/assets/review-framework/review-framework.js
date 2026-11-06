@@ -621,7 +621,7 @@
       els.confirmButton.disabled = Boolean(waiting || delivered);
       if (delivered) {
         els.confirmButton.textContent = "设计交付已批准";
-      } else if (stage.id === "visual-final" && state.contract?.phase === "direction") {
+      } else if (stage.id === "final" && state.contract?.phase === "direction") {
         els.confirmButton.textContent = "确认方向，继续全量设计";
       } else {
         els.confirmButton.textContent = waiting
@@ -1560,7 +1560,7 @@
       showToast("当前关卡还没有画板内容，不能确认。");
       return;
     }
-    if (stage.id === "visual-final" && state.contract?.phase === "direction") {
+    if (stage.id === "final" && state.contract?.phase === "direction") {
       const selected = state.workflow.selections?.[stage.id]?.variantId;
       if (!selected) {
         showToast("先单独查看并选择一个高保真方向。");

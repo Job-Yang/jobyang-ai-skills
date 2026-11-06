@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="1120" viewBox="0 0 390 1120" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Source Han Sans SC, sans-serif">
+  <rect width="390" height="1120" fill="#ffffff"/>
+  <text x="20" y="30" font-size="16" font-weight="600" fill="#2b2b2b">一条链讲到底，不摆要点清单</text>
+  <text x="20" y="50" font-size="11.5" fill="#666666">青绿＝逻辑链　琥珀＝召回翻车后修的规则　灰虚＝例外与归属</text>
+
+  <rect x="20" y="66" width="350" height="60" rx="9" fill="#2a9d8f" stroke="#1f5f58" stroke-width="2"/>
+  <text x="36" y="90" font-size="13" font-weight="600" fill="#ffffff">先讲问题，不讲术语</text>
+  <text x="36" y="110" font-size="11.5" fill="#dff3f0">开头大白话说清这事在解决什么，甩出名词是错的</text>
+
+  <g stroke="#555555" stroke-width="1.5" fill="#555555">
+    <line x1="195" y1="126" x2="195" y2="148"/><polygon points="195,151 191,144 199,144"/>
+  </g>
+
+  <rect x="20" y="154" width="350" height="60" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="36" y="178" font-size="13" font-weight="600" fill="#1f5f58">朴素做法是什么，为什么不够用</text>
+  <text x="36" y="198" font-size="11.5" fill="#333333">制造张力：每一段都是上一段的自然结果</text>
+
+  <g stroke="#555555" stroke-width="1.5" fill="#555555">
+    <line x1="195" y1="214" x2="195" y2="236"/><polygon points="195,239 191,232 199,232"/>
+  </g>
+
+  <rect x="20" y="242" width="350" height="60" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="36" y="266" font-size="13" font-weight="600" fill="#1f5f58">真正的做法是什么，机制讲开</text>
+  <text x="36" y="286" font-size="11.5" fill="#333333">硬核转折处自然点破误区，比喻融进句子</text>
+
+  <g stroke="#555555" stroke-width="1.5" fill="#555555">
+    <line x1="195" y1="302" x2="195" y2="324"/><polygon points="195,327 191,320 199,320"/>
+  </g>
+
+  <rect x="20" y="330" width="350" height="60" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="36" y="354" font-size="13" font-weight="600" fill="#1f5f58">这么做又带来什么新麻烦</text>
+  <text x="36" y="374" font-size="11.5" fill="#333333">黑盒如实说黑盒，事实和推测分开讲，绝不编造</text>
+
+  <g stroke="#555555" stroke-width="1.5" fill="#555555">
+    <line x1="195" y1="390" x2="195" y2="412"/><polygon points="195,415 191,408 199,408"/>
+  </g>
+
+  <rect x="20" y="418" width="350" height="60" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="36" y="442" font-size="13" font-weight="600" fill="#1f5f58">收口：一两句话让外行也能转述</text>
+  <text x="36" y="462" font-size="11.5" fill="#333333">脚手架（费曼检验、难理解点牌子）成品里全拆掉</text>
+
+  <rect x="20" y="500" width="350" height="96" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.8"/>
+  <text x="36" y="524" font-size="12.5" font-weight="600" fill="#7a5a12">召回翻车一：对外文章被错派畅想</text>
+  <text x="36" y="544" font-size="11.5" fill="#333333">「把 Raft 讲透写成分享文」被一刀切派给汤山，</text>
+  <text x="36" y="562" font-size="11.5" fill="#333333">0.2.1 改成按文体三分：分享归 talk-smith、</text>
+  <text x="36" y="580" font-size="11.5" fill="#333333">观点归 cuihuo、畅想归 tangshan</text>
+
+  <rect x="20" y="608" width="350" height="112" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.8"/>
+  <text x="36" y="632" font-size="12.5" font-weight="600" fill="#7a5a12">召回翻车二：对内调研被平台裸写</text>
+  <text x="36" y="652" font-size="11.5" fill="#333333">Ponytail、提示词这类对内调研成稿没走费曼，</text>
+  <text x="36" y="670" font-size="11.5" fill="#333333">被平台技能直接写成文档。0.2.2 钉死：</text>
+  <text x="36" y="688" font-size="11.5" fill="#333333">任何技术调研无论对内对外都先过费曼，</text>
+  <text x="36" y="706" font-size="11.5" fill="#333333">平台只承载写入，不决定骨架；调研不再因指令短就跳过</text>
+
+  <rect x="20" y="736" width="350" height="120" rx="9" fill="#f4f5f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="36" y="760" font-size="12" fill="#5f6368">例外与归属</text>
+  <text x="36" y="782" font-size="11.5" fill="#5f6368">例外：三句话能讲清的单点快答，不启动研究流程；</text>
+  <text x="36" y="800" font-size="11.5" fill="#5f6368">纯翻译润色、文件搬运不走本技能。</text>
+  <text x="36" y="824" font-size="11.5" fill="#5f6368">成稿归属：人味传播的分享给 talk-smith，</text>
+  <text x="36" y="842" font-size="11.5" fill="#5f6368">扎观点给 cuihuo，评审方案给 engineering-docs；</text>
+  <text x="36" y="860" font-size="11.5" fill="#5f6368">成稿归谁，调研环节仍先过本技能。</text>
+</svg>

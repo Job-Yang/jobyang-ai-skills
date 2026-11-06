@@ -27,7 +27,7 @@ A subtler failure is a document that looks complete but moves no decision forwar
 This skill keeps three objects aligned:
 
 - **Engineering judgment:** facts, inferences, assumptions, decisions, and unresolved questions stay distinct.
-- **Reader-facing document:** the structure follows the decision the reader must make, not the internal checklist.
+- **Reader-facing document:** a Level-1 model comes first, main sections map to its nodes, and every section summarizes itself before selective drill-down.
 - **Verifiable delivery:** diagrams, interfaces, risks, acceptance, rollout, and rollback must describe the same system.
 
 This skill builds the evidence and decision first, then writes the document. It supports:
@@ -46,9 +46,19 @@ Context gathering, iterative refinement, and independent reader testing are part
 
 The internal decision model is separate from the reader-facing document. Evidence ledgers and G0-G12 gates stay internal by default. The final structure follows the reader's actual questions; goals, boundaries, and option comparisons appear only when they help the decision.
 
+Before drafting, the skill builds an internal structure tree: governing claim, scope, top-level nodes and relationships, node-to-section mapping, section summaries, and drill-down routes. Completeness prevents omissions; the tree prevents the completeness checklist from becoming a wall of text.
+
 Diagrams are selected by question rather than quota. When boundaries, structure, runtime order, state, data relationships, or schedules are hard to understand in prose, the skill chooses an appropriate view and requires editable source, a real render, and consistency with the document.
 
 ## Visual Coverage
+
+### Structure and architecture diagrams (v2)
+
+Complex architecture and overview diagrams are generated with `scripts/diagram_kit.py`: a claim title, three visual levels (zone, card, label), one accent colour for what changes, and no lines through cards. Each diagram ships as `arch.svg` (renders anywhere; imports into Feishu whiteboards as editable nodes), `arch.drawio` (edges bound to nodes) and the `arch.py` source. `scripts/diagram_check.py` measures font size at 800px, hue families, aspect ratio and the Feishu editable ratio, and with `--doc` lists component names the document keeps using but the figure never shows; `scripts/lark_bind.py` binds connectors on Feishu boards. Examples: [config-release](assets/examples/config-release/arch.png), [personal-harness](assets/examples/personal-harness/arch.png).
+
+### Legacy gallery
+
+The examples below were made for a 680px column with pastel zones; use them for chart types and layout ideas, and the section above for new structure diagrams.
 
 [Browse 21 reusable examples and editable sources](assets/visual-examples/README.md). Twelve cover technical views: context, container, component, deployment, flowchart, swimlane, sequence, state, data flow, ER, Gantt, and milestones. Nine cover quantitative views: trend, dumbbell comparison, histogram, ECDF, box plot, scatter, heatmap, stacked composition, and waterfall.
 
@@ -80,10 +90,13 @@ Provide source material and the decision the reader needs to make. Material may 
 read source material and current evidence
 → identify the reader's decision
 → establish problem, goals, constraints, and options
-→ write the decision, accepted costs, and implementation design
+→ build the reading map
+→ present the Level-1 solution model
+→ derive main sections from model nodes
+→ keep selected white-box detail in explicit appendices
 → add only the visuals that answer real questions
 → complete risks, acceptance, rollout, and rollback
-→ test whether an independent reader can recover the decision
+→ test the overview, section tree, random drill-down, and full document separately
 ```
 
 Ordinary tasks deliver the document and necessary diagram sources and previews. Strict mode adds structured records. Python 3.9+ runs the standard-library validators; reproducing statistical chart examples additionally uses Matplotlib and NumPy.
@@ -119,8 +132,11 @@ Full gates and structured records belong to strict mode. Ordinary technical docu
 
 ### Readability and engineering checks
 
+- Schema v3 records the Level-1 overview and recursive section tree. Formal review requires overview, outline, random drill-down, and full-document tests; v1 and v2 remain compatible.
+- `readability --record` checks orientation, overview nodes, section mapping, section leads, H1/H2 labels, hierarchy gaps, duplicate paragraphs, and body-to-appendix density. Short H3 labels are allowed inside a clear parent.
+- In a real ClassCoverage proposal comparison, first-screen answers improved from 3/5 to 5/5, and the heading-and-lead scan changed from fail to pass. The evaluation preserved and corrected an owner-label error and five classes of omitted facts.
 - An older order-flow diagram was 1525px wide and had to shrink to 44.6% inside a 680px document column. The revised responsibility-based layout is 680×202 and needs no downscaling.
-- The current repository runs **31 tests** across document structure, lifecycle rules, templates, and diagrams.
+- The current repository runs **82 tests** across document structure, lifecycle rules, templates, diagrams and the v2 tools; 12 chart tests need matplotlib.
 - Visual tests cover valid SVG/XML, accessible descriptions, long-text overflow, timeline proportions, tree cycles, funnel quantities, radar scales, and changing inputs.
 
 These results support the current examples and rules. They do not guarantee that arbitrary systems, models, or renderers will produce correct documents. Project facts still require direct evidence, and every diagram must be inspected in its final medium.
@@ -134,6 +150,7 @@ engineering-docs/
 ├── README.en.md
 ├── references/
 │   ├── decision-model.md
+│   ├── human-reading.md
 │   ├── collaboration-workflow.md
 │   ├── diagram-guidance.md
 │   ├── diagram-recipes.md

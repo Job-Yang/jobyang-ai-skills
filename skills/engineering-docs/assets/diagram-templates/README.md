@@ -1,12 +1,22 @@
 # 常用图示模板
 
+> 数据驱动模板库：按 [选图规则](../../references/diagram-selection.md) 选 layout；时序、状态、ER、泳道等与 `diagram_kit` 共用统一色板，保留各自的图形语法。不再按节点或阶段序号自动轮换颜色。结构总览示例见 [config-release](../examples/config-release/arch.py) 和 [personal-harness](../examples/personal-harness/arch.py)。
+
 26 张合成示例由 20 个布局接口生成，与[原有 21 张技术及数据图](../visual-examples/README.md)共用一份浅色主题。模板覆盖结构、时间、协作、定位和比例表达；横竖方向及用途不同的示例不算独立绘图引擎。
 
 先按读者问题选图，再填真实事实。模板借用形状与布局，不替你确认关系、补写发布制度或评估业务效果。超出布局边界时拆图或使用成熟图布局工具，不能删真实节点和边来迁就模板。
 
 ## 选择模板
 
-每个预览同目录下都有同名 SVG；输入集中在 [examples.json](examples.json)。
+每个预览同目录下都有同名 SVG；基础输入在 [examples.json](examples.json)，时序、ER 和状态机等输入在 [examples_extra.json](examples_extra.json)。
+
+| 专用图型 | 预览 | 输入 ID |
+| --- | --- | --- |
+| 时序 | [参与者与消息](gallery/seq-agent-dispatch.png) | `seq-agent-dispatch` |
+| 状态 | [生命周期](gallery/sm-task-lifecycle.png) | `sm-task-lifecycle` |
+| ER | [实体关系](gallery/er-task-graph.png) | `er-task-graph` |
+
+默认中性；明确重点或状态时在输入中声明，不凭节点编号分配颜色。
 
 | 阅读问题 | 模板预览 | 输入 ID |
 | --- | --- | --- |
@@ -37,7 +47,7 @@
 | 哪些条件同时成立 | [韦恩图](gallery/venn.png) | `venn` |
 | 范围如何逐级收窄 | [嵌套集合](gallery/nested-sets.png) | `nested-sets` |
 
-流程、时序、甘特、带日期里程碑、C4 架构、状态、数据流和 ER 沿用原有样例。UML 类图、用例图、复杂网络拓扑和服务蓝图可按语义选择 Mermaid、PlantUML 或图布局工具，当前包没有它们各自经过验收的模板。海报、界面原型和 3D 场景不属于本模板集。
+时序、状态和 ER 优先使用上表的参数化模板；流程、甘特、带日期里程碑、C4 架构和数据流另有原有样例供参考。UML 类图、用例图、复杂网络拓扑和服务蓝图可按语义选择 Mermaid、PlantUML 或图布局工具，当前包没有它们各自经过验收的模板。海报、界面原型和 3D 场景不属于本模板集。
 
 ## 运行
 

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 1080" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif">
+  <rect width="640" height="1080" fill="#ffffff"/>
+  <text x="320" y="36" text-anchor="middle" font-size="20" font-weight="600" fill="#2b2b2b">技能管家：把技能集合当成系统治理</text>
+
+  <!-- 起源注记 -->
+  <g>
+    <rect x="60" y="64" width="520" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.5"/>
+    <text x="320" y="90" text-anchor="middle" font-size="13.5" font-weight="600" fill="#0b3b36">先有三级关系图和检测，发现治理没有承载它的容器</text>
+    <text x="320" y="112" text-anchor="middle" font-size="11.5" fill="#3d6b66">它才作为一个技能成立，而不是反过来先有想法再凑功能</text>
+  </g>
+
+  <!-- 三条主线 -->
+  <text x="320" y="166" text-anchor="middle" font-size="13" font-weight="600" fill="#0b3b36">三条主线</text>
+  <g font-size="13.5" fill="#0b3b36">
+    <rect x="120" y="182" width="400" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="208" text-anchor="middle" font-weight="600">A. 准入五问</text>
+    <text x="320" y="228" text-anchor="middle" font-size="11.5" fill="#3d6b66">需求成立吗 / 该归哪层 / 业界能直接用吗 / 打架吗 / 能持续吗</text>
+
+    <rect x="120" y="286" width="400" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="312" text-anchor="middle" font-weight="600">B. 健康体检</text>
+    <text x="320" y="332" text-anchor="middle" font-size="11.5" fill="#3d6b66">静态脚本扫描 + 人工语义判读，产出证据清单不擅自改</text>
+
+    <rect x="120" y="390" width="400" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="416" text-anchor="middle" font-weight="600">C. 外部技能收录</text>
+    <text x="320" y="436" text-anchor="middle" font-size="11.5" fill="#3d6b66">直接用 / 炼化去绑定 / 评测硬伤后重造</text>
+  </g>
+
+  <!-- 琥珀：doctor 从误报一片修到可信 -->
+  <g font-size="12.5" fill="#7a5410">
+    <rect x="60" y="500" width="520" height="90" rx="8" fill="#fdf1dd" stroke="#e8a33d" stroke-width="2"/>
+    <text x="320" y="526" text-anchor="middle" font-weight="600">体检工具本身先被修过一次</text>
+    <text x="320" y="548" text-anchor="middle" font-size="11.5">初版 doctor 误报一片；修致命 bug、下线高噪声规则后</text>
+    <text x="320" y="568" text-anchor="middle" font-size="11.5">真实库 150 条噪声 → 12 条低优先存量，才敢说「可信」</text>
+    <text x="320" y="586" text-anchor="middle" font-size="11.5">正反夹具 + baseline：只报基线外新增</text>
+  </g>
+
+  <!-- 灰虚线：误触发 -->
+  <g font-size="12.5" fill="#6b7280">
+    <rect x="120" y="630" width="400" height="58" rx="8" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="320" y="654" text-anchor="middle" font-weight="600">误触发：研究外部仓库/论文也被它接管</text>
+    <text x="320" y="674" text-anchor="middle" font-size="11">0.1.1 收紧：研究外部资料归 feynman-explainer，它只管自有集合</text>
+  </g>
+
+  <!-- 注记 -->
+  <g>
+    <rect x="60" y="730" width="520" height="100" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.5"/>
+    <text x="320" y="758" text-anchor="middle" font-size="13.5" font-weight="600" fill="#0b3b36">零环境依赖</text>
+    <text x="320" y="784" text-anchor="middle" font-size="12" fill="#3d6b66">库位置可发现、不写死；平台能力只作可选增强</text>
+    <text x="320" y="806" text-anchor="middle" font-size="12" fill="#3d6b66">体检只出报告和建议，合并删除由用户拍板</text>
+  </g>
+
+  <!-- 图例 -->
+  <g font-size="12" fill="#4b5563">
+    <rect x="60" y="1010" width="16" height="16" rx="3" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.5"/>
+    <text x="82" y="1023">治理主线</text>
+    <rect x="190" y="1010" width="16" height="16" rx="3" fill="#fdf1dd" stroke="#e8a33d" stroke-width="1.5"/>
+    <text x="212" y="1023">工具自身的修正</text>
+    <rect x="360" y="1010" width="16" height="16" rx="3" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="382" y="1023">被收紧的误触发</text>
+  </g>
+</svg>

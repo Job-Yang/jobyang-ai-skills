@@ -111,6 +111,48 @@ class TemplateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.render("hierarchy", nodes=nodes)
 
+    def test_structural_diagrams_use_shared_white_paper(self):
+        for name in ("hierarchy", "system-architecture", "grid-matrix"):
+            self.render(name)
+            svg = self.output.read_text()
+            self.assertIn('<rect width="680" height="100%" fill="#FFFFFF"/>', svg)
+            self.assertNotIn('#FBFAF7', svg)
+
+    def wedge_colors(self):
+        root = ET.parse(self.output).getroot()
+        axes = next(g for g in root.findall('.//{*}g') if g.get('id') == 'axes_1')
+        colors = []
+        for group in axes.findall('{*}g'):
+            if not group.get('id', '').startswith('patch_'):
+                continue
+            path = group.find('{*}path')
+            if path is not None:
+                style = dict(item.strip().split(':', 1) for item in path.get('style', '').split(';') if ':' in item)
+                if 'fill' in style:
+                    colors.append(style['fill'].strip().upper())
+        return colors
+
+    def test_eight_data_categories_render_as_distinct_wedges(self):
+        expected = {RENDER.tone(i)[0] for i in range(8)}
+        for name in ('pie', 'donut'):
+            with self.subTest(name=name):
+                self.render(name, labels=list('ABCDEFGH'), values=[1, 2, 3, 4, 5, 6, 7, 8])
+                colors = self.wedge_colors()
+                self.assertEqual(len(colors), 8)
+                self.assertEqual(set(colors), expected)
+
+    def test_donut_sorting_does_not_reassign_category_colors(self):
+        for values in ([1, 2, 7], [8, 2, 7]):
+            result = self.render('donut', labels=['A', 'B', 'C'], values=values)
+            expected = [RENDER.tone(i)[0] for i in result['statistics']['order']]
+            self.assertEqual(self.wedge_colors(), expected)
+
+    def test_quantitative_chart_stays_white(self):
+        # 数据图表走 matplotlib，保持白卡承载，不套奶油底
+        self.render("donut")
+        svg = self.output.read_text()
+        self.assertNotIn('fill="#FBFAF7"', svg)
+
 
 if __name__ == "__main__":
     unittest.main()

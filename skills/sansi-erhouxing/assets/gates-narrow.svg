@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="1080" viewBox="0 0 390 1080" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Source Han Sans SC, sans-serif">
+  <rect width="390" height="1080" fill="#ffffff"/>
+  <text x="20" y="30" font-size="16" font-weight="600" fill="#2b2b2b">先数改动多大，再决定查多深</text>
+  <text x="20" y="50" font-size="11.5" fill="#666666">青绿＝主路径　琥珀＝盲评返工打出来的规则　灰虚＝不触发</text>
+
+  <rect x="20" y="66" width="350" height="58" rx="9" fill="#2a9d8f" stroke="#1f5f58" stroke-width="2"/>
+  <text x="36" y="90" font-size="13" font-weight="600" fill="#ffffff">投入闸门：判据是数出来的，不是感觉</text>
+  <text x="36" y="110" font-size="11.5" fill="#dff3f0">小改大查是纯开销，大改小查是留硬伤；模糊按大档走</text>
+
+  <g stroke="#555555" stroke-width="1.5" fill="#555555">
+    <line x1="195" y1="124" x2="195" y2="142"/><polygon points="195,145 191,138 199,138"/>
+  </g>
+
+  <rect x="20" y="148" width="350" height="66" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="36" y="172" font-size="12.5" font-weight="600" fill="#1f5f58">微改（≤3 句、不增删整段、不动观点）</text>
+  <text x="36" y="192" font-size="11.5" fill="#333333">免通读全文，只列影响面加前后向引用核对；</text>
+  <text x="36" y="208" font-size="11.5" fill="#333333">说得出「这处改了谁会跟着变」才许下笔</text>
+
+  <rect x="20" y="226" width="350" height="66" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="36" y="250" font-size="12.5" font-weight="600" fill="#1f5f58">小改（一节内、4 句以上、新增一自然段）</text>
+  <text x="36" y="270" font-size="11.5" fill="#333333">骨架清单（5 到 10 行、每节一句陈述句、</text>
+  <text x="36" y="286" font-size="11.5" fill="#333333">标出改动落点）加影响面加三问过闸</text>
+
+  <rect x="20" y="304" width="350" height="78" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="36" y="328" font-size="12.5" font-weight="600" fill="#1f5f58">大改（删段合并、新增一节、改观点）</text>
+  <text x="36" y="348" font-size="11.5" fill="#333333">三步全跑，三个检查器全上：前后向引用核对表、</text>
+  <text x="36" y="366" font-size="11.5" fill="#333333">围栏登记表（原本服务谁加谁兜底，两格不空）、</text>
+  <text x="36" y="382" font-size="11.5" fill="#333333">相邻节首句连读；改前通读报告写下来</text>
+
+  <rect x="20" y="404" width="350" height="112" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.8"/>
+  <text x="36" y="428" font-size="12.5" font-weight="600" fill="#7a5a12">盲评返工：缺口被「论证」成通顺</text>
+  <text x="36" y="448" font-size="11.5" fill="#333333">taskB 删节连续两局输：新版把首句连读的缺口</text>
+  <text x="36" y="466" font-size="11.5" fill="#333333">用「并列清单不需要过渡」论证跳过了。裁判要的</text>
+  <text x="36" y="484" font-size="11.5" fill="#333333">是如实登记，不是论证不用管 → 检查器③写死：</text>
+  <text x="36" y="502" font-size="11.5" fill="#333333">别扭先登记缺口，最终不补也必须留在报告里</text>
+
+  <rect x="20" y="530" width="350" height="96" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.8"/>
+  <text x="36" y="554" font-size="12.5" font-weight="600" fill="#7a5a12">返工二：用户说的「重复」没核真伪</text>
+  <text x="36" y="574" font-size="11.5" fill="#333333">旧版额外核对了用户「两节重复」的删除理由，</text>
+  <text x="36" y="592" font-size="11.5" fill="#333333">新版漏了 → 问一新增前置一步：理由成立不成立</text>
+  <text x="36" y="610" font-size="11.5" fill="#333333">明牌写一句加证据，坚持要删照删，核错必须说破</text>
+
+  <rect x="20" y="646" width="350" height="112" rx="9" fill="#f4f5f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="36" y="670" font-size="12" fill="#5f6368">不触发</text>
+  <text x="36" y="692" font-size="11.5" fill="#5f6368">从零新起一篇（没有既有骨架可通读）；</text>
+  <text x="36" y="710" font-size="11.5" fill="#5f6368">纯一句话答疑；一次性丢弃的草稿。</text>
+  <text x="36" y="734" font-size="11.5" fill="#5f6368">只管文档类产物的修改，代码和工程改动不在范围；</text>
+  <text x="36" y="752" font-size="11" fill="#8a8f94">它是前置动作，跟写作改稿技能并行，不占名额</text>
+</svg>

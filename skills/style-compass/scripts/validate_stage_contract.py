@@ -18,8 +18,8 @@ BOUNDARY_ORDER = (
     "requirements",
     "structure",
     "interaction",
-    "visualDirection",
-    "visualFinal",
+    "direction",
+    "final",
     "delivery",
 )
 COLLECTION_PREFIXES = {
@@ -324,7 +324,7 @@ def validate(contract: dict, html: str, phase: str) -> dict:
     evidence_boundaries = (
         ("requirements", "structure", "interaction")
         if phase == "direction"
-        else ("requirements", "structure", "interaction", "visualDirection")
+        else ("requirements", "structure", "interaction", "direction")
     )
     for boundary_name in evidence_boundaries:
         evidence = boundaries.get(boundary_name, {}).get("evidence", [])

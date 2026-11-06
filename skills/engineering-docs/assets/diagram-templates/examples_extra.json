@@ -1,0 +1,682 @@
+[
+  {
+    "id": "sg-stage-gate",
+    "name": "阶段门图",
+    "layout": "stage_gate",
+    "title": "从需求到交付的三道门禁",
+    "subtitle": "横向推进 · 每道门禁标明准入与准出条件",
+    "note": "门禁状态是当前真实结论；未通过即阻断，须修复后重验。",
+    "stages": [
+      {
+        "id": "req",
+        "label": "需求冻结",
+        "entry": "口径签字",
+        "exit": "基线入库"
+      },
+      {
+        "id": "integ",
+        "label": "联调集成",
+        "entry": "环境就绪",
+        "exit": "联调通过"
+      },
+      {
+        "id": "acc",
+        "label": "验收交付",
+        "entry": "用例通过",
+        "exit": "签字交付"
+      }
+    ],
+    "gates": [
+      {
+        "id": "g1",
+        "after": "req",
+        "label": "方案评审",
+        "entry": "设计齐备",
+        "exit": "评审通过",
+        "status": "passed"
+      },
+      {
+        "id": "g2",
+        "after": "integ",
+        "label": "准出检查",
+        "entry": "回归全绿",
+        "exit": "容量达标",
+        "status": "blocked",
+        "note": "阻断：修复后重验"
+      }
+    ]
+  },
+  {
+    "id": "cc-causal-chain",
+    "name": "因果链图",
+    "layout": "causal_chain",
+    "title": "一次线上投诉的因果链",
+    "subtitle": "左到右因果传递 · 绿=增强，红=抑制",
+    "note": "极性是待验证假设；延迟为经验值，不表示精确耗时。",
+    "chain": [
+      {
+        "id": "traffic",
+        "label": "流量上升"
+      },
+      {
+        "id": "dep",
+        "label": "依赖超时"
+      },
+      {
+        "id": "err",
+        "label": "错误率上升"
+      }
+    ],
+    "links": [
+      {
+        "from": "traffic",
+        "to": "dep",
+        "polarity": "+"
+      },
+      {
+        "from": "dep",
+        "to": "err",
+        "polarity": "+",
+        "note": "约十分钟"
+      }
+    ],
+    "branches": [
+      {
+        "from": "dep",
+        "label": "缓存命中下降",
+        "polarity": "-"
+      }
+    ]
+  },
+  {
+    "id": "fl-feedback-loop",
+    "name": "反馈回路图",
+    "layout": "feedback_loop",
+    "title": "回答质量如何自我收敛",
+    "subtitle": "回环走外围 · 虚线表示反馈通道",
+    "note": "负反馈意味着系统趋向稳定；干预点是人工修正入口。",
+    "input": "用户提问",
+    "process": "检索与生成回答",
+    "output": "回答",
+    "polarity": "negative",
+    "trigger": "质量低于阈值",
+    "intervention": "人工标注修正"
+  },
+  {
+    "id": "sm-state-machine",
+    "name": "状态机图",
+    "layout": "state_machine",
+    "title": "一次任务的状态生命周期",
+    "subtitle": "实心圆为起点 · 双线为终态",
+    "note": "迁移标签为 事件[条件]/动作；重试是唯一回退边。",
+    "start": "idle",
+    "states": [
+      {
+        "id": "idle",
+        "label": "空闲"
+      },
+      {
+        "id": "work",
+        "label": "处理中"
+      },
+      {
+        "id": "done",
+        "label": "完成",
+        "kind": "end"
+      },
+      {
+        "id": "fail",
+        "label": "失败",
+        "kind": "end"
+      }
+    ],
+    "transitions": [
+      {
+        "from": "idle",
+        "to": "work",
+        "label": "提交"
+      },
+      {
+        "from": "work",
+        "to": "done",
+        "label": "成功"
+      },
+      {
+        "from": "work",
+        "to": "fail",
+        "label": "异常/退避"
+      },
+      {
+        "from": "fail",
+        "to": "idle",
+        "label": "重试"
+      }
+    ]
+  },
+  {
+    "id": "ia-sample-review",
+    "name": "截图标注图",
+    "layout": "image_annotate",
+    "title": "复审截图发现的三处问题",
+    "subtitle": "红框圈出问题 · 右侧图例给动作",
+    "note": "底图为合成示例；编号与图例一一对应。",
+    "image_path": "assets/diagram-templates/assets/sample-screen.png",
+    "markers": [
+      {
+        "n": 1,
+        "x": 60,
+        "y": 70,
+        "w": 220,
+        "h": 70,
+        "problem": "主按钮被导航遮挡",
+        "action": "下移并加宽点击区"
+      },
+      {
+        "n": 2,
+        "x": 360,
+        "y": 190,
+        "w": 200,
+        "h": 70,
+        "problem": "表单校验无错误提示",
+        "action": "改为行内红字提示"
+      },
+      {
+        "n": 3,
+        "x": 90,
+        "y": 250,
+        "w": 160,
+        "h": 60,
+        "problem": "加载态缺失骨架屏",
+        "action": "补骨架屏占位"
+      }
+    ]
+  },
+  {
+    "id": "lane-three-handoff",
+    "name": "三角色泳道图",
+    "layout": "workflow",
+    "orientation": "horizontal",
+    "title": "一次请求在前端、网关与服务端之间交接",
+    "subtitle": "横向泳道 · 时间从左向右推进",
+    "note": "只展示成功路径；鉴权失败应另画分支。",
+    "lanes": [
+      "前端",
+      "网关",
+      "服务端"
+    ],
+    "nodes": [
+      {
+        "id": "a",
+        "lane": 0,
+        "step": 0,
+        "label": "提交静态资源"
+      },
+      {
+        "id": "b",
+        "lane": 1,
+        "step": 1,
+        "label": "校验签名与限流"
+      },
+      {
+        "id": "c",
+        "lane": 2,
+        "step": 2,
+        "label": "查询与落库"
+      },
+      {
+        "id": "d",
+        "lane": 0,
+        "step": 3,
+        "label": "渲染结果"
+      }
+    ],
+    "edges": [
+      {
+        "from": "a",
+        "to": "b"
+      },
+      {
+        "from": "b",
+        "to": "c",
+        "label": "鉴权后转发"
+      },
+      {
+        "from": "c",
+        "to": "d"
+      }
+    ]
+  },
+  {
+    "id": "sm-order-fulfillment",
+    "name": "复杂状态机",
+    "layout": "state_machine",
+    "title": "订单支付履约的状态生命周期",
+    "subtitle": "主干一条线 · 失败/超时为短分叉 · 重试走外侧回退通道",
+    "note": "回退通道在卡片最外侧；迁移标签为事件/条件。",
+    "start": "created",
+    "states": [
+      {
+        "id": "created",
+        "label": "已创建"
+      },
+      {
+        "id": "paying",
+        "label": "支付处理中"
+      },
+      {
+        "id": "paid",
+        "label": "已支付"
+      },
+      {
+        "id": "fulfilling",
+        "label": "履约中"
+      },
+      {
+        "id": "done",
+        "label": "已完成",
+        "kind": "end"
+      },
+      {
+        "id": "payfailed",
+        "label": "支付失败"
+      },
+      {
+        "id": "timeout",
+        "label": "超时关闭"
+      }
+    ],
+    "transitions": [
+      {
+        "from": "created",
+        "to": "paying",
+        "label": "发起支付"
+      },
+      {
+        "from": "paying",
+        "to": "paid",
+        "label": "支付成功"
+      },
+      {
+        "from": "paying",
+        "to": "payfailed",
+        "label": "支付失败"
+      },
+      {
+        "from": "paying",
+        "to": "timeout",
+        "label": "超过30分钟"
+      },
+      {
+        "from": "payfailed",
+        "to": "paying",
+        "label": "重试支付"
+      },
+      {
+        "from": "paid",
+        "to": "fulfilling",
+        "label": "通知履约"
+      },
+      {
+        "from": "fulfilling",
+        "to": "done",
+        "label": "履约完成"
+      }
+    ]
+  },
+  {
+    "id": "seq-agent-dispatch",
+    "name": "时序图",
+    "layout": "sequence",
+    "title": "Agent 的请求先由管家消化，验收通过才算完成",
+    "subtitle": "一次任务的成功路径 · 纵向只表示先后",
+    "note": "规则内的权限请求管家自己批；结束事件只触发验收。",
+    "participants": [
+      {
+        "id": "you",
+        "label": "你"
+      },
+      {
+        "id": "core",
+        "label": "管家",
+        "emphasis": true
+      },
+      {
+        "id": "adp",
+        "label": "执行 Adapter"
+      },
+      {
+        "id": "agent",
+        "label": "外部 Agent"
+      }
+    ],
+    "groups": [
+      {
+        "label": "派活",
+        "start": 0,
+        "end": 3
+      },
+      {
+        "label": "执行中",
+        "start": 4,
+        "end": 8
+      },
+      {
+        "label": "验收",
+        "start": 9,
+        "end": 11
+      }
+    ],
+    "messages": [
+      {
+        "from": "core",
+        "to": "core",
+        "kind": "self",
+        "label": "拆任务图、配上下文"
+      },
+      {
+        "from": "core",
+        "to": "you",
+        "label": "首次拆解请确认"
+      },
+      {
+        "from": "you",
+        "to": "core",
+        "kind": "reply",
+        "label": "确认"
+      },
+      {
+        "from": "core",
+        "to": "adp",
+        "label": "任务信封"
+      },
+      {
+        "from": "adp",
+        "to": "agent",
+        "label": "启动会话"
+      },
+      {
+        "from": "agent",
+        "to": "adp",
+        "kind": "async",
+        "label": "要权限"
+      },
+      {
+        "from": "adp",
+        "to": "core",
+        "kind": "async",
+        "label": "审批事件"
+      },
+      {
+        "from": "core",
+        "to": "core",
+        "kind": "self",
+        "label": "按放权规则判定"
+      },
+      {
+        "from": "core",
+        "to": "adp",
+        "kind": "reply",
+        "label": "批准"
+      },
+      {
+        "from": "agent",
+        "to": "adp",
+        "kind": "async",
+        "label": "结束与产物"
+      },
+      {
+        "from": "adp",
+        "to": "core",
+        "kind": "async",
+        "label": "结束事件"
+      },
+      {
+        "from": "core",
+        "to": "you",
+        "kind": "async",
+        "label": "验收结果摘要"
+      }
+    ],
+    "sample": true
+  },
+  {
+    "id": "er-task-graph",
+    "name": "ER 图",
+    "layout": "er",
+    "title": "一个任务可以多次执行，每次修改都留版本",
+    "subtitle": "任务图对象模型 · 只画实体、键和基数",
+    "note": "重试、换 Agent 只新增 Run，任务历史不丢。",
+    "entities": [
+      {
+        "id": "goal",
+        "label": "Goal 目标组",
+        "col": 0,
+        "row": 0,
+        "fields": [
+          "goal_id",
+          "验收标准"
+        ]
+      },
+      {
+        "id": "type",
+        "label": "TaskType 任务类型",
+        "col": 2,
+        "row": 0,
+        "fields": [
+          "type_id",
+          "上下文配方"
+        ]
+      },
+      {
+        "id": "task",
+        "label": "Task 任务节点",
+        "col": 1,
+        "row": 1,
+        "emphasis": true,
+        "fields": [
+          "task_id",
+          "状态（事件推导）",
+          "rev"
+        ]
+      },
+      {
+        "id": "edge",
+        "label": "Edge 边",
+        "col": 0,
+        "row": 1,
+        "fields": [
+          "from / to",
+          "阻塞 父子 引出"
+        ]
+      },
+      {
+        "id": "run",
+        "label": "Run 执行实例",
+        "col": 1,
+        "row": 2,
+        "fields": [
+          "run_id",
+          "adapter",
+          "session_id"
+        ]
+      },
+      {
+        "id": "rev",
+        "label": "Revision 版本",
+        "col": 2,
+        "row": 1,
+        "fields": [
+          "rev",
+          "谁改 为什么"
+        ]
+      },
+      {
+        "id": "art",
+        "label": "Artifact 产物",
+        "col": 1,
+        "row": 3,
+        "fields": [
+          "path / link"
+        ]
+      },
+      {
+        "id": "review",
+        "label": "Review 验收",
+        "col": 2,
+        "row": 3,
+        "fields": [
+          "通过 / 退回"
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "from": "goal",
+        "to": "task",
+        "label": "包含",
+        "card_from": "1",
+        "card_to": "1..*"
+      },
+      {
+        "from": "type",
+        "to": "task",
+        "label": "决定配方",
+        "card_from": "1",
+        "card_to": "0..*"
+      },
+      {
+        "from": "task",
+        "to": "run",
+        "label": "执行",
+        "card_from": "1",
+        "card_to": "0..*"
+      },
+      {
+        "from": "task",
+        "to": "edge",
+        "label": "连接",
+        "card_from": "1",
+        "card_to": "0..*"
+      },
+      {
+        "from": "task",
+        "to": "rev",
+        "label": "留版",
+        "card_from": "1",
+        "card_to": "1..*"
+      },
+      {
+        "from": "run",
+        "to": "art",
+        "label": "产出",
+        "card_from": "1",
+        "card_to": "0..*"
+      },
+      {
+        "from": "art",
+        "to": "review",
+        "label": "提交",
+        "card_from": "1..*",
+        "card_to": "1"
+      }
+    ],
+    "sample": true
+  },
+  {
+    "id": "sm-task-lifecycle",
+    "name": "状态图（多回退）",
+    "layout": "state_machine",
+    "title": "任务要过验收才算完成",
+    "subtitle": "状态由事件推导 · 上游被改则下游待重算",
+    "note": "执行实例结束只进入待验收；退回会新建实例重跑。",
+    "start": "draft",
+    "states": [
+      {
+        "id": "draft",
+        "label": "草稿"
+      },
+      {
+        "id": "todo",
+        "label": "待办"
+      },
+      {
+        "id": "running",
+        "label": "进行中"
+      },
+      {
+        "id": "review",
+        "label": "待验收"
+      },
+      {
+        "id": "done",
+        "label": "已完成",
+        "kind": "end"
+      },
+      {
+        "id": "waiting",
+        "label": "等待"
+      },
+      {
+        "id": "recalc",
+        "label": "待重算"
+      },
+      {
+        "id": "dropped",
+        "label": "已放弃"
+      }
+    ],
+    "transitions": [
+      {
+        "from": "draft",
+        "to": "todo",
+        "label": "你确认"
+      },
+      {
+        "from": "todo",
+        "to": "running",
+        "label": "派出实例"
+      },
+      {
+        "from": "running",
+        "to": "review",
+        "label": "实例结束"
+      },
+      {
+        "from": "review",
+        "to": "done",
+        "label": "验收通过"
+      },
+      {
+        "from": "running",
+        "to": "waiting",
+        "label": "等你/外部"
+      },
+      {
+        "from": "todo",
+        "to": "dropped",
+        "label": "决定不做"
+      },
+      {
+        "from": "review",
+        "to": "recalc",
+        "label": "上游被改"
+      },
+      {
+        "from": "review",
+        "to": "running",
+        "label": "退回重跑"
+      },
+      {
+        "from": "recalc",
+        "to": "todo",
+        "label": "重新规划"
+      },
+      {
+        "from": "waiting",
+        "to": "running",
+        "label": "条件满足"
+      }
+    ],
+    "sample": true
+  }
+]

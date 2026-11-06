@@ -7,15 +7,20 @@ the documentation skill or its metadata validator.
 import argparse
 import html
 import json
+import sys
 from pathlib import Path
 
-import matplotlib
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+from bootstrap import require
+
+matplotlib = require("matplotlib")[0]
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-from matplotlib import font_manager, ticker
+plt = require("matplotlib.pyplot")[0]
+font_manager = require("matplotlib.font_manager")[0]
+ticker = require("matplotlib.ticker")[0]
 from matplotlib.colors import Normalize, LinearSegmentedColormap
 from matplotlib.patches import Rectangle
-import numpy as np
+np = require("numpy")[0]
 
 THEME = json.loads(Path(__file__).with_name("theme.json").read_text())
 INK, MUTED = THEME["ink"], THEME["muted"]

@@ -1,0 +1,73 @@
+{
+  "topic": "example-contradictory",
+  "one_liner": "对抗样例：维度互相矛盾 + 证据复用/无链接，验证脚本不崩溃、警告可见",
+  "upstream": null,
+  "profile": {
+    "form": "示例",
+    "endpoint": "示例",
+    "market": "未调研",
+    "monetization": "未调研",
+    "competitors": []
+  },
+  "foundation": {
+    "pass": true,
+    "reason": "假设：命题成立，只测矛盾输入"
+  },
+  "dimensions": [
+    {
+      "name": "痛点强度",
+      "score": 9.0,
+      "evidence": "假设：Reddit 高频抱怨原话（一条料喂两维）"
+    },
+    {
+      "name": "离钱近",
+      "score": 9.0,
+      "evidence": "假设：Reddit 高频抱怨原话（一条料喂两维）"
+    },
+    {
+      "name": "单位经济健康度",
+      "score": 1.0,
+      "evidence": "假设：内部消息，不便透露（测无链接不可验证警告）"
+    },
+    {
+      "name": "一人可交付",
+      "score": 9.0,
+      "evidence": "假设：4 周可出 MVP"
+    },
+    {
+      "name": "自然分发",
+      "score": 9.0,
+      "evidence": "假设：SEO 自然流量"
+    },
+    {
+      "name": "护城河",
+      "score": 1.0,
+      "evidence": "假设：无专有数据"
+    },
+    {
+      "name": "市场趋势",
+      "score": 1.0,
+      "evidence": "假设：搜索量连续两季归零（与痛点 9 分矛盾，矛盾由人判）"
+    },
+    {
+      "name": "可验证性",
+      "score": 9.0,
+      "evidence": "假设：落地页一周可测"
+    },
+    {
+      "name": "时机(Why now)",
+      "score": 1.0,
+      "evidence": "假设：无拐点"
+    },
+    {
+      "name": "AI-native契合度",
+      "score": 9.0,
+      "evidence": "假设：AI 原生交付"
+    }
+  ],
+  "diagnosis": "预期：结构通过不崩溃；evidence_warnings 至少含复用与不可验证两条；矛盾本身由人审",
+  "rebuttal": {
+    "claim": "",
+    "blindspot": ""
+  }
+}

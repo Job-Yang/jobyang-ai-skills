@@ -1,0 +1,8 @@
+{
+  "kit": "opc-envelope",
+  "version": "0.2.0",
+  "note": "本包只 vendored 交接信封 artifact_io.py；style-compass 只产 design 类型产物。scoring-rules.json（OPC 机会评分十维规则）经静态确认与全量测试实证无人读取，已移除；artifact_io.py 内 radar/assess 分支是公共信封的多类型支持，在本包内不会被触发。",
+  "vendored": [
+    {"path": "scripts/artifact_io.py", "sha256": "7f36d91596bf413752663e8802d8fe064de12180d3349b062e47497678f0c9a1"}
+  ]
+}

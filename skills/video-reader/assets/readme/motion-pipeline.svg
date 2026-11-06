@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 1120" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif">
+  <rect width="640" height="1120" fill="#ffffff"/>
+  <text x="320" y="36" text-anchor="middle" font-size="20" font-weight="600" fill="#2b2b2b">视频翻译成关键帧</text>
+  <text x="320" y="60" text-anchor="middle" font-size="12.5" fill="#6b7280">挑帧这一步由代码完成，模型只看挑完的结果</text>
+
+  <!-- 被否掉的朴素做法 -->
+  <g font-size="12.5" fill="#6b7280">
+    <rect x="40" y="84" width="262" height="62" rx="8" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="171" y="110" text-anchor="middle" font-weight="600">均匀抽帧硬塞</text>
+    <text x="171" y="130" text-anchor="middle" font-size="11">20 秒抽 20 张图，上下文爆炸</text>
+
+    <rect x="338" y="84" width="262" height="62" rx="8" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="5 4"/>
+    <text x="469" y="110" text-anchor="middle" font-weight="600">让模型逐帧挑</text>
+    <text x="469" y="130" text-anchor="middle" font-size="11">先把每帧看一遍，等于没省</text>
+  </g>
+
+  <!-- 主路径竖线 -->
+  <g font-size="14" fill="#0b3b36">
+    <rect x="170" y="180" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="208" text-anchor="middle" font-weight="600">一段视频</text>
+    <text x="320" y="228" text-anchor="middle" font-size="11.5" fill="#3d6b66">录屏 / 客诉 / 翻拍</text>
+
+    <rect x="170" y="300" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="328" text-anchor="middle" font-weight="600">帧差算运动时间线</text>
+    <text x="320" y="348" text-anchor="middle" font-size="11.5" fill="#3d6b66">纯代码跑，不经模型</text>
+
+    <rect x="170" y="420" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="448" text-anchor="middle" font-weight="600">静止段折叠</text>
+    <text x="320" y="468" text-anchor="middle" font-size="11.5" fill="#3d6b66">活动段才稀疏抽帧</text>
+
+    <rect x="170" y="540" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="568" text-anchor="middle" font-weight="600">关键帧 + 时间戳</text>
+    <text x="320" y="588" text-anchor="middle" font-size="11.5" fill="#3d6b66">时间戳走结构化文字</text>
+
+    <rect x="170" y="660" width="300" height="64" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="2"/>
+    <text x="320" y="688" text-anchor="middle" font-weight="600">大模型看图判断</text>
+    <text x="320" y="708" text-anchor="middle" font-size="11.5" fill="#3d6b66">第几秒发生了什么</text>
+  </g>
+
+  <g stroke="#0f9d8f" stroke-width="2.2" fill="#0f9d8f">
+    <line x1="320" y1="244" x2="320" y2="290"/><polygon points="320,300 315,290 325,290"/>
+    <line x1="320" y1="364" x2="320" y2="410"/><polygon points="320,420 315,410 325,410"/>
+    <line x1="320" y1="484" x2="320" y2="530"/><polygon points="320,540 315,530 325,530"/>
+    <line x1="320" y1="604" x2="320" y2="650"/><polygon points="320,660 315,650 325,650"/>
+  </g>
+
+  <!-- 琥珀：防呆分支 -->
+  <g font-size="12.5" fill="#7a5410">
+    <line x1="170" y1="332" x2="120" y2="332" stroke="#e8a33d" stroke-width="2"/>
+    <rect x="20" y="300" width="100" height="66" rx="8" fill="#fdf1dd" stroke="#e8a33d" stroke-width="2"/>
+    <text x="70" y="326" text-anchor="middle" font-weight="600">假视频防呆</text>
+    <text x="70" y="345" text-anchor="middle" font-size="10.5">无视频流</text>
+    <text x="70" y="359" text-anchor="middle" font-size="10.5">直接 exit 2</text>
+
+    <line x1="470" y1="332" x2="520" y2="332" stroke="#e8a33d" stroke-width="2"/>
+    <rect x="520" y="300" width="104" height="66" rx="8" fill="#fdf1dd" stroke="#e8a33d" stroke-width="2"/>
+    <text x="572" y="324" text-anchor="middle" font-weight="600">装包先预告</text>
+    <text x="572" y="342" text-anchor="middle" font-size="10.5">90MB / 2GB</text>
+    <text x="572" y="356" text-anchor="middle" font-size="10.5">未放行不装</text>
+  </g>
+
+  <!-- 先粗后细注记 -->
+  <g>
+    <rect x="60" y="790" width="520" height="120" rx="8" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.5"/>
+    <text x="320" y="818" text-anchor="middle" font-size="13.5" font-weight="600" fill="#0b3b36">标准打法：先粗后细</text>
+    <text x="320" y="844" text-anchor="middle" font-size="12.5" fill="#3d6b66">grid 概览全片节奏</text>
+    <text x="320" y="866" text-anchor="middle" font-size="12.5" fill="#3d6b66">→ scan 看运动时间线</text>
+    <text x="320" y="888" text-anchor="middle" font-size="12.5" fill="#3d6b66">→ zoom 下钻可疑区间（可多轮）</text>
+    <text x="320" y="906" text-anchor="middle" font-size="11" fill="#8a6420">zoom 宽区间逐帧 seek 慢，收窄区间</text>
+  </g>
+
+  <!-- 图例 -->
+  <g font-size="12" fill="#4b5563">
+    <rect x="60" y="1050" width="16" height="16" rx="3" fill="#e6f5f3" stroke="#0f9d8f" stroke-width="1.5"/>
+    <text x="82" y="1063">主路径 / 方法</text>
+    <rect x="200" y="1050" width="16" height="16" rx="3" fill="#fdf1dd" stroke="#e8a33d" stroke-width="1.5"/>
+    <text x="222" y="1063">代价换来的防呆</text>
+    <rect x="370" y="1050" width="16" height="16" rx="3" fill="#f3f4f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="392" y="1063">被否掉的朴素做法</text>
+  </g>
+</svg>

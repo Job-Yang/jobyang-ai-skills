@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "document": {
     "title": "__TITLE__",
     "type": "__TYPE__",
@@ -47,6 +47,24 @@
     "confidence": "",
     "accepted_by": "",
     "accepted_at": ""
+  },
+  "reading": {
+    "orientation": {
+      "thesis": "",
+      "why_now": "",
+      "scope": "",
+      "reader_actions": []
+    },
+    "overview": {
+      "required": true,
+      "exemption_reason": "",
+      "heading": "",
+      "summary": "",
+      "format": "",
+      "source_ref": "",
+      "nodes": []
+    },
+    "chapters": []
   },
   "design": {
     "system_boundary": [],
@@ -196,6 +214,44 @@
     }
   },
   "reader_test": {
+    "overview": {
+      "answers_locked": false,
+      "answers": {
+        "problem": "",
+        "top_nodes": "",
+        "relations": "",
+        "expanded_nodes": "",
+        "reader_action": ""
+      },
+      "completed": false,
+      "result": "",
+      "findings": []
+    },
+    "outline": {
+      "answers_locked": false,
+      "answers": {
+        "story": "",
+        "node_mapping": "",
+        "crosscutting": "",
+        "detail_routes": ""
+      },
+      "completed": false,
+      "result": "",
+      "findings": []
+    },
+    "drilldown": {
+      "answers_locked": false,
+      "sample_node": "",
+      "answers": {
+        "responsibility": "",
+        "boundary": "",
+        "children": "",
+        "detail_routes": ""
+      },
+      "completed": false,
+      "result": "",
+      "findings": []
+    },
     "answers_locked": false,
     "approved_by": "",
     "answers": {

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="560" viewBox="0 0 880 560" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Source Han Sans SC, sans-serif">
+  <rect width="880" height="560" fill="#ffffff"/>
+  <text x="40" y="34" font-size="17" font-weight="600" fill="#2b2b2b">五层过滤器：炼句是主角，保真层是兜底网</text>
+  <text x="40" y="54" font-size="12" fill="#666666">青绿＝主流水线　琥珀＝盲评返工现场　灰虚＝不接的活</text>
+
+  <!-- source box -->
+  <rect x="40" y="74" width="800" height="52" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="1.6"/>
+  <text x="60" y="96" font-size="12.5" fill="#1f5f58" font-weight="600">引不是洗稿：逆向拆解汤山老王 3 个视频逐字稿加 8 篇文章，偷的是「从哪个角度切、句子怎么炼」的引擎，</text>
+  <text x="60" y="115" font-size="12.5" fill="#333333">燃料是你自己的一线经验；财经观点一个不抄。</text>
+
+  <!-- five layers horizontal -->
+  <g>
+    <rect x="40" y="152" width="148" height="76" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+    <text x="56" y="176" font-size="12.5" font-weight="600" fill="#1f5f58">① 选题层</text>
+    <text x="56" y="195" font-size="11" fill="#333333">6 个内核当镜头</text>
+    <text x="56" y="211" font-size="11" fill="#333333">找反直觉角度切</text>
+
+    <rect x="206" y="152" width="148" height="76" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+    <text x="222" y="176" font-size="12.5" font-weight="600" fill="#1f5f58">② 结构层</text>
+    <text x="222" y="195" font-size="11" fill="#333333">发动机 5 段：</text>
+    <text x="222" y="211" font-size="11" fill="#333333">具身开头到反问收束</text>
+
+    <rect x="372" y="152" width="148" height="76" rx="9" fill="#2a9d8f" stroke="#1f5f58" stroke-width="2"/>
+    <text x="388" y="176" font-size="12.5" font-weight="600" fill="#ffffff">③ 句子层</text>
+    <text x="388" y="195" font-size="11" fill="#dff3f0">炼句 8 法逐句过筛</text>
+    <text x="388" y="211" font-size="11" fill="#dff3f0">本技能的重心</text>
+
+    <rect x="538" y="152" width="148" height="76" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="2"/>
+    <text x="554" y="176" font-size="12.5" font-weight="600" fill="#7a5a12">④ 保真层</text>
+    <text x="554" y="195" font-size="11" fill="#333333">技术文强制：机制先讲全</text>
+    <text x="554" y="211" font-size="11" fill="#333333">再上比喻；打架先保真</text>
+
+    <rect x="704" y="152" width="136" height="76" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+    <text x="720" y="176" font-size="12.5" font-weight="600" fill="#1f5f58">⑤ 质检层</text>
+    <text x="720" y="195" font-size="11" fill="#333333">口水话红线 9 条</text>
+    <text x="720" y="211" font-size="11" fill="#333333">加保真红线 A 到 E</text>
+  </g>
+  <g stroke="#555555" stroke-width="1.5" fill="#555555">
+    <line x1="188" y1="190" x2="204" y2="190"/><polygon points="206,190 199,186 199,194"/>
+    <line x1="354" y1="190" x2="370" y2="190"/><polygon points="372,190 365,186 365,194"/>
+    <line x1="520" y1="190" x2="536" y2="190"/><polygon points="538,190 531,186 531,194"/>
+    <line x1="686" y1="190" x2="702" y2="190"/><polygon points="704,190 697,186 697,194"/>
+  </g>
+  <text x="40" y="252" font-size="11.5" fill="#7a5a12">为什么保真层独立成一层：炼句的本能是把机制炼成比喻、把数据炼成金句，技术文会炼到「机制没了，只剩比喻」。</text>
+
+  <!-- amber A/B -->
+  <rect x="40" y="278" width="800" height="100" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.8"/>
+  <text x="60" y="302" font-size="13" font-weight="600" fill="#7a5a12">剂量闸是盲评返工打出来的，不是先想出来的</text>
+  <text x="60" y="324" font-size="12" fill="#333333">A/B 实测新版输了：产出自报只用 6 法，裁判按从宽口径数出 13 处、10 段，破了贴线闸；</text>
+  <text x="60" y="343" font-size="12" fill="#333333">全文只有 1 处平地句、尾部三段连环锤、最后两段连用反问，被判「更炸但更油滑」。</text>
+  <text x="60" y="364" font-size="12" fill="#333333">返工：从宽计数并写出、总数压到段落数 2/3、平地句至少 3 处点名、最后两段不连用反问。</text>
+
+  <!-- gray dashed -->
+  <rect x="40" y="400" width="800" height="76" rx="9" fill="#f4f5f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="60" y="424" font-size="12.5" fill="#5f6368">不接的活：下一个当下就能被反驳的硬判断走 cuihuo（淬火）；调研搞懂一个原理走 feynman-explainer；</text>
+  <text x="60" y="444" font-size="12.5" fill="#5f6368">把技术讲给读者听的分享走 talk-smith。判断句式：这篇是「我认为现在是怎样」，还是「未来会变成怎样」。</text>
+  <text x="60" y="464" font-size="11.5" fill="#8a8f94">内部笔记到公众号稿的低能耗改造流：补具身开头、插跨界引信、过炼句加保真、反问收束。</text>
+</svg>

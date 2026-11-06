@@ -1,0 +1,8 @@
+{
+  "kit": "opc-envelope",
+  "version": "0.2.0",
+  "vendored": [
+    {"path": "scripts/artifact_io.py", "sha256": "7f36d91596bf413752663e8802d8fe064de12180d3349b062e47497678f0c9a1"},
+    {"path": "scripts/scoring-rules.json", "sha256": "7d3fe352071a823a6b6ffb6c6b9b02f166ec5bbc1d581b2f44a92dd294309a61"}
+  ]
+}

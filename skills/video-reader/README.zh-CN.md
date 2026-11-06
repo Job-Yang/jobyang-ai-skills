@@ -1,8 +1,6 @@
 # Video Reader
 
-> 一个给大模型（只能看图、看不了视频）配「看视频眼镜」的 **Agent 技能（Skill）**。
-
-[English](./README.md) · **简体中文**
+> 一个给大模型（只能看图、看不了视频）配「看视频眼镜」的 **Agent 技能（Skill）**。简体中文文档。
 
 > [!IMPORTANT]
 > **这是一个 Agent 技能（Skill），不是给你单独跑的命令行工具。** 它要作为技能安装（入口是 [`SKILL.md`](./SKILL.md)），由 AI Agent 来驱动。里面的 `scripts/video_frames.py` 是**技能内部调用的引擎**，不是让最终用户手敲的脚本。用法：把这个仓库放进你 Agent 的技能目录，然后用大白话说「看看这个视频」就行。
@@ -85,11 +83,17 @@ Agent 会读 [`SKILL.md`](./SKILL.md) 来判断何时触发、怎么调用引擎
 - Python3 + `opencv-python-headless` + `numpy`（OpenCV 自带视频解码，**不依赖系统 ffmpeg**）
 - `matplotlib`（仅 `--debug` 模式画曲线图时需要）
 
-**依赖自愈**：脚本启动时会自动检测缺失依赖并尝试安装（`pip install --user --break-system-packages`，不污染系统环境），正常无需手动准备。仅当自动安装失败时，才会提示手动执行：
+**依赖自愈（带确认闸门）**：脚本启动时自动检测缺失依赖。首次缺 cv2/numpy（约 90MB）或 transcribe 缺 openai-whisper（含 torch 约 2GB）时，**未设 `VIDEO_READER_YES_PIP=1` 不会静默安装**——脚本会打印体量预告和手动命令，分别以 exit 3 / exit 4 退出。需要自动装时带变量重跑：
 
 ```bash
-pip install --user --break-system-packages opencv-python-headless numpy matplotlib
+VIDEO_READER_YES_PIP=1 python3 scripts/video_frames.py scan your_video.mp4
+# 或手动安装
+pip install --user --break-system-packages opencv-python-headless numpy
 ```
+
+**退出码**：0=成功；2=无法打开/不是视频文件（含"能打开但无视频流"的假文件）；3=缺 cv2/numpy 且未放行安装；4=transcribe 缺依赖或跳过转写。
+
+**帧目录治理**：帧默认写随机临时目录，退出时 stderr 打印"可删除 <dir>"提示（不自动删，防止模型 Read 滞后）。`--cleanup` 在成功退出时才删自动临时目录（`--outdir` 指定的位置绝不删）；`--keep-frames` 是默认行为的显式写法。`--max-frames`（默认 300）限制 scan/zoom 抽帧上限，超限截断并 warn，防止 zoom 宽区间×高 density 静默产出数千帧。
 
 ### 幕后：技能怎么调用引擎
 
@@ -139,6 +143,8 @@ python3 scripts/video_frames.py scan your_video.mp4
 2. **压成 zip**：把视频压成 `.zip` 上传（zip 通常不被拦），收到后先解压拿到里面的视频文件再喂给脚本。
 
 > 一句话：平台拦的是「后缀 / 格式」，不是「内容」。改后缀或套个 zip 壳就能绕过，拿到真身后照常 `scan` / `zoom`。
+>
+> **边界**：这仅适用于用户自有、有权处置的内容，且目标平台规则允许时；不要用它绕过平台合规管控。拿到文件后脚本会先校验它真的是视频（PNG 改名 mp4 这类会直接报错 exit 2）。
 
 ## 它是怎么工作的
 
@@ -192,6 +198,7 @@ python3 scripts/video_frames.py scan <视频路径>
 | `--threshold` | 运动阈值 | 自动估算 |
 
 > 性能：scan 在区间起点只 seek 一次，之后顺序跳帧（只解码采样帧），长视频也不会因逐帧随机定位卡死；处理过程每约 5 秒在 stderr 打一行进度。
+> 注意：zoom/grid 是逐帧随机 seek（每帧回退关键帧重解码），长视频上宽区间会明显变慢——请收窄区间、降低 density，不要对长片一次性高密度抽帧。
 
 ### zoom —— 对可疑区间高密度抽帧
 

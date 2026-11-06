@@ -1,0 +1,1 @@
+/tmp/mectx-outside-secret.txt

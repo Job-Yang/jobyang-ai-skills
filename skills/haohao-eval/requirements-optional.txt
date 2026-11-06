@@ -1,0 +1,10 @@
+# haohao-eval 可选依赖
+#
+# 每日召回主流程 scripts/loop.py 只用 Python 标准库，不需要任何第三方包——
+# 线上定时任务不要装这些。
+#
+# 只有已废弃的历史脚本 scripts/fit_weights.py（统一分权重拟合）需要 scipy/numpy。
+# 它不进每日流程，跑之前请先读文件头横幅和 data/archive/README.md：
+# 统一分奖励「不动」，结果已被作者自己否掉，重跑只是历史对照。
+scipy>=1.10
+numpy>=1.24

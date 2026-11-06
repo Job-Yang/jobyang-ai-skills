@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="1280" viewBox="0 0 880 1280" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Noto Sans CJK SC, sans-serif">
+  <rect width="880" height="1280" fill="#ffffff"/>
+  <text x="40" y="52" font-size="26" font-weight="600" fill="#262b33">设计罗盘：把「说不清的风格」逐关收敛成原型与档案</text>
+  <text x="40" y="86" font-size="15" fill="#5b6470">不问视觉问题，只点选产品性格；每个决策都渲染出来给用户看</text>
+
+  <rect x="40" y="120" width="800" height="88" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="2"/>
+  <text x="64" y="152" font-size="18" font-weight="600" fill="#0b6b55">① 入场分流：scan 产品目录</text>
+  <text x="64" y="180" font-size="14.5" fill="#0b6b55">有档案 → 延续（读档案，不重新问诊）；无档案有代码 → 补档；全新 → 完整四关</text>
+
+  <line x1="440" y1="208" x2="440" y2="240" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="240" width="800" height="76" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="270" font-size="18" font-weight="600" fill="#0b6b55">② 理结构：灰阶线框</text>
+  <text x="64" y="296" font-size="14.5" fill="#0b6b55">先定每个需求落在哪，不先谈颜色</text>
+
+  <line x1="440" y1="316" x2="440" y2="348" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="348" width="800" height="96" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="2"/>
+  <text x="64" y="380" font-size="18" font-weight="600" fill="#0b6b55">③ 问诊：出 direction.md 方向简报</text>
+  <text x="64" y="408" font-size="14.5" fill="#0b6b55">3–4 个风格坐标，含一个反向候选；简报里不写色值、不写字体名</text>
+  <text x="64" y="430" font-size="14.5" fill="#0b6b55">用户答不出「要什么风格」时，点选产品性格把感受换成可收敛的输入</text>
+
+  <line x1="440" y1="444" x2="440" y2="476" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="476" width="800" height="76" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="506" font-size="18" font-weight="600" fill="#0b6b55">④ 确认 UX：灰阶可点原型</text>
+  <text x="64" y="532" font-size="14.5" fill="#0b6b55">真点动线验证交互，不问「看着怎么样」</text>
+
+  <line x1="440" y1="552" x2="440" y2="584" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="584" width="800" height="88" rx="12" fill="#e6f4f0" stroke="#0f8a6d" stroke-width="2"/>
+  <text x="64" y="616" font-size="18" font-weight="600" fill="#0b6b55">⑤ 视觉定稿：过 final 门禁</text>
+  <text x="64" y="644" font-size="14.5" fill="#0b6b55">渲染候选给用户看实物选；数值写进 tokens.json，spec 从选定 HTML 自动导出</text>
+
+  <line x1="440" y1="672" x2="440" y2="704" stroke="#0f8a6d" stroke-width="2.5" marker-end="url(#t)"/>
+
+  <rect x="40" y="704" width="800" height="96" rx="12" fill="#ffffff" stroke="#0f8a6d" stroke-width="1.8"/>
+  <text x="64" y="736" font-size="18" font-weight="600" fill="#0b6b55">⑥ 交付归档：DESIGN.md + tokens.css</text>
+  <text x="64" y="764" font-size="14.5" fill="#0b6b55">存回产品仓库，导出 Google DESIGN.md 格式，别的 AI 工具也能读</text>
+  <text x="64" y="786" font-size="14.5" fill="#0b6b55">下次 scan 命中「延续」，直接读档案——这就是回流闭环</text>
+
+  <rect x="40" y="828" width="800" height="104" rx="12" fill="#fbf0dd" stroke="#c97a16" stroke-width="1.8"/>
+  <text x="64" y="860" font-size="17" font-weight="600" fill="#9a5a0e">取舍与安全边界</text>
+  <text x="64" y="888" font-size="14" fill="#9a5a0e">示例色板逐值照抄会被拦，微调照抄拦不住——方向必须来自本产品自己的简报。</text>
+  <text x="64" y="912" font-size="14" fill="#9a5a0e">本地评审服务只放行同源请求写评论，评审完优雅停机释放端口。</text>
+
+  <rect x="40" y="956" width="800" height="120" rx="12" fill="#f4f6f8" stroke="#9aa3ad" stroke-width="1.5" stroke-dasharray="8 5"/>
+  <text x="64" y="988" font-size="16" font-weight="600" fill="#5b6470">口味记录与待补</text>
+  <text x="64" y="1016" font-size="14" fill="#5b6470">用户口味记在本机文件里，第一次记录前必须征得用户同意。</text>
+  <text x="64" y="1040" font-size="14" fill="#5b6470">用例检查的是行为（如「模糊需求不连环发问」），不评价审美。</text>
+  <text x="64" y="1064" font-size="14" fill="#5b6470">档案格式对标业界做法的出处见 references/design-archive.md。</text>
+
+  <defs>
+    <marker id="t" markerWidth="10" markerHeight="10" refX="7" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0f8a6d"/></marker>
+  </defs>
+</svg>

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="390" height="1020" viewBox="0 0 390 1020" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Source Han Sans SC, sans-serif">
+  <rect width="390" height="1020" fill="#ffffff"/>
+  <text x="20" y="30" font-size="16" font-weight="600" fill="#2b2b2b">检索之前，先问现有证据够不够</text>
+  <text x="20" y="50" font-size="11.5" fill="#666666">青绿＝主路径　琥珀＝不许做的事　灰虚＝不触发</text>
+
+  <polygon points="195,66 340,108 195,150 50,108" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="195" y="104" font-size="12.5" font-weight="600" fill="#1f5f58" text-anchor="middle">现有证据能否同时支持</text>
+  <text x="195" y="124" font-size="12.5" font-weight="600" fill="#1f5f58" text-anchor="middle">取舍结论和推荐方案？</text>
+
+  <g stroke="#555555" stroke-width="1.5" fill="#555555">
+    <line x1="120" y1="150" x2="120" y2="176"/><polygon points="120,179 116,172 124,172"/>
+    <line x1="270" y1="150" x2="270" y2="176"/><polygon points="270,179 266,172 274,172"/>
+  </g>
+
+  <rect x="30" y="182" width="180" height="76" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="46" y="206" font-size="12.5" font-weight="600" fill="#1f5f58">DIRECT（不检索）</text>
+  <text x="46" y="226" font-size="11" fill="#333333">已批准执行、计算、翻译，</text>
+  <text x="46" y="242" font-size="11" fill="#333333">一手材料够裁决；高影响</text>
+  <text x="46" y="254" font-size="11" fill="#333333">也可以直接走</text>
+
+  <rect x="220" y="182" width="150" height="76" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="236" y="206" font-size="12.5" font-weight="600" fill="#1f5f58">QUICK（一轮收口）</text>
+  <text x="236" y="226" font-size="11" fill="#333333">会变的事实、API 行为、</text>
+  <text x="236" y="242" font-size="11" fill="#333333">可回退的成熟做法；</text>
+  <text x="236" y="254" font-size="11" fill="#333333">仍有关键冲突才升级</text>
+
+  <rect x="20" y="278" width="350" height="76" rx="9" fill="#e6f4f2" stroke="#2a9d8f" stroke-width="2"/>
+  <text x="36" y="302" font-size="12.5" font-weight="600" fill="#1f5f58">DEEP（结构化取证，默认两轮）</text>
+  <text x="36" y="322" font-size="11" fill="#333333">高影响、难回退、多目标权衡且现有证据不足才进；</text>
+  <text x="36" y="340" font-size="11" fill="#333333">第一轮找一手锚点，第二轮只补最强反方和失败边界</text>
+
+  <rect x="20" y="372" width="350" height="86" rx="9" fill="#2a9d8f" stroke="#1f5f58" stroke-width="2"/>
+  <text x="36" y="396" font-size="12.5" font-weight="600" fill="#ffffff">裁决只给四种</text>
+  <text x="36" y="416" font-size="11.5" fill="#dff3f0">已解决；条件性并存；暂时倾向；无法裁决。</text>
+  <text x="36" y="436" font-size="11.5" fill="#dff3f0">先判断双方是不是在回答同一个问题，</text>
+  <text x="36" y="452" font-size="11.5" fill="#dff3f0">差异能解释冲突就写成「各自在什么条件下成立」</text>
+
+  <rect x="20" y="476" width="350" height="96" rx="9" fill="#fbf1d6" stroke="#d9a441" stroke-width="1.8"/>
+  <text x="36" y="500" font-size="12.5" font-weight="600" fill="#7a5a12">不许做的事</text>
+  <text x="36" y="520" font-size="11.5" fill="#333333">写不出「什么新证据会改变行动」，不要检索；</text>
+  <text x="36" y="538" font-size="11.5" fill="#333333">不把搜索摘要冒充决策；不发明没有来源的数字、</text>
+  <text x="36" y="556" font-size="11.5" fill="#333333">阈值和「行业最佳实践」；冲突不按来源数量投票</text>
+
+  <rect x="20" y="590" width="350" height="112" rx="9" fill="#f4f5f6" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="36" y="614" font-size="12" fill="#5f6368">边界</text>
+  <text x="36" y="636" font-size="11.5" fill="#5f6368">它位于具体任务和检索工具之间，只负责判断：</text>
+  <text x="36" y="654" font-size="11.5" fill="#5f6368">缺什么证据、信到什么程度、冲突怎么解释、</text>
+  <text x="36" y="672" font-size="11.5" fill="#5f6368">什么时候停止。不替代领域技能，不替用户拍板；</text>
+  <text x="36" y="694" font-size="11" fill="#8a8f94">对已经很强的模型，主动取证的增益可能有限</text>
+</svg>

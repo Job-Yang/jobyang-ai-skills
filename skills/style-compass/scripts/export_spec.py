@@ -216,8 +216,8 @@ def build_spec(html_path, meta, topic=None, upstream=None, opc=False, producer="
             "requirements": "需求",
             "structure": "结构",
             "interaction": "交互",
-            "visualDirection": "高保真方向",
-            "visualFinal": "视觉定稿",
+            "direction": "高保真方向",
+            "final": "视觉定稿",
             "delivery": "设计交付",
         }
         for key, label in labels.items():

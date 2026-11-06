@@ -1,0 +1,38 @@
+{
+  "name": "example-x-http-api",
+  "_comment": "把这个文件复制为 x-provider.json（已被 gitignore），改成你实际使用的 X 数据服务。技能本体不含任何真实端点和密钥；密钥只通过 $ENV_VAR 注入。三种 action 的 url/params/body 按该服务文档填；maps 告诉归一化器字段在哪里（点号路径，| 分隔多个候选）。",
+  "mode": "http",
+  "timeout": 30,
+  "headers": {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer $X_API_KEY"
+  },
+  "actions": {
+    "search_posts": {
+      "url": "https://your-x-data-service.example/x/search_posts",
+      "method": "POST",
+      "body": {}
+    },
+    "user_posts": {
+      "url": "https://your-x-data-service.example/x/get_user_info",
+      "method": "POST",
+      "body": { "post_count": 20 }
+    },
+    "post_detail": {
+      "url": "https://your-x-data-service.example/x/get_posts_info",
+      "method": "POST",
+      "body": {}
+    }
+  },
+  "maps": {
+    "items_path": "data.items",
+    "id": "id",
+    "url": "item_url",
+    "text": "title|description|text",
+    "created_at": "publish_time|created_at",
+    "author_path": "author",
+    "author_handle_path": "screen_name",
+    "author_name_path": "nickname|name",
+    "stats": "statistics"
+  }
+}
