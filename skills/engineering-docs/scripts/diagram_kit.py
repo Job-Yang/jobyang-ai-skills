@@ -29,15 +29,18 @@ import math
 import re
 import unicodedata
 from pathlib import Path
-
-FONT = '"PingFang SC", "Noto Sans SC", "Noto Sans CJK SC", "Microsoft YaHei", Arial, sans-serif'
-MONO = 'Menlo, Consolas, "DejaVu Sans Mono", "Noto Sans Mono", monospace'
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 # Compatibility exports are derived views of the sole JSON token source.
 from copy import deepcopy
 from visual_theme import (THEME as VISUAL_THEME, DEFAULT_THEME, THEME_ALIASES,
-                          tones, palette as theme_palette, lines as theme_lines,
-                          legacy_components, variant as theme_variant, grayscale)
+                          tones, roles, semantic_tone, palette as theme_palette, lines as theme_lines,
+                          legacy_components, variant as theme_variant, grayscale,
+                          layout_tokens, diagram_metrics, contrast)
+
+FONT = layout_tokens()['fonts']['sans']
+MONO = layout_tokens()['fonts']['mono']
 
 PALETTES = {name: theme_palette() for name in (DEFAULT_THEME, *THEME_ALIASES)}
 PALETTES["plain"] = theme_palette(plain=True)
@@ -63,12 +66,7 @@ THEMES["plain"] = {**_DEFAULT_STYLE, "edge_main": grayscale(VISUAL_THEME["line"]
 DEPRECATED_VARIANTS = {"v2-magazine", "v3-outline", "v4-dashboard"}
 DOUBAO = legacy_components()
 VARIANTS = {name: theme_variant() for name in ("v1-review", *sorted(DEPRECATED_VARIANTS))}
-BASE = {  # font sizes and metrics on a 960-unit canvas
-    "title": 24, "subtitle": 14, "zone": 14, "card": 15, "desc": 13, "code": 12, "chip": 12.5,
-    "badge": 12, "label": 12.5, "note_title": 14, "note": 13, "legend": 12.5,
-    "pad": 12, "gap": 6, "radius": 8, "chip_h": 22, "margin": 32,
-    "card_sw": 1.3, "zone_sw": 1.0, "corner": 6.0,  # rounded-elbow radius (cosmetic only)
-}
+BASE = diagram_metrics()  # Shared library owns the compatibility measurement budget.
 
 
 class LayoutError(ValueError):
@@ -279,6 +277,10 @@ class Diagram:
         self.shadow_defs = {}
         self.label_boxes = []  # (owner, x0, y0, x1, y1) for zone titles and edge labels
         self._edge_specs = []
+        self.annotations = []
+        self._free_labels = []
+        self.legend_spec = None
+        self._current_kind = None
         self._finalized = False
         self.header_bottom = self.s("margin") + self.s("title") * 1.2
         if subtitle:
@@ -288,12 +290,16 @@ class Diagram:
     def _bind_colors(self):
         """Bind paint to this instance; never rebind module compatibility exports."""
         self.tones = tones(self._plain)
+        self.roles = roles(self._plain)
         self.lines = theme_lines(self._plain)
         self.db = legacy_components(self._plain)
         self._paper = PAPER
 
     def _tone(self, name):
         return self.tones.get(name, self.tones["neutral"])
+
+    def _node_tone(self, item):
+        return semantic_tone(item, tone_map=self.tones, role_map=self.roles)
 
     def _color(self, color):
         return grayscale(color) if self._plain and hex_rgb(color) is not None else color
@@ -332,8 +338,13 @@ class Diagram:
 
     def _group(self, layer, kind, nid):
         """Open a <g>; Feishu turns each group into one movable group node."""
+        previous = self._current_kind
+        self._current_kind = kind
         self.layers[layer].append(f'<g data-kind="{kind}" data-id="{esc(nid)}">')
-        return lambda: self.layers[layer].append("</g>")
+        def end():
+            self.layers[layer].append("</g>")
+            self._current_kind = previous
+        return end
 
     def _marker(self, color):
         mid = "ah-" + color.lstrip("#").lower()
@@ -439,7 +450,7 @@ class Diagram:
         return rows
 
     # ---------- components ----------
-    def zone(self, zid, x, y, w, h, label, tone="neutral", dashed=False, fill=True, label_side="top"):
+    def zone(self, zid, x, y, w, h, label, tone="neutral", dashed=False, fill=True, label_side="top", *, members=None):
         """Region for grouping (system boundary, phase, lane). Pass tone="sky"/"sage"/...
         to tint a whole layer with that low-saturation pastel (architecture layers)."""
         t = self._tone(tone)
@@ -476,7 +487,8 @@ class Diagram:
         end()
         n = Node(zid, "zone", x, y, w, h, label=label, tone=tone, dashed=dashed,
                  body_fill=zfill if zfill != "none" else None,
-                 body_border=zborder)
+                 body_border=zborder, fill=fill, label_side=label_side,
+                 members=None if members is None else [m.id if isinstance(m, Node) else m for m in members])
         self.nodes[zid] = n
         return n
 
@@ -487,12 +499,25 @@ class Diagram:
         y0 = min(m.y for m in members) - top
         x1 = max(m.right for m in members) + pad
         y1 = max(m.bottom for m in members) + pad
-        return self.zone(zid, x0, y0, x1 - x0, y1 - y0, label, **kw)
+        return self.zone(zid, x0, y0, x1 - x0, y1 - y0, label, members=members, **kw)
+
+    def set_members(self, zone, members):
+        """Declare containment only; never creates a call/control edge."""
+        zone = self.nodes[zone] if isinstance(zone, str) else zone
+        if zone.kind != "zone":
+            raise ValueError("members require a zone")
+        ids = [m.id if isinstance(m, Node) else m for m in members]
+        if len(set(ids)) != len(ids) or zone.id in ids or any(i not in self.nodes for i in ids):
+            raise ValueError("invalid explicit zone members")
+        zone.meta["members"] = ids
 
     def chip(self, x, y, label, style="soft", tone="neutral", layer="card", on_focal=False):
         """Pill tag. filled = deep pastel solid with white text; outline = white fill
         + soft border; soft = very light tint. on_focal is accepted for API
         compatibility and renders the same soft pastel pill."""
+        if self._current_kind is None:
+            self.annotations.append({"kind": "chip", "x": x, "y": y, "label": label,
+                                     "style": style, "tone": tone, "layer": layer, "on_focal": on_focal})
         t = self._tone(tone)
         w, h = self._chip_w(label), self.s("chip_h")
         if style == "filled":
@@ -509,12 +534,15 @@ class Diagram:
         self._text(layer, x + w / 2, y + h * 0.68, label, self.s("chip"), color, 500, anchor="middle")
         return w
 
-    def card(self, cid, x, y, w, title, desc=None, code=None, chips=(), badge=None, tone="neutral",
-             emphasis=False, dashed=False, h=None, shadow=True, rows=()):
+    def card(self, cid, x, y, w, title, desc=None, code=None, chips=(), badge=None, tone=None,
+             emphasis=False, dashed=False, h=None, shadow=True, rows=(), *, role=None, status=None):
         """Node card: [badge] title / code id / desc / chips / rows. Height fits content unless h is given.
 
-        chips: list of str or (label, style, tone). tone colours the border and badge;
-        emphasis=True fills the card with the tone tint (use for the one focal node).
+        chips: list of str or (label, style, tone), independent of the card role.
+        role declares frontend/backend/database/cloud/security/messagebus/external.
+        Explicit tone > status > string emphasis override role; boolean emphasis
+        strengthens a role without reclassifying it. Role never changes text inset.
+        Omitted role stays neutral; legacy tone aliases and plain remain supported.
         rows: one line per member of a group, each with an optional right-aligned tag, e.g.
         [("订单库", "唯一写入方", "filled", "accent"), ("报表副本", "只读")]. Use it when the design's rule
         applies member by member, so readers can see which members carry it instead of a bare count.
@@ -524,10 +552,10 @@ class Diagram:
         if h is not None and h + 0.5 < need:
             raise LayoutError(f"card {cid} needs height {need:.0f}, got {h:.0f}")
         h = need if h is None else h
-        t = self._tone(tone)
+        t = self._node_tone({"tone": tone, "status": status, "role": role, "emphasis": emphasis})
         th = self.theme
-        # Ordinary entities use a category-tinted face and a subtle border. Focal
-        # entities keep the same face but gain a stronger same-hue outline and dot.
+        # Ordinary entities use a role/category face and a readable outline. Focal
+        # entities keep that face but gain a deeper same-hue outline and dot.
         focal_bar = None
         focal_dot = None
         vr = self.variant
@@ -559,7 +587,7 @@ class Diagram:
             tx += ds + gap
         if badge is not None:
             r = self.s("badge") * 0.95
-            badge_fill = t["solid"] if tone != "neutral" or emphasis else self._color(INK2)
+            badge_fill = t["solid"] if t != self._tone("neutral") or emphasis else self._color(INK2)
             self.layers["card"].append(
                 f'<circle cx="{x + pad + r:.1f}" cy="{cy + self.s("card") * 0.62:.1f}" r="{r:.1f}" '
                 f'fill="{badge_fill}"/>')
@@ -598,8 +626,9 @@ class Diagram:
                 cy += self._row_h()
         end()
         n = Node(cid, "card", x, y, w, h, title=title, desc=desc, code=code, chips=list(chips), tone=tone,
-                 emphasis=emphasis, dashed=dashed, rows=[self._row(r)[:2] for r in rows],
-                 body_fill=fill, body_border=border)
+                 emphasis=emphasis, role=role, status=status, dashed=dashed, rows=[self._row(r)[:2] for r in rows],
+                 body_fill=fill, body_border=border, badge=badge, shadow=shadow,
+                 row_specs=[self._row(r) for r in rows])
         self.nodes[cid] = n
         return n
 
@@ -616,7 +645,7 @@ class Diagram:
         self._text("card", x + w / 2, y + h / 2 + size * 0.35, text, size, t["text"] if tone != "neutral" else INK,
                    600, anchor="middle")
         end()
-        n = Node(bid, "card", x, y, w, h, title=text, tone=tone, kind_tag="bar")
+        n = Node(bid, "card", x, y, w, h, title=text, label=label, items=list(items), tone=tone, kind_tag="bar")
         self.nodes[bid] = n
         return n
 
@@ -647,7 +676,7 @@ class Diagram:
                 self._text("card", tx + tw + size * 0.8, y + h / 2 + size * 0.36, desc,
                            size * 0.92, MUTED)
             end()
-            n = Node(bid, "card", x, y, w, h, title=f"{index} {title}", tone=tone, kind_tag="banner")
+            n = Node(bid, "card", x, y, w, h, title=f"{index} {title}", index=index, heading=title, desc=desc, tone=tone, kind_tag="banner")
             self.nodes[bid] = n
             return n
         # Cream banner: light pastel slab + one solid index chip + dark text.
@@ -671,7 +700,7 @@ class Diagram:
         else:
             self._text("card", tx, y + h / 2 + size * 0.36, title, size, tcol, 700)
         end()
-        n = Node(bid, "card", x, y, w, h, title=f"{index} {title}", tone=tone, kind_tag="banner")
+        n = Node(bid, "card", x, y, w, h, title=f"{index} {title}", index=index, heading=title, desc=desc, tone=tone, kind_tag="banner")
         self.nodes[bid] = n
         return n
 
@@ -713,13 +742,15 @@ class Diagram:
         self._text("card", x + 18 * k, y + h / 2 + self.s("desc") * 0.36, text, self.s("desc"),
                    self.db["verdict_text"], 700)
         end()
-        n = Node(nid, "card", x, y, w, h, title=text, body_fill=self.db["verdict_bg"])
+        n = Node(nid, "card", x, y, w, h, title=text, kind_tag="verdict", body_fill=self.db["verdict_bg"])
         self.nodes[nid] = n
         return n
 
     def status_pill(self, x, y, label, level="strong"):
         """Full-rounded status pill (strong/mid/weak). Drains to the baseline;
         returns (x, y, w, h)."""
+        if self._current_kind is None:
+            self.annotations.append({"kind": "status_pill", "x": x, "y": y, "label": label, "level": level})
         k = self.k
         tok = self.db["pills"].get(level, self.db["pills"]["neutral"])
         h = 22 * k
@@ -755,7 +786,7 @@ class Diagram:
             cy += self.s("note") * 1.45
         end()
         n = Node(nid, "card", x, y, w, h, title=title, tone=cat, body_fill=tok["fill"],
-                 body_border=tok["border"], emphasis=True)
+                 body_border=tok["border"], emphasis=True, kind_tag="category", body=body, cat=cat, left_bar=left_bar)
         self.nodes[nid] = n
         return n
 
@@ -788,7 +819,8 @@ class Diagram:
                        self.db["action"], 400)
             acy += self.s("note") * 1.45
         end()
-        n = Node(nid, "card", x, y, w, h, title=title, body_fill=PAPER)
+        n = Node(nid, "card", x, y, w, h, title=title, body_fill=PAPER, kind_tag="row",
+                 evidence=evidence, action=action, prio=prio)
         self.nodes[nid] = n
         return n
 
@@ -833,12 +865,17 @@ class Diagram:
                 ccx += cell_w + gap
             cy += cell_h + gap
         end()
-        n = Node(nid, "card", x, y, w, cy - y, title="matrix", body_fill=PAPER)
+        n = Node(nid, "card", x, y, w, cy - y, title="matrix", body_fill=PAPER, kind_tag="matrix",
+                 headers=list(headers), rows=deepcopy(rows), row_header_w=row_header_w, cell_h=cell_h)
         self.nodes[nid] = n
         return cy - gap
 
     def text(self, x, y, value, size="desc", color=MUTED, weight=400, anchor="start"):
+        self.annotations.append({"kind": "text", "x": x, "y": y, "value": value, "size": size,
+                                 "color": color, "weight": weight, "anchor": anchor})
+        before = len(self.layers["label"])
         self._text("label", x, y, value, self.s(size) if isinstance(size, str) else size, color, weight, anchor)
+        self._free_labels.extend(self.layers["label"][before:])
 
     def edge(self, a, b, a_side="right", b_side="left", via=None, label=None, style="normal",
              a_t=0.5, b_t=0.5, label_at=None, arrow=True, label_dx=0, label_dy=0, align=None,
@@ -1004,7 +1041,7 @@ class Diagram:
         self._distribute_ports()
         self.layers["edge"] = []
         self.label_boxes = [b for b in self.label_boxes if not b[0].startswith("edge-label:")]
-        self.layers["label"] = []
+        self.layers["label"] = list(self._free_labels)
         self.edges = []
         for i, spec in enumerate(self._edge_specs):
             pts = self._route(spec)
@@ -1018,11 +1055,11 @@ class Diagram:
                                "style": spec["style"], "arrow": spec["arrow"]})
         for i, spec in enumerate(self._edge_specs):
             if spec["label"]:
-                pos = spec["label_at"]
+                pos = spec['label_at']
+                endpoints = {x for x in (spec['a'].id if isinstance(spec['a'], Node) else '',
+                                        spec['b'].id if isinstance(spec['b'], Node) else '') if x}
                 if pos is None:
-                    endpoints = {x for x in (spec["a"].id if isinstance(spec["a"], Node) else "",
-                                                   spec["b"].id if isinstance(spec["b"], Node) else "") if x}
-                pos = self._place_label(spec["points"], spec["label"], endpoints)
+                    pos = self._place_label(spec['points'], spec['label'], endpoints)
                 self._draw_edge_label(i, pos[0] + spec["label_dx"], pos[1] + spec["label_dy"],
                                       spec["label"], spec["style"], spec["points"])
         self._finalized = True
@@ -1137,6 +1174,7 @@ class Diagram:
 
         Default position: single row sits top-right beside the title block; wrapped
         rows drop to a left-aligned block under the header."""
+        self.legend_spec = {"items": deepcopy(items), "x": x, "y": y, "per_row": per_row}
         m = self.s("margin")
         avail = self.W - 2 * m
         size0 = self.s("legend")
@@ -1333,9 +1371,18 @@ class Diagram:
             nfill = n.meta.get("body_fill")
             if zfill and nfill and not n.meta.get("emphasis"):
                 d = fill_contrast(zfill, nfill)
-                if d is not None and d < 0.02:
+                # 面的明度接近时，已有可辨实体轮廓也是合法边界；不能再要求
+                # 作者加一次已存在的边框，或把同色系子块改成白色挖空。
+                border = n.meta.get('body_border')
+                visible_outline = False
+                if border and border != 'none':
+                    try:
+                        visible_outline = contrast(self._color(border), self._color(zfill)) >= 3
+                    except (ValueError, TypeError):
+                        pass
+                if d is not None and d < 0.02 and not visible_outline:
                     out.append(f"{n.id} 的填充与区域 {z.id} 底色几乎相同（ΔL={d:.3f}）："
-                               f"卡片改白底、区域用更浅的底或加描边")
+                               f"拉开同色系色面明度或提供可辨的细边界")
         return out
 
     def _geometry_warnings(self):
@@ -1429,6 +1476,48 @@ class Diagram:
                            f"长边绕远，改走就近通道或贴一个标注")
         return out
 
+    def to_scene(self):
+        """Lossless transport from memory, not reverse engineering an SVG."""
+        self._finalize()
+        clean = lambda value: json.loads(json.dumps(value, ensure_ascii=False))
+        requests = [{k: v.id if isinstance(v, Node) else v for k, v in e.items()}
+                    for e in self._edge_specs]
+        annotations = []
+        for i, item in enumerate(self.annotations):
+            a = dict(item)
+            a.setdefault('id', f'annotation-{i}')
+            size = self.s(a.get('size', 'desc')) if isinstance(a.get('size', 'desc'), str) else a['size']
+            value = a.get('value', a.get('label', ''))
+            width = text_units(value) * size
+            height = size * 1.4
+            if a['kind'] == 'chip': width, height = self._chip_w(value), self.s('chip_h')
+            if a['kind'] == 'status_pill': width, height = text_units(value)*self.s('note')+20*self.k,22*self.k
+            shift = {'middle': width/2, 'end': width}.get(a.get('anchor'), 0)
+            a['geometry'] = [a['x']-shift, a['y']-size if a['kind']=='text' else a['y'], width, height]
+            a['geometry_source'] = 'library text/shape metrics'
+            annotations.append(a)
+        return clean({"scene_version": 1, "type": "free",
+                      "meta": {"title": self.title, "subtitle": self.subtitle, "note": self.summary},
+                      "canvas": [self.W, self.H], "font": self.font,
+                      "objects": [{"id": n.id, "kind": n.kind,
+                                   "geometry": [n.x, n.y, n.w, n.h], "content": n.meta,
+                                   "membership": {"state": "unknown" if n.meta.get("members") is None else "explicit",
+                                                  "members": n.meta.get("members")}}
+                                  for n in self.nodes.values()],
+                      "edges": [{"id": f"edge-{i}", **e} for i, e in enumerate(self.edges)],
+                      "edge_requests": requests, "annotations": annotations,
+                      "labels": self.label_boxes, "legend": self.legend_spec})
+
+    def to_input(self):
+        scene = self.to_scene()
+        return {"version": 1, "type": "free", "meta": scene["meta"],
+                "payload": {k: scene[k] for k in ("canvas", "font", "objects", "edge_requests", "annotations", "legend")}}
+
+    def deliver(self, output, **options):
+        """Use the same checked delivery pipeline as the public render CLI."""
+        from diagram_runtime import render
+        return render(self.to_input(), output, **options)
+
     def svg(self):
         self._finalize()
         defs = []
@@ -1485,7 +1574,7 @@ class Diagram:
                      f'{geo(self.s("margin"), self.s("margin"), self.W * 0.7, self.s("title") * 1.4)}</mxCell>')
         order = sorted(self.nodes.values(), key=lambda n: 0 if n.kind == "zone" else 1)
         for n in order:
-            t = self._tone(n.meta.get("tone", "neutral"))
+            t = self._node_tone(n.meta)
             neu = self._tone("neutral")
             if n.kind == "zone":
                 zfill = n.meta.get("body_fill") or "none"
@@ -1514,15 +1603,49 @@ class Diagram:
                 chips = [c[0] if isinstance(c, (tuple, list)) else c for c in n.meta.get("chips", [])]
                 if chips:
                     parts.append(" · ".join(html.escape(c) for c in chips))
-                for label, tag in n.meta.get("rows", []):
-                    parts.append(html.escape(label) + (f" <b>[{html.escape(tag)}]</b>" if tag else ""))
+                if n.meta.get("kind_tag") == "matrix":
+                    headers = "<tr><th></th>" + "".join(f"<th>{html.escape(str(h))}</th>" for h in n.meta['headers']) + "</tr>"
+                    body = "".join("<tr><th>" + html.escape(str(label)) + "</th>" + "".join(
+                        f"<td>{html.escape(str(level))}: {html.escape(str(text))}</td>" for level, text in cells) + "</tr>"
+                        for label, cells in n.meta['rows'])
+                    parts.append("<table>" + headers + body + "</table>")
+                else:
+                    for label, tag in n.meta.get("rows", []):
+                        parts.append(html.escape(label) + (f" <b>[{html.escape(tag)}]</b>" if tag else ""))
+                for key in ('body', 'evidence', 'action'):
+                    if n.meta.get(key): parts.append(html.escape(str(n.meta[key])))
                 value = esc("<br>".join(parts))
             cells.append(f'<mxCell id="{esc(n.id)}" value="{value}" style="{style}" vertex="1" parent="1">'
                          f'{geo(n.x, n.y, n.w, n.h)}</mxCell>')
+        used_ids = {"0", "1", "title", *self.nodes}
+        for a in self.to_scene()['annotations']:
+            aid = a['id']
+            while aid in used_ids: aid = 'annotation-' + aid
+            used_ids.add(aid)
+            x, y, w, h = a['geometry']
+            value = a.get('value', a.get('label', ''))
+            size = self.s(a.get('size', 'desc')) if isinstance(a.get('size', 'desc'), str) else a['size']
+            fill, stroke, color = 'none', 'none', self._color(a.get('color', MUTED))
+            if a['kind'] == 'chip':
+                t = self._tone(a.get('tone', 'neutral'))
+                filled = a.get('style') == 'filled'
+                fill, stroke, color = t['solid'] if filled else t['tint'], t['entity_border'], PAPER if filled else t['text']
+            elif a['kind'] == 'status_pill':
+                t = self.db['pills'].get(a.get('level'), self.db['pills']['neutral'])
+                fill, color = t['fill'], t['text']
+            style = (f"rounded=1;html=1;whiteSpace=wrap;fillColor={self._color(fill)};strokeColor={self._color(stroke)};"
+                     f"fontColor={self._color(color)};fontSize={size:.1f};align=left;verticalAlign=middle;")
+            cells.append(f'<mxCell id="{esc(aid)}" value="{esc(value)}" style="{style}" vertex="1" parent="1">'
+                         f'{geo(x,y,w,h)}</mxCell>')
         for i, e in enumerate(self.edges):
+            # Preserve legacy edge IDs unless they collide with a real node.
+            edge_id = f"e{i}"
+            while edge_id in used_ids:
+                edge_id = "edge-" + edge_id
+            used_ids.add(edge_id)
             color, width, dash = self._line_paint(e["style"])
             style = (f"edgeStyle=orthogonalEdgeStyle;rounded=1;curved=0;html=1;strokeColor={color};strokeWidth={width:.1f};"
-                     f"endArrow=block;endFill=1;fontSize={self.s('label'):.0f};fontColor={self._color(MUTED)};"
+                     f"endArrow={'block' if e['arrow'] else 'none'};endFill=1;fontSize={self.s('label'):.0f};fontColor={self._color(MUTED)};"
                      + ("dashed=1;" if dash else ""))
             ends = ""
             if e["from"]:
@@ -1535,15 +1658,34 @@ class Diagram:
                  f'<mxPoint x="{pts[0][0]:.1f}" y="{pts[0][1]:.1f}" as="sourcePoint"/>'
                  f'<mxPoint x="{pts[-1][0]:.1f}" y="{pts[-1][1]:.1f}" as="targetPoint"/>'
                  + (f'<Array as="points">{mids}</Array>' if mids else "") + '</mxGeometry>')
-            cells.append(f'<mxCell id="e{i}" value="{esc(e["label"] or "")}" style="{style}" edge="1" parent="1"{ends}>'
+            cells.append(f'<mxCell id="{esc(edge_id)}" value="{esc(e["label"] or "")}" style="{style}" edge="1" parent="1"{ends}>'
                          f'{g}</mxCell>')
         return ('<mxfile host="diagram_kit"><diagram name="Page-1"><mxGraphModel dx="0" dy="0" grid="1" gridSize="8" '
                 f'pageWidth="{self.W:.0f}" pageHeight="{self.H:.0f}"><root>' + "".join(cells) +
                 '</root></mxGraphModel></diagram></mxfile>\n')
 
 
+def render(input_value, output, **options):
+    """Public JSON/Python facade for every registered diagram, not just free objects."""
+    from diagram_runtime import render as execute_render
+    return execute_render(input_value, output, **options)
+
+
+def capabilities():
+    from diagram_runtime import capabilities as registered_capabilities
+    return registered_capabilities()
+
+
+def check_delivery(receipt):
+    from diagram_runtime import check_delivery as verify_delivery
+    return verify_delivery(receipt)
+
+
 if __name__ == "__main__":
     import sys
+    if len(sys.argv) > 1 and sys.argv[1] in {"render", "capabilities", "check", "explain", "compare", "patch"}:
+        from diagram_runtime import main
+        raise SystemExit(main())
     d = Diagram(960, 420, "示例：写入只经过网关", "目标架构 · 实线为调用方向")
     c1, c2, c3 = d.cols(3, 32, 896, gap=72)
     a = d.card("client", c1[0], 150, c1[1], "客户端", desc="提交写请求", badge="1")

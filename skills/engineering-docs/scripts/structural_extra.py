@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from render_templates import Canvas, check, tone, wrap, units, THEME, INK, MUTED, LINE, paint
-from visual_theme import structural_tone  # noqa: E402
+from visual_theme import structural_tone  # noqa: E402 — shared explicit roles and states
 
 # Retain the historical semantic view; these are not data category colours.
 SEM = {key: list(structural_tone({"tone": value})) for key, value in
@@ -36,9 +36,12 @@ def manual_box(canvas, key, x, y, w, h, text, fill, border, size=12, color=INK):
     """Small card drawn by hand (below box()'s 42px minimum height), bounds-checked."""
     if border in {LINE, GRAY} and fill in {"white", GRAY_BG, THEME["panel_bg"]}:
         fill, border = THEME["entity_fill"], THEME["entity_border"]
+    end = canvas.group(key, {"title": text}, (x, y, w, h), "card")
     canvas.rect(x, y, w, h, fill, border, 6)
     canvas.text(x + 10, y + h / 2 + size / 2 - 3, text, size, color, width=w - 18)
+    end()
     canvas.boxes[key] = (x, y, w, h)
+    canvas.scene_objects[str(key)] = {"title": text}
 
 
 # ---------------------------------------------------------------------------
@@ -78,18 +81,20 @@ def stage_gate(spec):
         # The Feishu importer treats a rect whose corner radius reaches half its
         # *narrower* side as an ellipse and freezes it to an image node. Keep rx one
         # unit below min(w,h)/2 so the gate still renders as an editable pill.
+        end = c.group(f"gate-{g['id']}", g, (cx-gw/2, cy-gh/2, gw, gh), "gate")
         c.rect(cx - gw / 2, cy - gh / 2, gw, gh, fill, stroke, radius=min(gw, gh) / 2 - 1)
         c.text(cx, cy + 7, "✓" if passed else "×", 20, GREEN if passed else RED,
                anchor="middle", width=gw)
-        c.path(f"M{xs[i]+sw} {cy} H{cx-gw/2}")
-        c.path(f"M{cx+gw/2} {cy} H{xs[i+1]}", arrow=True)
+        end()
+        c.path(f"M{xs[i]+sw} {cy} H{cx-gw/2}", relation={"from": f"stage-{g['after']}", "to": f"gate-{g['id']}", "directed": True})
+        c.path(f"M{cx+gw/2} {cy} H{xs[i+1]}", arrow=True, relation={"from": f"gate-{g['id']}", "to": f"stage-{stages[i+1]['id']}"})
         # Gate status label sits ABOVE the capsule (in the inter-card gap) so the
         # blocked branch line that drops from the capsule bottom never crosses the
         # label text, the main horizontal line, or a stage card.
         c.text(cx, cy - gh / 2 - 10, f"{g['label']} · {'通过' if passed else '阻断'}", 12,
                GREEN if passed else INK, anchor="middle", width=112)
         if not passed:
-            c.path(f"M{cx} {cy+gh/2} V270", color=RED, arrow=True)
+            c.path(f"M{cx} {cy+gh/2} V270", color=RED, arrow=True, relation={"from": f"gate-{g['id']}", "to": f"block-{g['id']}", "label": g.get('note', '阻断：修复后重验')})
             manual_box(c, f"block-{g['id']}", cx - 65, 270, 130, 44,
                        g.get("note", "阻断：修复后重验"), RED_BG, RED, color=INK)
     return c
@@ -130,7 +135,8 @@ def causal_chain(spec):
         a, b = pos[e["from"]], pos[e["to"]]
         check(b > a, "因果链只能从前向节点指向后向节点。")
         color = GREEN if e["polarity"] == "+" else RED
-        c.path(f"M{xs[a]+nw} {ny+nh/2} H{xs[b]}", color=color, width=1.4, arrow=True)
+        c.path(f"M{xs[a]+nw} {ny+nh/2} H{xs[b]}", color=color, width=1.4, arrow=True,
+               relation={**e, 'from': f"cause-{e['from']}", 'to': f"cause-{e['to']}", 'label': e.get('note', e['polarity'])})
         midx = (xs[a] + nw + xs[b]) / 2
         text = ("+ 增强" if e["polarity"] == "+" else "− 抑制") + (f" · {e['note']}" if e.get("note") else "")
         pill(c, midx, ny + nh / 2 + 28, text, color)
@@ -139,7 +145,8 @@ def causal_chain(spec):
         bx = centers[a] - nw / 2
         c.box(f"branch-{b['from']}", bx, 130, nw, 64, b["label"], "", index=0, **paint(b))
         color = GREEN if b["polarity"] == "+" else RED
-        c.path(f"M{centers[a]} {ny} V194", color=color, width=1.4, arrow=True)
+        c.path(f"M{centers[a]} {ny} V194", color=color, width=1.4, arrow=True,
+               relation={**b, 'from': f"cause-{b['from']}", 'to': f"branch-{b['from']}", 'label': b['polarity']})
         pill(c, centers[a], 202, "+ 增强" if b["polarity"] == "+" else "− 抑制", color)
     return c
 
@@ -154,20 +161,36 @@ def feedback_loop(spec):
     negative = spec["polarity"] == "negative"
     color = GREEN if negative else RED
 
-    c = Canvas(spec, 425)
-    c.box("fl-process", 240, 165, 200, 90, spec["process"], "", index=1, filled=True)
-    c.box("fl-in", 48, 195, 110, 44, spec["input"], "", index=5)
-    c.box("fl-out", 520, 195, 110, 44, spec["output"], "", index=5)
-    c.path("M158 217 H240", arrow=True)
-    c.path("M440 217 H520", arrow=True)
-    # 回环走外围底部：输出底部 -> 下 -> 左 -> 输入底部，不穿过任何节点
-    c.path("M575 239 V320 H103 V239", color=color, width=1.5, arrow=True, dash=True)
-    label = ("负反馈 · 自我收敛" if negative else "正反馈 · 自我放大") + f" · 触发：{spec['trigger']}"
-    pill(c, 240, 308, label, color)
+    c = Canvas(spec, width=spec.get("canvas_width", 680))
+    widths = [c.content_width*.22, c.content_width*.36, c.content_width*.22]
+    gap = (c.content_width-sum(widths))/2
+    texts = [spec["input"], spec["process"], spec["output"]]
+    details = [spec.get("input_detail", ""), spec.get("process_detail", ""), spec.get("output_detail", "")]
+    check(all(isinstance(v, str) for v in details), "反馈节点说明必须是文本。")
+    heights = [c.measure_block(t, d, w)["height"] for t, d, w in zip(texts, details, widths)]
+    cy = c.content_top+max(heights)/2
+    xs = [c.margin, c.margin+widths[0]+gap, c.width-c.margin-widths[2]]
+    keys = ["fl-in", "fl-process", "fl-out"]
+    for key, x, w, h, text, detail in zip(keys, xs, widths, heights, texts, details):
+        c.box(key, x, cy-h/2, w, None, text, detail)
+    for i, field in enumerate(("input_edge", "output_edge")):
+        label = spec.get(field, "")
+        check(isinstance(label, str), "反馈边义必须是文本。")
+        c.path(f"M{xs[i]+widths[i]} {cy} H{xs[i+1]}", arrow=True,
+               relation={"from": keys[i], "to": keys[i+1], "label": label})
+        if label:
+            c.text((xs[i]+widths[i]+xs[i+1])/2, cy-c.gap*2, label, c.size("caption"), anchor="middle", width=gap-c.gap)
+    loop_y = c.content_top+max(heights)+c.section
+    left, right = xs[0]+widths[0]/2, xs[2]+widths[2]/2
+    c.path(f"M{right} {cy+heights[2]/2} V{loop_y} H{left} V{cy+heights[0]/2}", color=color, arrow=True, dash=True,
+           relation={"from":"fl-out", "to":"fl-in", "label":spec["trigger"], "polarity":spec["polarity"], "assumption":spec.get("assumption", False)})
+    label = ("假设：" if spec.get("assumption") else "") + ("负反馈 · 自我收敛" if negative else "正反馈 · 自我放大") + f" · 触发：{spec['trigger']}"
+    bottom = loop_y+c.gap+c.size("body")
+    bottom += c.text(c.margin, bottom, label, c.size("body"), INK, width=c.content_width)-c.size("body")
     if spec.get("intervention"):
-        manual_box(c, "fl-inject", 430, 302, 140, 36, spec["intervention"],
-                   AMBER_BG, AMBER, size=12)
-    return c
+        bottom += c.section
+        bottom += c.box("fl-inject", c.margin, bottom, c.content_width, None, spec["intervention"], tone="warning")
+    return c.finish(bottom+c.gap)
 
 
 def _polyline_clears_boxes(points, boxes, exclude):
@@ -264,16 +287,28 @@ def state_machine(spec):
 
     # ---- 2) 坐标：主轴一行等距；分叉按父主干序号奇偶分上/下两侧，同父的
     # 第二条分叉自动分到另一侧。
-    nw, nh = 100, 46
-    x0, spine_y = 76, 216
-    n = len(spine)
-    pitch = (648 - x0 - nw) / max(n - 1, 1)
-    xs = [x0 + i * pitch for i in range(n)]
-    up_y, down_y = 130, 306
+    c = Canvas(spec, width=spec.get("canvas_width", 680))
+    by_id = {s["id"]: s for s in states}
+    n, x0 = len(spine), c.margin + 54
+    main_labels = [t.get("label", "") for t in fwd if t["from"] in spine and t["to"] in spine]
+    pitch_gap = max(32, max((units(label) * 12 + 12 + 2*c.gap for label in main_labels), default=0))
+    maximum = (c.width-c.margin-x0-pitch_gap*(n-1)) / n
+    check(maximum > 2*c.pad + 13, "主路径列数或迁移标签超过宽度预算；拆分状态图。")
+    widths = {sid: min(maximum, max(70, max(units(row)*13 for row in by_id[sid]["label"].split("\n"))+2*c.pad)) for sid in ids[1:]}
+    nh = max(46, max(2*c.pad+len(wrap(by_id[sid]["label"], widths[sid]-2*c.pad, 13))*c.line_height(13) for sid in ids[1:]))
+    occupied = sum(widths[sid] for sid in spine)+pitch_gap*(n-1)+54
+    x0 = (c.width-occupied)/2+54
+    xs = [x0]
+    for sid in spine[:-1]:
+        xs.append(xs[-1]+widths[sid]+pitch_gap)
+    branch_gap = max(44, c.section*2)
+    up_y = c.content_top
+    spine_y = up_y + nh + branch_gap if any(spine.index(parent) % 2 or sum(p == parent for p, _ in branches)>1 for parent, _ in branches) else c.content_top
+    down_y = spine_y + nh + branch_gap
     cy = spine_y + nh / 2
     box = {}
     for i, sid in enumerate(spine):
-        box[sid] = (xs[i], spine_y, nw, nh)
+        box[sid] = (xs[i], spine_y, widths[sid], nh)
     spine_idx = {sid: i for i, sid in enumerate(spine)}
     branch_count = {}
     for parent, t in branches:
@@ -282,8 +317,8 @@ def state_machine(spec):
         branch_count[parent] = k + 1
         base = "down" if spine_idx[parent] % 2 == 0 else "up"
         side = base if k == 0 else ("up" if base == "down" else "down")
-        px = box[parent][0]
-        box[sid] = (px, up_y if side == "up" else down_y, nw, nh)
+        px, _, pw, _ = box[parent]
+        box[sid] = (px+(pw-widths[sid])/2, up_y if side == "up" else down_y, widths[sid], nh)
     lowest_bottom = max(y + h for (_, y, _, h) in box.values())
 
     # 回退通道分层：跨度大的回退走更靠外（更下）的层。
@@ -293,15 +328,19 @@ def state_machine(spec):
     _bp = {t["to"]: p for p, t in branches}
     n_chan = sum(1 for t in back if _bp.get(t["from"]) != t["to"])
     height = channel_top + max(n_chan - 1, 0) * layer_gap + (110 if n_chan else 60)
-    c = Canvas(spec, height)
+    c.height = height
 
     # ---- 3) 画状态：起点实心圆；普通状态白卡；终态=两个嵌套可编辑圆角矩形。
-    start_cx, start_cy, start_r = 52, cy, 13
+    start_cx, start_cy, start_r = xs[0]-24, cy, 13
+    start_end = c.group(spec['start'], next(s for s in states if s['id'] == spec['start']),
+                        (start_cx-start_r, start_cy-start_r, start_r*2, start_r*2), "state")
     c.shape("circle", cx=start_cx, cy=start_cy, r=start_r, fill=INK)
+    start_end()
     by_id = {s["id"]: s for s in states}
     for sid, (x, y, w, h) in box.items():
         c.boxes[f"sm-{sid}"] = (x, y, w, h)
         stroke, fill = structural_tone(by_id[sid])
+        end = c.group(sid, by_id[sid], (x, y, w, h), "state")
         if by_id[sid].get("kind") == "end":
             gap = 6
             c.shape("rect", x=x, y=y, width=w, height=h, rx=8, fill=fill,
@@ -310,24 +349,28 @@ def state_machine(spec):
                     rx=6, fill=fill, stroke=stroke, stroke_width=1.0)
         else:
             c.rect(x, y, w, h, fill, stroke, 8)
-        c.text(x + w / 2, y + h / 2 + 5, by_id[sid]["label"], 13, INK, anchor="middle", width=w - 16)
+        rows = wrap(by_id[sid]["label"], w-2*c.pad, 13)
+        c.text(x+w/2, y+(h-len(rows)*c.line_height(13))/2+13, by_id[sid]["label"], 13, INK, anchor="middle", width=w-2*c.pad)
+        end()
 
+    route_relations = []
     routes = []  # (points, is_back)
     # ---- 4) 主干前向边：主轴直线；分叉短正交支线。
-    def add_route(pts, is_back=False):
+    def add_route(pts, is_back=False, relation=None):
+        route_relations.append(relation)
         routes.append((pts, is_back))
         return pts
 
     first = spine[0]
     fx, fy, fw, fh = box[first]
-    add_route([(start_cx + start_r, start_cy), (fx, start_cy)])
+    add_route([(start_cx + start_r, start_cy), (fx, start_cy)], relation=next(t for t in fwd if t['from'] == spec['start'] and t['to'] == first))
     if spec["start"] in [t["from"] for t in fwd]:
         t0 = next(t for t in fwd if t["from"] == spec["start"])
         pill(c, (start_cx + start_r + fx) / 2, start_cy - 15, t0["label"])
     for i in range(n - 1):
         ax, _, aw, _ = box[spine[i]]
         bx = box[spine[i + 1]][0]
-        add_route([(ax + aw, cy), (bx, cy)])
+        add_route([(ax + aw, cy), (bx, cy)], relation=next(t for t in fwd if t['from'] == spine[i] and t['to'] == spine[i+1]))
         lbl = next((t["label"] for t in fwd
                     if t["from"] == spine[i] and t["to"] == spine[i + 1]), None)
         if lbl:
@@ -341,10 +384,10 @@ def state_machine(spec):
         # 分叉标签统一放在支线左侧：右侧留给回退边的出入口。
         lx = cxm - (18 if paired_back else 0) - (units(t["label"]) * 12 + 12) / 2 - 6
         if by > py:  # down branch: from parent bottom to branch top
-            add_route([(cxm, py + ph), (cxm, by)])
+            add_route([(cxm, py + ph), (cxm, by)], relation=t)
             pill(c, lx, (py + ph + by) / 2, t["label"])
         else:        # up branch: from parent top to branch bottom
-            add_route([(cxm, py), (cxm, by + bh)])
+            add_route([(cxm, py), (cxm, by + bh)], relation=t)
             pill(c, lx, (py + by + bh) / 2, t["label"])
 
     # ---- 5) 回退边。
@@ -364,7 +407,7 @@ def state_machine(spec):
         else:
             pts = [(xx, by_ + bh_), (xx, py_)]
         add_route(pts, is_back=True)
-        c.path(f"M{pts[0][0]:.1f} {pts[0][1]:.1f} L{pts[1][0]:.1f} {pts[1][1]:.1f}", arrow=True, dash=True)
+        c.path(f"M{pts[0][0]:.1f} {pts[0][1]:.1f} L{pts[1][0]:.1f} {pts[1][1]:.1f}", arrow=True, dash=True, relation=t)
         pill(c, xx + 6 + (units(t["label"]) * 12 + 12) / 2, (pts[0][1] + pts[1][1]) / 2 + 5, t["label"])
     # 前向分叉边让出中线右侧给回退：把这些分叉的前向边左移 18px。
     paired = {t["from"] for t in pair_back}
@@ -376,7 +419,7 @@ def state_machine(spec):
             if abs(pts[0][0] - (bx_ + bw_ / 2)) < 0.5 and (abs(pts[1][1] - by_) < 0.5 or abs(pts[1][1] - (by_ + bh_)) < 0.5):
                 routes[idx] = ([(pts[0][0] - 18, pts[0][1]), (pts[1][0] - 18, pts[1][1])], False)
 
-    corr = [(xs[i] + nw + xs[i + 1]) / 2 for i in range(n - 1)] + [xs[-1] + nw + 14]
+    corr = [(xs[i]+widths[spine[i]]+xs[i+1])/2 for i in range(n-1)]+[xs[-1]+widths[spine[-1]]+14]
     used_corr, used_port = set(), {}
 
     def take_corr(near_x, prefer_right=None):
@@ -414,6 +457,11 @@ def state_machine(spec):
         # 入口：从目标卡片底边进入，多条汇入时端口错开。
         if b == spec["start"]:
             tail = [(start_cx, channel_y), (start_cx, start_cy + start_r)]
+            if _polyline_clears_boxes(tail, {f"sm-{sid}": v for sid, v in box.items()}, exclude=set()) is not None:
+                return_x = min(v[0] for v in box.values())-14
+                check(return_x >= c.margin, "宽分叉未给起点回退留下走廊；拆图或增加画布宽度。")
+                jog_y = start_cy+start_r+20
+                tail = [(return_x, channel_y), (return_x, jog_y), (start_cx, jog_y), (start_cx, start_cy+start_r)]
         else:
             bx, by, bw, bh = box[b]
             slot = used_port.get(b, 0)
@@ -440,7 +488,7 @@ def state_machine(spec):
         pts = clean
         add_route(pts, is_back=True)
         d = f"M{pts[0][0]:.1f} {pts[0][1]:.1f}" + "".join(f" L{p_[0]:.1f} {p_[1]:.1f}" for p_ in pts[1:])
-        c.path(d, arrow=True, dash=True)
+        c.path(d, arrow=True, dash=True, relation=t)
         # 标签放在通道横段中点
         seg = max(((pts[i], pts[i + 1]) for i in range(len(pts) - 1)
                    if abs(pts[i][1] - channel_y) < 0.5 and abs(pts[i + 1][1] - channel_y) < 0.5),
@@ -450,7 +498,7 @@ def state_machine(spec):
 
     # ---- 6) 主干/分叉边路径（回退已在上面直接画）。
     drawn = set()
-    for pts, is_back in routes:
+    for route_index, (pts, is_back) in enumerate(routes):
         if is_back:
             continue
         key = tuple(pts)
@@ -460,7 +508,7 @@ def state_machine(spec):
         d = f"M{pts[0][0]:.1f} {pts[0][1]:.1f}"
         for p in pts[1:]:
             d += f" L{p[0]:.1f} {p[1]:.1f}"
-        c.path(d, arrow=True)
+        c.path(d, arrow=True, relation=route_relations[route_index])
 
     # ---- 7) 渲染期几何硬错误。
     box_full = {f"sm-{sid}": v for sid, v in box.items()}
@@ -509,6 +557,9 @@ def state_machine(spec):
         ys = [p[1] for p in pts]
         check(max(ys) >= band_top, "回退边未进入外侧通道带。")
         check(max(ys) <= c.height - 88, "回退边越出画布底部。")
+    check(set(box) | {spec["start"]} == set(ids), "存在未布局的状态；调整主干/分叉顺序或拆图。")
+    actual = {(t["from"], t["to"]) for t in c.scene_graph["edges"]}
+    check(actual == {(t["from"], t["to"]) for t in trans}, "存在未路由的迁移；调整主干/分叉顺序或拆图，不能省略边。")
     return c
 
 
@@ -620,9 +671,11 @@ def sequence(spec):
         c.text(36, top + 15, g["label"], 12, MUTED, 500, width=200)
     for i, p in enumerate(parts):
         x = cx[i]
+        end = c.group(p['id'], p, (x - bw / 2, head_y, bw, head_h), "participant")
         c.rect(x - bw / 2, head_y, bw, head_h, structural_tone(p)[1], structural_tone(p)[0], 8)
         c.text(x, head_y + 28, p["label"], 14, INK, 600, width=bw - 10, anchor="middle")
         c.boxes[f"seq-{p['id']}"] = (x - bw / 2, head_y, bw, head_h)
+        end()
         c.path(f"M{x:.1f} {head_y + head_h} V{bottom}", color=LINE, width=1, dash=True)
     for m, y in zip(msgs, ys):
         kind = m.get("kind", "sync")
@@ -630,13 +683,13 @@ def sequence(spec):
         if kind == "self":
             right = col[m["from"]] < len(parts) - 1
             dx = 26 if right else -26
-            c.path(f"M{a:.1f} {y} H{a + dx:.1f} V{y + 20} H{a:.1f}", color=INK, width=1.3, arrow=True)
+            c.path(f"M{a:.1f} {y} H{a + dx:.1f} V{y + 20} H{a:.1f}", color=INK, width=1.3, arrow=True, relation=m)
             tx = a + dx + (8 if right else -8)
             c.text(tx, y + 15, m["label"], 12, INK, width=pitch - 40, anchor="start" if right else "end")
             continue
         b = cx[col[m["to"]]]
         color = MUTED if kind == "reply" else INK
-        c.path(f"M{a:.1f} {y} H{b:.1f}", color=color, width=1.3, arrow=True, dash=(kind != "sync"))
+        c.path(f"M{a:.1f} {y} H{b:.1f}", color=color, width=1.3, arrow=True, dash=(kind != "sync"), relation=m)
         span = abs(b - a)
         w = units(m["label"]) * 13 + 10
         check(w <= span - 8, f"消息标签放不下：{m['label']}；缩短标签或调整参与者顺序。")
@@ -681,11 +734,13 @@ def er(spec):
         box[e["id"]] = (x, yy, w, h)
         c.boxes[f"er-{e['id']}"] = (x, yy, w, h)
         stroke, fill = structural_tone(e)
+        end = c.group(e['id'], e, (x, yy, w, h), "card")
         c.rect(x, yy, w, h, "white", stroke, 8)
         c.rect(x + 1, yy + 1, w - 2, 28, fill, "none", 7)
         c.text(x + 10, yy + 20, e["label"], 13, INK, 600, width=w - 16)
         for i, f in enumerate(e.get("fields", [])):
             c.text(x + 10, yy + 48 + i * fh, f, 12, MUTED, width=w - 16)
+        end()
     full = {f"er-{k}": v for k, v in box.items()}
     seen_ports = set()
     for r in rels:
@@ -734,11 +789,14 @@ def er(spec):
         hit = _polyline_clears_boxes(pts, full, exclude={f"er-{r['from']}", f"er-{r['to']}"})
         check(hit is None, f"关系 {r['from']}->{r['to']} 穿过实体 {hit}；调整 col/row。")
         d = f"M{pts[0][0]:.1f} {pts[0][1]:.1f}" + "".join(f" L{p[0]:.1f} {p[1]:.1f}" for p in pts[1:])
-        c.path(d, color=MUTED, width=1.3)
+        c.path(d, color=MUTED, width=1.3, relation=r)
     c.text(32, y - 66 + 40, spec.get("legend", "数字为关系两端的基数：1 恰好一个，0..* 零个或多个"),
            12, MUTED, width=616)
     return c
 
+
+# Planning imports Canvas lazily; literal keys also expose public registry entries.
+import planning_layouts
 
 BUILDERS = {
     "stage_gate": stage_gate,
@@ -748,4 +806,6 @@ BUILDERS = {
     "image_annotate": image_annotate,
     "sequence": sequence,
     "er": er,
+    "gantt": planning_layouts.gantt,
+    "release-train": planning_layouts.release_train,
 }

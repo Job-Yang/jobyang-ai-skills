@@ -79,7 +79,9 @@ def _group_boxes(root, ns):
         x, y = num(main.get("x")) or 0, num(main.get("y")) or 0
         w, h = num(main.get("width")) or 0, num(main.get("height")) or 0
         entry = {"id": g.get("data-id"), "box": (x, y, x + w, y + h),
-                 "fill": (main.get("fill") or "").lower()}
+                 "fill": (main.get("fill") or "").lower(), "stroke": main.get('stroke'),
+                 "stroke_width": num(main.get('stroke-width')) or 0,
+                 "stroke_opacity": 1 if main.get('stroke-opacity') is None else num(main.get('stroke-opacity'))}
         if kind == "zone":
             entry["labeled"] = any((t.text or "").strip() for t in g.findall(f"{ns}text"))
             zones.append(entry)
@@ -96,6 +98,21 @@ def _lightness(c):
     if not v:
         return None
     return (max(v) + min(v)) / 2.0
+
+
+def _outline_contrast(card, fill):
+    foreground, background = rgb(card.get('stroke')), rgb(fill)
+    if foreground is None or background is None:
+        return 0
+    opacity = card.get('stroke_opacity', 1)
+    if opacity is None:
+        return 0
+    foreground = tuple(a * opacity + b * (1-opacity) for a,b in zip(foreground,background))
+    def luminance(channels):
+        linear = [v/12.92 if v <= .04045 else ((v+.055)/1.055)**2.4 for v in channels]
+        return sum(v*k for v,k in zip(linear,(.2126,.7152,.0722)))
+    a,b = sorted((luminance(foreground),luminance(background)))
+    return (b+.05)/(a+.05)
 
 
 def _layout_rules(root, ns, w, h, errors, warns):
@@ -168,8 +185,9 @@ def _layout_rules(root, ns, w, h, errors, warns):
             warns.append(f"卡片 {c['id']} 与区域 {z['id']} 标题贴得太近：卡片顶部应在标题带（约40px）之下")
         else:
             lz, lc = _lightness(z["fill"]), _lightness(c["fill"])
-            if lz is not None and lc is not None and not c["focal"] and abs(lz-lc) < 0.02:
-                warns.append(f"卡片 {c['id']} 填充与区域 {z['id']} 底色几乎相同：卡片改白底、区域用更浅的底或加描边")
+            visible_outline = c['stroke_width'] * DOC_WIDTH / w >= .55 and _outline_contrast(c, z['fill']) >= 3
+            if lz is not None and lc is not None and not c["focal"] and abs(lz-lc) < 0.02 and not visible_outline:
+                warns.append(f"卡片 {c['id']} 填充与区域 {z['id']} 底色几乎相同：拉开同色系明度或提供可辨的细边界")
     # content footprint = cards only (zones are containers), like the engine check.
     x0 = min(c["box"][0] for c in cards)
     x1 = max(c["box"][2] for c in cards)

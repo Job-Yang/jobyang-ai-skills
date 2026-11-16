@@ -2,11 +2,11 @@
 
 技术判断、协作方法、图型选择和图文验收都在本技能内完成。飞书、MindAI、其他绘图 Skill、iLoop 和 OPC 均不构成独立使用的前置依赖。
 
-**图的归属先定清楚**：工程关系图由本技能组织事实、选型和验收，原生适用时优先Archify，专用视图缺口由改良旧模板兜底，历史 `.py` 图继续用 `diagram_kit`。不手写 mermaid 充结构流程图，不在在线画板里从零摆节点。平台只是承载和发布；“顺手补图、回评论附图”同样按这一分工，无需点名。
+**图的归属先定清楚**：工程关系图由本技能组织事实、选型和验收，统一使用 `diagram_kit` 选择注册图型、完整scene和交付；已有JSON／Python API兼容，不要求作者选新旧组件。不手写 mermaid 充结构流程图，不在在线画板里从零摆节点。平台只是承载和发布；“顺手补图、回评论附图”同样按这一分工，无需点名。
 
 ## 画图能力的归属（不要被平台画板接管）
 
-统一入口 `scripts/archify_bridge.py render` 按能力与Schema选择原生或专用旧模板；后端全部随包，不读取其他平台技能目录。自由旧图和draw.io仍由 `diagram_kit` 维护；旧模板可以输出SVG或静态HTML并内嵌JSON源。宿主的平台技能（lark-doc、lark-whiteboard 等）只承担两类动作：
+统一入口 `scripts/diagram_kit.py render` 按图义和Schema选择注册实现，共享源、scene、中文HTML、主题与最终回执；组件全部随包。自由对象支持真实draw.io，其他图型未实现该格式时预先拒绝。SVG／PNG统一固化主题并清理交互状态，不交付auto SVG给静态转换器。宿主的平台技能（lark-doc、lark-whiteboard 等）只承担两类动作：
 
 1. **发布适配器**：将已生成、检查并实际渲染的静态图／正文或独立阅读页写进用户指定平台；
 2. **读取**：导出已有画板做理解或备份。
@@ -19,11 +19,11 @@
 
 | 需要的能力 | 缺什么 | 动作 |
 | --- | --- | --- |
-| 默认新图 | Node.js 18+ | 后端随包；缺Node明确说明，不自动安装或改回旧模板 |
+| 统一绘图交付 | Node.js 18+、独立Playwright＋匹配Chromium | 组件随包；复用本机依赖，缺能力拒绝，不安装／升级Node或Archify |
 | 历史SVG生成与通用检查 | 无（纯 Python 标准库） | 直接运行旧图源 |
 | 数据图表（定量模板、九种统计图示例） | matplotlib、numpy | 脚本已接 `scripts/bootstrap.py`：首次运行自动安装到技能内 `.deps/`（`pip install --target`，不动系统环境），用户无感 |
 | 旧SVG的PNG预览 | rsvg-convert 或 Node | 旧 `diagram_check --png` 按现有转换链运行 |
-| 新Archify静态图 | 独立浏览器 | 从原生HTML导出PNG；含CSS变量的SVG不默认交给旧转换器，见 `archify-bridge.md` |
+| 平台静态图 | 独立浏览器 | 从统一HTML清理导出；SVG固定主题、CSS变量和继承样式已解析，目标平台仍须实际打开验证 |
 | 飞书画板检查/连线绑定 | Node + npx | 仅 `--board` 和发布时需要；缺失就跳过该步并说明，不影响通用交付 |
 
 自动安装失败（内网镜像不可达等）时，把 bootstrap 给出的手动安装命令原样转达用户；不要把它说成"画图功能不可用"——核心 SVG 能力从不依赖这些可选包。
@@ -37,12 +37,14 @@
 design/
   document.md
   diagrams/
-    candidate.json    # 新图的结构源
-    arch.html         # 原生交互阅读产物
+    arch.source.json  # 共同meta＋图型payload
+    arch.scene.json   # 完整传输模型与索引
+    arch.receipt.json # 最终来源／组件／主题／成品指纹
+    arch.html         # 同一中文离线查看器
     arch.png          # 需要静态文档时导出
-    arch.svg          # 需要矢量交付时导出并检查
-    legacy.py         # 维护旧图时才保留
-    legacy.drawio     # 旧后端原生draw.io版本
+    arch.svg          # 固定主题，解析CSS变量与继承样式
+    arch.py           # 已有并已审阅的Python源原样保留
+    arch.drawio       # free图型支持的真实对象／绑定
 ```
 
 按实际需要保留文件，不为目录样式生成空文件。直接 SVG 就是可编辑图源；Mermaid、PlantUML、DOT、Draw.io、BPMN 模型等保留其原始格式。PNG 是预览，不替代可编辑源。

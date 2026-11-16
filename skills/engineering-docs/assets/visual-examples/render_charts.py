@@ -12,6 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 from bootstrap import require
+from visual_theme import theme_snapshot
 
 matplotlib = require("matplotlib")[0]
 matplotlib.use("Agg")
@@ -22,7 +23,7 @@ from matplotlib.colors import Normalize, LinearSegmentedColormap
 from matplotlib.patches import Rectangle
 np = require("numpy")[0]
 
-THEME = json.loads(Path(__file__).with_name("theme.json").read_text())
+THEME = theme_snapshot()
 INK, MUTED = THEME["ink"], THEME["muted"]
 BLUE, TEAL, PURPLE, AMBER = [THEME["colors"][c][0] for c in ("blue", "teal", "purple", "amber")]
 GRID = THEME["grid"]

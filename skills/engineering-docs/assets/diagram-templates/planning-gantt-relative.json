@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "type": "gantt",
+  "meta": {
+    "title": "接口升级计划 · FS 相对估算",
+    "subtitle": "合成数据；负责人泳道与集成前置关系",
+    "note": "抽象工作日，不计工作周和节假日；无限资源，不做资源调度。",
+    "id": "planning-gantt-relative"
+  },
+  "payload": {
+    "mode": "relative",
+    "unit": "workday",
+    "sample": true,
+    "lanes": [
+      {"id": "api-team", "label": "服务端", "owner": "API 小组"},
+      {"id": "client-team", "label": "客户端", "owner": "客户端小组"},
+      {"id": "qa-team", "label": "集成验证", "owner": "QA 小组"}
+    ],
+    "tasks": [
+      {"id": "verify", "label": "端到端回归", "lane": "qa-team", "duration": 2, "after": ["integrate"]},
+      {"id": "client", "label": "客户端接入", "lane": "client-team", "duration": 4, "after": ["contract"]},
+      {"id": "integrate", "label": "联调与兼容验证", "lane": "qa-team", "duration": 2, "after": ["api", "client"]},
+      {"id": "contract", "label": "契约与 Schema 定稿", "lane": "api-team", "duration": 2, "after": []},
+      {"id": "api", "label": "服务端 API 实现", "lane": "api-team", "duration": 3, "after": ["contract"]},
+      {"id": "docs", "label": "迁移说明与 FAQ", "lane": "client-team", "duration": 2, "after": ["contract"]}
+    ],
+    "milestones": [
+      {"id": "contract-ready", "label": "契约冻结", "after": ["contract"]},
+      {"id": "integration-ready", "label": "联调完成", "after": ["integrate"]},
+      {"id": "accept-ready", "label": "验收包就绪", "after": ["verify", "docs"]}
+    ]
+  }
+}

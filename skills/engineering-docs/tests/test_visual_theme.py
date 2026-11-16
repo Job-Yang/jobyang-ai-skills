@@ -51,7 +51,8 @@ def text_contrast(a, b):
 
 class SharedThemeTests(unittest.TestCase):
     def test_authoritative_base_tokens_and_both_engines_match(self):
-        self.assertEqual(VT.DEFAULT_THEME, "document-neutral")
+        self.assertEqual(VT.DEFAULT_THEME, VT.THEME["name"])
+        self.assertEqual(VT.THEME_ALIASES["document-neutral"], VT.DEFAULT_THEME)
         self.assertEqual(DK.INK, RT.INK)
         self.assertEqual(DK.MUTED, RT.MUTED)
         self.assertEqual(DK.BORDER, VT.THEME["entity_border"])
@@ -59,15 +60,18 @@ class SharedThemeTests(unittest.TestCase):
         self.assertNotEqual(DK.BORDER, RT.LINE)
         self.assertEqual(DK.INK, "#1A1B1C")
         self.assertEqual(RT.MUTED, "#5F6670")
-        self.assertEqual(VT.THEME["panel_bg"], "#FAFAF8")
+        self.assertEqual(VT.THEME["panel_bg"], "#F0F2F4")
         self.assertEqual(VT.THEME["grid"], "#E4E3DD")
         self.assertEqual(DK.Diagram(960, 400, "t").palette["canvas"], RT.THEME["canvas_bg"])
         self.assertEqual(RT.THEME["canvas_bg"], "#FFFFFF")
-        self.assertEqual(VT.THEME["semantic"], {"accent": "#4F6B9A", "success": "#35705A",
-                                               "warning": "#9A6A2F", "error": "#A14E50"})
+        self.assertEqual(set(VT.THEME["semantic"]), {"accent", "success", "warning", "error"})
+        self.assertEqual(DK.LINES["accent"][0], VT.THEME["semantic"]["accent"])
 
     def test_legacy_views_are_derived_and_json_readers_still_work(self):
-        raw = json.loads(VT.THEME_PATH.read_text())
+        library = json.loads(VT.THEME_PATH.read_text())
+        self.assertNotIn('colors', library)
+        self.assertNotIn('border', library)
+        raw = VT.theme_snapshot()
         self.assertEqual(DK.TONES, VT.tones())
         self.assertEqual(DK.DOUBAO, VT.legacy_components())
         self.assertIsInstance(RT.tone(0), list)
@@ -282,12 +286,14 @@ class StructuralPaintTests(unittest.TestCase):
         for index in (-1, 0, 1, 2, 5, 999):
             c = RT.Canvas(BASE, 400)
             c.box("a", 40, 140, 200, 60, "普通", index=index, filled=True)
-            self.assertEqual(box_paint(c, "a"), (VT.THEME["entity_border"], VT.THEME["entity_fill"]))
+            self.assertEqual(box_paint(c, "a"), (VT.THEME["entity_border"], VT.node_surface(VT.tones()["neutral"])))
         for field, value, name in (("tone", "success", "success"), ("status", "warning", "warning"),
                                    ("emphasis", True, "accent"), ("tone", "unseen", "neutral")):
             c = RT.Canvas(BASE, 400)
             c.box("a", 40, 140, 200, 60, "重点", **{field: value})
-            expected = (VT.THEME["entity_border"], VT.THEME["entity_fill"]) if name == "neutral" else VT.structural_tone({"tone": name})
+            appearance = VT.tones()[name]
+            border = VT.THEME["entity_border"] if name == "neutral" else VT.structural_tone({"tone": name})[0]
+            expected = (border, VT.node_surface(appearance))
             self.assertEqual(box_paint(c, "a"), expected)
 
     def test_sequence_groups_and_participants_neutral_unless_explicit(self):

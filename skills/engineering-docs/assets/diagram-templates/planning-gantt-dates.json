@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "type": "gantt",
+  "meta": {
+    "title": "迁移排期 · 给定日期区间",
+    "subtitle": "合成日期，不代表真实业务排期",
+    "note": "区间 [开始,结束)；按日历日定位，不推算关键路径、余量或资源。",
+    "id": "planning-gantt-dates"
+  },
+  "payload": {
+    "mode": "dates",
+    "sample": true,
+    "lanes": [
+      {"id": "service", "label": "服务迁移", "owner": "服务组"},
+      {"id": "verify-team", "label": "回归与值守", "owner": "QA／SRE"}
+    ],
+    "tasks": [
+      {"id": "observe", "label": "小流量观察", "lane": "verify-team", "start": "2026-11-23", "finish": "2026-11-26", "after": ["switch"]},
+      {"id": "prepare", "label": "Schema 兼容准备", "lane": "service", "start": "2026-11-16", "finish": "2026-11-20"},
+      {"id": "switch", "label": "切换 API 路由", "lane": "service", "start": "2026-11-20", "finish": "2026-11-23", "after": ["prepare"]},
+      {"id": "check", "label": "历史数据核对", "lane": "verify-team", "start": "2026-11-17", "finish": "2026-11-21"}
+    ],
+    "milestones": [
+      {"id": "switch-done", "label": "路由切换完成", "at": "2026-11-23", "after": ["switch"]},
+      {"id": "observe-done", "label": "观察报告交付", "at": "2026-11-26", "after": ["observe", "check"]}
+    ]
+  }
+}

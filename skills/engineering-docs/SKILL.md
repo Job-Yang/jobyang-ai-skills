@@ -1,6 +1,6 @@
 ---
 name: engineering-docs
-description: 写、改、评审研发技术文档（技术方案、系统设计、RFC、ADR、重构与迁移方案、设计评审），产出主次分明、结论先行、表格列表为主、不写大段文字的正文；以及在技术文档里画、改、重画任何工程图（架构、上下文/容器/组件/部署、流程、泳道、时序、状态、数据流、ER、前后对照、里程碑），新图优先桥接随包 Archify，按关系选型；原生缺少的专用视图由改良旧后端兜底，交付平台通用源与实际产物；旧图仍用 diagram_kit 维护 SVG/draw.io（发布到某个平台只是可选的最后一步）。不手写 mermaid、不在画板 DSL 中从零摆节点。纯润色、教程、API 手册、调研笔记和非技术文档不用。用户说「帮我写个技术方案」「把这张架构图重画一下」「评审下这份 RFC」时触发。
+description: 写、改、评审研发技术文档（技术方案、系统设计、RFC、ADR、重构与迁移方案、设计评审），产出主次分明、结论先行、表格列表为主、不写大段文字的正文；以及在技术文档里画、改、重画任何工程图（架构、上下文/容器/组件/部署、流程、泳道、时序、状态、数据流、ER、前后对照、里程碑），统一使用 diagram_kit 绘图，按关系选型；随包成熟编译器、专用布局与自由对象共享输入、角色主题、场景、查看器和交付；兼容已有 JSON／Python API，保留平台通用源与实际 SVG／PNG，真实对象图支持 draw.io（发布到某个平台只是可选的最后一步）。不手写 mermaid、不在画板 DSL 中从零摆节点。纯润色、教程、API 手册、调研笔记和非技术文档不用。用户说「帮我写个技术方案」「把这张架构图重画一下」「评审下这份 RFC」时触发。
 license: MIT
 ---
 
@@ -10,7 +10,7 @@ license: MIT
 
 ## 触发与归属：只要在技术文档里画工程图，就是本技能
 
-不需要用户点名“用 engineering-docs 画图”。命中下面任一情况，走本技能的内容判断与绘图桥接，哪怕当前任务只是“更新文档、回评论、补一张图”。**原生能力适合时优先 Archify；它缺少而旧后端明确支持的专用图型用旧能力兜底。维护 `.py` 图源仍用 `diagram_kit`。**
+不需要用户点名“用 engineering-docs 画图”。命中下面任一情况，走本技能的内容判断与绘图桥接，哪怕当前任务只是“更新文档、回评论、补一张图”。**全部图型统一用 `diagram_kit render`；按图义、Schema和实际格式选注册能力，不让作者判断新旧。维护已审阅 `.py` API 可用 `Diagram.deliver()`，不自动执行未知 Python。**
 
 - 在技术方案/系统设计/RFC/ADR/设计评审/迁移方案里**新增、修改、重画**一张图。
 - 图里出现的是**服务、模块、组件、容器、节点、角色、阶段、状态、表实体、数据存储、上下游**及其调用/数据/时序关系。
@@ -18,22 +18,22 @@ license: MIT
 
 归属优先级（高到低）：
 
-1. 工程结构图/流程图/泳道/时序/状态/数据流/ER/部署/里程碑 → **本技能**组织事实和关系，由 `scripts/archify_bridge.py` 按能力与输入族选择：原生适用时走 Archify，旧专用layout明确支持时走改良旧模板。能力缺口可以兜底，输入／生成／检查错误不能自动换图。
+1. 工程结构图/流程图/泳道/时序/状态/数据流/ER/部署/里程碑 → **本技能**组织事实和关系，由 `scripts/diagram_kit.py render` 按图义与Schema选择注册实现，共享 `meta＋payload`、完整 scene、主题、查看器与回执。缺能力在渲染前拒绝，输入／生成／检查错误不能自动换图。
 2. 统计数据图表（折线、柱状、散点、分布、漏斗等，表达的是数字而不是工程关系）→ 才用通用可视化能力（ECharts 等）。
 3. 飞书画板 / 其他平台 → 只是**发布适配器**，把已生成、已检查的成品写进去，不负责从零构图。
 
 判据是“图表达的是工程关系还是纯数字”：表达工程关系一律归本技能，不要因为任务标题里没有“写文档”三个字就改用通用画图或直接手写 mermaid。
 
-**别的写作技能只借图或阅读增强，不抢正文**：`feynman-explainer`（调研稿）、`talk-smith`（分享稿）需要严谨工程图时复用本技能的 Archify 桥接。用户要一页式讲解、分享速读页时，可用 Explainer 将已核对正文做成图表联动页面；内容与叙事仍归原文体技能，不因借图或网页交付改成工程方案。
+**别的写作技能只借图或阅读增强，不抢正文**：`feynman-explainer`（调研稿）、`talk-smith`（分享稿）需要严谨工程图时复用本技能的统一绘图入口。用户要一页式讲解、分享速读页时，可用 Explainer 将已核对正文做成图表联动页面；内容与叙事仍归原文体技能，不因借图或网页交付改成工程方案。
 
 ## 绘图边界：内容归本技能，绘制归后端，平台只发布
 
-- **先判能力**：读取 `references/diagram-capabilities.md`，必要时运行桥接的 `capabilities`。图义、关键特性和交付格式能由原生完整承载时优先使用；不能只看同名图型是否存在。
-- **原生图**：按 `references/archify-bridge.md` 读取所选Schema与作者规范，明确主路径、分组、边界和条件，保留Archify原生视觉，不覆盖为旧灰框。
-- **专用兜底／旧图**：旧JSON的 `layout` 字符串交改良的 `render_templates`；已有 `.py` 图源仍用 `diagram_kit`。源文件保留，报告后端和兜底原因。两种Schema不强行互转，旧静态图不冒充原生交互页。
-- **检查后交付**：新图桥接完成生成与来源检查后，必须用独立 Playwright 实际渲染，核对入口、主路径、归属、标签和交互。桥接报告 `browser_verified=false` 表示它没有做浏览器验收；不能只凭退出码报“画得清楚”。旧 SVG 仍运行 `diagram_check`。
+- **先判能力**：读取 `references/diagram-capabilities.md`，运行 `diagram_kit capabilities` 查询图型、Schema、格式与依赖。缺能力先拒绝，不只看图型重名。
+- **统一输入**：采用 `version=1、type、meta＋payload`，payload保留图型专属字段；副标题／说明可省略，不补造文案。既有JSON明确兼容导入，同名不同Schema采用语义明确的注册ID。
+- **完整场景**：保留正文、code／chips／rows、角色／状态、几何、稳定ID、标签、真实边与自由注释。分区成员显式声明；未声明保持unknown，不根据视觉包含猜调用。
+- **检查后交付**：统一终稿装配后再检查scene、SVG语义和适用的组件规则，出自己的源／组件／主题／成品指纹回执。浏览器DOM／导出观测不代替独立视觉验收；`browser_verified=false` 不得包装成已认可。
 - **平台只做承载**：不手写 mermaid 充结构／流程图，不在飞书画板 DSL 中从零摆节点。发布到哪里不决定内容方法，也不保证 HTML 能在该平台直接运行；需要静态图时从成品导出 PNG／SVG。
-- **可修改源**：新图保留 JSON，一页式讲解保留 `.archify.md`；旧图保留 `.py`。draw.io 原生节点编辑沿用旧后端，不能把 Archify SVG 导出直接等同于原生绑定。
+- **可修改源**：所有图保留统一JSON与scene；已有Python源保留不覆盖，SVG不能反推完整作者源。draw.io目前仅自由对象图支持真实节点／绑定，其余格式明确拒绝，不能嵌SVG冒称可编辑。一页式讲解仍保留 `.archify.md`。
 
 ## 交付物
 
@@ -61,7 +61,7 @@ license: MIT
 
 **卡片图不是默认图型。** 最常见的失败是每张图都画成「分区 + 白卡片 + 折线 + 结论卡」。画之前先认关系的形状：
 
-| 关系形状 | Archify 图型 |
+| 关系形状 | 统一图型 |
 | --- | --- |
 | 运行单元、调用、部署边界 | `architecture` |
 | 多角色交接、条件门、闭环 | `workflow` |
@@ -74,24 +74,23 @@ license: MIT
 
 - 先明确读者要回答的问题，再定主路径、归属、条件与图型。不要用卡片数量、流程步数硬判图型。
 - **图文互补**：图要表达文字或表格没有直接呈现的关系；对象名称相同不算重复，逐项重排而没有理解增益才算重复。
-- 完整选择规则见 `references/diagram-selection.md`，新旧差集与兜底见 `references/diagram-capabilities.md`；执行与输入路径见 `references/archify-bridge.md`。
+- 完整选择规则见 `references/diagram-selection.md`，能力与Schema兼容见 `references/diagram-capabilities.md`；执行与输入路径见 `references/archify-bridge.md`。
 
 ### 图与阅读页的交付
 
 | 产物 | 修改源 | 展示 |
 | --- | --- | --- |
-| 新工程图 | JSON | 自包含交互 HTML，按目标需要导出 PNG／SVG |
+| 全部工程图与专用视图 | 统一JSON＋scene；兼容既有JSON／Python API | 同一自包含中文HTML，按实际能力导出固定主题SVG／PNG |
+| 自由对象图 | 同上；已有 `.py` 保留 | 另支持真实节点与绑定的draw.io |
 | 一页式讲解 | `.archify.md` 与引用数据 | Explainer HTML，图表、步骤、来源联动 |
-| 专用旧视图兜底 | 旧layout JSON | SVG／自包含静态HTML，明确没有原生交互 |
-| 历史图 | `.py` | SVG／draw.io 与 PNG，继续可维护 |
 
-新图保持 Archify 原生的角色色面、轻分组和路径编码；旧图使用本技能浅色面／轻轮廓主题，分类色与状态色分开，不自动按编号换色。完整规则见 `references/visual-design.md`。
+全部绘图使用唯一 `document-roles` 低饱和色库，色面为主、细浅同色边辅助；普通中文sans、代码mono，尺寸进入各图型的测量预算。短Item按内容收紧，必要长条标题居中，不用白底嵌套或重灰框。角色、分类、重点与状态分开；统计独立点按任意色对方案取色，超过单面容量显式分面而不删数据。发布图保关键条件，完整审批记录另交可展开表和受回执校验的 `.details.html／.details.json`，不撑进主图。完整规则见 `references/visual-design.md`。
 
 **额外阅读能力按需用**：技术方案的速读页、机制讲解、分享稿可以借用 Explainer 的一页图文组合、步骤定位、来源和代码片段、面板局部修订。它不替作者取证，不改变原文体，也不把所有正文强制改成网页；说明见 `references/archify-reading.md`。
 
 平台无关交付见 `references/portable-delivery.md`，飞书发布读 `references/lark-publish.md`。静态图与正文默认分发，交互页按平台能力作独立附件或链接。
 
-维护历史图时读 `references/diagram-system.md`，旧脚本示例为 `assets/examples/personal-harness/arch.py`；这些不是新图默认入口。
+自由对象／Python API读 `references/diagram-system.md`；统一输入与执行读 `references/archify-bridge.md`。已审阅脚本示例为 `assets/examples/personal-harness/arch.py`。
 
 ## 工作流
 
@@ -100,27 +99,28 @@ license: MIT
 3. **建立工程判断**：现状事实、问题、目标约束、候选、决定与代价、落地设计、风险、验证发布回退、未决问题。这是检查顺序不是目录。完整模型见 `references/decision-model.md`。
 4. **先写速读层**：标题、首屏、总览图草稿；全部 H2/H3 + 每章第一段。**标题写短关键词、模块或方向**（“聚合校验”“发布与回退”“数据采集”），像目录一样写宽一点，不写成一句话、不写具体作用域或结论、不编号（不写“第 N 步/1./一、”），结论和作用域放进第一段；正文不写“老板/同学问”“你让我”等对话来源和手机号/邮箱/姓名称谓（doc_check 会报错拦截）。跑 `python3 scripts/doc_check.py doc.md --skim --source <材料>`，只读速读层确认五问答得上。
 5. **填细节**：每段问"删掉它，评审结论、职责、失败处理或验收会不会变"，会变的留章节，只影响实现的进附录，都不影响的删。留下的内容按 `references/formatting.md` 的形状表选格式，默认表格/列表/引用块，不默认写段落。
-6. **设计必要的图**：先按选择规则定问题、主路径、归属与条件，查询能力差集后准备原生Schema或完整旧layout输入，再运行桥接。适用的原生图优先，专用能力缺口由旧后端兜底；输入错误或执行失败不偷偷换图。实际用独立Playwright看图，核对关键事实、格式、后端和可读性。维护旧 `.py` 仍用 `diagram_kit` 与 `diagram_check`。
-7. **检查与交付**：再跑两个 check，处理提醒或说明保留理由；锁定事实后过一遍 `haohao-shuohua` 洗 AI 味（技术文档成文的必经收尾，只改语言不改技术含义与判断强度；**不得把表格、列表、引用块改回段落**，格式结构归本技能）；高风险/正式评审做独立读者测试，走 `references/quality-gates.md` 全检 + `references/human-reading.md`（总览、主线、随机章节、全文四层）。先交付平台无关文件（正文＋JSON／`.archify.md` 与 HTML；旧图为 `.py`／SVG／draw.io，静态图按需导出），再按用户指定平台发布；平台（lark-doc/飞书等）只承载成文，不决定结构；平台不可用或没权限不阻塞，写明哪步没发、需要谁做什么。
+6. **设计必要的图**：先按选择规则定问题、主路径、归属与条件，查询统一能力表后准备 `meta＋图型payload`，运行 `diagram_kit render`。保留真实图义；错误不换图。用独立Playwright在正文尺寸核对关键事实、条件、角色、查找／聚焦及导出；无有向边不展示假路径。已有Python API可 `to_input()`／`deliver()`，未知脚本不执行。
+7. **检查与交付**：再跑两个 check，处理提醒或说明保留理由；锁定事实后过一遍 `haohao-shuohua` 洗 AI 味（技术文档成文的必经收尾，只改语言不改技术含义与判断强度；**不得把表格、列表、引用块改回段落**，格式结构归本技能）；高风险/正式评审做独立读者测试，走 `references/quality-gates.md` 全检 + `references/human-reading.md`（总览、主线、随机章节、全文四层）。先交付平台无关文件（正文＋统一JSON／scene／HTML；已有Python源原样保留，一页式讲解附 `.archify.md`，静态格式按实际能力导出），再按用户指定平台发布；平台（lark-doc/飞书等）只承载成文，不决定结构；平台不可用或没权限不阻塞，写明哪步没发、需要谁做什么。
 
 复杂流程读 `references/process-modeling.md`，数据图读 `references/data-charts.md`，图型内容要求读 `references/diagram-guidance.md`，团队模板读 `references/template-adaptation.md`。
 
 ## 依赖原则：核心零依赖，可选自动补
 
-- `diagram_kit`／`diagram_check`／`doc_check` 仍只靠 Python 标准库，旧图维护不需要平台账号。默认新图的 Archify 需要 Node.js 18+，后端随包固定版本，不自动安装或升级；缺运行时就明确报告，不偷偷换旧画法。
-- 数据图要 matplotlib/numpy：脚本已接 `scripts/bootstrap.py`，首次运行自动装到技能内 `.deps/`（`pip install --target`，不写系统环境、不要 sudo）；装不上时把脚本给出的手动命令转给用户，不允许说成"画图不可用"。
-- 旧SVG的PNG预览仍可用 `rsvg-convert` → Node resvg → whiteboard-cli。新Archify静态图从原生浏览器导出PNG；其SVG含CSS样式，不默认走旧转换器。飞书连线绑定只在旧图与发布时按目标环境验证。
+- Python内存API／SVG兼容save仍只靠标准库；统一交付需要Node.js 18+及独立Playwright＋匹配Chromium。编译器随包固定版本，不安装／升级Node或Archify，缺依赖明确拒绝。
+- 定量图需要matplotlib／numpy，先查已有依赖；仅在获准时通过 `bootstrap.py` 隔离到 `.deps`。`ENGINEERING_DOCS_DEPS_DIR` 可指定本次数据目录，不动系统环境。
+- 平台SVG固化light／dark／plain，解析CSS变量与继承样式，PNG使用同一清理过的SVG。HTML交互不进入静态图；目标平台原生导入／连线绑定另按实际环境验证。
 
 | 脚本 | 用途 |
 | --- | --- |
-| `scripts/archify_bridge.py` | 新图、一页式讲解、架构对照、面板修订；不实现第二套绘图规则 |
+| `scripts/archify_bridge.py` | 兼容门面；render委托统一交付，explain／compare／patch保留原方法 |
 | `scripts/doc_check.py` | 三层结构、预算、速读层、段落墙与格式密度、套话检查 |
-| `scripts/diagram_kit.py` | 生成 SVG/draw.io；放不下、重叠、线穿卡片时报错 |
+| `scripts/diagram_kit.py` | 唯一公共CLI／Python门面：render／capabilities／check；兼容save／svg／drawio |
 | `scripts/diagram_check.py` | SVG 格式/字号/色系/比例检查；`--board` 加飞书兼容检查 |
 | `scripts/bootstrap.py` | 可选依赖自动安装与失败提示 |
 | `scripts/lark_bind.py` | 可选适配器：连线绑定节点的飞书画板数据 |
 | `scripts/engineering_docs.py` | 严格模式：`init`/`validate`/`readability`/`transition` |
-| `scripts/render_templates.py` | 旧版模板图库（定量图经 bootstrap 自动补依赖） |
+| `scripts/diagram_runtime.py`／`diagram_scene.py`／`diagram_adapter.mjs` | 内部注册、Schema适配、完整scene、查看器装配与统一检查／交付 |
+| `scripts/render_templates.py` | 专用布局内部组件；定量图使用隔离依赖 |
 
 ## 使用边界
 

@@ -1,0 +1,312 @@
+{
+  "version": 1,
+  "type": "release-train",
+  "meta": {
+    "id": "planning-release-capacity",
+    "title": "两窗口发布列车 · 完整上车记录",
+    "subtitle": "合成日期与状态；窗口之间的空档不补阶段"
+  },
+  "payload": {
+    "sample": true,
+    "time_mode": "date",
+    "train": {
+      "id": "train",
+      "label": "合成 SDK 发布列车"
+    },
+    "windows": [
+      {
+        "id": "w0",
+        "label": "窗口 1",
+        "start": "2026-11-16",
+        "finish": "2026-11-21",
+        "phases": [
+          {
+            "id": "integration0",
+            "label": "集成与票检",
+            "kind": "integration",
+            "start": "2026-11-16",
+            "finish": "2026-11-18"
+          },
+          {
+            "id": "freeze0",
+            "label": "冻结与准出",
+            "kind": "freeze",
+            "start": "2026-11-18",
+            "finish": "2026-11-19"
+          },
+          {
+            "id": "canary0",
+            "label": "部署与灰度",
+            "kind": "canary",
+            "start": "2026-11-19",
+            "finish": "2026-11-21"
+          }
+        ]
+      },
+      {
+        "id": "w1",
+        "label": "窗口 2",
+        "start": "2026-11-23",
+        "finish": "2026-11-28",
+        "phases": [
+          {
+            "id": "integration1",
+            "label": "集成与票检",
+            "kind": "integration",
+            "start": "2026-11-23",
+            "finish": "2026-11-25"
+          },
+          {
+            "id": "freeze1",
+            "label": "冻结与准出",
+            "kind": "freeze",
+            "start": "2026-11-25",
+            "finish": "2026-11-26"
+          },
+          {
+            "id": "canary1",
+            "label": "部署与灰度",
+            "kind": "canary",
+            "start": "2026-11-26",
+            "finish": "2026-11-28"
+          }
+        ]
+      }
+    ],
+    "branches": [
+      {
+        "id": "master",
+        "label": "master",
+        "kind": "master",
+        "start": "2026-11-16",
+        "finish": "2026-12-01"
+      },
+      {
+        "id": "release0",
+        "label": "release/sdk-1",
+        "kind": "release",
+        "window": "w0",
+        "start": "2026-11-16",
+        "finish": "2026-11-21"
+      },
+      {
+        "id": "release1",
+        "label": "release/sdk-2",
+        "kind": "release",
+        "window": "w1",
+        "start": "2026-11-23",
+        "finish": "2026-11-28"
+      }
+    ],
+    "tickets": [
+      {
+        "id": "ticket00",
+        "label": "窗口1 · SDK 1兼容项",
+        "window": "w0",
+        "branch": "release0",
+        "at": "2026-11-18",
+        "status": "boarded",
+        "approval_gate": "approval0",
+        "approvals": [
+          {
+            "label": "兼容审查",
+            "state": "approved",
+            "recorded_at": "2026-11-17",
+            "approver": "合成 SDK reviewer"
+          }
+        ]
+      },
+      {
+        "id": "ticket01",
+        "label": "窗口1 · SDK 2兼容项",
+        "window": "w0",
+        "branch": "release0",
+        "at": "2026-11-18",
+        "status": "boarded",
+        "approval_gate": "approval0",
+        "approvals": [
+          {
+            "label": "兼容审查",
+            "state": "approved",
+            "recorded_at": "2026-11-17",
+            "approver": "合成 SDK reviewer"
+          }
+        ]
+      },
+      {
+        "id": "ticket10",
+        "label": "窗口2 · SDK 1兼容项",
+        "window": "w1",
+        "branch": "release1",
+        "at": "2026-11-25",
+        "status": "boarded",
+        "approval_gate": "approval1",
+        "approvals": [
+          {
+            "label": "兼容审查",
+            "state": "approved",
+            "recorded_at": "2026-11-24",
+            "approver": "合成 SDK reviewer"
+          }
+        ]
+      },
+      {
+        "id": "ticket11",
+        "label": "窗口2 · SDK 2兼容项",
+        "window": "w1",
+        "branch": "release1",
+        "at": "2026-11-25",
+        "status": "boarded",
+        "approval_gate": "approval1",
+        "approvals": [
+          {
+            "label": "兼容审查",
+            "state": "approved",
+            "recorded_at": "2026-11-24",
+            "approver": "合成 SDK reviewer"
+          }
+        ]
+      }
+    ],
+    "gates": [
+      {
+        "id": "approval0",
+        "label": "窗口1车票审批",
+        "window": "w0",
+        "phase": "integration0",
+        "at": "2026-11-18",
+        "kind": "ticket-approval",
+        "state": "passed",
+        "conditions": [
+          "SDK 兼容确认记录已给定"
+        ]
+      },
+      {
+        "id": "exit0",
+        "label": "窗口1准出",
+        "window": "w0",
+        "phase": "freeze0",
+        "at": "2026-11-19",
+        "kind": "exit",
+        "state": "passed",
+        "conditions": [
+          "候选 SHA 可查",
+          "给定回退包已校验"
+        ]
+      },
+      {
+        "id": "approval1",
+        "label": "窗口2车票审批",
+        "window": "w1",
+        "phase": "integration1",
+        "at": "2026-11-25",
+        "kind": "ticket-approval",
+        "state": "passed",
+        "conditions": [
+          "SDK 兼容确认记录已给定"
+        ]
+      },
+      {
+        "id": "exit1",
+        "label": "窗口2准出",
+        "window": "w1",
+        "phase": "freeze1",
+        "at": "2026-11-26",
+        "kind": "exit",
+        "state": "passed",
+        "conditions": [
+          "候选 SHA 可查",
+          "给定回退包已校验"
+        ]
+      }
+    ],
+    "deployments": [
+      {
+        "id": "deploy0",
+        "label": "窗口1灰度",
+        "window": "w0",
+        "phase": "canary0",
+        "branch": "release0",
+        "start": "2026-11-19",
+        "finish": "2026-11-21",
+        "gate": "exit0",
+        "state": "complete",
+        "scope": "合成流量 10% → 50%"
+      },
+      {
+        "id": "deploy1",
+        "label": "窗口2灰度",
+        "window": "w1",
+        "phase": "canary1",
+        "branch": "release1",
+        "start": "2026-11-26",
+        "finish": "2026-11-28",
+        "gate": "exit1",
+        "state": "complete",
+        "scope": "合成流量 10% → 50%"
+      }
+    ],
+    "edges": [
+      {
+        "id": "board00",
+        "from": "ticket00",
+        "to": "release0",
+        "kind": "board",
+        "label": "给定上车记录"
+      },
+      {
+        "id": "board01",
+        "from": "ticket01",
+        "to": "release0",
+        "kind": "board",
+        "label": "给定上车记录"
+      },
+      {
+        "id": "cut0",
+        "from": "master",
+        "to": "release0",
+        "kind": "branch",
+        "label": "切出给定分支",
+        "at": "2026-11-16"
+      },
+      {
+        "id": "merge0",
+        "from": "release0",
+        "to": "master",
+        "kind": "merge",
+        "label": "给定合回记录",
+        "at": "2026-11-21"
+      },
+      {
+        "id": "board10",
+        "from": "ticket10",
+        "to": "release1",
+        "kind": "board",
+        "label": "给定上车记录"
+      },
+      {
+        "id": "board11",
+        "from": "ticket11",
+        "to": "release1",
+        "kind": "board",
+        "label": "给定上车记录"
+      },
+      {
+        "id": "cut1",
+        "from": "master",
+        "to": "release1",
+        "kind": "branch",
+        "label": "切出给定分支",
+        "at": "2026-11-23"
+      },
+      {
+        "id": "merge1",
+        "from": "release1",
+        "to": "master",
+        "kind": "merge",
+        "label": "给定合回记录",
+        "at": "2026-11-28"
+      }
+    ]
+  }
+}

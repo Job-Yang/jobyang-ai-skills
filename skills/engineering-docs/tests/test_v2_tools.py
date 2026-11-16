@@ -195,9 +195,15 @@ class DiagramKitTests(unittest.TestCase):
         d.legend([("card", "已有能力", "neutral"), ("card", "项目新增", "accent"),
                   ("card", "待确认", "orange")])
         text = d.svg()
-        # Focal marks and legend samples use the same semantic tokens.
-        self.assertIn("#4F6B9A", text.upper())
-        self.assertIn("#9A6A2F", text.upper())
+        # Check the actual focal and legend glyphs, not any incidental SVG colour.
+        ns = "{http://www.w3.org/2000/svg}"
+        root = ET.fromstring(text)
+        card = next(g for g in root.iter(ns + "g") if g.get("data-id") == "c")
+        legend = next(g for g in root.iter(ns + "g") if g.get("data-kind") == "legend")
+        self.assertEqual(card.find(ns + "rect").get("stroke"), d.tones["accent"]["border"])
+        self.assertEqual(card.find(ns + "circle").get("fill"), d.tones["accent"]["solid"])
+        strokes = [g.get("stroke") for g in legend.iter(ns + "rect") if g.get("stroke") != "none"]
+        self.assertEqual(strokes, [d.tones[k]["border"] for k in ("neutral", "accent", "orange")])
         self.assertIn("项目新增", text)
 
     def test_legend_stress_long_chinese_wraps_and_never_overlaps(self):
@@ -281,7 +287,7 @@ class DiagramKitTests(unittest.TestCase):
         c = d.card("c", 60, 180, 300, "网关", tone="sky", emphasis=True)
         svg = d.svg()
         # Group stays neutral; the focal entity uses a light category face and same-hue outline.
-        self.assertIn("#FAFAF8", svg.upper())
+        self.assertIn(diagram_kit.VISUAL_THEME['panel_bg'].upper(), svg.upper())
         self.assertIn(c.meta["body_fill"], svg.upper())
         self.assertNotEqual(c.meta["body_fill"], "#FFFFFF")
         self.assertEqual(c.meta["body_border"], d.tones["sky"]["border"])
@@ -312,9 +318,14 @@ class DiagramKitTests(unittest.TestCase):
         d = Diagram(960, 300, title="t", theme="doubao")
         d.evidence_action_row("r", 40, 120, 880, "P0 漏标",
                               "实跑：文件头缺失", "修：不导出", prio="p0")
-        svg = d.svg().upper()
-        self.assertIn("#A14E50", svg)   # explicit P0 status
-        self.assertIn("#4F6B9A", svg)    # action is not a success state
+        ns = "{http://www.w3.org/2000/svg}"
+        root = ET.fromstring(d.svg())
+        row = next(g for g in root.iter(ns + "g") if g.get("data-id") == "r")
+        priority = next(rect for rect in row.iter(ns + "rect") if rect.get("width") == "6.0")
+        action = next(text for text in row.iter(ns + "text") if text.text == "修：不导出")
+        self.assertEqual(priority.get("fill"), d.db["prio_bar"]["p0"])
+        self.assertEqual(action.get("fill"), d.db["action"])
+        self.assertNotEqual(action.get("fill"), d.tones["success"]["text"])
 
     def test_doubao_matrix_renders_pill_headers_and_status(self):
         d = Diagram(1100, 500, title="t", theme="doubao")
@@ -324,7 +335,11 @@ class DiagramKitTests(unittest.TestCase):
         svg = d.svg().upper()
         self.assertIn(d.db["matrix_head_bg"], svg)
         self.assertIn(d.db["pills"]["strong"]["fill"], svg)
-        self.assertIn("#EEF3F7", svg)    # row header
+        ns = "{http://www.w3.org/2000/svg}"
+        group = next(g for g in ET.fromstring(d.svg()).iter(ns + "g") if g.get("data-id") == "m")
+        row_header = next(rect for rect in group.iter(ns + "rect") if rect.get("x") == "40.0")
+        self.assertEqual(row_header.get("fill"), d.db["row_header_bg"])
+        self.assertIn(d.db["pills"]["weak"]["fill"], svg)
 
     def test_doubao_components_are_editable_rects_not_paths(self):
         d = Diagram(1100, 600, title="t", theme="doubao")

@@ -1,0 +1,1382 @@
+{
+  "synthetic": true,
+  "cases": [
+    {
+      "id": "gantt-cycle",
+      "expected": "reject",
+      "input": {
+        "version": 1,
+        "type": "gantt",
+        "meta": {
+          "title": "接口升级计划 · FS 相对估算",
+          "subtitle": "合成数据；负责人泳道与集成前置关系",
+          "note": "抽象工作日，不计工作周和节假日；无限资源，不做资源调度。",
+          "id": "planning-gantt-relative"
+        },
+        "payload": {
+          "mode": "relative",
+          "unit": "workday",
+          "sample": true,
+          "lanes": [
+            {
+              "id": "api-team",
+              "label": "服务端",
+              "owner": "API 小组"
+            },
+            {
+              "id": "client-team",
+              "label": "客户端",
+              "owner": "客户端小组"
+            },
+            {
+              "id": "qa-team",
+              "label": "集成验证",
+              "owner": "QA 小组"
+            }
+          ],
+          "tasks": [
+            {
+              "id": "verify",
+              "label": "端到端回归",
+              "lane": "qa-team",
+              "duration": 2,
+              "after": [
+                "integrate"
+              ]
+            },
+            {
+              "id": "client",
+              "label": "客户端接入",
+              "lane": "client-team",
+              "duration": 4,
+              "after": [
+                "contract"
+              ]
+            },
+            {
+              "id": "integrate",
+              "label": "联调与兼容验证",
+              "lane": "qa-team",
+              "duration": 2,
+              "after": [
+                "api",
+                "client"
+              ]
+            },
+            {
+              "id": "contract",
+              "label": "契约与 Schema 定稿",
+              "lane": "api-team",
+              "duration": 2,
+              "after": [
+                "verify"
+              ]
+            },
+            {
+              "id": "api",
+              "label": "服务端 API 实现",
+              "lane": "api-team",
+              "duration": 3,
+              "after": [
+                "contract"
+              ]
+            },
+            {
+              "id": "docs",
+              "label": "迁移说明与 FAQ",
+              "lane": "client-team",
+              "duration": 2,
+              "after": [
+                "contract"
+              ]
+            }
+          ],
+          "milestones": [
+            {
+              "id": "contract-ready",
+              "label": "契约冻结",
+              "after": [
+                "contract"
+              ]
+            },
+            {
+              "id": "integration-ready",
+              "label": "联调完成",
+              "after": [
+                "integrate"
+              ]
+            },
+            {
+              "id": "accept-ready",
+              "label": "验收包就绪",
+              "after": [
+                "verify",
+                "docs"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "gantt-unknown-dependency",
+      "expected": "reject",
+      "input": {
+        "version": 1,
+        "type": "gantt",
+        "meta": {
+          "title": "接口升级计划 · FS 相对估算",
+          "subtitle": "合成数据；负责人泳道与集成前置关系",
+          "note": "抽象工作日，不计工作周和节假日；无限资源，不做资源调度。",
+          "id": "planning-gantt-relative"
+        },
+        "payload": {
+          "mode": "relative",
+          "unit": "workday",
+          "sample": true,
+          "lanes": [
+            {
+              "id": "api-team",
+              "label": "服务端",
+              "owner": "API 小组"
+            },
+            {
+              "id": "client-team",
+              "label": "客户端",
+              "owner": "客户端小组"
+            },
+            {
+              "id": "qa-team",
+              "label": "集成验证",
+              "owner": "QA 小组"
+            }
+          ],
+          "tasks": [
+            {
+              "id": "verify",
+              "label": "端到端回归",
+              "lane": "qa-team",
+              "duration": 2,
+              "after": [
+                "missing"
+              ]
+            },
+            {
+              "id": "client",
+              "label": "客户端接入",
+              "lane": "client-team",
+              "duration": 4,
+              "after": [
+                "contract"
+              ]
+            },
+            {
+              "id": "integrate",
+              "label": "联调与兼容验证",
+              "lane": "qa-team",
+              "duration": 2,
+              "after": [
+                "api",
+                "client"
+              ]
+            },
+            {
+              "id": "contract",
+              "label": "契约与 Schema 定稿",
+              "lane": "api-team",
+              "duration": 2,
+              "after": []
+            },
+            {
+              "id": "api",
+              "label": "服务端 API 实现",
+              "lane": "api-team",
+              "duration": 3,
+              "after": [
+                "contract"
+              ]
+            },
+            {
+              "id": "docs",
+              "label": "迁移说明与 FAQ",
+              "lane": "client-team",
+              "duration": 2,
+              "after": [
+                "contract"
+              ]
+            }
+          ],
+          "milestones": [
+            {
+              "id": "contract-ready",
+              "label": "契约冻结",
+              "after": [
+                "contract"
+              ]
+            },
+            {
+              "id": "integration-ready",
+              "label": "联调完成",
+              "after": [
+                "integrate"
+              ]
+            },
+            {
+              "id": "accept-ready",
+              "label": "验收包就绪",
+              "after": [
+                "verify",
+                "docs"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "gantt-calendar-unsupported",
+      "expected": "reject",
+      "input": {
+        "version": 1,
+        "type": "gantt",
+        "meta": {
+          "title": "接口升级计划 · FS 相对估算",
+          "subtitle": "合成数据；负责人泳道与集成前置关系",
+          "note": "抽象工作日，不计工作周和节假日；无限资源，不做资源调度。",
+          "id": "planning-gantt-relative"
+        },
+        "payload": {
+          "mode": "relative",
+          "unit": "workday",
+          "sample": true,
+          "lanes": [
+            {
+              "id": "api-team",
+              "label": "服务端",
+              "owner": "API 小组"
+            },
+            {
+              "id": "client-team",
+              "label": "客户端",
+              "owner": "客户端小组"
+            },
+            {
+              "id": "qa-team",
+              "label": "集成验证",
+              "owner": "QA 小组"
+            }
+          ],
+          "tasks": [
+            {
+              "id": "verify",
+              "label": "端到端回归",
+              "lane": "qa-team",
+              "duration": 2,
+              "after": [
+                "integrate"
+              ]
+            },
+            {
+              "id": "client",
+              "label": "客户端接入",
+              "lane": "client-team",
+              "duration": 4,
+              "after": [
+                "contract"
+              ]
+            },
+            {
+              "id": "integrate",
+              "label": "联调与兼容验证",
+              "lane": "qa-team",
+              "duration": 2,
+              "after": [
+                "api",
+                "client"
+              ]
+            },
+            {
+              "id": "contract",
+              "label": "契约与 Schema 定稿",
+              "lane": "api-team",
+              "duration": 2,
+              "after": []
+            },
+            {
+              "id": "api",
+              "label": "服务端 API 实现",
+              "lane": "api-team",
+              "duration": 3,
+              "after": [
+                "contract"
+              ]
+            },
+            {
+              "id": "docs",
+              "label": "迁移说明与 FAQ",
+              "lane": "client-team",
+              "duration": 2,
+              "after": [
+                "contract"
+              ]
+            }
+          ],
+          "milestones": [
+            {
+              "id": "contract-ready",
+              "label": "契约冻结",
+              "after": [
+                "contract"
+              ]
+            },
+            {
+              "id": "integration-ready",
+              "label": "联调完成",
+              "after": [
+                "integrate"
+              ]
+            },
+            {
+              "id": "accept-ready",
+              "label": "验收包就绪",
+              "after": [
+                "verify",
+                "docs"
+              ]
+            }
+          ],
+          "calendar": {
+            "weekdays": [
+              1,
+              2,
+              3,
+              4,
+              5
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "gantt-date-conflict",
+      "expected": "reject",
+      "input": {
+        "version": 1,
+        "type": "gantt",
+        "meta": {
+          "title": "迁移排期 · 给定日期区间",
+          "subtitle": "合成日期，不代表真实业务排期",
+          "note": "区间 [开始,结束)；按日历日定位，不推算关键路径、余量或资源。",
+          "id": "planning-gantt-dates"
+        },
+        "payload": {
+          "mode": "dates",
+          "sample": true,
+          "lanes": [
+            {
+              "id": "service",
+              "label": "服务迁移",
+              "owner": "服务组"
+            },
+            {
+              "id": "verify-team",
+              "label": "回归与值守",
+              "owner": "QA／SRE"
+            }
+          ],
+          "tasks": [
+            {
+              "id": "observe",
+              "label": "小流量观察",
+              "lane": "verify-team",
+              "start": "2026-11-21",
+              "finish": "2026-11-26",
+              "after": [
+                "switch"
+              ]
+            },
+            {
+              "id": "prepare",
+              "label": "Schema 兼容准备",
+              "lane": "service",
+              "start": "2026-11-16",
+              "finish": "2026-11-20"
+            },
+            {
+              "id": "switch",
+              "label": "切换 API 路由",
+              "lane": "service",
+              "start": "2026-11-20",
+              "finish": "2026-11-23",
+              "after": [
+                "prepare"
+              ]
+            },
+            {
+              "id": "check",
+              "label": "历史数据核对",
+              "lane": "verify-team",
+              "start": "2026-11-17",
+              "finish": "2026-11-21"
+            }
+          ],
+          "milestones": [
+            {
+              "id": "switch-done",
+              "label": "路由切换完成",
+              "at": "2026-11-23",
+              "after": [
+                "switch"
+              ]
+            },
+            {
+              "id": "observe-done",
+              "label": "观察报告交付",
+              "at": "2026-11-26",
+              "after": [
+                "observe",
+                "check"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "train-undecided-approval",
+      "expected": "reject",
+      "input": {
+        "version": 1,
+        "type": "release-train",
+        "meta": {
+          "title": "API 发布列车 · 窗口与准出",
+          "subtitle": "合成操作记录；不是任何团队的默认发布规则",
+          "id": "planning-release-train"
+        },
+        "payload": {
+          "sample": true,
+          "time_mode": "datetime",
+          "train": {
+            "id": "api-train",
+            "label": "API 兼容升级列车"
+          },
+          "windows": [
+            {
+              "id": "w1",
+              "label": "11 月 16 日发布窗口",
+              "start": "2026-11-16T09:00+08:00",
+              "finish": "2026-11-16T18:00+08:00",
+              "phases": [
+                {
+                  "id": "integration",
+                  "label": "集成与票检",
+                  "kind": "integration",
+                  "start": "2026-11-16T09:00+08:00",
+                  "finish": "2026-11-16T12:00+08:00"
+                },
+                {
+                  "id": "freeze",
+                  "label": "冻结候选",
+                  "kind": "freeze",
+                  "start": "2026-11-16T12:00+08:00",
+                  "finish": "2026-11-16T14:00+08:00",
+                  "detail": "仅此合成计划：冻结后不再新增普通车票"
+                },
+                {
+                  "id": "deploy",
+                  "label": "部署",
+                  "kind": "deploy",
+                  "start": "2026-11-16T14:00+08:00",
+                  "finish": "2026-11-16T15:00+08:00"
+                },
+                {
+                  "id": "canary",
+                  "label": "灰度",
+                  "kind": "canary",
+                  "start": "2026-11-16T15:00+08:00",
+                  "finish": "2026-11-16T17:00+08:00"
+                },
+                {
+                  "id": "observe",
+                  "label": "观察与交接",
+                  "kind": "observe",
+                  "start": "2026-11-16T17:00+08:00",
+                  "finish": "2026-11-16T18:00+08:00"
+                }
+              ]
+            }
+          ],
+          "branches": [
+            {
+              "id": "master",
+              "label": "master",
+              "kind": "master",
+              "start": "2026-11-16T08:00+08:00",
+              "finish": "2026-11-16T19:00+08:00"
+            },
+            {
+              "id": "release-w1",
+              "label": "release/api-compat",
+              "kind": "release",
+              "window": "w1",
+              "start": "2026-11-16T09:00+08:00",
+              "finish": "2026-11-16T18:00+08:00"
+            }
+          ],
+          "tickets": [
+            {
+              "id": "ticket-api",
+              "label": "API 向后兼容",
+              "window": "w1",
+              "branch": "release-w1",
+              "at": "2026-11-16T12:10+08:00",
+              "status": "boarded",
+              "approval_gate": "ticket-gate",
+              "approvals": [
+                {
+                  "label": "兼容审查",
+                  "state": "pending",
+                  "recorded_at": "2026-11-16T11:00+08:00",
+                  "approver": "合成 API reviewer"
+                },
+                {
+                  "label": "回归确认",
+                  "state": "approved",
+                  "recorded_at": "2026-11-16T11:20+08:00",
+                  "approver": "合成 QA reviewer"
+                }
+              ]
+            },
+            {
+              "id": "ticket-cache",
+              "label": "Cache 参数调整",
+              "window": "w1",
+              "branch": "release-w1",
+              "at": "2026-11-16T12:20+08:00",
+              "status": "deferred",
+              "approval_gate": "ticket-gate",
+              "approvals": [
+                {
+                  "label": "压测确认",
+                  "state": "pending",
+                  "conditions": [
+                    "合成压测报告尚未提交"
+                  ]
+                }
+              ],
+              "detail": "延期状态由输入给定；不会自动上车"
+            }
+          ],
+          "gates": [
+            {
+              "id": "ticket-gate",
+              "label": "车票审批",
+              "window": "w1",
+              "phase": "integration",
+              "at": "2026-11-16T11:30+08:00",
+              "kind": "ticket-approval",
+              "state": "passed",
+              "conditions": [
+                "兼容审查已记录",
+                "回归记录可查"
+              ]
+            },
+            {
+              "id": "exit-gate",
+              "label": "候选准出",
+              "window": "w1",
+              "phase": "freeze",
+              "at": "2026-11-16T14:00+08:00",
+              "kind": "exit",
+              "state": "passed",
+              "conditions": [
+                "候选 SHA 与验收包一致",
+                "回退包校验记录已提供"
+              ]
+            }
+          ],
+          "deployments": [
+            {
+              "id": "deploy-one",
+              "label": "单机房部署",
+              "window": "w1",
+              "phase": "deploy",
+              "branch": "release-w1",
+              "start": "2026-11-16T14:00+08:00",
+              "finish": "2026-11-16T15:00+08:00",
+              "gate": "exit-gate",
+              "state": "complete",
+              "scope": "合成机房 A"
+            },
+            {
+              "id": "deploy-canary",
+              "label": "Canary 观察",
+              "window": "w1",
+              "phase": "canary",
+              "branch": "release-w1",
+              "start": "2026-11-16T15:00+08:00",
+              "finish": "2026-11-16T17:00+08:00",
+              "gate": "exit-gate",
+              "state": "complete",
+              "scope": "合成流量 5% → 20%"
+            }
+          ],
+          "exceptions": [
+            {
+              "id": "rollback",
+              "label": "回退到给定候选",
+              "kind": "rollback",
+              "window": "w1",
+              "branch": "release-w1",
+              "at": "2026-11-16T17:20+08:00",
+              "condition": "仅当输入中的错误率门限触发",
+              "detail": "条件路径，未声明已发生回退"
+            }
+          ],
+          "edges": [
+            {
+              "id": "branch-cut",
+              "from": "master",
+              "to": "release-w1",
+              "kind": "branch",
+              "label": "切出 release 分支",
+              "at": "2026-11-16T09:00+08:00"
+            },
+            {
+              "id": "board-api",
+              "from": "ticket-api",
+              "to": "release-w1",
+              "kind": "board",
+              "label": "已上车记录"
+            },
+            {
+              "id": "gray-progress",
+              "from": "deploy-one",
+              "to": "deploy-canary",
+              "kind": "progression",
+              "label": "部署后进入灰度"
+            },
+            {
+              "id": "conditional-rollback",
+              "from": "deploy-canary",
+              "to": "rollback",
+              "kind": "rollback",
+              "label": "给定回退路径",
+              "condition": "输入错误率门限触发"
+            },
+            {
+              "id": "merge-back",
+              "from": "release-w1",
+              "to": "master",
+              "kind": "merge",
+              "label": "合成合回记录",
+              "at": "2026-11-16T18:00+08:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "train-unknown-gate",
+      "expected": "reject",
+      "input": {
+        "version": 1,
+        "type": "release-train",
+        "meta": {
+          "title": "API 发布列车 · 窗口与准出",
+          "subtitle": "合成操作记录；不是任何团队的默认发布规则",
+          "id": "planning-release-train"
+        },
+        "payload": {
+          "sample": true,
+          "time_mode": "datetime",
+          "train": {
+            "id": "api-train",
+            "label": "API 兼容升级列车"
+          },
+          "windows": [
+            {
+              "id": "w1",
+              "label": "11 月 16 日发布窗口",
+              "start": "2026-11-16T09:00+08:00",
+              "finish": "2026-11-16T18:00+08:00",
+              "phases": [
+                {
+                  "id": "integration",
+                  "label": "集成与票检",
+                  "kind": "integration",
+                  "start": "2026-11-16T09:00+08:00",
+                  "finish": "2026-11-16T12:00+08:00"
+                },
+                {
+                  "id": "freeze",
+                  "label": "冻结候选",
+                  "kind": "freeze",
+                  "start": "2026-11-16T12:00+08:00",
+                  "finish": "2026-11-16T14:00+08:00",
+                  "detail": "仅此合成计划：冻结后不再新增普通车票"
+                },
+                {
+                  "id": "deploy",
+                  "label": "部署",
+                  "kind": "deploy",
+                  "start": "2026-11-16T14:00+08:00",
+                  "finish": "2026-11-16T15:00+08:00"
+                },
+                {
+                  "id": "canary",
+                  "label": "灰度",
+                  "kind": "canary",
+                  "start": "2026-11-16T15:00+08:00",
+                  "finish": "2026-11-16T17:00+08:00"
+                },
+                {
+                  "id": "observe",
+                  "label": "观察与交接",
+                  "kind": "observe",
+                  "start": "2026-11-16T17:00+08:00",
+                  "finish": "2026-11-16T18:00+08:00"
+                }
+              ]
+            }
+          ],
+          "branches": [
+            {
+              "id": "master",
+              "label": "master",
+              "kind": "master",
+              "start": "2026-11-16T08:00+08:00",
+              "finish": "2026-11-16T19:00+08:00"
+            },
+            {
+              "id": "release-w1",
+              "label": "release/api-compat",
+              "kind": "release",
+              "window": "w1",
+              "start": "2026-11-16T09:00+08:00",
+              "finish": "2026-11-16T18:00+08:00"
+            }
+          ],
+          "tickets": [
+            {
+              "id": "ticket-api",
+              "label": "API 向后兼容",
+              "window": "w1",
+              "branch": "release-w1",
+              "at": "2026-11-16T12:10+08:00",
+              "status": "boarded",
+              "approval_gate": "ticket-gate",
+              "approvals": [
+                {
+                  "label": "兼容审查",
+                  "state": "approved",
+                  "recorded_at": "2026-11-16T11:00+08:00",
+                  "approver": "合成 API reviewer"
+                },
+                {
+                  "label": "回归确认",
+                  "state": "approved",
+                  "recorded_at": "2026-11-16T11:20+08:00",
+                  "approver": "合成 QA reviewer"
+                }
+              ]
+            },
+            {
+              "id": "ticket-cache",
+              "label": "Cache 参数调整",
+              "window": "w1",
+              "branch": "release-w1",
+              "at": "2026-11-16T12:20+08:00",
+              "status": "deferred",
+              "approval_gate": "ticket-gate",
+              "approvals": [
+                {
+                  "label": "压测确认",
+                  "state": "pending",
+                  "conditions": [
+                    "合成压测报告尚未提交"
+                  ]
+                }
+              ],
+              "detail": "延期状态由输入给定；不会自动上车"
+            }
+          ],
+          "gates": [
+            {
+              "id": "ticket-gate",
+              "label": "车票审批",
+              "window": "w1",
+              "phase": "integration",
+              "at": "2026-11-16T11:30+08:00",
+              "kind": "ticket-approval",
+              "state": "passed",
+              "conditions": [
+                "兼容审查已记录",
+                "回归记录可查"
+              ]
+            },
+            {
+              "id": "exit-gate",
+              "label": "候选准出",
+              "window": "w1",
+              "phase": "freeze",
+              "at": "2026-11-16T14:00+08:00",
+              "kind": "exit",
+              "state": "passed",
+              "conditions": [
+                "候选 SHA 与验收包一致",
+                "回退包校验记录已提供"
+              ]
+            }
+          ],
+          "deployments": [
+            {
+              "id": "deploy-one",
+              "label": "单机房部署",
+              "window": "w1",
+              "phase": "deploy",
+              "branch": "release-w1",
+              "start": "2026-11-16T14:00+08:00",
+              "finish": "2026-11-16T15:00+08:00",
+              "gate": "missing",
+              "state": "complete",
+              "scope": "合成机房 A"
+            },
+            {
+              "id": "deploy-canary",
+              "label": "Canary 观察",
+              "window": "w1",
+              "phase": "canary",
+              "branch": "release-w1",
+              "start": "2026-11-16T15:00+08:00",
+              "finish": "2026-11-16T17:00+08:00",
+              "gate": "exit-gate",
+              "state": "complete",
+              "scope": "合成流量 5% → 20%"
+            }
+          ],
+          "exceptions": [
+            {
+              "id": "rollback",
+              "label": "回退到给定候选",
+              "kind": "rollback",
+              "window": "w1",
+              "branch": "release-w1",
+              "at": "2026-11-16T17:20+08:00",
+              "condition": "仅当输入中的错误率门限触发",
+              "detail": "条件路径，未声明已发生回退"
+            }
+          ],
+          "edges": [
+            {
+              "id": "branch-cut",
+              "from": "master",
+              "to": "release-w1",
+              "kind": "branch",
+              "label": "切出 release 分支",
+              "at": "2026-11-16T09:00+08:00"
+            },
+            {
+              "id": "board-api",
+              "from": "ticket-api",
+              "to": "release-w1",
+              "kind": "board",
+              "label": "已上车记录"
+            },
+            {
+              "id": "gray-progress",
+              "from": "deploy-one",
+              "to": "deploy-canary",
+              "kind": "progression",
+              "label": "部署后进入灰度"
+            },
+            {
+              "id": "conditional-rollback",
+              "from": "deploy-canary",
+              "to": "rollback",
+              "kind": "rollback",
+              "label": "给定回退路径",
+              "condition": "输入错误率门限触发"
+            },
+            {
+              "id": "merge-back",
+              "from": "release-w1",
+              "to": "master",
+              "kind": "merge",
+              "label": "合成合回记录",
+              "at": "2026-11-16T18:00+08:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "train-timezone-missing",
+      "expected": "reject",
+      "input": {
+        "version": 1,
+        "type": "release-train",
+        "meta": {
+          "title": "API 发布列车 · 窗口与准出",
+          "subtitle": "合成操作记录；不是任何团队的默认发布规则",
+          "id": "planning-release-train"
+        },
+        "payload": {
+          "sample": true,
+          "time_mode": "datetime",
+          "train": {
+            "id": "api-train",
+            "label": "API 兼容升级列车"
+          },
+          "windows": [
+            {
+              "id": "w1",
+              "label": "11 月 16 日发布窗口",
+              "start": "2026-11-16T09:00",
+              "finish": "2026-11-16T18:00+08:00",
+              "phases": [
+                {
+                  "id": "integration",
+                  "label": "集成与票检",
+                  "kind": "integration",
+                  "start": "2026-11-16T09:00+08:00",
+                  "finish": "2026-11-16T12:00+08:00"
+                },
+                {
+                  "id": "freeze",
+                  "label": "冻结候选",
+                  "kind": "freeze",
+                  "start": "2026-11-16T12:00+08:00",
+                  "finish": "2026-11-16T14:00+08:00",
+                  "detail": "仅此合成计划：冻结后不再新增普通车票"
+                },
+                {
+                  "id": "deploy",
+                  "label": "部署",
+                  "kind": "deploy",
+                  "start": "2026-11-16T14:00+08:00",
+                  "finish": "2026-11-16T15:00+08:00"
+                },
+                {
+                  "id": "canary",
+                  "label": "灰度",
+                  "kind": "canary",
+                  "start": "2026-11-16T15:00+08:00",
+                  "finish": "2026-11-16T17:00+08:00"
+                },
+                {
+                  "id": "observe",
+                  "label": "观察与交接",
+                  "kind": "observe",
+                  "start": "2026-11-16T17:00+08:00",
+                  "finish": "2026-11-16T18:00+08:00"
+                }
+              ]
+            }
+          ],
+          "branches": [
+            {
+              "id": "master",
+              "label": "master",
+              "kind": "master",
+              "start": "2026-11-16T08:00+08:00",
+              "finish": "2026-11-16T19:00+08:00"
+            },
+            {
+              "id": "release-w1",
+              "label": "release/api-compat",
+              "kind": "release",
+              "window": "w1",
+              "start": "2026-11-16T09:00+08:00",
+              "finish": "2026-11-16T18:00+08:00"
+            }
+          ],
+          "tickets": [
+            {
+              "id": "ticket-api",
+              "label": "API 向后兼容",
+              "window": "w1",
+              "branch": "release-w1",
+              "at": "2026-11-16T12:10+08:00",
+              "status": "boarded",
+              "approval_gate": "ticket-gate",
+              "approvals": [
+                {
+                  "label": "兼容审查",
+                  "state": "approved",
+                  "recorded_at": "2026-11-16T11:00+08:00",
+                  "approver": "合成 API reviewer"
+                },
+                {
+                  "label": "回归确认",
+                  "state": "approved",
+                  "recorded_at": "2026-11-16T11:20+08:00",
+                  "approver": "合成 QA reviewer"
+                }
+              ]
+            },
+            {
+              "id": "ticket-cache",
+              "label": "Cache 参数调整",
+              "window": "w1",
+              "branch": "release-w1",
+              "at": "2026-11-16T12:20+08:00",
+              "status": "deferred",
+              "approval_gate": "ticket-gate",
+              "approvals": [
+                {
+                  "label": "压测确认",
+                  "state": "pending",
+                  "conditions": [
+                    "合成压测报告尚未提交"
+                  ]
+                }
+              ],
+              "detail": "延期状态由输入给定；不会自动上车"
+            }
+          ],
+          "gates": [
+            {
+              "id": "ticket-gate",
+              "label": "车票审批",
+              "window": "w1",
+              "phase": "integration",
+              "at": "2026-11-16T11:30+08:00",
+              "kind": "ticket-approval",
+              "state": "passed",
+              "conditions": [
+                "兼容审查已记录",
+                "回归记录可查"
+              ]
+            },
+            {
+              "id": "exit-gate",
+              "label": "候选准出",
+              "window": "w1",
+              "phase": "freeze",
+              "at": "2026-11-16T14:00+08:00",
+              "kind": "exit",
+              "state": "passed",
+              "conditions": [
+                "候选 SHA 与验收包一致",
+                "回退包校验记录已提供"
+              ]
+            }
+          ],
+          "deployments": [
+            {
+              "id": "deploy-one",
+              "label": "单机房部署",
+              "window": "w1",
+              "phase": "deploy",
+              "branch": "release-w1",
+              "start": "2026-11-16T14:00+08:00",
+              "finish": "2026-11-16T15:00+08:00",
+              "gate": "exit-gate",
+              "state": "complete",
+              "scope": "合成机房 A"
+            },
+            {
+              "id": "deploy-canary",
+              "label": "Canary 观察",
+              "window": "w1",
+              "phase": "canary",
+              "branch": "release-w1",
+              "start": "2026-11-16T15:00+08:00",
+              "finish": "2026-11-16T17:00+08:00",
+              "gate": "exit-gate",
+              "state": "complete",
+              "scope": "合成流量 5% → 20%"
+            }
+          ],
+          "exceptions": [
+            {
+              "id": "rollback",
+              "label": "回退到给定候选",
+              "kind": "rollback",
+              "window": "w1",
+              "branch": "release-w1",
+              "at": "2026-11-16T17:20+08:00",
+              "condition": "仅当输入中的错误率门限触发",
+              "detail": "条件路径，未声明已发生回退"
+            }
+          ],
+          "edges": [
+            {
+              "id": "branch-cut",
+              "from": "master",
+              "to": "release-w1",
+              "kind": "branch",
+              "label": "切出 release 分支",
+              "at": "2026-11-16T09:00+08:00"
+            },
+            {
+              "id": "board-api",
+              "from": "ticket-api",
+              "to": "release-w1",
+              "kind": "board",
+              "label": "已上车记录"
+            },
+            {
+              "id": "gray-progress",
+              "from": "deploy-one",
+              "to": "deploy-canary",
+              "kind": "progression",
+              "label": "部署后进入灰度"
+            },
+            {
+              "id": "conditional-rollback",
+              "from": "deploy-canary",
+              "to": "rollback",
+              "kind": "rollback",
+              "label": "给定回退路径",
+              "condition": "输入错误率门限触发"
+            },
+            {
+              "id": "merge-back",
+              "from": "release-w1",
+              "to": "master",
+              "kind": "merge",
+              "label": "合成合回记录",
+              "at": "2026-11-16T18:00+08:00"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "train-unprovided-emergency",
+      "expected": "reject",
+      "input": {
+        "version": 1,
+        "type": "release-train",
+        "meta": {
+          "title": "API 发布列车 · 窗口与准出",
+          "subtitle": "合成操作记录；不是任何团队的默认发布规则",
+          "id": "planning-release-train"
+        },
+        "payload": {
+          "sample": true,
+          "time_mode": "datetime",
+          "train": {
+            "id": "api-train",
+            "label": "API 兼容升级列车"
+          },
+          "windows": [
+            {
+              "id": "w1",
+              "label": "11 月 16 日发布窗口",
+              "start": "2026-11-16T09:00+08:00",
+              "finish": "2026-11-16T18:00+08:00",
+              "phases": [
+                {
+                  "id": "integration",
+                  "label": "集成与票检",
+                  "kind": "integration",
+                  "start": "2026-11-16T09:00+08:00",
+                  "finish": "2026-11-16T12:00+08:00"
+                },
+                {
+                  "id": "freeze",
+                  "label": "冻结候选",
+                  "kind": "freeze",
+                  "start": "2026-11-16T12:00+08:00",
+                  "finish": "2026-11-16T14:00+08:00",
+                  "detail": "仅此合成计划：冻结后不再新增普通车票"
+                },
+                {
+                  "id": "deploy",
+                  "label": "部署",
+                  "kind": "deploy",
+                  "start": "2026-11-16T14:00+08:00",
+                  "finish": "2026-11-16T15:00+08:00"
+                },
+                {
+                  "id": "canary",
+                  "label": "灰度",
+                  "kind": "canary",
+                  "start": "2026-11-16T15:00+08:00",
+                  "finish": "2026-11-16T17:00+08:00"
+                },
+                {
+                  "id": "observe",
+                  "label": "观察与交接",
+                  "kind": "observe",
+                  "start": "2026-11-16T17:00+08:00",
+                  "finish": "2026-11-16T18:00+08:00"
+                }
+              ]
+            }
+          ],
+          "branches": [
+            {
+              "id": "master",
+              "label": "master",
+              "kind": "master",
+              "start": "2026-11-16T08:00+08:00",
+              "finish": "2026-11-16T19:00+08:00"
+            },
+            {
+              "id": "release-w1",
+              "label": "release/api-compat",
+              "kind": "release",
+              "window": "w1",
+              "start": "2026-11-16T09:00+08:00",
+              "finish": "2026-11-16T18:00+08:00"
+            }
+          ],
+          "tickets": [
+            {
+              "id": "ticket-api",
+              "label": "API 向后兼容",
+              "window": "w1",
+              "branch": "release-w1",
+              "at": "2026-11-16T12:10+08:00",
+              "status": "boarded",
+              "approval_gate": "ticket-gate",
+              "approvals": [
+                {
+                  "label": "兼容审查",
+                  "state": "approved",
+                  "recorded_at": "2026-11-16T11:00+08:00",
+                  "approver": "合成 API reviewer"
+                },
+                {
+                  "label": "回归确认",
+                  "state": "approved",
+                  "recorded_at": "2026-11-16T11:20+08:00",
+                  "approver": "合成 QA reviewer"
+                }
+              ]
+            },
+            {
+              "id": "ticket-cache",
+              "label": "Cache 参数调整",
+              "window": "w1",
+              "branch": "release-w1",
+              "at": "2026-11-16T12:20+08:00",
+              "status": "deferred",
+              "approval_gate": "ticket-gate",
+              "approvals": [
+                {
+                  "label": "压测确认",
+                  "state": "pending",
+                  "conditions": [
+                    "合成压测报告尚未提交"
+                  ]
+                }
+              ],
+              "detail": "延期状态由输入给定；不会自动上车"
+            }
+          ],
+          "gates": [
+            {
+              "id": "ticket-gate",
+              "label": "车票审批",
+              "window": "w1",
+              "phase": "integration",
+              "at": "2026-11-16T11:30+08:00",
+              "kind": "ticket-approval",
+              "state": "passed",
+              "conditions": [
+                "兼容审查已记录",
+                "回归记录可查"
+              ]
+            },
+            {
+              "id": "exit-gate",
+              "label": "候选准出",
+              "window": "w1",
+              "phase": "freeze",
+              "at": "2026-11-16T14:00+08:00",
+              "kind": "exit",
+              "state": "passed",
+              "conditions": [
+                "候选 SHA 与验收包一致",
+                "回退包校验记录已提供"
+              ]
+            }
+          ],
+          "deployments": [
+            {
+              "id": "deploy-one",
+              "label": "单机房部署",
+              "window": "w1",
+              "phase": "deploy",
+              "branch": "release-w1",
+              "start": "2026-11-16T14:00+08:00",
+              "finish": "2026-11-16T15:00+08:00",
+              "gate": "exit-gate",
+              "state": "complete",
+              "scope": "合成机房 A"
+            },
+            {
+              "id": "deploy-canary",
+              "label": "Canary 观察",
+              "window": "w1",
+              "phase": "canary",
+              "branch": "release-w1",
+              "start": "2026-11-16T15:00+08:00",
+              "finish": "2026-11-16T17:00+08:00",
+              "gate": "exit-gate",
+              "state": "complete",
+              "scope": "合成流量 5% → 20%"
+            }
+          ],
+          "exceptions": [
+            {
+              "id": "rollback",
+              "label": "回退到给定候选",
+              "kind": "rollback",
+              "window": "w1",
+              "branch": "release-w1",
+              "at": "2026-11-16T17:20+08:00",
+              "condition": "仅当输入中的错误率门限触发",
+              "detail": "条件路径，未声明已发生回退"
+            }
+          ],
+          "edges": [
+            {
+              "id": "branch-cut",
+              "from": "master",
+              "to": "release-w1",
+              "kind": "emergency",
+              "label": "切出 release 分支",
+              "at": "2026-11-16T09:00+08:00"
+            },
+            {
+              "id": "board-api",
+              "from": "ticket-api",
+              "to": "release-w1",
+              "kind": "board",
+              "label": "已上车记录"
+            },
+            {
+              "id": "gray-progress",
+              "from": "deploy-one",
+              "to": "deploy-canary",
+              "kind": "progression",
+              "label": "部署后进入灰度"
+            },
+            {
+              "id": "conditional-rollback",
+              "from": "deploy-canary",
+              "to": "rollback",
+              "kind": "rollback",
+              "label": "给定回退路径",
+              "condition": "输入错误率门限触发"
+            },
+            {
+              "id": "merge-back",
+              "from": "release-w1",
+              "to": "master",
+              "kind": "merge",
+              "label": "合成合回记录",
+              "at": "2026-11-16T18:00+08:00"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

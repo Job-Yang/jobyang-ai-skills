@@ -1,73 +1,597 @@
 {
-  "name": "document-neutral",
-  "version": 3,
-  "basis": "Light categorical entity surfaces; subtle entity borders; neutral groups; explicit semantic states; independent readable edges.",
-  "ink": "#1A1B1C",
-  "muted": "#5F6670",
-  "line": "#5F6670",
-  "edge": "#596574",
-  "grid": "#E4E3DD",
-  "paper": "#FFFFFF",
-  "canvas_bg": "#FFFFFF",
-  "panel_bg": "#FAFAF8",
-  "entity_fill": "#EEF3F7",
-  "entity_border": "#D9E2E8",
-  "group_border": "#D6DCE3",
-  "semantic": {
-    "accent": "#4F6B9A",
-    "success": "#35705A",
-    "warning": "#9A6A2F",
-    "error": "#A14E50"
+  "name": "document-roles",
+  "version": 9,
+  "basis": "用户2026-11-10指定低饱和：所有角色、分区、状态、边界及数据系列从低彩度色阶取值，可辨而不亮艳。",
+  "foundation": {
+    "ink": "#1A1B1C",
+    "muted": "#5F6670",
+    "edge": "#64748B",
+    "grid": "#E4E3DD",
+    "paper": "#FFFFFF",
+    "panel_bg": "#F0F2F4",
+    "entity_fill": "#EEF3F7",
+    "entity_border": "#7B8B9E",
+    "group_border": "#D6DCE3"
   },
-  "semantic_fill": {
-    "accent": "#EDF2F8",
-    "success": "#ECF5F0",
-    "warning": "#FBF3E7",
-    "error": "#FAEEEE"
+  "ramp": {
+    "sky": {
+      "solid": "#3A5365",
+      "fill": "#E9F1F8",
+      "border": "#566F82"
+    },
+    "sage": {
+      "solid": "#3F5744",
+      "fill": "#EBF3EC",
+      "border": "#5B735F"
+    },
+    "lavender": {
+      "solid": "#554A63",
+      "fill": "#F2EEF7",
+      "border": "#716680"
+    },
+    "sand": {
+      "solid": "#5C4D35",
+      "fill": "#F4EFE7",
+      "border": "#796950"
+    },
+    "rose": {
+      "solid": "#654746",
+      "fill": "#F8EDED",
+      "border": "#836262"
+    },
+    "messagebus": {
+      "solid": "#624A3A",
+      "fill": "#F7EEE9",
+      "border": "#7F6655"
+    },
+    "external": {
+      "solid": "#495158",
+      "fill": "#EAF1F8",
+      "border": "#656D74"
+    },
+    "success": {
+      "solid": "#445640",
+      "fill": "#ECF2EB",
+      "border": "#5F725B"
+    },
+    "error": {
+      "solid": "#654744",
+      "fill": "#F8EDEC",
+      "border": "#836360"
+    },
+    "cvd_blue": {
+      "mark": "#346CA3",
+      "fill": "#F3F6F9",
+      "dark_mark": "#3D75AC"
+    },
+    "cvd_amber": {
+      "mark": "#D2915B",
+      "fill": "#FCF8F5",
+      "dark_mark": "#BE7F49"
+    },
+    "cvd_teal": {
+      "mark": "#3E8250",
+      "fill": "#F3F8F4",
+      "dark_mark": "#2F7442"
+    },
+    "cvd_gold": {
+      "mark": "#B39E4C",
+      "fill": "#FAF9F4",
+      "dark_mark": "#A6913F"
+    },
+    "cvd_pink": {
+      "mark": "#944A69",
+      "fill": "#F9F4F6",
+      "dark_mark": "#8D4563"
+    },
+    "cvd_green": {
+      "mark": "#76A15E",
+      "fill": "#F7F9F5",
+      "dark_mark": "#739E5B"
+    },
+    "cvd_purple": {
+      "mark": "#6C4D8D",
+      "fill": "#F6F4F8",
+      "dark_mark": "#775899"
+    },
+    "cvd_red": {
+      "mark": "#CE7B74",
+      "fill": "#FCF7F7",
+      "dark_mark": "#C7756E"
+    },
+    "point_blue_deep": {
+      "mark": "#225B90",
+      "fill": "#F2F5F8",
+      "dark_mark": "#29639B"
+    },
+    "point_ochre_light": {
+      "mark": "#CAA056",
+      "fill": "#FCF9F5",
+      "dark_mark": "#B58A3C"
+    },
+    "point_blue_light": {
+      "mark": "#649DD7",
+      "fill": "#F6F9FD",
+      "dark_mark": "#5C97D2"
+    },
+    "point_ochre_deep": {
+      "mark": "#7F5800",
+      "fill": "#F7F5F0",
+      "dark_mark": "#805800"
+    }
   },
-  "semantic_border": {
-    "accent": "#C4D0E0",
-    "success": "#BAD5C9",
-    "warning": "#E7D3B6",
-    "error": "#E5C6C7"
+  "surface": {
+    "canvas": "foundation.paper",
+    "panel": "foundation.panel_bg",
+    "entity": "foundation.entity_fill",
+    "entity_border": "foundation.entity_border",
+    "group_border": "foundation.group_border",
+    "ink": "foundation.ink",
+    "muted": "foundation.muted",
+    "line": "foundation.muted",
+    "edge": "foundation.edge",
+    "grid": "foundation.grid",
+    "paper": "foundation.paper"
   },
-  "category": {
-    "sky": {"solid": "#52789B", "fill": "#EAF2F8", "border": "#C5D8E7"},
-    "sage": {"solid": "#577660", "fill": "#EDF4EF", "border": "#C9DDCF"},
-    "lavender": {"solid": "#746C96", "fill": "#F1EFF7", "border": "#D7D2E6"},
-    "sand": {"solid": "#806A4C", "fill": "#F7F1E8", "border": "#E4D5BE"},
-    "rose": {"solid": "#936977", "fill": "#F7EEF1", "border": "#E5D1D7"}
+  "mapping": {
+    "typed_kind": {
+      "class": {
+        "class": {
+          "role": "backend"
+        },
+        "abstract": {
+          "role": "backend"
+        },
+        "interface": {
+          "role": "frontend"
+        },
+        "enum": {
+          "role": "messagebus"
+        },
+        "record": {
+          "role": "database"
+        }
+      },
+      "erd": {
+        "_default": {
+          "role": "database"
+        }
+      },
+      "lifecycle": {
+        "start": {
+          "role": "frontend"
+        },
+        "active": {
+          "role": "frontend"
+        },
+        "decision": {
+          "role": "database"
+        },
+        "neutral": {
+          "role": "external"
+        }
+      }
+    },
+    "category": {
+      "sky": {
+        "solid": "ramp.sky.solid",
+        "fill": "ramp.sky.fill",
+        "border": "ramp.sky.border"
+      },
+      "sage": {
+        "solid": "ramp.sage.solid",
+        "fill": "ramp.sage.fill",
+        "border": "ramp.sage.border"
+      },
+      "lavender": {
+        "solid": "ramp.lavender.solid",
+        "fill": "ramp.lavender.fill",
+        "border": "ramp.lavender.border"
+      },
+      "sand": {
+        "solid": "ramp.sand.solid",
+        "fill": "ramp.sand.fill",
+        "border": "ramp.sand.border"
+      },
+      "rose": {
+        "solid": "ramp.rose.solid",
+        "fill": "ramp.rose.fill",
+        "border": "ramp.rose.border"
+      }
+    },
+    "roles": {
+      "frontend": {
+        "solid": "ramp.sky.solid",
+        "fill": "ramp.sky.fill",
+        "border": "ramp.sky.border"
+      },
+      "backend": {
+        "solid": "ramp.sage.solid",
+        "fill": "ramp.sage.fill",
+        "border": "ramp.sage.border"
+      },
+      "database": {
+        "solid": "ramp.lavender.solid",
+        "fill": "ramp.lavender.fill",
+        "border": "ramp.lavender.border"
+      },
+      "cloud": {
+        "solid": "ramp.sand.solid",
+        "fill": "ramp.sand.fill",
+        "border": "ramp.sand.border"
+      },
+      "security": {
+        "solid": "ramp.rose.solid",
+        "fill": "ramp.rose.fill",
+        "border": "ramp.rose.border"
+      },
+      "messagebus": {
+        "solid": "ramp.messagebus.solid",
+        "fill": "ramp.messagebus.fill",
+        "border": "ramp.messagebus.border"
+      },
+      "external": {
+        "solid": "ramp.external.solid",
+        "fill": "ramp.external.fill",
+        "border": "ramp.external.border"
+      }
+    },
+    "semantic": {
+      "accent": {
+        "solid": "ramp.sage.solid",
+        "fill": "ramp.sage.fill",
+        "border": "ramp.sage.border"
+      },
+      "success": {
+        "solid": "ramp.success.solid",
+        "fill": "ramp.success.fill",
+        "border": "ramp.success.border"
+      },
+      "warning": {
+        "solid": "ramp.sand.solid",
+        "fill": "ramp.sand.fill",
+        "border": "ramp.sand.border"
+      },
+      "error": {
+        "solid": "ramp.error.solid",
+        "fill": "ramp.error.fill",
+        "border": "ramp.error.border"
+      }
+    },
+    "categorical": {
+      "blue": {
+        "solid": "ramp.cvd_blue.mark",
+        "fill": "ramp.cvd_blue.fill"
+      },
+      "amber": {
+        "solid": "ramp.cvd_amber.mark",
+        "fill": "ramp.cvd_amber.fill"
+      },
+      "teal": {
+        "solid": "ramp.cvd_teal.mark",
+        "fill": "ramp.cvd_teal.fill"
+      },
+      "gold": {
+        "solid": "ramp.cvd_gold.mark",
+        "fill": "ramp.cvd_gold.fill"
+      },
+      "pink": {
+        "solid": "ramp.cvd_pink.mark",
+        "fill": "ramp.cvd_pink.fill"
+      },
+      "green": {
+        "solid": "ramp.cvd_green.mark",
+        "fill": "ramp.cvd_green.fill"
+      },
+      "purple": {
+        "solid": "ramp.cvd_purple.mark",
+        "fill": "ramp.cvd_purple.fill"
+      },
+      "red": {
+        "solid": "ramp.cvd_red.mark",
+        "fill": "ramp.cvd_red.fill"
+      }
+    },
+    "sequential": {
+      "hue": "sky",
+      "steps": [
+        "ramp.sky.fill",
+        "ramp.sky.border",
+        "ramp.sky.solid"
+      ]
+    },
+    "diverging": {
+      "negative": "ramp.rose.solid",
+      "midpoint": "foundation.entity_fill",
+      "positive": "ramp.sky.solid"
+    },
+    "typed": {
+      "service": {
+        "role": "backend"
+      },
+      "api": {
+        "role": "backend"
+      },
+      "worker": {
+        "role": "backend"
+      },
+      "database": {
+        "role": "database"
+      },
+      "cache": {
+        "role": "database"
+      },
+      "queue": {
+        "role": "messagebus"
+      },
+      "stream": {
+        "role": "messagebus"
+      },
+      "gateway": {
+        "role": "cloud"
+      },
+      "client": {
+        "role": "frontend"
+      },
+      "actor": {
+        "role": "frontend"
+      },
+      "external": {
+        "role": "external"
+      },
+      "success": {
+        "status": "success"
+      },
+      "failure": {
+        "status": "error"
+      },
+      "waiting": {
+        "status": "warning"
+      }
+    },
+    "categorical_modes": {
+      "dark": {
+        "blue": {
+          "solid": "ramp.cvd_blue.dark_mark"
+        },
+        "amber": {
+          "solid": "ramp.cvd_amber.dark_mark"
+        },
+        "teal": {
+          "solid": "ramp.cvd_teal.dark_mark"
+        },
+        "gold": {
+          "solid": "ramp.cvd_gold.dark_mark"
+        },
+        "pink": {
+          "solid": "ramp.cvd_pink.dark_mark"
+        },
+        "green": {
+          "solid": "ramp.cvd_green.dark_mark"
+        },
+        "purple": {
+          "solid": "ramp.cvd_purple.dark_mark"
+        },
+        "red": {
+          "solid": "ramp.cvd_red.dark_mark"
+        }
+      }
+    },
+    "independent_points": [
+      {
+        "id": "point_blue_deep",
+        "mark": "ramp.point_blue_deep.mark",
+        "fill": "ramp.point_blue_deep.fill",
+        "dark_mark": "ramp.point_blue_deep.dark_mark"
+      },
+      {
+        "id": "point_ochre_light",
+        "mark": "ramp.point_ochre_light.mark",
+        "fill": "ramp.point_ochre_light.fill",
+        "dark_mark": "ramp.point_ochre_light.dark_mark"
+      },
+      {
+        "id": "point_blue_light",
+        "mark": "ramp.point_blue_light.mark",
+        "fill": "ramp.point_blue_light.fill",
+        "dark_mark": "ramp.point_blue_light.dark_mark"
+      },
+      {
+        "id": "point_ochre_deep",
+        "mark": "ramp.point_ochre_deep.mark",
+        "fill": "ramp.point_ochre_deep.fill",
+        "dark_mark": "ramp.point_ochre_deep.dark_mark"
+      }
+    ],
+    "independent_points_policy": {
+      "pair_scope": "all",
+      "per_panel_capacity": 4,
+      "overflow": "explicit small multiples, same bounds and size scale; retain all points",
+      "lightness_and_chroma": "low chroma; hue plus luminance differentiate, no vivid replacement"
+    }
   },
+  "surface_modes": {
+    "dark": {
+      "ink": "foundation.paper"
+    }
+  },
+  "scheme": {
+    "layers": {
+      "layer": [
+        "sky",
+        "sage",
+        "lavender",
+        "sand",
+        "rose",
+        "roles.messagebus",
+        "roles.external"
+      ],
+      "group": "neutral"
+    },
+    "grid": {
+      "module": [
+        "sky",
+        "sage",
+        "lavender",
+        "sand",
+        "rose",
+        "roles.messagebus",
+        "roles.external"
+      ],
+      "group": "neutral"
+    },
+    "house": {
+      "roof": "sky",
+      "claim": "lavender",
+      "pillar": [
+        "sky",
+        "sage",
+        "sand",
+        "rose",
+        "roles.messagebus",
+        "roles.external"
+      ],
+      "foundation": "sage"
+    },
+    "pyramid": {
+      "layer": [
+        "lavender",
+        "sky",
+        "sage",
+        "sand",
+        "rose",
+        "roles.messagebus",
+        "roles.external"
+      ]
+    },
+    "cycle": {
+      "ring": "sky",
+      "stage": [
+        "sky",
+        "sage",
+        "lavender",
+        "sand",
+        "rose",
+        "roles.messagebus",
+        "roles.external"
+      ],
+      "label": "neutral"
+    }
+  },
+  "sequence": [
+    "blue",
+    "amber",
+    "teal",
+    "gold",
+    "pink",
+    "green",
+    "purple",
+    "red"
+  ],
   "tint_amount": 0.06,
-  "font": "Arial, PingFang SC, Noto Sans CJK SC, sans-serif",
-  "colors": {
-    "blue": ["#2A78D6", "#F2F7FD"],
-    "amber": ["#EB6834", "#FEF6F3"],
-    "teal": ["#1BAF7A", "#F1FAF7"],
-    "gold": ["#EDA100", "#FEF9F0"],
-    "pink": ["#E87BA4", "#FEF7FA"],
-    "green": ["#008300", "#F0F8F0"],
-    "purple": ["#6250D6", "#F6F4FD"],
-    "red": ["#E34948", "#FDF4F4"],
-    "gray": ["#5F6670", "#FAFAF8"]
+  "typography": {
+    "sans": "\"PingFang SC\", \"Noto Sans CJK SC\", \"Microsoft YaHei\", \"Arial Unicode MS\", Arial, sans-serif",
+    "mono": "Menlo, Consolas, \"DejaVu Sans Mono\", monospace",
+    "sizes": {
+      "title": 30,
+      "heading": 22,
+      "node": 20,
+      "body": 18,
+      "caption": 16,
+      "code": 16
+    },
+    "line_height": {
+      "title": 1.25,
+      "heading": 1.3,
+      "node": 1.4,
+      "body": 1.4,
+      "caption": 1.4,
+      "code": 1.4
+    },
+    "weight": {
+      "title": 600,
+      "heading": 600,
+      "node": 600,
+      "body": 400,
+      "caption": 400,
+      "code": 400
+    },
+    "measure": {
+      "sans_latin": 0.58,
+      "mono_latin": 0.6,
+      "cjk": 1.0
+    }
   },
-  "border": {
-    "blue": "#2A78D6",
-    "amber": "#EB6834",
-    "teal": "#1BAF7A",
-    "gold": "#EDA100",
-    "pink": "#E87BA4",
-    "green": "#008300",
-    "purple": "#6250D6",
-    "red": "#E34948",
-    "gray": "#5F6670"
+  "layout": {
+    "design_width": 960,
+    "document_width": 800,
+    "spacing": {
+      "pad": 12,
+      "gap": 6,
+      "section": 24,
+      "margin": 32
+    },
+    "radius": {
+      "card": 8,
+      "zone": 12,
+      "corner": 6
+    },
+    "line": {
+      "main": 1.6,
+      "normal": 1.25,
+      "accent": 1.6,
+      "alert": 1.5,
+      "entity": 1.3,
+      "group": 1.0
+    },
+    "marker": {
+      "size": 8,
+      "gap": 2,
+      "arrow_length": 8,
+      "arrow_width": 6
+    },
+    "diagram_metrics": {
+      "title": 24,
+      "subtitle": 14,
+      "zone": 14,
+      "card": 15,
+      "desc": 13,
+      "code": 12,
+      "chip": 12.5,
+      "badge": 12,
+      "label": 12.5,
+      "note_title": 14,
+      "note": 13,
+      "legend": 12.5,
+      "pad": 12,
+      "gap": 6,
+      "radius": 8,
+      "chip_h": 22,
+      "margin": 32,
+      "card_sw": 1.3,
+      "zone_sw": 1.0,
+      "corner": 6.0
+    },
+    "surface_outline": {
+      "filled": "thin",
+      "semantic_width": 0.6,
+      "fallback_width": 0.45,
+      "node_weight": 0.12,
+      "filled_width": 0.55,
+      "filled_opacity": 0.5
+    }
   },
-  "sequence": ["blue", "amber", "teal", "gold", "pink", "green", "purple", "red"],
-  "sizes": {
-    "title": 26,
-    "heading": 17,
-    "body": 15,
-    "caption": 13,
-    "radius": 8
+  "overrides": [],
+  "colour_policy": {
+    "name": "muted-document",
+    "engineering_chroma_target": 0.042,
+    "data_chroma_target": 0.105,
+    "data_chroma_ceiling": 0.11,
+    "meaning": "工程面/框使用更低彩度；细小统计标记保留可辨彩度下限，但降低原亮艳色，文本仍使用墨色。",
+    "validator_unchanged": true
+  },
+  "surface_policy": {
+    "default": "低饱和色面为主，0.55px正文尺度的细浅同色边辅助识别；不白底挖空、不叠重虚线",
+    "semantic": "明确虚线/规划/安全或无填充边界保留细线；不删除关系箭头"
   }
 }

@@ -15,6 +15,15 @@ BR = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(BR)
 
 
+def component_execute(args):
+    """Regression coverage for retained staging helpers, not author routing."""
+    if args.operation == 'render':
+        decision = BR.route_render(args)
+        if decision['selected'] == 'legacy': return BR.execute_legacy(args, decision)
+        return BR.execute_native(args, decision)
+    return BR.execute_native(args)
+
+
 class BridgeUnitTests(unittest.TestCase):
     def test_unknown_type_rejected(self):
         with self.assertRaises(SystemExit):
@@ -59,7 +68,7 @@ class BridgeUnitTests(unittest.TestCase):
             args = BR.parser().parse_args(["render", "--type", "lifecycle", "--input", str(p), "--output", str(Path(td)/"out.html")])
             version = subprocess.CompletedProcess([], 0, 'v22.0.0', '')
             with patch.object(BR.shutil, "which", return_value="node"), patch.object(BR.subprocess, "run", return_value=version), patch.object(BR, "run_command", return_value={"exit_code":0,"receipt":{"ok":False},"stdout":"","stderr":""}):
-                report, code = BR.execute(args)
+                report, code = component_execute(args)
             self.assertFalse(report["ok"])
             self.assertNotEqual(code, 0)
             self.assertFalse(report["browser_verified"])
@@ -68,7 +77,7 @@ class BridgeUnitTests(unittest.TestCase):
         args = BR.parser().parse_args(["explain", "--input", "x.md", "--output", "x.html"])
         with patch.object(BR.shutil, "which", return_value=None):
             with self.assertRaisesRegex(BR.BridgeError, "未自动降级"):
-                BR.execute(args)
+                component_execute(args)
 
     def test_vendored_pin_and_licenses_exist(self):
         pin = json.loads(BR.PIN.read_text())
@@ -98,11 +107,12 @@ class BridgeUnitTests(unittest.TestCase):
     def test_capabilities_are_ast_derived_without_optional_imports(self):
         before = set(os.sys.modules)
         report = BR.capabilities()
-        self.assertEqual(report["legacy"]["count"], 27)
-        self.assertEqual(len(report["legacy"]["structural"]), 14)
-        self.assertEqual(len(report["legacy"]["quantitative"]), 6)
-        self.assertEqual(len(report["legacy"]["extra_structural"]), 7)
-        self.assertEqual(report["overlapping_names"], ["sequence", "timeline", "tree", "workflow"])
+        self.assertEqual(report["count"], 40)
+        self.assertNotIn("native", report)
+        self.assertNotIn("legacy", report)
+        self.assertEqual(set(report["schema_compatibility"]), {"sequence", "timeline", "tree", "workflow"})
+        self.assertEqual(len(BR.legacy_registry()["layouts"]), 29)
+        self.assertTrue({'gantt', 'release-train'} <= set(BR.legacy_registry()['layouts']))
         self.assertNotIn("matplotlib", set(os.sys.modules) - before)
 
     def test_three_legacy_only_layouts_route_without_schema_conversion(self):
@@ -142,7 +152,7 @@ class BridgeUnitTests(unittest.TestCase):
             before = json.dumps(self.legacy_spec())
             source.write_text(before)
             with self.assertRaisesRegex(BR.BridgeError, "拒绝覆盖图源"):
-                BR.execute(self.parse_render(source, "mindmap", source.name, "--overwrite"))
+                component_execute(self.parse_render(source, "mindmap", source.name, "--overwrite"))
             self.assertEqual(source.read_text(), before)
 
     def test_legacy_empty_check_receipt_is_not_success(self):
@@ -156,7 +166,7 @@ class BridgeUnitTests(unittest.TestCase):
                     return {"exit_code": 0, "receipt": {"id": "x"}, "stdout": "", "stderr": ""}
                 return {"exit_code": 0, "receipt": {}, "stdout": "", "stderr": ""}
             with patch.object(BR, "run_command", side_effect=fake_run):
-                report, code = BR.execute(self.parse_render(source, "mindmap", output.name))
+                report, code = component_execute(self.parse_render(source, "mindmap", output.name))
             self.assertFalse(report["ok"])
             self.assertNotEqual(code, 0)
             self.assertFalse(output.exists())
@@ -181,7 +191,7 @@ class BridgeUnitTests(unittest.TestCase):
                     return {"exit_code": 0, "receipt": {"id": "x"}, "stdout": "", "stderr": ""}
                 return {"exit_code": 0, "receipt": {"errors": []}, "stdout": "", "stderr": ""}
             with patch.object(BR, "run_command", side_effect=fake_run):
-                report, code = BR.execute(self.parse_render(source, "mindmap", output.name))
+                report, code = component_execute(self.parse_render(source, "mindmap", output.name))
             self.assertEqual(code, 0, report)
             self.assertEqual(report["source_sha256"], hashlib.sha256(before).hexdigest())
             metadata = ET.parse(output).getroot().find("{http://www.w3.org/2000/svg}metadata")
@@ -208,7 +218,7 @@ class BridgeUnitTests(unittest.TestCase):
             self.assertEqual(decision["selected"], "native")
             with patch.object(BR, "execute_legacy") as legacy, patch.object(BR.shutil, "which", return_value=None):
                 with self.assertRaisesRegex(BR.BridgeError, "未自动降级"):
-                    BR.execute(self.parse_render(source, "lifecycle"))
+                    component_execute(self.parse_render(source, "lifecycle"))
             legacy.assert_not_called()
 
     def test_explicit_backend_refuses_wrong_schema(self):
@@ -242,7 +252,7 @@ class BridgeUnitTests(unittest.TestCase):
                 return {"exit_code": 1, "receipt": {"errors": ["broken"]}, "stdout": "", "stderr": ""}
 
             with patch.object(BR, "run_command", side_effect=fake_run):
-                report, code = BR.execute(args)
+                report, code = component_execute(args)
             self.assertNotEqual(code, 0)
             self.assertEqual(report["stage"], "artifact_check")
             self.assertIn("broken", report["error"])
@@ -251,7 +261,7 @@ class BridgeUnitTests(unittest.TestCase):
             self.assertEqual(calls[0][0][2], str(BR.LEGACY_RENDERER))
             self.assertEqual(calls[0][1], source.parent)
 
-    def test_legacy_html_is_static_and_preserves_source(self):
+    def test_compatible_json_gets_unified_viewer_and_source(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             source = root / "legacy.json"
@@ -262,13 +272,14 @@ class BridgeUnitTests(unittest.TestCase):
             self.assertEqual(code, 0, report)
             page = output.read_text()
             self.assertTrue(report["ok"])
-            self.assertEqual(report["route"]["selected"], "legacy")
+            self.assertEqual(report["type"], "mindmap")
             self.assertFalse(report["browser_verified"])
-            self.assertIn('data-backend="legacy"', page)
-            self.assertIn('data-static="true"', page)
-            self.assertIn('content="false"', page)
-            self.assertIn('id="legacy-source-json" type="application/json"', page)
-            self.assertIn('"layout": "mindmap"', page)
+            self.assertIn('data-node-id="root"', page)
+            self.assertNotIn('data-backend="legacy"', page)
+            self.assertIn('id="diagram-kit-source" type="application/json"', page)
+            self.assertIn('id="diagram-kit-scene" type="application/json"', page)
+            normalized = json.loads(Path(report['artifacts']['source']['path']).read_text())
+            self.assertEqual(normalized['payload']['groups'], self.legacy_spec()['groups'])
 
     def test_image_annotation_fallback_resolves_relative_image(self):
         with tempfile.TemporaryDirectory() as td:
@@ -282,7 +293,7 @@ class BridgeUnitTests(unittest.TestCase):
             output = root / "annotation.html"
             report, code = BR.execute(self.parse_render(source, "image_annotate", output.name))
             self.assertEqual(code, 0, report)
-            self.assertEqual(report["route"]["selected"], "legacy")
+            self.assertEqual(report["type"], "image_annotate")
             self.assertIn("data:image/png;base64,", output.read_text())
             self.assertEqual(json.loads(source.read_text())["image_path"], "screen.png")
 
@@ -305,7 +316,7 @@ class BridgeUnitTests(unittest.TestCase):
             output = root / "out.html"
             output.write_text("keep me")
             with self.assertRaises(BR.BridgeError):
-                BR.execute(self.parse_render(source, "mindmap", output.name))
+                component_execute(self.parse_render(source, "mindmap", output.name))
             self.assertEqual(output.read_text(), "keep me")
 
 
@@ -333,15 +344,16 @@ class BridgeIntegrationTests(unittest.TestCase):
         inp = ROOT / "vendor/archify/examples/agent-run.lifecycle.json"
         output = self.work / "lifecycle.html"
         report = self.invoke("render", "--type", "lifecycle", "--input", str(inp), "--output", str(output))
-        self.assertEqual(report["stage"], "checked")
+        self.assertEqual(report["type"], "lifecycle")
         self.assertIn('data-node-id="queued"', output.read_text())
-        self.assertTrue(report["stages"]["artifact_check"]["receipt"]["ok"])
+        self.assertTrue(report["checks"]["scene"]["ok"])
+        self.assertEqual(report["checks"]["typed_output"]["exit_code"], 0)
 
     def test_native_erd_with_layout_config_stays_native(self):
         inp = ROOT / "vendor/archify/examples/orders.erd.json"
         output = self.work / "native-erd.html"
         report = self.invoke("render", "--type", "erd", "--input", str(inp), "--output", str(output))
-        self.assertEqual(report["route"]["selected"], "native")
+        self.assertEqual(report["schema"], "typed/erd")
         self.assertIn('data-node-id="order"', output.read_text())
 
     def test_architecture_comparison(self):

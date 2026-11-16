@@ -47,15 +47,15 @@ class FallbackVisualTests(unittest.TestCase):
     def test_default_entity_has_surface_and_soft_outline(self):
         c = canvas()
         c.box("n", 32, 150, 240, 80, "节点")
-        rect = ET.fromstring(c.parts[-2])
-        self.assertEqual(rect.get("fill"), RT.THEME["entity_fill"])
+        rect = ET.fromstring(next(p for p in reversed(c.parts) if p.startswith('<rect ')))
+        self.assertEqual(rect.get("fill"), RT.node_surface(RT.semantic_tone()))
         self.assertEqual(rect.get("stroke"), RT.THEME["entity_border"])
         self.assertEqual(tuple(rect.get(k) for k in ("x", "y", "width", "height")), ("32", "150", "240", "80"))
 
     def test_focus_outline_remains_semantic(self):
         c = canvas()
         c.box("n", 32, 150, 240, 80, "重点", tone="accent", emphasis=True)
-        rect = ET.fromstring(c.parts[-2])
+        rect = ET.fromstring(next(p for p in reversed(c.parts) if p.startswith('<rect ')))
         self.assertEqual(rect.get("stroke"), RT.THEME["semantic"]["accent"])
 
     def test_group_border_does_not_change_path_colour(self):
@@ -85,6 +85,6 @@ class FallbackVisualTests(unittest.TestCase):
         import structural_extra as extra
         c = canvas()
         extra.manual_box(c, "e", 32, 150, 240, 30, "错误", extra.RED_BG, extra.RED)
-        rect = ET.fromstring(c.parts[-2])
+        rect = ET.fromstring(next(p for p in reversed(c.parts) if p.startswith('<rect ')))
         self.assertEqual(rect.get("stroke"), extra.RED)
         self.assertEqual(rect.get("fill"), extra.RED_BG)

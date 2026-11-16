@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "type": "donut",
+  "meta": {
+    "id": "cvd-eight",
+    "title": "八系列颜色容量验证",
+    "note": "合成验证输入，非业务数据。每个系列都有可见名称和数值。"
+  },
+  "payload": {
+    "labels": ["blue", "orange", "aqua", "yellow", "magenta", "green", "violet", "red"],
+    "values": [8, 7, 6, 5, 4, 3, 2, 1],
+    "unit": "合成单位"
+  }
+}

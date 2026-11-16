@@ -24,7 +24,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-DEPS_DIR = Path(__file__).resolve().parent.parent / ".deps"
+DEPS_DIR = Path(os.environ.get("ENGINEERING_DOCS_DEPS_DIR", str(Path(__file__).resolve().parent.parent / ".deps")))
 _DEFAULT_PACKAGES = ("matplotlib", "numpy")
 _BOOTSTRAPPED = False
 

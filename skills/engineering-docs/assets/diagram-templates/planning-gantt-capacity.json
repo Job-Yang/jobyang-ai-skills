@@ -1,0 +1,258 @@
+{
+  "version": 1,
+  "type": "gantt",
+  "meta": {
+    "id": "planning-gantt-capacity",
+    "title": "多模块迁移 · 24 项容量样例",
+    "subtitle": "合成相对估算；全量任务与依赖保留，不缩字"
+  },
+  "payload": {
+    "mode": "relative",
+    "unit": "workday",
+    "sample": true,
+    "lanes": [
+      {
+        "id": "l0",
+        "label": "模块 1",
+        "owner": "合成工作组 1"
+      },
+      {
+        "id": "l1",
+        "label": "模块 2",
+        "owner": "合成工作组 2"
+      },
+      {
+        "id": "l2",
+        "label": "模块 3",
+        "owner": "合成工作组 3"
+      },
+      {
+        "id": "l3",
+        "label": "模块 4",
+        "owner": "合成工作组 4"
+      }
+    ],
+    "tasks": [
+      {
+        "id": "t00",
+        "label": "模块 1 · Schema准备 1",
+        "lane": "l0",
+        "duration": 1,
+        "after": []
+      },
+      {
+        "id": "t01",
+        "label": "模块 2 · API实现 2",
+        "lane": "l1",
+        "duration": 2,
+        "after": []
+      },
+      {
+        "id": "t02",
+        "label": "模块 3 · 兼容回归 3",
+        "lane": "l2",
+        "duration": 3,
+        "after": []
+      },
+      {
+        "id": "t03",
+        "label": "模块 4 · Schema准备 4",
+        "lane": "l3",
+        "duration": 1,
+        "after": []
+      },
+      {
+        "id": "t04",
+        "label": "模块 1 · API实现 5",
+        "lane": "l0",
+        "duration": 2,
+        "after": [
+          "t00"
+        ]
+      },
+      {
+        "id": "t05",
+        "label": "模块 2 · 兼容回归 6",
+        "lane": "l1",
+        "duration": 3,
+        "after": [
+          "t01"
+        ]
+      },
+      {
+        "id": "t06",
+        "label": "模块 3 · Schema准备 7",
+        "lane": "l2",
+        "duration": 1,
+        "after": [
+          "t02"
+        ]
+      },
+      {
+        "id": "t07",
+        "label": "模块 4 · API实现 8",
+        "lane": "l3",
+        "duration": 2,
+        "after": [
+          "t03"
+        ]
+      },
+      {
+        "id": "t08",
+        "label": "模块 1 · 兼容回归 9",
+        "lane": "l0",
+        "duration": 3,
+        "after": [
+          "t04"
+        ]
+      },
+      {
+        "id": "t09",
+        "label": "模块 2 · Schema准备 10",
+        "lane": "l1",
+        "duration": 1,
+        "after": [
+          "t05"
+        ]
+      },
+      {
+        "id": "t10",
+        "label": "模块 3 · API实现 11",
+        "lane": "l2",
+        "duration": 2,
+        "after": [
+          "t06"
+        ]
+      },
+      {
+        "id": "t11",
+        "label": "模块 4 · 兼容回归 12",
+        "lane": "l3",
+        "duration": 3,
+        "after": [
+          "t07"
+        ]
+      },
+      {
+        "id": "t12",
+        "label": "模块 1 · Schema准备 13",
+        "lane": "l0",
+        "duration": 1,
+        "after": [
+          "t08"
+        ]
+      },
+      {
+        "id": "t13",
+        "label": "模块 2 · API实现 14",
+        "lane": "l1",
+        "duration": 2,
+        "after": [
+          "t09"
+        ]
+      },
+      {
+        "id": "t14",
+        "label": "模块 3 · 兼容回归 15",
+        "lane": "l2",
+        "duration": 3,
+        "after": [
+          "t10"
+        ]
+      },
+      {
+        "id": "t15",
+        "label": "模块 4 · Schema准备 16",
+        "lane": "l3",
+        "duration": 1,
+        "after": [
+          "t11"
+        ]
+      },
+      {
+        "id": "t16",
+        "label": "模块 1 · API实现 17",
+        "lane": "l0",
+        "duration": 2,
+        "after": [
+          "t12"
+        ]
+      },
+      {
+        "id": "t17",
+        "label": "模块 2 · 兼容回归 18",
+        "lane": "l1",
+        "duration": 3,
+        "after": [
+          "t13"
+        ]
+      },
+      {
+        "id": "t18",
+        "label": "模块 3 · Schema准备 19",
+        "lane": "l2",
+        "duration": 1,
+        "after": [
+          "t14"
+        ]
+      },
+      {
+        "id": "t19",
+        "label": "模块 4 · API实现 20",
+        "lane": "l3",
+        "duration": 2,
+        "after": [
+          "t15"
+        ]
+      },
+      {
+        "id": "t20",
+        "label": "模块 1 · 兼容回归 21",
+        "lane": "l0",
+        "duration": 3,
+        "after": [
+          "t16"
+        ]
+      },
+      {
+        "id": "t21",
+        "label": "模块 2 · Schema准备 22",
+        "lane": "l1",
+        "duration": 1,
+        "after": [
+          "t17"
+        ]
+      },
+      {
+        "id": "t22",
+        "label": "模块 3 · API实现 23",
+        "lane": "l2",
+        "duration": 2,
+        "after": [
+          "t18"
+        ]
+      },
+      {
+        "id": "t23",
+        "label": "模块 4 · 兼容回归 24",
+        "lane": "l3",
+        "duration": 3,
+        "after": [
+          "t19"
+        ]
+      }
+    ],
+    "milestones": [
+      {
+        "id": "migration-ready",
+        "label": "迁移验收包就绪",
+        "after": [
+          "t20",
+          "t21",
+          "t22",
+          "t23"
+        ]
+      }
+    ]
+  }
+}

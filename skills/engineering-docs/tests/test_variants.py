@@ -2,6 +2,7 @@ import os, sys, unittest
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "scripts"))
 from diagram_kit import Diagram, VARIANTS
 import diagram_check
+from visual_theme import THEME
 
 
 class TestVariants(unittest.TestCase):
@@ -15,7 +16,7 @@ class TestVariants(unittest.TestCase):
         for name, view in VARIANTS.items():
             with self.subTest(name=name):
                 self.assertEqual(view, VARIANTS["v1-review"])
-                self.assertEqual(view["neutral_border"], "#D9E2E8")
+                self.assertEqual(view["neutral_border"], THEME["entity_border"])
                 self.assertEqual(view["heavy"], "none")
 
     def test_render_each_variant_clean(self):
@@ -43,7 +44,8 @@ class TestVariants(unittest.TestCase):
     def test_no_arg_default_is_unified_neutral_style(self):
         """Legacy names resolve to the white, neutral, shadow-free default."""
         from diagram_kit import DEFAULT_THEME, THEME_ALIASES
-        self.assertEqual(DEFAULT_THEME, "document-neutral")
+        self.assertEqual(DEFAULT_THEME, THEME["name"])
+        self.assertEqual(THEME_ALIASES["document-neutral"], DEFAULT_THEME)
         self.assertEqual(THEME_ALIASES["doubao"], DEFAULT_THEME)
         self.assertEqual(THEME_ALIASES["default"], DEFAULT_THEME)
         d = Diagram(900, 600, "t")
@@ -52,7 +54,7 @@ class TestVariants(unittest.TestCase):
         d.verdict_bar("v", 40, 360, 820, "结论：待验收")
         svg = d.svg().upper()
         self.assertIn('FILL="#FFFFFF"', svg)
-        self.assertIn('FILL="#FAFAF8"', svg)
+        self.assertIn('FILL="' + THEME['panel_bg'].upper() + '"', svg)
         self.assertNotIn("#1B1D22", svg)
         self.assertNotIn("#FBFAF7", svg)
         self.assertNotIn("#F3EEE5", svg)

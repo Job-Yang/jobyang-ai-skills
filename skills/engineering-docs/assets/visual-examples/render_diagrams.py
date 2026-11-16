@@ -7,9 +7,13 @@ defines synthetic fixtures and the limits of these examples.
 import argparse
 import html
 import json
+import sys
 from pathlib import Path
 
-THEME = json.loads(Path(__file__).with_name("theme.json").read_text())
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+from visual_theme import theme_snapshot
+
+THEME = theme_snapshot()
 INK, MUTED, LINE = THEME["ink"], THEME["muted"], THEME["line"]
 COLORS = THEME["colors"]
 

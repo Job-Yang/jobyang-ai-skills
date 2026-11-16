@@ -1,45 +1,51 @@
-# 新旧图型与有限兜底
+# 统一绘图能力
 
-**新旧能力不是一一对等。优先用Archify能完整表达的图；缺少专用图型时，复用已改良的旧能力。** 原生生成失败和能力缺口要分开，不能一失败就换成普通流程图。
+**作者只选择图义、Schema和格式，不选择新旧后端。** `diagram_kit` 将成熟编译器、专用布局和自由对象收进同一注册与交付链；未知图型、缺依赖、无效输入或检查失败不换图。
 
-## 实际覆盖来自哪里
+```bash
+python3 "$SKILL_DIR/scripts/diagram_kit.py" capabilities
+```
 
-- Archify原生桥接：architecture、workflow、sequence、dataflow、lifecycle、erd、class、tree、timeline、waterfall，共10种输入模式。
-- 旧JSON模板：`render_templates.py` 的14个结构注册项、6个定量项，加 `structural_extra.py` 的7项，共27个layout。运行 `archify_bridge.py capabilities` 可查看直接从源码注册表解析的最新清单，不在提示词里复制一份永久名单。
-- 旧 `diagram_kit` 另有自由组合原语与draw.io导出。它不是一个可自动接收所有JSON格式的通用转换器。
-- Explainer另支持图文组合和部分统计图，但不是所有旧模板的同格式替代。
+清单来自源码注册表：10个typed图型、29个专用layout和自由对象，共40个实现；以运行时 `capabilities` 为准。`component`只用于内部调度，不在公共能力表分类；组件版本和依赖来源仍如实进入回执。
 
-这些数量只说明接口，不说明新后端比旧后端少多少能力：许多专用旧布局的内容可以用原生架构／流程表达，只是外形与输入不一样。
+## 按图义选能力
 
-## 按内容选择，不按名字硬映射
-
-| 内容／目标 | 优先路径 | 何时用旧能力 |
+| 要表达 | 注册图型 | 输入约定 |
 | --- | --- | --- |
-| 架构、部署、上下文 | Archify architecture | 明确需要原生draw.io编辑或维护旧Python图源 |
-| 多角色交接、条件、重试 | Archify workflow | 用户需要已有专用阶段门／发布视图，且旧输入能完整承载 |
-| 状态迁移与终态 | Archify lifecycle | 维护已能验证的旧state_machine，不因原生失败自动改回它 |
-| 实体、字段与类关系 | Archify erd／class | 维护旧er输入；不混淆实体与类的语义 |
-| 消息先后、自调用 | Archify sequence | 其时序自调用等特性有限制；旧sequence能表达时按旧格式重新组织并核对完整性 |
-| 纯层级 | Archify tree | 明确需要思维导图的中心／左右分支视图或旧mindmap输入 |
-| 真实日期、耗时 | Archify timeline／waterfall | 旧timeline有不同数字时间输入，不能按同名直接转换 |
-| 矩阵、金字塔、品牌屋、商业画布、维恩图 | 对应旧专用layout | 新原生模式没有同名专用视图时的能力兜底 |
-| 图片圈注、证据／动作标记 | 旧image_annotate | 不把截图重新画成框线来冒充标注 |
-| 环形、漏斗、雷达、象限、气泡等 | 旧定量layout，或适合的Explainer统计图 | 按数据与图义选择；保留数值、单位、来源 |
+| 架构、运行单元与部署 | architecture | components／connections；复杂任意分区或draw.io对象用free |
+| 跨角色、条件门与回环 | workflow | lanes／nodes／edges，成熟泳道布局 |
+| 消息先后与返回 | sequence | participants／messages／activations等图义字段 |
+| 状态与事件迁移 | lifecycle | states／transitions／mainPath |
+| 数据来源与流向 | dataflow | nodes／flows |
+| 实体字段与基数、类关系 | erd／class | entities／relationships或types／relationships |
+| 单父级层级 | tree | nodes／parent，不冒充调用图 |
+| 真实日期或耗时 | timeline／waterfall | events或spans，保留时间字段 |
+| 任务区间与完成后开始依赖 | gantt | 相对工作日估算或给定日期区间分别建模；不假算资源调度 |
+| 发布窗口、分支、车票与准出 | release-train | 真实给定窗口／阶段／审批／部署及条件关系；长记录独立详情 |
+| 分层、网格、思维导图、阶段与循环 | layers／grid／mindmap／stages／cycle | 对应layout字段进入payload |
+| 金字塔、屋形、矩阵、发布、商业、集合 | pyramid／house／matrix／release／business／venn | 对应专用payload，不改画成普通流程 |
+| 阶段门、因果、反馈、状态机、图片圈注、ER | stage_gate／causal_chain／feedback_loop／state_machine／image_annotate／er | 复用随包专用Schema和布局 |
+| 定量图 | pie／donut／funnel／radar／quadrant／bubble | 数值、单位和来源保留，matplotlib／numpy可选依赖 |
+| 任意对象与分区、固定几何、分区端点 | free | `Diagram.to_input()`生成objects／edge_requests／annotations |
 
-完整传统甘特图不等于Archify耗时waterfall。旧Mermaid／PlantUML等既有语法路径仍可按 `diagram-recipes.md` 使用，但不在这27个JSON模板的自动渲染注册表里；不能虚称已支持同输入自动转写。
+## 同名Schema的明确兼容
 
-## 路由规则
+有些名字相同但图义字段不同。不能把数字时间改成日期，不能把步骤列、消息类型或条件丢掉来适配。
 
-1. 先核对图义和字段，查询桥接的能力清单。
-2. 原生支持且能承载关键关系时，用其Schema，不手工拼旧卡片。
-3. 需要旧专用图型时，按旧layout字段准备输入，由旧模板兜底；源JSON保留，后端与理由明确报告。
-4. 同名tree、timeline、workflow、sequence也按输入族区分。旧 `layout` 是图型字符串；原生架构、树、ER等可合法包含 `layout` 配置对象。不要把该对象误判为旧格式，也不把原生标记和旧字符串混写。
-5. 输入错误、原生验证／几何／来源检查失败、未知图型都不是自动换图的理由。先修明确错误；两边都不支持时如实报告。
+| 既有layout字符串 | 统一注册ID | typed图型ID |
+| --- | --- | --- |
+| workflow | workflow-steps | workflow |
+| sequence | sequence-steps | sequence |
+| tree | tree-hierarchy | tree |
+| timeline | timeline-stages | timeline |
 
-## 兜底的质量底线
+旧JSON导入按明确layout标记转换外壳，业务字段全部原样进入payload；typedJSON同样只转换外壳。统一输入中不要再塞另一套顶层标记，重名能力用上述ID明确选择。合法的payload.layout配置对象继续保留。
 
-- 不删节点、条件、数值、基数、回路来让旧工具通过；格式转换或抽象变更必须对原材料核对。
-- 旧图使用统一浅色面、轻实体／Group轮廓；关键连线和状态仍保持可辨，不恢复未改良的重灰框主题。
-- SVG检查通过后实际看PNG／SVG或静态HTML；程序通过不代替审美与阅读判断。
-- 旧兜底没有Archify查看器的全部交互。交付源与实际格式，明确哪些能力未保留，不假冒交互图。
-- 需要定量依赖或外部语法渲染器时，按既有依赖规范执行；缺依赖不是伪造图或悄悄删内容的理由。
+## 查看与格式的真实边界
+
+- 所有成品使用同一中文离线查看器、角色主题、source／scene索引和最终回执。可查找与聚焦已登记的对象；纯统计或形状视图可聚焦完整图与其数据，不伪造卡片／控制流。
+- 有真实有向边才启用上下游和路径；层级／关联／实体关系不伪装成调用。组成员与关系边分开；未声明成员保持unknown。
+- 所有实现交付HTML，按需导出固定light／dark／plain主题SVG／PNG；交互只在HTML。静态导出复用查看器清理，再解析CSS变量和继承样式。
+- draw.io目前仅free支持真实节点、唯一ID和绑定；其他图型请求draw.io在渲染前拒绝，不用嵌SVG冒充可编辑。
+- 输入、源和主题变化后重新生成并检查；不能沿用组件原HTML的回执证明后续装配页。
+- 未实现的语法转换等不注册；不冒称同输入自动转换。甘特已接入有界任务区间／依赖能力，不提供日历假期或资源调度求解；Explainer阅读能力保持独立原方法。

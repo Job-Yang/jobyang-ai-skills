@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""通过随包 Archify 或有边界的旧模板后端生成与检查工程图。
+"""统一绘图的兼容门面。render/capabilities委托diagram_kit内部运行时。
 
-render 默认按输入 schema 自动选择后端；不会转换 schema，也不会在执行失败后换后端。
-浏览器目视验证由调用者使用独立 Playwright 执行，脚本通过不等同视觉验收。
+既有JSON、explain/compare/patch及组件辅助API保留；作者不选择新旧。
+浏览器DOM/导出观测不等同独立视觉验收，错误不切换图型。
 """
 import argparse
 import ast
@@ -19,6 +19,7 @@ import tempfile
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = SKILL_ROOT / "scripts"
+sys.path.insert(0, str(SCRIPTS))
 BACKEND = SKILL_ROOT / "vendor/archify/bin/archify.mjs"
 PIN = SKILL_ROOT / "vendor/archify-version.json"
 LEGACY_RENDERER = SCRIPTS / "render_templates.py"
@@ -119,23 +120,8 @@ def legacy_registry():
 
 
 def capabilities():
-    registry = legacy_registry()
-    overlap = sorted(set(TYPES) & set(registry["layouts"]))
-    return {
-        "ok": True,
-        "native": {"types": list(TYPES), "output": ["html"], "interactive": True},
-        "legacy": {
-            "layouts": list(registry["layouts"]),
-            "structural": list(registry["structural"]),
-            "quantitative": list(registry["quantitative"]),
-            "extra_structural": list(registry["extra_structural"]),
-            "count": len(registry["layouts"]),
-            "output": ["svg", "html"],
-            "interactive": False,
-        },
-        "overlapping_names": overlap,
-        "routing": "同名不代表 schema 等价；render 根据 diagram_type/schema_version 或 layout 选择后端，不做字段转换。",
-    }
+    from diagram_runtime import capabilities as unified_capabilities
+    return unified_capabilities()
 
 
 def route_render(args):
@@ -361,13 +347,22 @@ def execute_legacy(args, decision):
 
 
 def execute(args):
-    if args.operation == "capabilities":
-        return capabilities(), 0
-    if args.operation == "render":
-        decision = route_render(args)
-        if decision["selected"] == "legacy":
-            return execute_legacy(args, decision)
-        return execute_native(args, decision)
+    # Compatibility facade. Retained helper APIs below are internal components;
+    # all author-side render/capabilities calls use the unified delivery pipeline.
+    if args.operation in {"render", "capabilities"}:
+        from diagram_runtime import capabilities as unified_capabilities, render
+        if args.operation == "capabilities":
+            return unified_capabilities(), 0
+        if args.backend != "auto":
+            data = load_json(readable(file_path(args.input)))
+            is_layout = isinstance(data.get("layout"), str)
+            if (args.backend == "native" and is_layout) or (args.backend == "legacy" and not is_layout):
+                raise BridgeError("兼容backend参数与输入Schema不一致；不会丢字段强行转换。")
+        try:
+            result = render(args.input, args.output, overwrite=args.overwrite, requested=args.type, quality=args.quality, repo_root=args.repo_root)
+            return result, 0
+        except (ValueError, OSError, UnicodeError, subprocess.SubprocessError) as error:
+            return {"ok": False, "error": str(error), "browser_verified": False, "fallback": None}, 2
     return execute_native(args)
 
 

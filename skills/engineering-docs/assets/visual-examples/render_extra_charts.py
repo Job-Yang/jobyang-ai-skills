@@ -17,6 +17,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
 from bootstrap import require
+from visual_theme import theme_snapshot
 
 matplotlib = require("matplotlib")[0]
 matplotlib.use("Agg")
@@ -28,7 +29,7 @@ from matplotlib.path import Path as MplPath
 from matplotlib.text import Text
 np = require("numpy")[0]
 
-THEME = json.loads(Path(__file__).with_name("theme.json").read_text())
+THEME = theme_snapshot()
 INK, MUTED, GRID = THEME["ink"], THEME["muted"], THEME["grid"]
 TONES = THEME["sequence"]
 FONT_CANDIDATES = ["PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei",
