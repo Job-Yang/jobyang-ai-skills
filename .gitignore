@@ -9,3 +9,6 @@ skills/*/.deps
 # 个人/本机同步配置与私有约定（含本机绝对路径，不进公开仓）
 tools/sync.local.json
 SKILLS_SYNC_RULE.md
+
+# 技能评测/迭代的临时工作区（含 xcresult、截图等大体积证据）
+skills/*-workspace/
