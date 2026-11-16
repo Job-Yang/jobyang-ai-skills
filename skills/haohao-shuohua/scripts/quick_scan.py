@@ -310,6 +310,7 @@ def main(argv=None):
     for c in checks:
         print("  %-8s %d 处" % (CN[c], total[c]))
     print("  fail-on=%s -> %s" % (",".join(fail_on) or "(无)", "有命中，退出1" if failed else "零命中，退出0"))
+    print("  语义未检查：动词、对象与比喻对应关系需按 references/verb-metaphor-gate.md 另行核对。")
 
     if any_file_error:
         return 2
