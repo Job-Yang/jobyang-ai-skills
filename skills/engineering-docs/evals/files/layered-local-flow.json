@@ -1,0 +1,76 @@
+{
+  "title": "分层系统保留运行局部流程",
+  "layers": [
+    {"id": "view", "label": "视图层"},
+    {"id": "access", "label": "接入层"},
+    {"id": "service", "label": "服务层"},
+    {"id": "data", "label": "数据层"}
+  ],
+  "groups": [
+    {"id": "configuration", "label": "配置区"},
+    {"id": "runtime", "label": "运行区"},
+    {"id": "ingress", "label": "入口区"},
+    {"id": "internal", "label": "内部服务"},
+    {"id": "external", "label": "外部依赖"},
+    {"id": "storage", "label": "存储区"}
+  ],
+  "nodes": [
+    {
+      "id": "schema", "layer": "view", "group": "configuration", "label": "配置模型", "detail": "声明页面、路由与权限键",
+      "rows": [["页面", "名称与入口"], ["路由", "路径与目标"], ["权限", "操作与资源"]]
+    },
+    {
+      "id": "prepare", "layer": "view", "group": "runtime", "label": "运行准备", "detail": "核对会话与本地缓存",
+      "rows": [["会话", "身份和过期时间"], ["缓存", "版本和清理策略"]]
+    },
+    {
+      "id": "initialize", "layer": "view", "group": "runtime", "label": "初始化", "detail": "建立资源和路由上下文",
+      "rows": [["资源", "加载器与异常边界"], ["路由", "匹配与导航"], ["应用", "模块加载与缓存"]]
+    },
+    {
+      "id": "respond", "layer": "view", "group": "runtime", "label": "交互响应", "detail": "处理导航和页面事件",
+      "rows": [["页面", "布局与局部渲染"], ["事件", "分派与权限核对"]]
+    },
+    {"id": "proxy", "layer": "access", "group": "ingress", "label": "入口代理", "detail": "转发入口请求"},
+    {"id": "gateway", "layer": "access", "group": "ingress", "label": "接口网关", "detail": "鉴权与限流"},
+    {
+      "id": "control", "layer": "service", "group": "internal", "label": "请求控制", "detail": "校验参数与责任边界",
+      "rows": [["校验", "字段与域标识"], ["身份", "会话与请求头"]]
+    },
+    {
+      "id": "domain", "layer": "service", "group": "internal", "label": "领域服务", "detail": "执行业务契约",
+      "rows": [["租户", "隔离规则"], ["资源", "读写契约"], ["应用", "发布版本"], ["路由", "地址映射"]]
+    },
+    {
+      "id": "adapter", "layer": "service", "group": "internal", "label": "服务适配", "detail": "统一外部请求格式",
+      "rows": [["协议", "HTTP 请求"], ["错误", "重试分类"]]
+    },
+    {"id": "repository", "layer": "data", "group": "storage", "label": "仓储访问", "detail": "查询与更新领域记录"},
+    {"id": "database", "layer": "data", "group": "storage", "label": "关系存储", "detail": "保存领域记录"},
+    {"id": "cache", "layer": "data", "group": "storage", "label": "短期缓存", "detail": "保存可过期查询结果"},
+    {"id": "identity", "layer": "service", "group": "external", "label": "身份服务", "detail": "验证身份声明"},
+    {"id": "document", "layer": "service", "group": "external", "label": "文档服务", "detail": "返回文档内容"},
+    {"id": "configuration", "layer": "service", "group": "external", "label": "配置服务", "detail": "返回版本化配置"}
+  ],
+  "relations": [
+    {"id": "r1", "from": "schema", "to": "prepare", "label": "加载配置", "kind": "call"},
+    {"id": "r2", "from": "prepare", "to": "initialize", "label": "会话有效", "kind": "local-flow", "condition": "会话有效且缓存版本兼容"},
+    {"id": "r3", "from": "initialize", "to": "respond", "label": "初始化完成", "kind": "local-flow", "condition": "资源与路由就绪"},
+    {"id": "r4", "from": "proxy", "to": "gateway", "label": "转发请求", "kind": "call"},
+    {"id": "r5", "from": "gateway", "to": "control", "label": "已鉴权请求", "kind": "call", "condition": "鉴权通过且未超限"},
+    {"id": "r6", "from": "control", "to": "domain", "label": "参数通过", "kind": "call"},
+    {"id": "r7", "from": "domain", "to": "adapter", "label": "查询外部内容", "kind": "call"},
+    {"id": "r8", "from": "adapter", "to": "document", "label": "HTTP 查询", "kind": "call"},
+    {"id": "r9", "from": "domain", "to": "repository", "label": "查询领域记录", "kind": "call"},
+    {"id": "r10", "from": "repository", "to": "database", "label": "SQL 查询", "kind": "call"},
+    {"id": "r11", "from": "repository", "to": "cache", "label": "查询缓存", "kind": "call"}
+  ],
+  "shared_coverage": [
+    {"id": "view-audit", "label": "界面审计", "detail": "覆盖运行准备、初始化与交互响应；记录事件与版本", "members": ["prepare", "initialize", "respond"], "kind": "coverage"},
+    {"id": "service-observe", "label": "服务观测", "detail": "覆盖请求控制、领域服务与服务适配；关联请求标识", "members": ["control", "domain", "adapter"], "kind": "coverage"}
+  ],
+  "semantics": {
+    "local_flow": "仅 prepare→initialize→respond 是已确认的局部先后；不推断其他上下层之间的调用",
+    "external": "身份与配置依赖存在但未声明调用方，保留对象，不补边"
+  }
+}

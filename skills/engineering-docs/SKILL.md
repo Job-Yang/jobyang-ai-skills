@@ -1,6 +1,6 @@
 ---
 name: engineering-docs
-description: 写、改、评审研发技术文档（技术方案、系统设计、RFC、ADR、重构与迁移方案、设计评审），产出主次分明、结论先行、表格列表为主、不写大段文字的正文；以及在技术文档里画、改、重画任何工程图（架构、上下文/容器/组件/部署、流程、泳道、时序、状态、数据流、ER、前后对照、里程碑），统一使用 diagram_kit 绘图，按关系选型；随包成熟编译器、专用布局与自由对象共享输入、角色主题、场景、查看器和交付；兼容已有 JSON／Python API，保留平台通用源与实际 SVG／PNG，真实对象图支持 draw.io（发布到某个平台只是可选的最后一步）。不手写 mermaid、不在画板 DSL 中从零摆节点。纯润色、教程、API 手册、调研笔记和非技术文档不用。用户说「帮我写个技术方案」「把这张架构图重画一下」「评审下这份 RFC」时触发。
+description: 写、改、评审研发技术文档（技术方案、系统设计、RFC、ADR、重构与迁移方案、设计评审），产出主次分明、结论先行、表格列表为主、不写大段文字的正文；以及在技术文档里画、改、重画任何工程图（架构/高密度蓝图、上下文/容器/组件/部署、流程/泳道、时序、状态、数据流、ER、复合看板、全景脑图、飞轮、里程碑），统一使用 diagram_kit 绘图，按关系选型；随包成熟编译器、专用布局与自由对象共享输入、角色/insight 主题、场景、查看器和交付；兼容已有 JSON／Python API，保留平台通用源与实际 SVG／PNG，真实对象图支持 draw.io（发布到某个平台只是可选的最后一步）。不手写 mermaid、不在画板 DSL 中从零摆节点。纯润色、教程、API 手册、调研笔记和非技术文档不用。用户说「帮我写个技术方案」「把这张架构图重画一下」「评审下这份 RFC」时触发。
 license: MIT
 ---
 
@@ -18,13 +18,13 @@ license: MIT
 
 归属优先级（高到低）：
 
-1. 工程结构图/流程图/泳道/时序/状态/数据流/ER/部署/里程碑 → **本技能**组织事实和关系，由 `scripts/diagram_kit.py render` 按图义与Schema选择注册实现，共享 `meta＋payload`、完整 scene、主题、查看器与回执。缺能力在渲染前拒绝，输入／生成／检查错误不能自动换图。
-2. 统计数据图表（折线、柱状、散点、分布、漏斗等，表达的是数字而不是工程关系）→ 才用通用可视化能力（ECharts 等）。
+1. 工程结构图/流程图/泳道/时序/状态/数据流/ER/部署/里程碑/复合看板/高密度脑图/飞轮 → **本技能**组织事实和关系，由 `scripts/diagram_kit.py render` 按图义与Schema选择注册实现，共享 `meta＋payload`、完整 scene、主题、查看器与回执。缺能力在渲染前拒绝，输入／生成／检查错误不能自动换图。
+2. 需要独立散点/定制统计可视化（且 `dashboard` / `render_templates` 无法覆盖）→ 才用通用可视化能力（ECharts 等）。
 3. 飞书画板 / 其他平台 → 只是**发布适配器**，把已生成、已检查的成品写进去，不负责从零构图。
 
-判据是“图表达的是工程关系还是纯数字”：表达工程关系一律归本技能，不要因为任务标题里没有“写文档”三个字就改用通用画图或直接手写 mermaid。
+判据是图表达的核心语义：工程关系、复合看板、三层脑图与飞轮优先用 `diagram_kit.py render` 声明式 JSON 生成，不手写 mermaid 或临时 SVG 脚本。
 
-**别的写作技能只借图或阅读增强，不抢正文**：`feynman-explainer`（调研稿）、`talk-smith`（分享稿）需要严谨工程图时复用本技能的统一绘图入口。用户要一页式讲解、分享速读页时，可用 Explainer 将已核对正文做成图表联动页面；内容与叙事仍归原文体技能，不因借图或网页交付改成工程方案。
+**他技能只借图、不抢正文**：`feynman-explainer`、`talk-smith` 与分析复盘稿需画 `architecture-blueprint`／`dashboard`／`panorama-mindmap`／`flywheel` 时，可直接调 `scripts/diagram_kit.py render`（可选 `"preset": "insight"`）独立出图；正文归原技能，**不强制套用 RFC 的 `doc_check.py` 门禁**。需要一页式讲解或速读页时，可用 Explainer 联动图表。
 
 ## 绘图边界：内容归本技能，绘制归后端，平台只发布
 
@@ -55,7 +55,7 @@ license: MIT
 - **硬线**：段落 ≤ 120 字；纯段落不连排超过 2 段；超过 300 字的章节至少一个表格或列表；加粗只加粗关键词或数字（≤ 16 字）。
 - 写完每章自查：**只看加粗、表头、列表标签和引用块，能否读出本章要点？** 不能就重排格式。
 
-形状对照表、强调层级和改写示例见 `references/formatting.md`（写正文前必读）。本技能是所有写作技能共用版式底线（`haohao-shuohua/references/reader-layout.md`）里密度最高的一档。
+形状对照表、强调层级和改写示例见 `references/formatting.md`（写正文前必读）。若仓库同源存在 `haohao-shuohua/references/reader-layout.md`，本技能是其共用版式底线里密度最高的一档；独立安装本技能时直接按本节与 `references/formatting.md` 执行。
 
 ### 图：先选图型，再画
 
@@ -63,18 +63,21 @@ license: MIT
 
 | 关系形状 | 统一图型 |
 | --- | --- |
-| 运行单元、调用、部署边界 | `architecture` |
+| 运行单元、接口、子模块与部署边界 | `architecture`／`architecture-blueprint` |
 | 多角色交接、条件门、闭环 | `workflow` |
 | 消息的先后与返回 | `sequence` |
 | 状态与事件迁移 | `lifecycle` |
 | 实体、字段与基数 | `erd`／`class` |
 | 数据的来源、转换与落点 | `dataflow` |
-| 单父级包含 | `tree` |
-| 日期、耗时与重叠 | `timeline`／`waterfall` |
+| 单父级包含 / 多维全景拆解 | `tree`／`panorama-mindmap` |
+| 阶段×能力类型、横切覆盖 | `capability_map` |
+| 正反馈飞轮与底层护栏 | `flywheel` |
+| KPI、排名对比、预测趋势与驱动拆解 | `dashboard` |
+| 日期、耗时与重叠 | `timeline`／`waterfall`／`gantt` |
 
-- 先明确读者要回答的问题，再定主路径、归属、条件与图型。不要用卡片数量、流程步数硬判图型。
-- **图文互补**：图要表达文字或表格没有直接呈现的关系；对象名称相同不算重复，逐项重排而没有理解增益才算重复。
-- 完整选择规则见 `references/diagram-selection.md`，能力与Schema兼容见 `references/diagram-capabilities.md`；执行与输入路径见 `references/archify-bridge.md`。
+- 先明确读者要回答的问题，再定主路径、归属、条件与图型，不用卡片数量、步数硬判图型。
+- **信息密度**：图补充正文/表格未直接呈现的关系；高密度架构优先用 `architecture-blueprint` 填实 `code`/`rows`/`chips` 与连线动词，不画空心框。
+- 选型见 `references/diagram-selection.md`，能力见 `references/diagram-capabilities.md`，高密度 Schema 见 `references/insight-layouts.md`，覆盖矩阵见 `references/capability-map.md`，执行见 `references/archify-bridge.md`。
 
 ### 图与阅读页的交付
 
@@ -84,7 +87,7 @@ license: MIT
 | 自由对象图 | 同上；已有 `.py` 保留 | 另支持真实节点与绑定的draw.io |
 | 一页式讲解 | `.archify.md` 与引用数据 | Explainer HTML，图表、步骤、来源联动 |
 
-全部绘图使用唯一 `document-roles` 低饱和色库，色面为主、细浅同色边辅助；普通中文sans、代码mono，尺寸进入各图型的测量预算。短Item按内容收紧，必要长条标题居中，不用白底嵌套或重灰框。角色、分类、重点与状态分开；统计独立点按任意色对方案取色，超过单面容量显式分面而不删数据。发布图保关键条件，完整审批记录另交可展开表和受回执校验的 `.details.html／.details.json`，不撑进主图。完整规则见 `references/visual-design.md`。
+全部绘图以 `theme.json` 为唯一色源：默认 `document-roles` 低饱和色面，分析看板、脑图与飞轮默认或以 `"preset": "insight"` 启用洞察风（均支持 `light`／`dark`／`plain`）。角色、分类、重点、状态分开，规则见 `references/visual-design.md`。
 
 **额外阅读能力按需用**：技术方案的速读页、机制讲解、分享稿可以借用 Explainer 的一页图文组合、步骤定位、来源和代码片段、面板局部修订。它不替作者取证，不改变原文体，也不把所有正文强制改成网页；说明见 `references/archify-reading.md`。
 
@@ -120,7 +123,7 @@ license: MIT
 | `scripts/lark_bind.py` | 可选适配器：连线绑定节点的飞书画板数据 |
 | `scripts/engineering_docs.py` | 严格模式：`init`/`validate`/`readability`/`transition` |
 | `scripts/diagram_runtime.py`／`diagram_scene.py`／`diagram_adapter.mjs` | 内部注册、Schema适配、完整scene、查看器装配与统一检查／交付 |
-| `scripts/render_templates.py` | 专用布局内部组件；定量图使用隔离依赖 |
+| `scripts/render_templates.py`／`insight_layouts.py`／`planning_layouts.py` | 专用布局、高密度蓝图/看板/脑图/飞轮与有界排期 |
 
 ## 使用边界
 
@@ -128,6 +131,6 @@ license: MIT
 
 不用：非技术提案、纪要、纯润色、教程、API 全集、未形成工程决定的调研、技术观点文章；面向读者的技术分享文/talk/slides（讲一个技术或项目、不形成评审决策文档）走 `talk-smith`，本技能只接其中需要评审/拍板的方案与配套架构图。
 
-与 `content-infographic` 的分工（相辅相成、不互斥）：本技能出**严谨图**——精确框线、真实模块/接口/时序、可编辑可评审的工程结构；content-infographic 出**直观图**——面向读者、帮记忆的步骤链/对比/概念比喻（可含文生图场景）。同一机制在对外分享里可两张成对：直观图帮读者记住、结构图供工程评审，谁也不替代谁。拿不准归属时问一句：这张图要"经得起评审、能照着实现"（本技能），还是要"读者一眼记住这个道理"（content-infographic）。
+与 `content-infographic`（信息图技能，若未安装可跳过联动）的分工相辅相成、不互斥：本技能出**严谨图**——精确框线、真实模块/接口/时序、可编辑可评审的工程结构；`content-infographic` 出**直观图**——面向读者、帮记忆的步骤链/对比/概念比喻（可含文生图场景）。同一机制在对外分享里可两张成对：直观图帮读者记住、结构图供工程评审，谁也不替代谁。拿不准归属时问一句：这张图要"经得起评审、能照着实现"（本技能），还是要"读者一眼记住这个道理"（直观信息图）。
 
 OPC 独立交接：复用用户材料和指定输出位置，不依赖 iLoop；需要信封封装或打包时读 `references/handoff.md`。

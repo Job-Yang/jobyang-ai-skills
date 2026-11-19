@@ -503,6 +503,12 @@ def tree(spec):
 
 
 def mindmap(spec):
+    if ("left_groups" in spec or "right_groups" in spec or spec.get("preset") == "insight"
+            or len(spec.get("groups", [])) > 6
+            or any(isinstance(g, dict) and ("leaves" in g or "children" in g or any(isinstance(it, dict) for it in g.get("items", [])))
+                   for g in spec.get("groups", []))):
+        import insight_layouts
+        return insight_layouts.panorama_mindmap(spec)
     groups = spec["groups"]
     check(2 <= len(groups) <= 6, "Mindmap supports 2–6 branches.")
     c = _canvas(spec)
@@ -590,6 +596,11 @@ def stages(spec):
 
 
 def cycle(spec):
+    if (spec.get("preset") == "insight" or "guardrails" in spec or "premises" in spec
+            or any(isinstance(g, dict) and ("bullets" in g or "header_tag" in g or "tag" in g)
+                   for g in spec.get("groups", []))):
+        import insight_layouts
+        return insight_layouts.flywheel(spec)
     groups = spec["groups"]
     check(len(groups) in (3, 4), "Cycle supports 3–4 stages; larger cycles should be split.")
     c = _canvas(spec)

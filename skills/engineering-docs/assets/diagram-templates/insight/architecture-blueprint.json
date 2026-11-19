@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "type": "architecture-blueprint",
+  "meta": {
+    "title": "写路径收口与异步对账架构",
+    "subtitle": "目标架构蓝图 · 实线同步调用 / 虚线规划链路 / 虚框横切覆盖",
+    "note": "合成示例：展示网关统一写入、出站表事务一致性与异步补偿边界。"
+  },
+  "payload": {
+    "preset": "document-roles",
+    "layout": {"width": 1280},
+    "kpi_badges": [
+      {"label": "主写可用性 99.99%", "tone": "blue"},
+      {"label": "P99 < 45ms", "tone": "teal"}
+    ],
+    "layers": [
+      {"id": "edge", "label": "接入与路由层", "tone": "sky"},
+      {"id": "core", "label": "核心业务与编排层", "tone": "sage"},
+      {"id": "storage", "label": "数据持久化与外部依赖层", "tone": "lavender"}
+    ],
+    "groups": [
+      {"id": "ingress", "label": "统一接入区", "layer": "edge"},
+      {"id": "biz", "label": "交易写服务", "layer": "core"},
+      {"id": "async_workers", "label": "异步补偿与分发", "layer": "core"},
+      {"id": "db_zone", "label": "主存储与消息队列", "layer": "storage"}
+    ],
+    "nodes": [
+      {
+        "id": "api_gw", "layer": "edge", "group": "ingress", "role": "cloud", "badge": "1",
+        "label": "API 写入网关", "code": "POST /v1/orders",
+        "desc": "统一鉴权、幂等键校验与租户限流",
+        "chips": [["唯一写入口", "filled", "accent"], "TLS 1.3"]
+      },
+      {
+        "id": "schema_guard", "layer": "edge", "group": "ingress", "role": "security",
+        "label": "契约校验器", "code": "SchemaGuard.validate()",
+        "desc": "字段白名单、版本兼容与灰度规则过滤",
+        "rows": [["协议", "OpenAPI 3.1"], ["策略", "租户级流控"]]
+      },
+      {
+        "id": "order_svc", "layer": "core", "group": "biz", "role": "backend", "badge": "2", "emphasis": true,
+        "label": "订单状态机服务", "code": "OrderService.commit()",
+        "desc": "本地事务同时落订单主表与 Outbox 事件",
+        "rows": [["状态校验", "严格递增"], ["锁策略", "乐观版本戳"]],
+        "chips": [["强一致写入", "filled", "teal"], "超时 800ms"]
+      },
+      {
+        "id": "outbox_relay", "layer": "core", "group": "async_workers", "role": "messagebus", "badge": "3",
+        "label": "Outbox 投递器", "code": "RelayPoller.flush()",
+        "desc": "扫描未发布事件，按分区顺序投递至消息总线",
+        "rows": [["批大小", "200 条/批"], ["退避", "指数重试 + DLQ"]]
+      },
+      {
+        "id": "reconciler", "layer": "core", "group": "async_workers", "role": "backend", "dashed": true,
+        "label": "对账补偿任务", "code": "ReconcileJob.scan()",
+        "desc": "按 5 分钟窗口核对下游确认回执与死信",
+        "chips": [["规划中", "outline", "amber"], "T+5m 巡检"]
+      },
+      {
+        "id": "main_db", "layer": "storage", "group": "db_zone", "role": "database",
+        "label": "核心事务库", "code": "PostgreSQL Primary",
+        "rows": [["orders 表", "主写唯一源"], ["outbox 表", "同库事务"]]
+      },
+      {
+        "id": "kafka_bus", "layer": "storage", "group": "db_zone", "role": "messagebus",
+        "label": "事件总线", "code": "kafka://order.events",
+        "rows": [["分区键", "order_id"], ["保留期", "7 天回溯"]]
+      },
+      {
+        "id": "read_cache", "layer": "storage", "group": "db_zone", "role": "database",
+        "label": "只读状态缓存", "code": "Redis Cluster",
+        "rows": [["读链路", "事件驱动失效"], ["TTL", "120s 兜底"]]
+      }
+    ],
+    "connections": [
+      {"id": "c1", "from": "api_gw", "to": "schema_guard", "label": "校验请求"},
+      {"id": "c2", "from": "api_gw", "to": "order_svc", "label": "gRPC 转发", "emphasis": true},
+      {"id": "c3", "from": "order_svc", "to": "main_db", "label": "同事务落库", "emphasis": true},
+      {"id": "c4", "from": "outbox_relay", "to": "main_db", "label": "拉取待发事件"},
+      {"id": "c5", "from": "outbox_relay", "to": "kafka_bus", "label": "批量投递"},
+      {"id": "c6", "from": "reconciler", "to": "read_cache", "label": "补偿刷新", "style": "dashed"}
+    ],
+    "shared_coverage": [
+      {
+        "id": "cov-trace", "label": "全链路 TraceID 透传", "role": "security",
+        "detail": "网关注入全局请求标识，贯穿状态机事务、Outbox 与下游事件消费日志",
+        "members": ["order_svc"]
+      }
+    ],
+    "notes": [
+      {"id": "n1", "label": "一致性约束", "tone": "teal", "detail": "所有状态变更只经 OrderService 写入主库与 outbox 表，禁止外部服务直连主库。"},
+      {"id": "n2", "label": "灰度边界", "tone": "amber", "detail": "对账补偿任务处于规划阶段，上线前先以只读巡检模式验证 7 天。"}
+    ]
+  }
+}

@@ -415,7 +415,9 @@ def _adapt_svg(scene, text):
                 if len(geometry) == 4 and all(abs(a-b) < .5 for a, b in zip(rect, geometry)):
                     el.set('fill', node_surface(semantic_tone(declared)))
                     styles.pop('fill', None)
-            if policy and surface and not outlined:
+            if el.get('data-preserve-stroke') == '1':
+                pass
+            elif policy and surface and not outlined:
                 stroke = styles.get('stroke', el.get('data-dk-stroke', el.get('stroke', THEME['group_border'])))
                 styles.pop('stroke', None)
                 styles.pop('stroke-width', None)
@@ -499,6 +501,8 @@ def _adapt_svg(scene, text):
 
 def _layout_scene(source, spec, output):
     import render_templates as rt
+    if isinstance(source["payload"].get("layout"), dict):
+        spec = {**spec, "_layout_options": deepcopy(source["payload"]["layout"])}
     compiled = rt.render(spec, output)
     raw = output.read_text()
     root = ET.fromstring(raw)
@@ -553,7 +557,7 @@ def component_fingerprint():
     if altered:
         raise DiagramError('固定上游组件被修改且未登记patch：' + ', '.join(altered))
     files = {str(p.relative_to(SKILL_ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(SCRIPTS.glob("diagram_*.py"))}
-    for p in (SCRIPTS/"diagram_adapter.mjs", SCRIPTS/"visual_theme.py", SCRIPTS/"render_templates.py", SCRIPTS/"structural_extra.py", SCRIPTS/"planning_layouts.py", SCRIPTS/"archify_bridge.py", PIN):
+    for p in (SCRIPTS/"diagram_adapter.mjs", SCRIPTS/"visual_theme.py", SCRIPTS/"render_templates.py", SCRIPTS/"structural_extra.py", SCRIPTS/"planning_layouts.py", SCRIPTS/"insight_layouts.py", SCRIPTS/"archify_bridge.py", PIN):
         files[str(p.relative_to(SKILL_ROOT))] = hashlib.sha256(p.read_bytes()).hexdigest()
     return {"archify_version": pin["version"], "archify_commit": pin["commit"], "adapter_files": files,
             "sha256": digest({'adapters': files, 'vendor': pin['files']}), "upstream_files_sha256": digest(pin['files']), "upstream_modified": pin["upstream_modified"], "local_adaptation": "diagram_adapter.mjs: template assembly, theme tokens, typed semantics, export API"}
@@ -676,6 +680,8 @@ def render(input_value, output, *, formats=None, theme="light", overwrite=False,
             else: component_payload = source["payload"]
             spec = {"id": source["meta"].get("id", "diagram"), "name": source["meta"].get("name", entry["id"]),
                     **source["meta"], **component_payload, "layout": entry["layout"]}
+            if isinstance(component_payload.get("layout"), dict):
+                spec["_layout_options"] = deepcopy(component_payload["layout"])
             scene, raw_svg, stages["component_check"] = _layout_scene(source, spec, stage/"component.svg")
         scene["meta"] = deepcopy(source["meta"])
         scene["source_sha256"] = digest(source)

@@ -19,9 +19,9 @@ from visual_theme import export_tokens
 class UnifiedInputTests(unittest.TestCase):
     def test_registry_has_all_implemented_modes(self):
         r=R.registry()
-        self.assertEqual(len(r),40)
-        self.assertEqual(len({x['id'] for x in r}),40)
-        self.assertTrue({'gantt','release-train'} <= {x['id'] for x in r})
+        self.assertEqual(len(r),45)
+        self.assertEqual(len({x['id'] for x in r}),45)
+        self.assertTrue({'gantt','release-train','capability_map','architecture-blueprint','dashboard','panorama-mindmap','flywheel'} <= {x['id'] for x in r})
         self.assertEqual({x['type'] for x in r if x['component']=='typed'},set(R.TYPES))
         self.assertEqual({x['layout'] for x in r if x['component']=='layout'},set(R.legacy_registry()['layouts']))
         self.assertFalse({'native','legacy'} & set(R.capabilities()))

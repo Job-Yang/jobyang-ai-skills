@@ -11,7 +11,25 @@
     "panel_bg": "#F0F2F4",
     "entity_fill": "#EEF3F7",
     "entity_border": "#7B8B9E",
-    "group_border": "#D6DCE3"
+    "group_border": "#D6DCE3",
+    "insight_canvas": "#F8FAFC",
+    "insight_card": "#FFFFFF",
+    "insight_panel": "#F1F5F9",
+    "insight_track": "#F1F5F9",
+    "insight_border": "#E2E8F0",
+    "insight_divider": "#CBD5E1",
+    "insight_ink": "#0F172A",
+    "insight_text": "#334155",
+    "insight_muted": "#475569",
+    "insight_subtle": "#64748B",
+    "insight_dark_canvas": "#10141A",
+    "insight_dark_panel": "#191F28",
+    "insight_dark_track": "#191F28",
+    "insight_dark_border": "#3D4756",
+    "insight_dark_divider": "#526075",
+    "insight_dark_text": "#E2E8F0",
+    "insight_dark_muted": "#B6C2D1",
+    "insight_dark_subtle": "#94A3B8"
   },
   "ramp": {
     "sky": {
@@ -118,6 +136,62 @@
       "mark": "#7F5800",
       "fill": "#F7F5F0",
       "dark_mark": "#805800"
+    },
+    "insight_blue": {
+      "solid": "#2563EB",
+      "mark": "#2563EB",
+      "text": "#1D4ED8",
+      "tint": "#EFF6FF",
+      "border": "#BFDBFE"
+    },
+    "insight_teal": {
+      "solid": "#0F766E",
+      "mark": "#0D9488",
+      "text": "#0F766E",
+      "tint": "#F0FDFA",
+      "border": "#99F6E4"
+    },
+    "insight_amber": {
+      "solid": "#B45309",
+      "mark": "#D97706",
+      "text": "#B45309",
+      "tint": "#FFFBEB",
+      "border": "#FDE68A"
+    },
+    "insight_purple": {
+      "solid": "#7C3AED",
+      "mark": "#7C3AED",
+      "text": "#6D28D9",
+      "tint": "#F5F3FF",
+      "border": "#DDD6FE"
+    },
+    "insight_red": {
+      "solid": "#E11D48",
+      "mark": "#E11D48",
+      "text": "#BE123C",
+      "tint": "#FFF1F2",
+      "border": "#FECDD3"
+    },
+    "insight_green": {
+      "solid": "#047857",
+      "mark": "#10B981",
+      "text": "#047857",
+      "tint": "#ECFDF5",
+      "border": "#A7F3D0"
+    },
+    "insight_indigo": {
+      "solid": "#4F46E5",
+      "mark": "#4F46E5",
+      "text": "#4338CA",
+      "tint": "#EEF2FF",
+      "border": "#C7D2FE"
+    },
+    "insight_slate": {
+      "solid": "#475569",
+      "mark": "#64748B",
+      "text": "#334155",
+      "tint": "#F1F5F9",
+      "border": "#CBD5E1"
     }
   },
   "surface": {
@@ -413,6 +487,16 @@
   "surface_modes": {
     "dark": {
       "ink": "foundation.paper"
+    },
+    "dark_insight": {
+      "canvas": "foundation.insight_dark_canvas",
+      "panel": "foundation.insight_dark_panel",
+      "track": "foundation.insight_dark_track",
+      "border": "foundation.insight_dark_border",
+      "divider": "foundation.insight_dark_divider",
+      "text": "foundation.insight_dark_text",
+      "muted": "foundation.insight_dark_muted",
+      "subtle": "foundation.insight_dark_subtle"
     }
   },
   "scheme": {
@@ -593,5 +677,89 @@
   "surface_policy": {
     "default": "低饱和色面为主，0.55px正文尺度的细浅同色边辅助识别；不白底挖空、不叠重虚线",
     "semantic": "明确虚线/规划/安全或无填充边界保留细线；不删除关系箭头"
+  },
+  "presets": {
+    "insight": {
+      "surface": {
+        "canvas": "foundation.insight_canvas",
+        "card": "foundation.insight_card",
+        "panel": "foundation.insight_panel",
+        "track": "foundation.insight_track",
+        "border": "foundation.insight_border",
+        "divider": "foundation.insight_divider",
+        "ink": "foundation.insight_ink",
+        "text": "foundation.insight_text",
+        "muted": "foundation.insight_muted",
+        "subtle": "foundation.insight_subtle"
+      },
+      "accents": {
+        "blue": {
+          "solid": "ramp.insight_blue.solid",
+          "mark": "ramp.insight_blue.mark",
+          "text": "ramp.insight_blue.text",
+          "tint": "ramp.insight_blue.tint",
+          "border": "ramp.insight_blue.border"
+        },
+        "teal": {
+          "solid": "ramp.insight_teal.solid",
+          "mark": "ramp.insight_teal.mark",
+          "text": "ramp.insight_teal.text",
+          "tint": "ramp.insight_teal.tint",
+          "border": "ramp.insight_teal.border"
+        },
+        "amber": {
+          "solid": "ramp.insight_amber.solid",
+          "mark": "ramp.insight_amber.mark",
+          "text": "ramp.insight_amber.text",
+          "tint": "ramp.insight_amber.tint",
+          "border": "ramp.insight_amber.border"
+        },
+        "purple": {
+          "solid": "ramp.insight_purple.solid",
+          "mark": "ramp.insight_purple.mark",
+          "text": "ramp.insight_purple.text",
+          "tint": "ramp.insight_purple.tint",
+          "border": "ramp.insight_purple.border"
+        },
+        "red": {
+          "solid": "ramp.insight_red.solid",
+          "mark": "ramp.insight_red.mark",
+          "text": "ramp.insight_red.text",
+          "tint": "ramp.insight_red.tint",
+          "border": "ramp.insight_red.border"
+        },
+        "green": {
+          "solid": "ramp.insight_green.solid",
+          "mark": "ramp.insight_green.mark",
+          "text": "ramp.insight_green.text",
+          "tint": "ramp.insight_green.tint",
+          "border": "ramp.insight_green.border"
+        },
+        "indigo": {
+          "solid": "ramp.insight_indigo.solid",
+          "mark": "ramp.insight_indigo.mark",
+          "text": "ramp.insight_indigo.text",
+          "tint": "ramp.insight_indigo.tint",
+          "border": "ramp.insight_indigo.border"
+        },
+        "slate": {
+          "solid": "ramp.insight_slate.solid",
+          "mark": "ramp.insight_slate.mark",
+          "text": "ramp.insight_slate.text",
+          "tint": "ramp.insight_slate.tint",
+          "border": "ramp.insight_slate.border"
+        }
+      },
+      "sequence": [
+        "blue",
+        "teal",
+        "amber",
+        "purple",
+        "green",
+        "red",
+        "indigo",
+        "slate"
+      ]
+    }
   }
 }

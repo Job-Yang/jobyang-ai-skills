@@ -14,10 +14,10 @@
 ```yaml
 ---
 schema: opc-artifact/v1
-opc_node: prd
-artifact_kind: prd
+opc_node: technical
+artifact_kind: technical
 opc_version: 0.2.0
-topic: example-product
+topic: example-topic
 created: 2026-09-25T10:00:00+00:00
 upstream: null
 produced_by: standalone
@@ -25,7 +25,7 @@ human_review: pending
 ---
 ```
 
-`opc_node` 是能力；`artifact_kind` 是产物类型，例如同一个 prd 节点输出 prd 和 plan。兼容已有 v1 中没有 artifact_kind 的文件。`topic` 使用小写 slug；多候选雷达可为 null，每条候选要给自己的 slug。`created` 为带时区的真实生成时间。
+`opc_node` 是能力；`artifact_kind` 是产物类型（`engineering-docs` 输出 `technical`，文件名为 `technical-spec-<topic>.md`，正文须覆盖五类核心信息：**方案**、**取舍**、**风险**、**验证**、**回退**）。兼容已有 v1 中没有 artifact_kind 的文件。`topic` 使用小写 slug；`created` 为带时区的真实生成时间。
 
 直接输入的 upstream 为 null。多个上游写 `inputs: '["prd-example-product.md", "assess-example-product.md"]'`，使用工件相对路径，不使用远端绝对路径。并行实例使用不同 topic（如 example-product-ios、example-product-web），或由编排为实例分配不同数据根；不允许把两份同名产物挤进一个路径。可附 `node_run_id` 记录实例，但本版本不实现调度引擎。
 
@@ -36,10 +36,8 @@ human_review: pending
 有文件能力时交付可下载的 Markdown；涉及评分 JSON、原型、素材、阶段契约和评论时打包。无文件能力时，在一个完整的 Markdown 代码块内输出信封和正文，不混入说明、不省略。本地 Agent 接收该块后用 `--stdin` 校验。
 
 ```bash
-python3 scripts/artifact_io.py validate --input artifact.md
-python3 scripts/artifact_io.py pack --input prd-example-product.md plan-example-product.md --out result.zip
-python3 scripts/artifact_io.py pack --input assess-example-product.md --scoring _scoring-example-product.json --out result.zip
-python3 scripts/artifact_io.py pack --input design-spec-example-product.md --attach prototype --out result.zip
+python3 scripts/artifact_io.py validate --input technical-spec-example-topic.md
+python3 scripts/artifact_io.py pack --input technical-spec-example-topic.md --attach diagrams --out result.zip
 python3 scripts/artifact_io.py ingest --input result.zip --output-root /explicit/artifacts --dry-run
 python3 scripts/artifact_io.py ingest --input result.zip --output-root /explicit/artifacts
 ```

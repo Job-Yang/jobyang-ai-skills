@@ -795,10 +795,234 @@ def er(spec):
     return c
 
 
-# Planning imports Canvas lazily; literal keys also expose public registry entries.
+def capability_map(spec):
+    """按阶段与能力类型表达覆盖范围，不表示控制流或调用。
+
+    紧凑测量仅作用于此专用布局，旧 Canvas 的对象几何
+    和其他布局保持不变。共享横带只表达连续阶段范围，
+    不生成有向或无向关系边。
+    """
+    stages, categories = spec.get("stages", []), spec.get("categories", [])
+    items, shared = spec.get("capabilities", []), spec.get("shared", [])
+    check(isinstance(stages, list) and 2 <= len(stages) <= 5, "capability_map supports 2–5 stages.")
+    check(isinstance(categories, list) and 1 <= len(categories) <= 6, "capability_map supports 1–6 categories.")
+    check(isinstance(items, list) and isinstance(shared, list), "Capabilities and shared must be lists.")
+    check(not any(spec.get(k) for k in ("edges", "connections", "flows", "messages", "relations")),
+          "Coverage is not a call/flow graph; use a relationship view for real edges.")
+    all_objects = stages + categories + items + shared
+    for obj in all_objects:
+        check(isinstance(obj, dict) and isinstance(obj.get("id"), str) and obj["id"], "Every object needs a string ID.")
+        check(isinstance(obj.get("label"), str) and obj["label"].strip(), "Every object needs a label.")
+        check(isinstance(obj.get("detail", ""), str), "detail must be text.")
+    ids = [obj["id"] for obj in all_objects]
+    check(len(set(ids)) == len(ids), "Duplicate capability_map IDs.")
+    stage_ids, category_ids = [s["id"] for s in stages], [r["id"] for r in categories]
+    for item in items:
+        check(item.get("stage") in stage_ids and item.get("category") in category_ids, "Unknown stage/category.")
+    scopes = []
+    for band in shared:
+        scope = band.get("stages")
+        check(isinstance(scope, list) and scope and len(set(scope)) == len(scope)
+              and all(s in stage_ids for s in scope), "Shared coverage needs explicit known stages.")
+        indices = sorted(stage_ids.index(s) for s in scope)
+        check(indices == list(range(indices[0], indices[-1] + 1)), "Split non-contiguous shared coverage into explicit bands.")
+        scopes.append(indices)
+
+    from diagram_kit import wrap as natural_wrap, text_units
+    import math
+    options = spec.get("_layout_options", spec.get("layout", {}) if isinstance(spec.get("layout"), dict) else {})
+    check(isinstance(options, dict) and not (set(options) - {"width"}), "capability_map layout supports only width.")
+    canvas_width = options.get("width", 680)
+    check(isinstance(canvas_width, (int, float)) and not isinstance(canvas_width, bool)
+          and math.isfinite(canvas_width) and canvas_width >= 680,
+          "capability_map layout.width must be a finite logical-pixel budget >= 680; do not shrink fonts.")
+    left, gutter, gap = 32, 82, 6
+    content_width = canvas_width - 64
+    data_x, available = left + gutter + gap, content_width - gutter - gap
+    demands = []
+    for stage in stages:
+        labels = [stage["label"]] + [it["label"] for it in items if it["stage"] == stage["id"]]
+        demands.append(min(180, max(88, max(text_units(t) for t in labels) * 15 + 16)))
+    usable = available - gap * (len(stages) - 1)
+    minimum = 80
+    spare = usable - minimum * len(stages)
+    check(spare >= 0, "Too many stage columns.")
+    weights = [max(1, d - minimum) for d in demands]
+    widths = [minimum + spare * weight / sum(weights) for weight in weights]
+    xs, x = [], data_x
+    for width in widths:
+        xs.append(x)
+        x += width + gap
+
+    def measure(obj, width):
+        title = natural_wrap(obj["label"], width - 16, 15)
+        detail = natural_wrap(obj["detail"], width - 16, 13) if obj.get("detail") else []
+        check(all(text_units(t) * size <= width - 16 + .1 for lines, size in ((title, 15), (detail, 13)) for t in lines),
+              f"Unbreakable text exceeds {obj['id']}; enlarge the view or split content, not the word.")
+        return title, detail, 16 + len(title) * 21 + (4 + len(detail) * 18.2 if detail else 0)
+
+    cell_items = {(r, s): [it for it in items if it["category"] == r and it["stage"] == s]
+                  for r in category_ids for s in stage_ids}
+    measured = {it["id"]: measure(it, widths[stage_ids.index(it["stage"])]) for it in items}
+    header_h = max(measure(s, widths[i])[2] for i, s in enumerate(stages))
+    row_heights = []
+    for category in categories:
+        heights = [sum(measured[it["id"]][2] for it in cell_items[category["id"], sid])
+                   + max(0, len(cell_items[category["id"], sid]) - 1) * gap for sid in stage_ids]
+        row_heights.append(max(measure(category, gutter)[2], max(heights, default=0), 37) + 12)
+    band_sizes = [measure(band, xs[scope[-1]] + widths[scope[-1]] - xs[scope[0]])
+                  for band, scope in zip(shared, scopes)]
+    band_rows, band_slots = [], []
+    for scope, size in zip(scopes, band_sizes):
+        slot = next((i for i, row in enumerate(band_rows) if not set(scope) & row["stages"]), len(band_rows))
+        if slot == len(band_rows):
+            band_rows.append({"stages": set(), "height": 0})
+        band_rows[slot]["stages"].update(scope)
+        band_rows[slot]["height"] = max(band_rows[slot]["height"], size[2])
+        band_slots.append(slot)
+    bottom = 140 + header_h + 8 + sum(row_heights) + gap * len(categories)
+    bottom += sum(row["height"] + gap for row in band_rows)
+
+    class BudgetCanvas(Canvas):
+        """仅传递此图宽度，保留原 Canvas 检查和正文字号。"""
+        def save(self, path):
+            if self.spec.get("note") and not getattr(self, "_cap_rule_added", False):
+                self._cap_rule_added = True
+                self.parts.append(f'<path d="M32 {self.height-69} H648" fill="none" stroke="{THEME["grid"]}" stroke-width="1"/>')
+            if canvas_width == 680:
+                return super().save(path)
+            scale = 616 / content_width
+            actual_boxes, actual_labels = self.boxes, self.labels
+            self.boxes = {key: (32 + (x - 32) * scale, y, w * scale, h)
+                          for key, (x, y, w, h) in actual_boxes.items()}
+            self.labels = [{**item, "x": 32 + (item["x"] - 32) * scale, "width": item["width"] * scale}
+                           for item in actual_labels]
+            label_count = len(self.labels)
+            try:
+                result = super().save(path)
+                extra_labels = self.labels[label_count:]
+            finally:
+                self.boxes, self.labels = actual_boxes, actual_labels
+            self.labels.extend(extra_labels)
+            svg = path.read_text()
+            svg = svg.replace('width="680" height=', f'width="{canvas_width}" height=', 1)
+            svg = svg.replace(f'viewBox="0 0 680 {self.height}"', f'viewBox="0 0 {canvas_width} {self.height}"', 1)
+            svg = svg.replace('<rect width="680" height="100%"', f'<rect width="{canvas_width}" height="100%"', 1)
+            if self.spec.get("note"):
+                svg = svg.replace(f'd="M32 {self.height-69} H648"',
+                                  f'd="M32 {self.height-69} H{canvas_width-32}"', 1)
+            path.write_text(svg)
+            return {**result, "boxes": self.boxes, "labels": self.labels, "width": canvas_width}
+
+    c = BudgetCanvas(spec, int(bottom + 90))
+
+    def measured_line(x, y, value, size=15, color=INK, weight=400):
+        """直接绘制已经测量的一行，不再使用 Canvas 的规则换行。"""
+        from html import escape
+        c.parts.append(f'<text x="{x}" y="{y}" font-size="{size}" '
+                       f'fill="{color}" font-weight="{weight}" text-anchor="start">'
+                       f'{escape(value)}</text>')
+        c.labels.append({"text": value, "x": x, "y": y, "size": size,
+                         "width": text_units(value) * size, "anchor": "start"})
+
+    from visual_theme import semantic_tone, tones
+
+    def presentation(obj, category=None):
+        effective = dict(obj)
+        own_color = any(obj.get(key) not in (None, "") for key in ("tone", "status", "role"))
+        emphasis = obj.get("emphasis")
+        own_color = own_color or isinstance(emphasis, str) and bool(emphasis)
+        inherited = {}
+        if not own_color and category:
+            inherited = {key: category[key] for key in ("tone", "role") if category.get(key) not in (None, "")}
+            effective.update(inherited)
+        focus = emphasis is True or isinstance(emphasis, str) and emphasis in tones()
+        return semantic_tone(effective), focus, {
+            "effective": paint(effective), "inherited_from": category["id"] if inherited else None,
+            "focus": focus,
+        }
+
+    def block(obj, x, y, width, measured_text, kind="card", members=None, category=None):
+        title, detail, height = measured_text
+        appearance, focus, display = presentation(obj, category)
+        end = c.group(obj["id"], obj, (x, y, width, height), kind, members)
+        c.scene_graph["objects"][-1]["presentation"] = display
+        subordinate = kind == "coverage" and not focus
+        fill = THEME["panel_bg"] if subordinate else appearance["tint"]
+        border = appearance["solid"] if focus else appearance["entity_border"]
+        c.shape("rect", x=x, y=y, width=width, height=height, rx=4, fill=fill,
+                fill_opacity=1 if focus or subordinate else .62, stroke=border,
+                stroke_opacity=1 if focus else .38, stroke_width=1.6 if focus else .85)
+        if focus:
+            c.shape("rect", x=x, y=y+4, width=3, height=max(0, height-8), rx=1.5,
+                    fill=appearance["solid"], stroke="none")
+        elif subordinate:
+            c.shape("rect", x=x, y=y+5, width=2, height=max(0, height-10), rx=1,
+                    fill=appearance["entity_border"], fill_opacity=.5, stroke="none")
+        yy = y + 21
+        title_weight = 700 if focus else 600 if kind == "group" else 500
+        for line in title:
+            measured_line(x + 8, yy, line, 15, INK, title_weight)
+            yy += 21
+        if detail:
+            yy += 1
+            for line in detail:
+                measured_line(x + 8, yy, line, 13, MUTED)
+                yy += 18.2
+        end()
+        if kind == "card":
+            c.boxes[obj["id"]] = (x, y, width, height)
+            c.scene_objects[obj["id"]] = dict(obj)
+
+    for i, stage in enumerate(stages):
+        members = [it["id"] for it in items if it["stage"] == stage["id"]]
+        block(stage, xs[i], 140, widths[i], measure(stage, widths[i]), "group", members)
+    measured_line(left + 8, 161, "能力类型", 15, INK, 600)
+    y = 140 + header_h + 8
+    for category, height in zip(categories, row_heights):
+        members = [it["id"] for it in items if it["category"] == category["id"]]
+        end = c.group(category["id"], category, (left, y, content_width, height), members=members)
+        category_paint, category_focus, category_display = presentation(category)
+        c.scene_graph["objects"][-1]["presentation"] = category_display
+        c.shape("rect", x=left, y=y, width=content_width, height=height, rx=4,
+                fill=category_paint["tint"], fill_opacity=.24, stroke="none")
+        c.shape("rect", x=left, y=y+6, width=3, height=max(0, height-12), rx=1.5,
+                fill=category_paint["solid"] if category_focus else category_paint["entity_border"],
+                fill_opacity=1 if category_focus else .65, stroke="none")
+        label, detail, _ = measure(category, gutter)
+        yy = y + 25
+        for line in label:
+            measured_line(left + 8, yy, line, 15, INK, 700 if category_focus else 600)
+            yy += 21
+        for line in detail:
+            measured_line(left + 8, yy, line, 13, MUTED)
+            yy += 18.2
+        for i, sid in enumerate(stage_ids):
+            yy = y + 6
+            for it in cell_items[category["id"], sid]:
+                block(it, xs[i], yy, widths[i], measured[it["id"]], category=category)
+                yy += measured[it["id"]][2] + gap
+            if not cell_items[category["id"], sid]:
+                measured_line(xs[i] + 8, y + 27, "—", 15, MUTED)
+        end()
+        y += height + gap
+    band_ys, yy = [], y
+    for row in band_rows:
+        band_ys.append(yy)
+        yy += row["height"] + gap
+    for band, scope, measured_text, slot in zip(shared, scopes, band_sizes, band_slots):
+        x = xs[scope[0]]
+        width = xs[scope[-1]] + widths[scope[-1]] - x
+        block(band, x, band_ys[slot], width, measured_text, "coverage")
+    return c
+
+
+# Planning and insight layouts import helpers lazily; literal keys expose public registry entries.
+import insight_layouts
 import planning_layouts
 
 BUILDERS = {
+    "capability_map": capability_map,
     "stage_gate": stage_gate,
     "causal_chain": causal_chain,
     "feedback_loop": feedback_loop,
@@ -808,4 +1032,8 @@ BUILDERS = {
     "er": er,
     "gantt": planning_layouts.gantt,
     "release-train": planning_layouts.release_train,
+    "architecture-blueprint": insight_layouts.architecture_blueprint,
+    "dashboard": insight_layouts.dashboard,
+    "panorama-mindmap": insight_layouts.panorama_mindmap,
+    "flywheel": insight_layouts.flywheel,
 }

@@ -107,12 +107,12 @@ class BridgeUnitTests(unittest.TestCase):
     def test_capabilities_are_ast_derived_without_optional_imports(self):
         before = set(os.sys.modules)
         report = BR.capabilities()
-        self.assertEqual(report["count"], 40)
+        self.assertEqual(report["count"], 45)
         self.assertNotIn("native", report)
         self.assertNotIn("legacy", report)
         self.assertEqual(set(report["schema_compatibility"]), {"sequence", "timeline", "tree", "workflow"})
-        self.assertEqual(len(BR.legacy_registry()["layouts"]), 29)
-        self.assertTrue({'gantt', 'release-train'} <= set(BR.legacy_registry()['layouts']))
+        self.assertEqual(len(BR.legacy_registry()["layouts"]), 34)
+        self.assertTrue({'gantt', 'release-train', 'capability_map', 'architecture-blueprint', 'dashboard', 'panorama-mindmap', 'flywheel'} <= set(BR.legacy_registry()['layouts']))
         self.assertNotIn("matplotlib", set(os.sys.modules) - before)
 
     def test_three_legacy_only_layouts_route_without_schema_conversion(self):

@@ -28,14 +28,14 @@
 
 ## 当前绘图分工
 
-新图原生适用时优先使用随包固定版本Archify；原生没有的专用视图可以由改良旧模板兜底。`archify_bridge.py capabilities` 给出真实清单，render按输入族选择并报告后端，不把新JSON直接塞旧引擎，也不因执行失败随意换图。我们负责取证、信息取舍和语义检查，后端负责绘制。
+新图原生适用时优先使用随包固定版本Archify；原生没有的专用视图（含 0.1.16 新增的高密度 `architecture-blueprint` / `dashboard` / `panorama-mindmap` / `flywheel` 等共 45 个注册模式）由统一引擎渲染或兜底。运行 `diagram_kit.py capabilities` / `archify_bridge.py capabilities` 给出真实清单，`render` 按输入族选择并报告后端，不把新 JSON 直接塞旧引擎，也不因执行失败随意换图。我们负责取证、信息取舍和语义检查，后端负责绘制。
 
 ```bash
-python3 scripts/archify_bridge.py render --type lifecycle --input candidate.json --output task.html
+python3 scripts/diagram_kit.py render --input candidate.json --output task.html
 python3 scripts/archify_bridge.py explain --input candidate.archify.md --output answer.html
 ```
 
-生成与来源检查后仍须用独立 Playwright 真正看图。新旧差集见 [能力与兜底](references/diagram-capabilities.md)，具体Schema与边界见 [绘图桥接](references/archify-bridge.md)，一页式讲解、来源／代码导读、步骤定位、局部修订见 [阅读增强](references/archify-reading.md)。
+生成与来源检查后仍须用独立 Playwright 真正看图。新旧差集见 [能力与兜底](references/diagram-capabilities.md)，具体Schema与边界见 [绘图桥接](references/archify-bridge.md)，高密度布局见 [洞察布局](references/insight-layouts.md)，一页式讲解、来源／代码导读、步骤定位、局部修订见 [阅读增强](references/archify-reading.md)。
 
 ## 历史图引擎：可编译的 Python 图源
 

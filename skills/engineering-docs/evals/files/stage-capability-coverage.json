@@ -1,0 +1,46 @@
+{
+  "title": "按阶段查找能力与共享覆盖",
+  "question": "哪个阶段有哪些类型能力，审批与诊断覆盖哪些阶段？",
+  "stages": [
+    {"id": "define", "label": "定义"},
+    {"id": "verify", "label": "验证"},
+    {"id": "operate", "label": "运行"},
+    {"id": "learn", "label": "复盘"}
+  ],
+  "groups": [
+    {"id": "governance", "label": "治理"},
+    {"id": "delivery", "label": "交付"},
+    {"id": "observe", "label": "观测"}
+  ],
+  "capabilities": [
+    {"id": "g1", "stage": "define", "group": "governance", "category": "governance", "label": "责任登记", "detail": "记录责任人与适用范围"},
+    {"id": "g2", "stage": "define", "group": "governance", "category": "governance", "label": "权限边界", "detail": "区分查看、配置和发布"},
+    {"id": "g3", "stage": "verify", "group": "governance", "category": "governance", "label": "规则核对", "detail": "确认必填字段和版本兼容"},
+    {"id": "g4", "stage": "verify", "group": "governance", "category": "governance", "label": "例外审批", "detail": "仅处理已登记的例外"},
+    {"id": "g5", "stage": "operate", "group": "governance", "category": "governance", "label": "配额控制", "detail": "按租户限制资源使用"},
+    {"id": "g6", "stage": "operate", "group": "governance", "category": "governance", "label": "异常隔离", "detail": "超限时隔离当前实例"},
+    {"id": "g7", "stage": "learn", "group": "governance", "category": "governance", "label": "变更审计", "detail": "保留操作者和规则版本"},
+    {"id": "d1", "stage": "define", "group": "delivery", "category": "delivery", "label": "模板登记", "detail": ""},
+    {"id": "d2", "stage": "define", "group": "delivery", "category": "delivery", "label": "参数编排", "detail": ""},
+    {"id": "d3", "stage": "verify", "group": "delivery", "category": "delivery", "label": "沙箱预演", "detail": ""},
+    {"id": "d4", "stage": "verify", "group": "delivery", "category": "delivery", "label": "发布检查", "detail": "失败不进入运行阶段"},
+    {"id": "d5", "stage": "operate", "group": "delivery", "category": "delivery", "label": "服务执行", "detail": ""},
+    {"id": "d6", "stage": "operate", "group": "delivery", "category": "delivery", "label": "版本回滚", "detail": "由已验证版本恢复"},
+    {"id": "d7", "stage": "learn", "group": "delivery", "category": "delivery", "label": "样本归档", "detail": ""},
+    {"id": "o1", "stage": "define", "group": "observe", "category": "observe", "label": "指标定义", "detail": ""},
+    {"id": "o2", "stage": "verify", "group": "observe", "category": "observe", "label": "样本比对", "detail": ""},
+    {"id": "o3", "stage": "operate", "group": "observe", "category": "observe", "label": "实时告警", "detail": ""},
+    {"id": "o4", "stage": "operate", "group": "observe", "category": "observe", "label": "事件追踪", "detail": ""},
+    {"id": "o5", "stage": "learn", "group": "observe", "category": "observe", "label": "场景回放", "detail": ""},
+    {"id": "o6", "stage": "learn", "group": "observe", "category": "observe", "label": "差异归因", "detail": ""}
+  ],
+  "shared_coverage": [
+    {"id": "approval", "label": "审批记录", "detail": "覆盖定义与验证；保留节点、证据和结果", "stages": ["define", "verify"], "role": "security"},
+    {"id": "trace", "label": "链路诊断", "detail": "覆盖运行与复盘；保留事件关联和告警上下文", "stages": ["operate", "learn"], "role": "backend"}
+  ],
+  "relations": [],
+  "semantics": {
+    "axes": "阶段×能力类型；不是消息时序或状态迁移",
+    "shared": "覆盖不表示调用"
+  }
+}

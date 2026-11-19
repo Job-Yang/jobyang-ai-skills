@@ -142,20 +142,27 @@ def _layout_rules(root, ns, w, h, errors, warns):
         if g.get("data-kind") not in ("card", "note"):
             continue
         rid = g.get("data-id")
-        rect = next((c for c in g if c.tag == f"{ns}rect"), None)
-        if rect is None:
+        rects = [c for c in g if c.tag == f"{ns}rect"]
+        if not rects:
             continue
-        rx, ry = float(rect.get("x")), float(rect.get("y"))
-        rw, rh = float(rect.get("width")), float(rect.get("height"))
+        rect = max(rects, key=lambda r: (num(r.get("width")) or 0) * (num(r.get("height")) or 0))
+        rx, ry = num(rect.get("x")) or 0.0, num(rect.get("y")) or 0.0
+        rw, rh = num(rect.get("width")) or 0.0, num(rect.get("height")) or 0.0
+        if rw <= 0 or rh <= 0:
+            continue
         for t in g.findall(f"{ns}text"):
             s = (t.text or "").strip()
             if not s:
                 continue
-            fs = float(t.get("font-size", 13))
-            tx, ty = float(t.get("x")), float(t.get("y"))
+            fs = num(t.get("font-size") or style_of(t).get("font-size")) or 13.0
+            tx, ty = num(t.get("x")) or 0.0, num(t.get("y")) or 0.0
+            tw = _tw(s, fs)
+            anchor = (t.get("text-anchor") or style_of(t).get("text-anchor") or "start").strip()
+            lx = tx - tw / 2 if anchor == "middle" else tx - tw if anchor == "end" else tx
+            rx_t = lx + tw
             gaps = {
-                "左": tx - rx,
-                "右": rx + rw - (tx + _tw(s, fs)),
+                "左": lx - rx,
+                "右": rx + rw - rx_t,
                 "上": (ty - fs * 0.85) - ry,
                 "下": (ry + rh) - (ty + fs * 0.25),
             }
@@ -206,6 +213,8 @@ def _edge_polylines(root, ns):
     """Orthogonal H/V segments of every path plus its data-points waypoints (if present)."""
     out = []
     for el in root.findall(f".//{ns}path"):
+        if el.get("data-non-edge") == "1":
+            continue
         d = el.get("d") or ""
         pts = [(float(x), float(y)) for x, y in re.findall(r"(?:M|L)\s*([-\d.]+)\s+([-\d.]+)", d)]
         # Only true axis-aligned segments count for crossing checks: a segment between two
@@ -392,17 +401,45 @@ def static_check(path, standard_svg=False):
         hh, l, s = colorsys.rgb_to_hls(*v)
         if s > 0.3 and 0.15 < l < 0.92:
             hues.add(int((hh * 360 + 15) // 30) % 12)
-    if len(hues) > 3:
+    hue_limit = 8 if root.get("data-preset") == "insight" else 3
+    if len(hues) > hue_limit:
         warns.append(f"用了 {len(hues)} 个色系：颜色应表达含义（重点、风险、规划），不要给每组换一种颜色")
     aspect = round(h / w, 2) if w else None
     if aspect and aspect > 1.3:
         warns.append(f"高宽比 {aspect}：在文档里要滚动才能看完，改横向排布或拆成两张图")
-    if len(texts) > 140:
+    text_limit = 220 if root.get("data-preset") == "insight" else 140
+    if len(texts) > text_limit:
         warns.append(f"{len(texts)} 段文字：图承担了正文的工作，把细节移回正文或表格")
+    # Soft information-density check: warn only when an architecture-like graph has >=5
+    # component cards and >=3 directed edges yet most cards only show a bare 1-line title
+    # and most edges are unlabeled.
+    comp_cards = [
+        g for g in root.iter(f"{NS}g")
+        if g.get("data-kind") == "card" and (g.get("data-id") or "") != "header"
+    ]
+    dir_edges = [
+        el for el in root.iter(f"{NS}path")
+        if (el.get("data-kind") == "edge" or el.get("data-edge-key"))
+        and el.get("data-edge-directed") != "false"
+    ]
+    bare_ratio = None
+    if len(comp_cards) >= 5 and len(dir_edges) >= 3:
+        bare = sum(1 for g in comp_cards if sum(1 for t in g.iter(f"{NS}text") if (t.text or "").strip()) <= 1)
+        bare_ratio = round(bare / len(comp_cards), 2)
+        edge_label_groups = sum(1 for g in root.iter(f"{NS}g") if g.get("data-kind") == "edge-label")
+        labeled_attrs = sum(1 for e in dir_edges if (e.get("data-edge-label") or "").strip())
+        labeled_ratio = max(labeled_attrs, edge_label_groups) / len(dir_edges)
+        if bare_ratio > 0.5 and labeled_ratio < 0.5:
+            warns.append(
+                f"架构/结构图信息密度偏低（{bare}/{len(comp_cards)} 张卡片只有标题且连线缺少动作/协议标签）："
+                "建议补充 code（接口/协议）、rows（子模块/读写归属）、chips（SLA/状态）或改用 architecture-blueprint 图型"
+            )
     has_title = root.find(f"{NS}title") is not None
     metrics = {"width": w, "height": h, "aspect_h_over_w": aspect, "texts": len(texts),
                "font_min_at_800": font_min, "font_median_at_800": font_median, "hue_families": len(hues),
                "colors": len(colors), "has_title_element": has_title}
+    if bare_ratio is not None:
+        metrics["bare_card_ratio"] = bare_ratio
     return {"file": str(path), "ok": not errors, "errors": errors, "warnings": warns, "metrics": metrics,
             "texts": texts}
 

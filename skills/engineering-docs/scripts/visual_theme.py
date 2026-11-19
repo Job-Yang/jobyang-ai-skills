@@ -297,19 +297,29 @@ def export_tokens():
         elif isinstance(v, list):
             for item in v: collect(item)
     collect(THEME)
+    collect(insight_palette())
     collect([node_surface(tone) for tone in {**tones(), **roles()}.values()])
     point_slots = _LIBRARY['mapping']['independent_points']
     collect([_resolve(slot[key]) for slot in point_slots for key in ('mark', 'fill', 'dark_mark')])
     dark_marks = {_resolve(_LIBRARY['mapping']['categorical'][name]['solid']).upper(): _resolve(values['solid'])
                   for name, values in _LIBRARY['mapping']['categorical_modes']['dark'].items()}
     dark_marks.update({_resolve(slot['mark']).upper(): _resolve(slot['dark_mark']) for slot in point_slots})
+    insight_surface = insight_palette()['surface']
+    insight_ink = insight_surface['ink'].upper()
+    dark_insight = {
+        insight_surface[k].upper(): (_resolve(v) if isinstance(v, str) and not v.startswith('#') else v)
+        for k, v in _LIBRARY.get('surface_modes', {}).get('dark_insight', {}).items()
+        if k in insight_surface
+    }
     modes = {}
     for mode in ("light", "dark", "plain"):
         def color(value):
             if mode == "plain": return grayscale(value)
             if mode == "light": return value
-            if value.upper() == THEME['ink'].upper():
+            if value.upper() in {THEME['ink'].upper(), insight_ink}:
                 return _resolve(_LIBRARY['surface_modes']['dark']['ink'])
+            if value.upper() in dark_insight:
+                return dark_insight[value.upper()]
             if value.upper() in dark_marks: return dark_marks[value.upper()]
             rgb = [int(value[i:i+2], 16) for i in (1, 3, 5)]
             return blend(THEME["ink"], value, .08) if min(rgb) > 200 else blend(value, THEME["paper"], .50)
@@ -344,3 +354,102 @@ def variant():
             "neutral_border": THEME["entity_border"], "card_fill": THEME["entity_fill"],
             "focal": "category-trio", "zone_fill": THEME["panel_bg"],
             "zone_border": THEME["group_border"], "heavy": "none"}
+
+
+def insight_palette(plain=False):
+    """Return crisp analytical/dashboard tokens from theme.json presets.insight."""
+    raw = _LIBRARY["presets"]["insight"]
+    surface = {k: _resolve(v) for k, v in raw["surface"].items()}
+    accents = {name: {k: _resolve(v) for k, v in toks.items()} for name, toks in raw["accents"].items()}
+    if plain:
+        surface = {k: grayscale(v) for k, v in surface.items()}
+        accents = {name: {k: grayscale(v) for k, v in toks.items()} for name, toks in accents.items()}
+    return {
+        "surface": surface,
+        "accents": accents,
+        "sequence": list(raw["sequence"]),
+    }
+
+
+_PRESET_TONE_ALIASES = {
+    "sky": "blue",
+    "accent": "blue",
+    "sage": "teal",
+    "success": "green",
+    "passed": "green",
+    "strong": "green",
+    "sand": "amber",
+    "warning": "amber",
+    "mid": "amber",
+    "lavender": "purple",
+    "rose": "red",
+    "error": "red",
+    "weak": "red",
+    "blocked": "red",
+    "neutral": "slate",
+    "gray": "slate",
+    "frontend": "blue",
+    "backend": "teal",
+    "database": "purple",
+    "cloud": "amber",
+    "security": "red",
+    "messagebus": "amber",
+    "external": "slate",
+}
+
+
+def preset_palette(preset="document-roles", plain=False):
+    """Unified surface + accent lookup for 'document-roles' and 'insight' presets."""
+    if preset == "insight":
+        return insight_palette(plain=plain)
+    ts, rs = tones(plain), roles(plain)
+    conv = lambda c: grayscale(c) if plain else c
+    surface = {
+        "canvas": conv(THEME["canvas_bg"]),
+        "card": conv(THEME["paper"]),
+        "panel": conv(THEME["panel_bg"]),
+        "track": conv(THEME["panel_bg"]),
+        "border": conv(THEME["group_border"]),
+        "divider": conv(THEME["grid"]),
+        "ink": conv(THEME["ink"]),
+        "text": conv(THEME["ink"]),
+        "muted": conv(THEME["muted"]),
+        "subtle": conv(THEME["edge"]),
+    }
+    accents = {}
+    for key, t in {**ts, **rs}.items():
+        accents[key] = {
+            "solid": t["solid"],
+            "mark": t["solid"],
+            "text": t["text"],
+            "tint": t["tint"],
+            "border": t["entity_border"],
+        }
+    alias_doc = {
+        "blue": "sky", "teal": "sage", "amber": "sand", "purple": "lavender",
+        "red": "error", "green": "success", "indigo": "lavender", "slate": "neutral",
+    }
+    for name, target in alias_doc.items():
+        accents[name] = dict(accents[target])
+    return {"surface": surface, "accents": accents, "sequence": ["sky", "sage", "lavender", "sand", "rose"]}
+
+
+def resolve_preset_accent(pal, item=None, fallback="slate"):
+    """Resolve explicit tone/status/emphasis/role into an accent dict."""
+    accents = pal["accents"]
+    if isinstance(item, str):
+        key = _PRESET_TONE_ALIASES.get(item, item)
+        return accents.get(key, accents.get(fallback, accents[next(iter(accents))]))
+    item = item if isinstance(item, dict) else {}
+    name = item.get("tone") or item.get("status")
+    emphasis = item.get("emphasis")
+    if not name and isinstance(emphasis, str):
+        name = emphasis
+    if not name:
+        name = item.get("role")
+    if not name and emphasis is True:
+        name = "blue" if "blue" in accents else "accent"
+    if isinstance(name, str) and name:
+        key = name if name in accents else _PRESET_TONE_ALIASES.get(name, fallback)
+        return accents.get(key, accents.get(fallback, accents[next(iter(accents))]))
+    return accents.get(fallback, accents[next(iter(accents))])

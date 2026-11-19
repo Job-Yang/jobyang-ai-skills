@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "type": "panorama-mindmap",
+  "meta": {
+    "title": "企业级 AI Agent 平台架构全景拆解",
+    "subtitle": "交互认知层与运行时基建双翼全景 · 8 大能力域与 24 个关键实现机制",
+    "note": "合成示例：展示 3 层高密度双翼全景脑图（中心核心 + 分级彩条枝干 + 带明细叶子卡片）。"
+  },
+  "payload": {
+    "preset": "insight",
+    "layout": {"width": 1440},
+    "center": {"label": "Agent 核心底座", "sublabel": "规划 · 工具 · 记忆 · 评测", "tone": "blue"},
+    "left_header": "← 任务认知与编排侧（决策大脑）",
+    "right_header": "运行时执行与治理基建（确定性底座） →",
+    "left_groups": [
+      {
+        "id": "b_intent", "label": "1. 意图理解与规划", "tone": "blue",
+        "leaves": [
+          {"id": "l_i1", "label": "任务分解图", "detail": "将复杂目标拆为可校验 DAG 子任务"},
+          {"id": "l_i2", "label": "澄清反问门控", "detail": "歧义参数超阈值先确认再调用工具"},
+          {"id": "l_i3", "label": "ReAct/Plan 切换", "detail": "确定流程走状态机，开放探索走循环"}
+        ]
+      },
+      {
+        "id": "b_mem", "label": "2. 分层记忆体系", "tone": "teal",
+        "leaves": [
+          {"id": "l_m1", "label": "工作上下文窗口", "detail": "滑动压缩旧观察结果保留关键状态"},
+          {"id": "l_m2", "label": "语义长期检索", "detail": "混合向量+BM25 按实体权限过滤"},
+          {"id": "l_m3", "label": "技能程序沉淀", "detail": "高频成功轨迹固化为可复用工作流"}
+        ]
+      },
+      {
+        "id": "b_tool", "label": "3. 工具契约与协议", "tone": "green",
+        "leaves": [
+          {"id": "l_t1", "label": "JSON Schema 强约束", "detail": "编译期校验参数枚举与必填边界"},
+          {"id": "l_t2", "label": "只读与写操作分级", "detail": "高风险写动作强制人类二次审批"},
+          {"id": "l_t3", "label": "MCP 标准适配层", "detail": "统一外部工具发现、鉴权与超时重试"}
+        ]
+      },
+      {
+        "id": "b_collab", "label": "4. 多智能体协同", "tone": "indigo",
+        "leaves": [
+          {"id": "l_c1", "label": "子代理上下文隔离", "detail": "研究或大文件扫描不污染主对话"},
+          {"id": "l_c2", "label": "角色边界与转交", "detail": "规划/执行/验收分模型降本增效"},
+          {"id": "l_c3", "label": "共享产出物协议", "detail": "通过结构化工件与状态文件同步进度"}
+        ]
+      }
+    ],
+    "right_groups": [
+      {
+        "id": "b_sandbox", "label": "5. 沙箱与安全隔离", "tone": "purple",
+        "leaves": [
+          {"id": "l_s1", "label": "容器/微虚机执行", "detail": "文件系统与网络出站白名单受控"},
+          {"id": "l_s2", "label": "凭证代填机制", "detail": "Token 与密钥绝不暴露给模型上下文"},
+          {"id": "l_s3", "label": "越权拦截审计", "detail": "敏感命令与目录操作强制人工确认"}
+        ]
+      },
+      {
+        "id": "b_obs", "label": "6. 全链路可观测性", "tone": "amber",
+        "leaves": [
+          {"id": "l_o1", "label": "轨迹 Trace 回放", "detail": "逐回合记录 Prompt、工具入参及耗时"},
+          {"id": "l_o2", "label": "Token 与延迟预算", "detail": "超单次上限触发压缩或早停保护"},
+          {"id": "l_o3", "label": "错误分类归因", "detail": "区分模型幻觉、工具报错与环境故障"}
+        ]
+      },
+      {
+        "id": "b_eval", "label": "7. 离线评测与回归", "tone": "red",
+        "leaves": [
+          {"id": "l_e1", "label": "黄金数据集回放", "detail": "固定沙箱环境验证端到端通过率"},
+          {"id": "l_e2", "label": "规则加裁判双检", "detail": "脚本核对状态，模型判定边界合理性"},
+          {"id": "l_e3", "label": "BadCase 自动入库", "detail": "线上人工纠偏自动转化为回归测试"}
+        ]
+      },
+      {
+        "id": "b_ship", "label": "8. 工程交付与灰度", "tone": "slate",
+        "leaves": [
+          {"id": "l_p1", "label": "版本锁与快照回滚", "detail": "Prompt 与工具清单共同版本化发布"},
+          {"id": "l_p2", "label": "影子流量 AB 验证", "detail": "新策略先小流量对比成本与成功率"},
+          {"id": "l_p3", "label": "人工接管降级通道", "detail": "连续失败三次无缝转出工单流"}
+        ]
+      }
+    ]
+  }
+}

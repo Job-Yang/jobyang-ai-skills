@@ -75,7 +75,11 @@
 - **发散色**：存在有意义的中点，如零变化；正负两侧都要有刻度。
 - **状态色**：成功、风险、失败是业务语义，不宜同时拿来区分无关组件。
 
-**全部图型使用同一低饱和 `document-roles` 色库。** 唯一色源为 [theme.json](../assets/visual-examples/theme.json)，`visual_theme.py` 向 Python／JS 输出相同语义映射与字体资源，不在模板、作者提示或本文再维护具体 HEX 表。
+**全部图型共用 [theme.json](../assets/visual-examples/theme.json) 作为唯一色源，支持双主题共存。**
+
+- **`document-roles`（默认，v9 低饱和）**：用于所有研发技术文档结构图、时序、状态、ER、甘特、发布列车及 `architecture-blueprint` 默认外观；保持低饱和色面为主、细浅同色边辅助，角色色（frontend/backend/database/cloud/security/messagebus/external）不与状态色（success/warning/error）混用。
+- **`insight`（预设 `presets.insight`，高辨识洞察风）**：`dashboard`、`panorama-mindmap`、`flywheel` 的默认外观，亦可在 `architecture-blueprint` 通过 `"preset": "insight"` 启用；采用冷白卡片配浅灰底、语义色条头、高亮排名行与底部结论条。
+- **共同约束**：具体 HEX 只留在唯一色源 `theme.json`，不在 Python 布局脚本写硬编码色表；`visual_theme.py` 向 Python／JS 同步输出两套 token，均完整支持 `--theme light / dark / plain`（灰阶），关键文字与背景保持 WCAG 对比度。
 
 | 用途 | 库级来源 | 使用边界 |
 | --- | --- | --- |
@@ -89,7 +93,7 @@
 - **结构图**：短Item按已有内容定宽高；有结构职责的分区按scheme取色，显式role／tone／status优先。嵌套边界靠低饱和色面和细边，不加光晕或灰重框。
 - **所有图型**：保留自己的组、阶段、消息、实体和时间语义，不把矩阵、商业九区、三角、屋形或飞轮压成同款卡片。长记录不撑高主图，但完整源和独立详情仍保留。
 - **数据图**：独立点不能直接取邻接色序列的前几色。统计色保可辨性，低饱和不能靠删数据、循环颜色或无验证提亮过关；超容量分面，坐标／面积／单位仍一致。
-- **兼容**：旧 `document-neutral`、`warm-cream`、`doubao` 等名字仍指向当前统一库，不恢复旧亮艳色板；`plain` 使用同源灰阶，必要时依靠标签和线型。
+- **兼容**：旧 `document-neutral`、`warm-cream`、`doubao` 等名字仍指向当前统一库，不恢复旧亮艳色板；`plain` 使用同源灰阶，必要时依靠标签和线型。退役与兼容边界见 `warm_cream_spec.md`。
 
 七种显式角色保持 frontend、backend、database、cloud、security、messagebus、external；语义继承既有体系，具体低饱和色阶只在唯一库维护。用户品牌覆盖必须有来源，不把随手生成的颜色自动登记为库。
 

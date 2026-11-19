@@ -21,7 +21,7 @@
 | --- | --- | --- |
 | 统一绘图交付 | Node.js 18+、独立Playwright＋匹配Chromium | 组件随包；复用本机依赖，缺能力拒绝，不安装／升级Node或Archify |
 | 历史SVG生成与通用检查 | 无（纯 Python 标准库） | 直接运行旧图源 |
-| 数据图表（定量模板、九种统计图示例） | matplotlib、numpy | 脚本已接 `scripts/bootstrap.py`：首次运行自动安装到技能内 `.deps/`（`pip install --target`，不动系统环境），用户无感 |
+| 数据图表（定量模板、九种统计图示例） | matplotlib、numpy | 脚本已接 `scripts/bootstrap.py`：优先复用已有环境或 `.deps/`，获准并设置 `ENGINEERING_DOCS_ALLOW_PIP=1` 时按 `pip install --target` 隔离安装到 `.deps/`，默认不静默联网安装 |
 | 旧SVG的PNG预览 | rsvg-convert 或 Node | 旧 `diagram_check --png` 按现有转换链运行 |
 | 平台静态图 | 独立浏览器 | 从统一HTML清理导出；SVG固定主题、CSS变量和继承样式已解析，目标平台仍须实际打开验证 |
 | 飞书画板检查/连线绑定 | Node + npx | 仅 `--board` 和发布时需要；缺失就跳过该步并说明，不影响通用交付 |

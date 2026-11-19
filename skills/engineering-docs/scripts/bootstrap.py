@@ -24,7 +24,12 @@ import subprocess
 import sys
 from pathlib import Path
 
-DEPS_DIR = Path(os.environ.get("ENGINEERING_DOCS_DEPS_DIR", str(Path(__file__).resolve().parent.parent / ".deps")))
+DEPS_DIR = Path(
+    os.environ.get(
+        "ENGINEERING_DOCS_DEPS_DIR",
+        str(Path(__file__).resolve().parent.parent / ".deps" / f"py{sys.version_info.major}{sys.version_info.minor}"),
+    )
+)
 _DEFAULT_PACKAGES = ("matplotlib", "numpy")
 _BOOTSTRAPPED = False
 
@@ -62,10 +67,17 @@ def require(*module_names, packages=None):
 
     if not _BOOTSTRAPPED:
         wanted = list(packages) if packages else sorted({m.split(".")[0] for m in module_names})
+        manual = " ".join(wanted)
+        if os.environ.get("ENGINEERING_DOCS_ALLOW_PIP") != "1":
+            raise SystemExit(
+                "缺少可选依赖：" + manual + "\n"
+                "核心结构图、高密度布局与文档检查不依赖它们；仅定量数据图表示例需要。\n"
+                "未默认自动联网安装；获准后可设置 ENGINEERING_DOCS_ALLOW_PIP=1 重试，或手动隔离安装：\n"
+                f"  {sys.executable} -m pip install --target {DEPS_DIR} {manual}"
+            )
         DEPS_DIR.mkdir(parents=True, exist_ok=True)
         ok, log = _pip_install(wanted)
         if not ok:
-            manual = " ".join(wanted)
             raise SystemExit(
                 "缺少可选依赖：" + manual + "\n"
                 "核心结构图、文档检查不依赖它们；只有数据图表示例需要。\n"
@@ -75,12 +87,20 @@ def require(*module_names, packages=None):
                 "安装日志：\n" + log
             )
         _deps_on_path()
+        for root_name in sorted({m.split(".")[0] for m in module_names}):
+            for mod_key in [k for k in list(sys.modules) if k == root_name or k.startswith(root_name + ".")]:
+                sys.modules.pop(mod_key, None)
+        importlib.invalidate_caches()
         _BOOTSTRAPPED = True
 
     try:
         return tuple(importlib.import_module(m) for m in module_names)
     except ImportError as exc:
-        raise SystemExit(f"依赖已安装但仍无法导入 {exc.name}：检查 Python 版本与平台 wheel 是否匹配。")
+        missing = exc.name or ", ".join(module_names)
+        pyver = f"{sys.version_info.major}.{sys.version_info.minor}"
+        raise SystemExit(
+            f"依赖已安装但仍无法导入 {missing}（当前 Python {pyver}：{exc}）：请检查 Python 版本与平台 wheel 是否匹配。"
+        )
 
 
 if __name__ == "__main__":

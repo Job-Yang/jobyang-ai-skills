@@ -6,12 +6,17 @@
 python3 "$SKILL_DIR/scripts/diagram_kit.py" capabilities
 ```
 
-清单来自源码注册表：10个typed图型、29个专用layout和自由对象，共40个实现；以运行时 `capabilities` 为准。`component`只用于内部调度，不在公共能力表分类；组件版本和依赖来源仍如实进入回执。
+清单来自源码注册表：10个typed图型、34个专用layout和自由对象，共45个实现；以运行时 `capabilities` 为准。`component`只用于内部调度，不在公共能力表分类；组件版本和依赖来源仍如实进入回执。
 
 ## 按图义选能力
 
 | 要表达 | 注册图型 | 输入约定 |
 | --- | --- | --- |
+| 高密度架构蓝图（含接口/子模块/横切带） | architecture-blueprint | layers／groups／zones ＋ nodes(code/rows/chips) ＋ connections；见 insight-layouts.md |
+| 复合定量数据看板 | dashboard | kpi_badges／kpi_cards ＋ panels(ranked_bars/trend/grouped_bars/drivers)；纯标准库 |
+| 三层双翼全景脑图（多分支与明细叶） | panorama-mindmap／mindmap | center ＋ left_groups/right_groups(含 leaves/items) ＋ header；零坐标贝塞尔连线 |
+| 带色条头与底部护栏的飞轮 | flywheel／cycle | center ＋ stages(3-4,含 items) ＋ links ＋ guardrails；兼容简单 cycle |
+| 阶段×能力类型与共享覆盖带 | capability_map | stages／categories／capabilities／shared；显式归属、测量高度，无调用边；见 capability-map.md |
 | 架构、运行单元与部署 | architecture | components／connections；复杂任意分区或draw.io对象用free |
 | 跨角色、条件门与回环 | workflow | lanes／nodes／edges，成熟泳道布局 |
 | 消息先后与返回 | sequence | participants／messages／activations等图义字段 |

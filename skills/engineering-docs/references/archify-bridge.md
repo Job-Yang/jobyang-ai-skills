@@ -56,7 +56,7 @@ python3 "$SKILL_DIR/scripts/diagram_kit.py" check diagram.receipt.json
 
 ## 依赖与许可
 
-统一交付需要Node.js 18+及Playwright＋匹配Chromium，先复用本机缓存。缺依赖不降级、不自动更新Archify／Node。统计依赖可经批准用bootstrap隔离；`ENGINEERING_DOCS_DEPS_DIR`指定数据目录内 `.deps`，不写系统pip环境。源码brand远程对象默认拒绝，内置品牌名可用；这不是全局网络沙箱。
+统一交付需要Node.js 18+及Playwright＋匹配Chromium，先复用本机缓存。缺依赖不降级、不自动更新Archify／Node。统计依赖可经用户批准并设置 `ENGINEERING_DOCS_ALLOW_PIP=1` 后用 `bootstrap.py` 隔离到 `.deps/`；`ENGINEERING_DOCS_DEPS_DIR` 指定数据目录内 `.deps`，不写系统 pip 环境。源码brand远程对象默认拒绝，内置品牌名可用；这不是全局网络沙箱。
 
 固定上游来源见 `vendor/archify-version.json`，上游文件及LICENSE／NOTICE不改；`diagram_adapter.mjs`在生成页内装配token、语义和静态导出适配，作为本地适配明确记录，不冒称生成页是上游原生成物。
 

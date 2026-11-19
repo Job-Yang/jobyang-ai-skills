@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "type": "dashboard",
+  "meta": {
+    "title": "AI 推理网关升级后成本与延迟显著双降",
+    "subtitle": "2026 Q3 灰度至全量阶段合成观测样本（历史实测与未来两季度外推分开标注）",
+    "note": "合成示例：验证 composite-dashboard 的 KPI 摘要卡、分组排名柱、虚实分割趋势图与驱动结论栏。"
+  },
+  "payload": {
+    "preset": "insight",
+    "layout": {"width": 1360},
+    "kpi_badges": [
+      {"label": "日处理 4.8 亿请求", "tone": "blue"},
+      {"label": "Token 成本 -38%", "tone": "teal"}
+    ],
+    "kpi_cards": [
+      {"id": "k1", "label": "端到端 P95 延迟", "value": "420 ms", "delta": "-34% vs 基线", "detail": "缓存命中与路由裁剪贡献主力", "tone": "teal"},
+      {"id": "k2", "label": "单百万 Token 成本", "value": "$0.84", "delta": "-38%", "detail": "分级模型按复杂度分流", "tone": "blue"},
+      {"id": "k3", "label": "语义缓存命中率", "value": "41.5%", "delta": "+19.2 pt", "detail": "高频问答场景免回源推理", "tone": "purple"},
+      {"id": "k4", "label": "回退降级次数", "value": "2 次/月", "delta": "100% 自动熔断", "detail": "主模型波动自动切换备通道", "tone": "amber"}
+    ],
+    "columns": 2,
+    "panels": [
+      {
+        "id": "p_cost",
+        "title": "各业务线语义缓存命中率与降本贡献",
+        "subtitle": "虚线下方为低频长尾场景，单次上下文变化大",
+        "type": "ranked_bars",
+        "tone": "blue",
+        "unit": "%",
+        "divider_before": 3,
+        "items": [
+          {"label": "客服标准问答", "value": 68.4, "display": "68.4%", "delta": "-52% 成本", "delta_tone": "teal", "highlight": true, "tone": "blue"},
+          {"label": "代码片段补全", "value": 51.2, "display": "51.2%", "delta": "-39% 成本", "delta_tone": "teal", "tone": "blue"},
+          {"label": "搜索意图改写", "value": 44.0, "display": "44.0%", "delta": "-33% 成本", "delta_tone": "blue", "tone": "teal"},
+          {"label": "长文档摘要", "value": 18.5, "display": "18.5%", "reason": "输入文档高度异构", "tone": "slate"},
+          {"label": "多轮复杂规划", "value": 9.2, "display": "9.2%", "reason": "依赖动态上下文状态", "tone": "amber"}
+        ],
+        "takeaway": "高频短上下文场景已贡献 81% 的缓存节省额；长文档不宜强推语义缓存，应优先走模型蒸馏。"
+      },
+      {
+        "id": "p_trend",
+        "title": "单位推理成本变化轨迹与预测外推",
+        "subtitle": "2026 Q4 以后为灰度全量外推预测（虚线表示待验证区间）",
+        "type": "trend",
+        "tone": "teal",
+        "split_after": 3,
+        "forecast_label": "外推预测期",
+        "categories": ["Q1", "Q2", "Q3", "Q4", "27Q1E", "27Q2E"],
+        "series": [
+          {"name": "单位成本($/M)", "kind": "line", "values": [1.35, 1.18, 0.96, 0.84, 0.72, 0.65], "tone": "blue", "show_values": true},
+          {"name": "小模型分流比(%)", "kind": "bar", "axis": "right", "values": [18, 29, 44, 58, 66, 72], "tone": "teal"}
+        ],
+        "annotations": [
+          {"at": 2, "series": 0, "label": "9月语义缓存全量", "dy": -28, "tone": "amber"}
+        ],
+        "takeaway": "Q3 语义缓存上线令成本曲线出现明显拐点，预计随分流比升至 72% 仍有 22% 降本空间。"
+      },
+      {
+        "id": "p_drivers",
+        "title": "三条核心优化杠杆落地机理",
+        "type": "drivers",
+        "span": 2,
+        "columns": 3,
+        "items": [
+          {"id": "d1", "title": "语义向量近似缓存", "tag": "延迟 -45%", "tone": "blue",
+           "detail": "相似意图阈值 0.94 直出", "bullets": ["覆盖高频客服与FAQ请求", "支持租户与版本双隔离"]},
+          {"id": "d2", "title": "难度感知动态路由", "tag": "成本 -38%", "tone": "teal",
+           "detail": "前置轻量分类器判断复杂度", "bullets": ["简单指令路由至 7B 微调模型", "推理链任务保留旗舰大模型"]},
+          {"id": "d3", "title": "结构化前缀复用", "tag": "吞吐 +60%", "tone": "purple",
+           "detail": "固定 System Prompt 驻留显存 KV", "bullets": ["消除重复编码开销", "降低首字响应时间 TTFT"]}
+        ]
+      }
+    ]
+  }
+}

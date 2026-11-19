@@ -1,5 +1,13 @@
 # Changelog · engineering-docs
 
+## 0.1.16 — 2026-11-18
+
+- 回灌并整合 `capability_map`（阶段×能力覆盖与共享横带）、`references/capability-map.md`、`evals/` 与 `test_capability_map.py` 到权威 Git 源并适配共享画布。
+- 新增 `scripts/insight_layouts.py`（纯标准库、零十六进制字面量），一次性接入 4 项零坐标声明式能力：高密度系统蓝图 `architecture-blueprint`、复合数据看板 `dashboard`（KPI 卡/分组排名柱/虚实预测趋势/事件标注/驱动摘要）、三层双翼全景脑图 `panorama-mindmap`（兼容并自动代理扩展版 `mindmap`）与带色条头和底部护栏的飞轮 `flywheel`（兼容并自动代理扩展版 `cycle`），注册能力由 40 项增至 45 项。
+- 在 `theme.json` 新增 `presets.insight` 清爽洞察主题，同时保持 `document-roles` 低饱和默认风格与既有图型输出零破坏，统一导出 `light` / `dark` / `plain` CSS 变量并计入 `diagram_runtime` 组件与主题指纹。
+- 升级 `diagram_check.py`：修复居中/右对齐文字包络检查，为显式 `insight` 图型合理放宽多维色系阈值，并新增架构图信息密度软警告（过半空心标题卡片且缺少边动词标签时提示补全字段）。
+- 新增 `assets/diagram-templates/insight/*.json` 黄金样例与 `references/insight-layouts.md`；更新 `SKILL.md` 明确科研/分享/分析任务可直接借图复用 `diagram_kit.py render` 而无需强套 RFC 正文门禁。
+
 ## 0.1.15 — 2026-11-11
 
 - 统一低饱和色库、色面层级与细浅同色边；字体、尺寸及完整源／场景保持共用，保留复杂分区和真实关系。

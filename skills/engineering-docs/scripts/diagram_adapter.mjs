@@ -1,6 +1,7 @@
 // Assembly adapter only. The pinned compiler and viewer stay upstream-identical.
 // applyTemplate remains the sole viewer assembler; its export cleanup is reused.
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
@@ -14,8 +15,9 @@ const scriptData = (name, value) => `<script id="diagram-kit-${name}" type="appl
 function playwrightModule() {
   if (process.env.PLAYWRIGHT_MODULE) return require(process.env.PLAYWRIGHT_MODULE);
   try { const p=require('playwright'); if(fs.existsSync(p.chromium.executablePath())) return p; } catch {}
-  const cache = path.join(process.env.HOME, '.npm', '_npx');
-  if (fs.existsSync(cache)) {
+  const home = process.env.HOME || process.env.USERPROFILE || os.homedir();
+  const cache = home ? path.join(home, '.npm', '_npx') : '';
+  if (cache && fs.existsSync(cache)) {
     for (const dir of fs.readdirSync(cache).sort()) {
       const module = path.join(cache, dir, 'node_modules', 'playwright');
       if (fs.existsSync(path.join(module, 'package.json'))) {
