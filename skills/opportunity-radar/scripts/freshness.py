@@ -26,7 +26,7 @@
 deep_dig = 没有任何硬旗。退出码 4 只在全部候选被硬旗挡住时返回。
 
 用法：
-  python3 freshness.py --candidates today.json [--today 2026-10-16] [--dedup dedup.json]
+  python3 freshness.py --candidates today.json [--today 2026-10-16] [--dedup dedup.json] [--max-age-days 180]
 
 退出码：0=至少一条可立（deep_dig=True）；4=全部被硬旗挡住；2=参数错误。
 """
@@ -55,7 +55,8 @@ def host_of(url: str) -> str:
     return m.group(1) if m else ""
 
 
-def check_candidate(c: dict, today: dt.date, dedup_verdict: str | None) -> dict:
+def check_candidate(c: dict, today: dt.date, dedup_verdict: str | None,
+                    max_age_days: int = MAX_AGE_DAYS) -> dict:
     hard, soft, actions = [], [], []
     # 1. 时效
     date_str = (c.get("evidence_date") or "").strip()
@@ -69,9 +70,9 @@ def check_candidate(c: dict, today: dt.date, dedup_verdict: str | None) -> dict:
                 # 未来日期在物理上不可能已发生 → 硬旗。
                 hard.append("future_evidence")
                 actions.append(f"证据日期 {date_str} 在未来：尚未发生，不是 real 证据，退回重取")
-            elif age > MAX_AGE_DAYS:
+            elif age > max_age_days:
                 hard.append("stale_evidence")
-                actions.append(f"证据是 {age} 天前（>{MAX_AGE_DAYS}）：时间窗不成立，降级 assumption，不立条")
+                actions.append(f"证据是 {age} 天前（>{max_age_days}）：时间窗不成立，降级 assumption，不立条")
         except ValueError:
             soft.append("undated")
             actions.append(f"evidence_date 不是合法日期：{date_str}（补日期前按弱证据处理）")
@@ -117,7 +118,13 @@ def main(argv) -> int:
     ap.add_argument("--candidates", required=True)
     ap.add_argument("--today", default=None, help="默认今天 YYYY-MM-DD")
     ap.add_argument("--dedup", help="dedup.py 的输出 JSON（用于换皮降级）")
+    ap.add_argument("--max-age-days", type=int, default=MAX_AGE_DAYS,
+                    help=f"证据最大允许天数（默认 {MAX_AGE_DAYS}）")
     args = ap.parse_args(argv)
+    if args.max_age_days < 0:
+        print(json.dumps({"status": "rejected", "error": "--max-age-days 不能为负数"},
+                         ensure_ascii=False), file=sys.stderr)
+        return 2
     try:
         today = dt.date.fromisoformat(args.today) if args.today else dt.date.today()
         cands = json.loads(Path(args.candidates).read_text(encoding="utf-8"))
@@ -129,7 +136,8 @@ def main(argv) -> int:
         print(json.dumps({"status": "rejected", "error": str(e)}, ensure_ascii=False),
               file=sys.stderr)
         return 2
-    results = [check_candidate(c, today, verdict_by_title.get(c.get("title", ""))) for c in cands]
+    results = [check_candidate(c, today, verdict_by_title.get(c.get("title", "")),
+                               max_age_days=args.max_age_days) for c in cands]
     deep = sum(1 for r in results if r["deep_dig"])
     payload = {
         "today": today.isoformat(),

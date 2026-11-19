@@ -4,23 +4,25 @@
 为什么需要它
 ------------
 0.3.x 的雷达没有"采集"这一步：每天靠 Agent 临时跑几条通用搜索词，输入基本是
-SEO 博客，原始候选只有 4 条上下。Reddit/X/即刻/小红书/Google Trends/G2 在云电脑
-又大多不可达（403/429/登录墙），于是"五源"长期只读得到通用网页搜这一条路。
+SEO 博客，原始候选只有 4 条上下。Reddit JSON/X/即刻/小红书/Google Trends/G2 在无浏览器登录态的
+服务端环境中大多不可达（403/429/登录墙），单靠通用网页搜召回往往偏窄。
 
-本脚本把**确实可达、无需登录、无需 key** 的源固化下来，每个源独立容错：
-  - hunted.space   当日 Product Hunt 榜（votes/comments/topics，结构化）
+本脚本把**确实可达、无需登录、无需 key** 的 16 个公开源固化下来，每个源独立容错：
+  - hunted         当日 Product Hunt 榜（votes/comments/topics，结构化）
   - ph_feed        Product Hunt 官方 Atom（近 50 条发布）
   - gh_trending    GitHub Trending（daily，stars today）
-  - gh_new         GitHub Search：近 N 天新建且涨星快的仓（供给侧新能力）
-  - hn_show        Show HN（近 N 天高赞发布）
-  - hn_ask         Ask HN（近 N 天高赞提问）
-  - hn_wishes      HN 评论里的许愿/愿付原话（需求侧原话）
+  - gh_new         GitHub Search：近 N 天新建且涨星快的仓（供给侧新能力，吃 --since-days）
+  - hn_show        Show HN（近 max(N, 3) 天高赞发布，吃 --since-days）
+  - hn_ask         Ask HN（近 max(N, 7) 天高赞提问，吃 --since-days）
+  - hn_wishes      HN 评论里的许愿/愿付原话（近 max(N, 14) 天，吃 --since-days）
   - hf_spaces      Hugging Face trending Spaces（新模型能力外溢）
-  - devto          DEV.to 近 3 天热文（开发者痛点）
+  - hf_models      Hugging Face trending 模型（最新模型与能力发布）
+  - hn_front       Hacker News 首页（当天业界热议与线索）
+  - devto          DEV.to 最新 40 + 近一周热门 40（开发者痛点）
   - v2ex_create    V2EX 创造节点（中文独立开发者当日发布）
-  - v2ex_hot       V2EX 热门（中文需求与发布）
-  - lobsters       Lobsters hottest（技术社区发布与讨论）
-  - reddit_rss     Reddit RSS（SaaS/SideProject 等，限流时只记 blocked）
+  - v2ex_hot       V2EX hot + latest 合并（中文需求与发布）
+  - lobsters       Lobsters hottest + newest 合并（技术社区发布与讨论）
+  - reddit_rss     Reddit 公开 RSS（SaaS/SideProject 等，限流时只记 blocked）
   - appstore_money App Store 效率类畅销榜（钱在流向什么 app）
 
 它只负责"取数 + 归一化 + 逐源记状态"，不判断哪个是机会——那是 Agent 的语义活。
@@ -28,7 +30,7 @@ SEO 博客，原始候选只有 4 条上下。Reddit/X/即刻/小红书/Google T
 
 用法
 ----
-  python3 collect.py --out <目录> [--since-days 3] [--only id1,id2]
+  python3 collect.py --out <目录> [--since-days 5] [--only id1,id2]
 产出：
   <目录>/pool.json  全量机器可读池
   <目录>/pool.md    给 Agent 读的精简清单（每源最多 12 条）
@@ -370,8 +372,8 @@ def src_lobsters(since_days):
     return out, None
 
 
-def src_reddit(since_days):
-    """Reddit 公开 RSS（云电脑 JSON API 被 403，RSS 偶发 429）。
+def src_reddit(since_days=5):
+    """Reddit 公开 RSS（无浏览器登录态的服务端环境中 JSON API 常被 403，RSS 偶发 429）。
 
     每个 sub 独立容错；全挂时 status=blocked，不算整池失败。
     """
@@ -422,8 +424,7 @@ def src_appstore_money(since_days):
     return out, None
 
 
-# 第三项 = 是否吃 --since-days 时间窗参数
-# 0.4.1：ph_feed、hunted 是榜单快照不吃窗口；其余文本源窗口 5 天。
+# 第三项 = 是否实际消费 --since-days 时间窗参数（仅 gh_new / hn_show / hn_ask / hn_wishes 按 since_days 过滤，其余为榜单/最新流快照）
 SOURCES = [
     ("hunted", src_hunted, False),
     ("ph_feed", src_ph_feed, False),
@@ -432,15 +433,15 @@ SOURCES = [
     ("hn_show", src_hn_show, True),
     ("hn_ask", src_hn_ask, True),
     ("hn_wishes", src_hn_wishes, True),
-    ("hf_spaces", src_hf_spaces, True),
-    ("hf_models", src_hf_models, True),
-    ("hn_front", src_hn_front, True),
-    ("devto", src_devto, True),
-    ("v2ex_create", src_v2ex_create, True),
-    ("v2ex_hot", src_v2ex_hot, True),
-    ("lobsters", src_lobsters, True),
-    ("reddit_rss", src_reddit, True),
-    ("appstore_money", src_appstore_money, True),
+    ("hf_spaces", src_hf_spaces, False),
+    ("hf_models", src_hf_models, False),
+    ("hn_front", src_hn_front, False),
+    ("devto", src_devto, False),
+    ("v2ex_create", src_v2ex_create, False),
+    ("v2ex_hot", src_v2ex_hot, False),
+    ("lobsters", src_lobsters, False),
+    ("reddit_rss", src_reddit, False),
+    ("appstore_money", src_appstore_money, False),
 ]
 
 

@@ -20,9 +20,9 @@ CN = r"[\u4e00-\u9fff]"
 LATIN = r"[A-Za-z][A-Za-z0-9\-/]*"
 
 FORBIDDEN_OPENERS = [
-    "本文将介绍", "本文介绍", "在当今时代", "众所周知", "随着",
+    "本文将介绍", "本文介绍", "在当今时代", "众所周知",
 ]
-# "随着…的发展" 类用正则单独抓，上面列表是精确短语
+# "随着…的发展/普及/演进/推进" 用正则单独抓，不误杀正常技术句里的裸词"随着"
 
 UNVERIFIED = ["TODO", "待补", "待核实", "[?]", "TBD", "FIXME"]
 ACTION_WORDS = ["明天", "下一步", "可以试试", "建议你", "你可以", "动手"]
@@ -58,8 +58,10 @@ def mask_code_and_url(text: str):
     调用方应单独报错且不把围栏内内容当正文扫。
     """
     unclosed = text.count("```") % 2 == 1
-    masked = re.sub(r"```.*?```", lambda m: " " * len(m.group()), text, flags=re.DOTALL)
+    masked = re.sub(r"<!--.*?-->", lambda m: " " * len(m.group()), text, flags=re.DOTALL)
+    masked = re.sub(r"```.*?```", lambda m: " " * len(m.group()), masked, flags=re.DOTALL)
     masked = re.sub(r"`[^`\n]*`", lambda m: " " * len(m.group()), masked)
+    masked = re.sub(r"(\[[^\]]+\]\()([^)\n]+)(\))", lambda m: m.group(1) + (" " * len(m.group(2))) + m.group(3), masked)
     # URL：RFC3986 pchar 字符集，自然停在中文/空白处；逗号是合法 URL 字符，
     # 故 `https://x/bench,我们` 里的逗号随 URL 一起被 mask，不误报。
     masked = re.sub(r"https?://[A-Za-z0-9\-._~:/?#\[\]@!$&'()*+,;=%]+",
@@ -100,7 +102,7 @@ def check(state: str, text: str):
     for phrase in FORBIDDEN_OPENERS:
         if phrase in head:
             errors.append(f"开头禁用导语：前3段出现「{phrase}」——禁寒暄/课件腔开场")
-    if re.search(r"随着.{0,6}的发展", head):
+    if re.search(r"随着.{0,8}(?:的发展|的普及|的演进|的推进)", head):
         errors.append("开头禁用导语：前3段出现「随着…的发展」式开场")
 
     # 2. 开头信号：现场钩子（数字/引语「」/问句）或新默认合法开头（TL;DR 卡 / 先成果节）
@@ -133,7 +135,8 @@ def check(state: str, text: str):
     has_action = any(w in tail for w in ACTION_WORDS)
     has_bold_closer = "**" in tail
     insight_head = re.search(r"(?m)^#{1,6}\s.*(几点启示|复盘启示|收获与体会|心得体会|几点体会)", body)
-    list_items = len(re.findall(r"(?m)^\s*(?:\d+[.、)]|[•·\-])\s+\S", body))
+    after_insight = body[insight_head.end():] if insight_head else ""
+    list_items = len(re.findall(r"(?m)^\s*(?:\d+[.、)]|[•·\-])\s+\S", after_insight))
     has_insight = bool(insight_head) and list_items >= 2
     if not (has_insight or has_action or has_bold_closer):
         warns.append("结尾未见「几点启示」分节/可搬走动作/加粗收口——结尾别空收（金句、明天动作均为可选，不强制）")
@@ -148,7 +151,7 @@ def check(state: str, text: str):
     if unclosed:
         errors.append("检测到未闭合围栏（``` 不成对）——代码块边界无法判定，已跳过正文标点扫描；请先闭合围栏")
     else:
-        half = re.findall(CN + r"[,.;:!?]|[,.;:!?]" + CN, masked)
+        half = re.findall(CN + r"[,;:]|" + CN + r"[!?]|" + CN + r"\.(?![0-9.])", masked)
         if half:
             errors.append(f"中文正文夹半角标点 {len(half)} 处（围栏代码/行内码/URL/数字千分位除外）——换全角，示例：{half[:3]}")
 

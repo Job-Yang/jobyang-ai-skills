@@ -40,6 +40,7 @@ cp config.example.json config.json   # 填读者画像、关注账号、文档�
 python3 scripts/github_trending.py --range weekly --top 5   # 真实抓本周 Trending
 python3 -m unittest discover -s tests                        # 本地假服务测试
 python3 scripts/render_brief.py --input examples/brief_input.example.json  # 渲染示例
+grep -rnE "sk-[A-Za-z0-9]{16,}|open\.feishu|larkoffice" SKILL.md references/ scripts/ examples/ || echo "CLEAN"  # 去个人化自检
 ```
 
 跑出来的一条卡片长这样（示例非真实某日）：

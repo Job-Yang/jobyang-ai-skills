@@ -24,11 +24,11 @@ done
 
 if [ ${#need_install[@]} -gt 0 ]; then
   echo "缺少依赖: ${need_install[*]}"
-  if command -v brew >/dev/null 2>&1; then
-    echo "→ 用 brew 自动安装中..."
+  if [ "${PNG_COMPRESS_YES_BREW:-}" = "1" ] && command -v brew >/dev/null 2>&1; then
+    echo "→ 已设 PNG_COMPRESS_YES_BREW=1，用 brew 自动安装中..."
     brew install "${need_install[@]}"
   else
-    echo "未检测到 brew。请手动安装后重试:"
+    echo "未自动安装（设为避免静默改环境；如需自动 brew 安装请设 PNG_COMPRESS_YES_BREW=1）。请手动安装后重试:"
     echo "  macOS:  brew install ${need_install[*]}"
     echo "  Ubuntu: sudo apt-get install pngquant && cargo install oxipng"
     exit 1

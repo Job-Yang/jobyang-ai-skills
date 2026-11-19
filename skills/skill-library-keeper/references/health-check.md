@@ -58,7 +58,7 @@ python3 scripts/library_doctor.py <目录> --baseline baseline.json        # 只
 
 | ID | 判什么 | 边界（避免误报） |
 | --- | --- | --- |
-| R001 | SKILL.md 正文引用的本地文件不存在（broken reference） | 只看正文 markdown 链接，去掉代码围栏里的命令；剥掉 `#锚点/?query` |
+| R001 | SKILL.md 与 references/*.md 正文引用的本地文件不存在（broken reference） | 只看正文（去掉代码围栏；references 里同时剥掉行内反引号语法占位），剥掉 `#锚点/?query`；相对 SKILL 或所在目录解析 |
 | R002 | SKILL.md / references 的代码围栏未闭合 | 只查 SKILL.md 与 references/，不查 tests/fixtures（负例夹具本就故意坏） |
 
 ### C 类 · 库级覆盖（P1，站在整版图上找"洞"）
@@ -80,7 +80,7 @@ python3 scripts/library_doctor.py <目录> --baseline baseline.json        # 只
 
 | ID | 判什么 | 边界 |
 | --- | --- | --- |
-| P001 | SKILL.md 正文写死绝对路径/宿主目录（/Users、/home、C:\、.doubaowork 等） | **只扫正文、不含代码块**；README 安装示例、CHANGELOG 变更记录、可移植性文档里的拷贝命令不算 |
+| P001 | SKILL.md 正文写死绝对路径/宿主目录（/Users、/home、C:\、.doubaowork、~/.trae/skills、~/.claude/skills 等） | **只扫正文、不含代码块**；README 安装示例、CHANGELOG 变更记录、可移植性文档里的拷贝命令不算 |
 | P002 | 引用了平台专属工具但没写「缺失则降级」 | 提示人工确认是不是软依赖 |
 
 ### S 类 · 结构与卫生（P2，低优先）

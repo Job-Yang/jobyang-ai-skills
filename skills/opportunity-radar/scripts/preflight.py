@@ -54,7 +54,7 @@ def decide(doc_writable: bool, group_sendable: bool, group_error: str) -> dict:
         return {
             "branch": "block", "exit": 7,
             "actions": ["不在任何地方留痕（写不进追踪台，别处也不补）",
-                        "回报用户：飞书追踪台文档不可写，今日雷达结果未留痕，请先修文档权限"],
+                        "回报用户：追踪台文档不可写，今日雷达结果未留痕，请先修文档权限"],
             "blocker": "doc_not_writable",
         }
     if not group_sendable:

@@ -69,8 +69,8 @@ design-spec-<topic>.md                 # 与 prototype/ 平级
 
 ## 落盘
 
-- OPC 标准道：`$ILOOP_DATA_ROOT/analysis/opc.product-pipeline/<topic>/prototype/` 和 `design-spec-<topic>.md`。
-- 自由模式：写到用户或宿主指定的 `<产物目录>/prototype/`，不自动猜工程路径。
+- OPC 标准道（仅由 OPC 适配器显式调用并注入 `$ILOOP_DATA_ROOT` 时）：`$ILOOP_DATA_ROOT/analysis/opc.product-pipeline/<topic>/prototype/` 和 `design-spec-<topic>.md`。
+- 独立模式：写到用户或宿主指定的 `<产物目录>/prototype/`，不因环境中存在 `ILOOP_DATA_ROOT` 就擅自切进 OPC，也不自动猜工程路径。
 - 过程产物不能写进用户工程源码目录。
 - 设计档案（`DESIGN.md` 和 `design/`）是例外：它是产品的长期资产，交付时写进产品仓库，第一次写之前请用户确认文件清单。规则见 `design-archive.md`。
 

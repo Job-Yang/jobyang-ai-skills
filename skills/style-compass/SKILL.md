@@ -38,9 +38,9 @@ description: "把已有 PRD 或一句需求做成高质感、带动效的可交�
 | 入场分流 | `references/design-archive.md` | `design_memory.py scan <产品目录>` | 新做／延续／补档／评审 |
 | 理结构 | `references/structure-guide.md` | —（画完自查每个需求有落点） | 灰阶线框 HTML |
 | 问诊 | `references/intake-questions.md` | `design_memory.py taste` | `design/direction.md`（3–4 个风格坐标，含反向候选） |
-| 确认 UX | `references/interaction-guide.md`＋`references/interaction-craft.md` | `validate_stage_contract.py --phase direction` | 灰阶可点原型 |
-| 视觉定稿 | `references/craft-packs.md`＋`references/craft-genome.md`＋`references/motion-craft.md`＋`references/design-kernel.md`＋`references/visual-craft.md`＋`references/cjk-typography.md` | `lint_design.py diverge prototype/directions.json`；`lint_design.py check <页面>.html --phase direction`；`capture_preview.mjs` 截屏验收；选定后 `--phase final --tokens design/tokens.json` | tokens.json＋高定高保真页 |
-| 交付 | `references/prototype-guide.md`＋`references/handoff.md` | `export_spec.py` → `export_tokens.py design/tokens.json --out design --targets all --design-md DESIGN.md` → `design_memory.py check <目录>` | spec＋DESIGN.md＋档案 |
+| 确认 UX | `references/interaction-guide.md`＋`references/interaction-craft.md` | —（灰阶交互走查，不混入视觉色值） | 灰阶可点原型 |
+| 视觉定稿 | `references/craft-packs.md`＋`references/craft-genome.md`＋`references/motion-craft.md`＋`references/design-kernel.md`＋`references/visual-craft.md`＋`references/cjk-typography.md` | `lint_design.py diverge prototype/directions.json`；`lint_design.py check <页面>.html --phase direction`；`validate_stage_contract.py --phase direction`；`capture_preview.mjs` 截屏验收；选定后 `--phase final --tokens design/tokens.json` | tokens.json＋高定高保真页 |
+| 交付 | `references/prototype-guide.md`＋`references/handoff.md` | `validate_stage_contract.py --phase final` → `export_spec.py` → `export_tokens.py design/tokens.json --out design --targets all --prototype prototype --design-md DESIGN.md` → `design_memory.py check <目录>` | spec＋DESIGN.md＋档案 |
 
 四关确认边界、`R/P/J/A/S` 编号和危险动作字段见 `references/stage-contracts.md`。full 的原多方向协议、正式阶段校验和固定工作台全部保留。多版并排仍用 `compare_variants.py`，不改变原跨目录限制。
 

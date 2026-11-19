@@ -13,7 +13,7 @@ description: "检索带来源证据的产品机会候选。用户要扫描机会
 
 一个**可移植的机会侦察能力**：每天先由 `scripts/collect.py` 从十六个公开结构化源宽口径采出一张原始机会池（0.4.1 起默认 5 天窗口，实测 480 条以上），再按当天的垂直镜头从中挖**正在变热、还没被大量注意**的产品机会，每条挂真实证据，收敛成一张候选清单。
 
-> **它是自包含的、不绑定任何 harness。** 只需要"能联网搜"这一项能力（WebSearch/WebFetch 或等价物），就能在 Mira、云端 agent、任意 AI 软件里跑。iLoop 只是它的老家之一。
+> **它是自包含的、不绑定任何 harness。** 只需要"能联网搜"这一项能力（WebSearch/WebFetch 或等价物），就能在云端定时 Agent、任意 AI 宿主里跑。iLoop 只是它的老家之一。
 > **输入**（可空）：兴趣领域 / 技能标签 / 一句方向。空则按"solo 可做的 AI 原生小产品"全域扫。
 > **输出**：一张候选机会清单。下一步由用户或调用方编排决定。
 
@@ -25,19 +25,19 @@ description: "检索带来源证据的产品机会候选。用户要扫描机会
 
 ## 只做 / 禁止
 
-- **只做**：定向扫五源 + 全网搜验证、给每条候选挂真实证据、判信号强度、出结构化清单。
+- **只做**：通过 16 个公开结构化源采池 + 补充全网搜验证、给每条候选挂真实证据、判信号强度、出结构化清单。
 - **禁止**：改任何代码；编造证据；只抄热榜不挖 gap；把无证据的臆想当真候选；自己打分（那是 scorecard kit 的活，防止侦察和评估互相污染）。
 
-## 每日运行契约（与 cron / 云电脑的边界）
+## 每日运行契约（与定时调度宿主的边界）
 
-**调度归宿主，技能只管"扫什么、怎么判、怎么留痕"。** 每日定时由宿主 cron/云电脑拉起本技能；技能不内置 token、不自建 app、不负责定时。一天的固定动作：
+**调度归宿主，技能只管"扫什么、怎么判、怎么留痕"。** 每日定时由宿主调度器拉起本技能；技能不内置 token、不自建 app、不负责定时。一天的固定动作：
 
 0. **采池（0.4.0 新增，入口动作）**：`python3 scripts/collect.py --out <工作目录>`（默认 5 天窗口，可用 --since-days 调） → 多源并发采集，产出 `pool.json`/`pool.md`，并逐源记状态。退出码 4 = 所有源都空，按"失败留痕"处理而不是静默结束。
 1. **定镜头**：`python3 scripts/rotate.py --date <今天> [--coverage <历史覆盖.json>]` → 从 v2 池（10 个垂直人群镜头 + 2 个方法道）选今天的 anchor 垂直和补位方向，附 lens/keywords/queries。coverage 由追踪台历史整理，必须传，否则缺扫记录时补位会反复选同一方向。
-2. **取证**：先按当天镜头的 keywords 在 pool.json/pool.md 里过滤和归并相关信号；再对最强的 5～8 条用 `references/search-queries.md` 的词做补充网页搜和差评挖（评论原话、付费证据、竞品）。信源可达性见 `references/sources.md`，不可达源（云电脑上的 Reddit JSON/X/即刻/小红书/G2/Trends）不要硬搜。
+2. **取证**：先按当天镜头的 keywords 在 pool.json/pool.md 里过滤和归并相关信号；再对最强的 5～8 条用 `references/search-queries.md` 的词做补充网页搜和差评挖（评论原话、付费证据、竞品）。信源可达性见 `references/sources.md`，无浏览器登录态环境中通常不可达的源（Reddit JSON/X/即刻/小红书/G2/Trends）不要硬搜。
 3. **与历史去重**：把追踪台历史 markdown 拉下来 + 今日候选 JSON，跑 `python3 scripts/dedup.py --history <追踪台.md|目录> --candidates <今日.json>`。每条判 NEW/DUP/RELATED；退出码 4 = 全是 DUP/RELATED（安静日），0 = 有 NEW。跨条目通用词由 df 折扣自动剔除。
 4. **证据对抗自检**：`python3 scripts/freshness.py --candidates <今日.json> --dedup <上一步输出>`。**硬旗**（旧证据、未来日期、垃圾源、坏链接、DUP）挡候选；**软旗**（缺日期、付费未验证、RELATED）只提醒补证，不挡新供给。退出码 4 只在全部被硬旗挡住时返回。
-5. **进场自诊断 + 留痕分支**：`python3 scripts/preflight.py check --doc-writable <宿主探测> --group-sendable <宿主探测> --group-error <码>`。文档可写+群可发=full（文档留痕+群卡片）；群不可发（如 230002）=degrade-docs（**只文档留痕+回报 blocker，不发群卡片**）；文档不可写=block。这是确定性分支，不临场发挥。
+5. **进场自诊断 + 留痕分支**：`python3 scripts/preflight.py check --doc-writable <宿主探测> --group-sendable <宿主探测> --group-error <码>`。文档可写+群可发=full（文档留痕+群卡片）；群不可发（如特定群发送错误）=degrade-docs（**只文档留痕+回报 blocker，不发群卡片**）；文档不可写=block。这是确定性分支，不临场发挥。
 6. **渲染留痕卡片**：`python3 scripts/preflight.py render-card --template no_opportunity|strong_opportunity --data '<json>'` → 产出可直接喂宿主 im 的卡片 JSON。
 
 **召回节奏要求（0.4.1，宽进严出）**：召回端尽量宽——默认 5 天窗口、十六个源、最新流和热门流都采；筛选端严格。目标是每 1～2 个工作日产出一条值得深挖的机会。池子有 480 条左右还判"无强机会"时，必须在条目里写明漏斗各层的数量（采池数、镜头命中数、去重后数、硬旗后数），证明是筛掉的而不是没采到。连续两个工作日无强机会时，下一次自动放宽：镜头扩到相邻垂直、补充网页搜加码，并在条目里标注"连续静默日扩源"。
@@ -47,7 +47,7 @@ description: "检索带来源证据的产品机会候选。用户要扫描机会
 ## 执行流程
 
 ### 第 1 步 · 先采池，再按镜头取证 —— 见 `references/sources.md`
-- **每天先跑 `scripts/collect.py`**：PH/hunted、GitHub Trending 与新高星、Show HN/Ask HN/HN 评论许愿、HF Spaces、DEV、V2EX、Lobsters、Reddit RSS、App Store 畅销榜一次采全，逐源容错。具体源和云电脑不可达清单见 references。
+- **每天先跑 `scripts/collect.py`**：PH/hunted、GitHub Trending 与新高星、Show HN/Ask HN/HN 评论许愿、HF Spaces/Models、HN 首页、DEV、V2EX、Lobsters、Reddit RSS、App Store 畅销榜一次采全，逐源容错。具体源与受限网络环境不可达清单见 `references/sources.md`。
 - **当天镜头过滤**：用 rotate.py 给的 keywords 在池子里筛相关信号，按"同一痛点"归并，再人工读最强的十六条。
 - **补充网页搜**：对最强候选用 `references/search-queries.md` 的高信号词补差评和付费原话。通用搜只是补充，不再是唯一入口（0.3.x 每天只靠它捞 4 条，召回率必然低）。
 - 今天扫哪个垂直由 `scripts/rotate.py` 确定性选出，不凭感觉挑。
@@ -123,7 +123,7 @@ opportunity-radar/
 │   └── check_handoff.py        # handoff 示例 opc_node drift 检查
 ├── references/
 │   ├── handoff.md              # 包内完整交接协议（radar 节点定制）
-│   ├── sources.md              # 五源怎么读、怎么防垃圾站
+│   ├── sources.md              # 十六个结构化采集源、可达性与防垃圾站规则
 │   ├── search-queries.md       # 高信号搜索词库
 │   ├── golden-signals.md       # 蓝海/红海判据、信号分档、非 solo 适配、蓝海陷阱反例
 │   ├── rotation-pool.json      # 方向池（rotate.py 的数据源）
@@ -137,7 +137,7 @@ opportunity-radar/
 ## 在不同环境怎么跑
 
 - **iLoop 流程内**：由 `opc.product-pipeline.radar` 调用，按适配器传入的目录交付；由当前编排决定后续节点。
-- **独立/别的 harness（如 Mira）→ 交接回本地**：把本 kit 目录整体拷过去当 skill 用。**产出时严格照上面的信封格式**（含 `schema/produced_by`）。交接三步：
+- **独立或云端 Agent 宿主 → 交接回本地**：把本 kit 目录整体拷过去当 skill 用。**产出时严格照上面的信封格式**（含 `schema/produced_by`）。交接三步：
   1. 远端**自检**：`python3 scripts/artifact_io.py validate --input <你产的.md>`（或 `--stdin`），不合规时先修正。
   2. 把文件/内容拿回本地（复制、粘贴、下载都行）。
   3. 本地**导入**：`python3 scripts/artifact_io.py ingest --input <文件> --output-root <接收目录>`。工具校验信封，写入显式接收目录，不需要 iLoop。
@@ -149,5 +149,5 @@ opportunity-radar/
 本包自带 opc-envelope 0.2.0 公共文件副本（`scripts/artifact_io.py`、`scripts/scoring-rules.json`，见 `scripts/vendor-manifest.json`），本轮冻结不改内容。发布前跑：
 - `python3 scripts/check_vendored.py` 自检冻结副本 sha；
 - `python3 -m unittest discover -s tests -v` 跑全部回归（含 dedup/freshness 对 2026-10-16 实跑的复现）；
-- `python3 scripts/check_handoff.py <本包> <scorecard包> <brief包>` 确认三包 handoff 示例 opc_node 无 drift；
+- `python3 scripts/check_handoff.py <radar包> <scorecard包> <brief包> <style-compass包> <engineering-docs包>` 确认各流水线节点 handoff 示例 `opc_node` 无 drift；
 - 与其他流水线包并排时跑 `python3 scripts/check_vendored.py --drift <各技能根>` 确认无漂移。

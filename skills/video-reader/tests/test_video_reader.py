@@ -118,6 +118,11 @@ class FrameDirGovernanceTests(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stderr)
         self.assertTrue(custom.exists(), "--cleanup 绝不能删用户显式指定的 --outdir")
 
+    def test_zoom_invalid_range_rejected(self):
+        r = run_script("zoom", str(self.video), "--start", "3", "--end", "1")
+        self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
+        self.assertIn("区间无效", r.stderr)
+
 
 class PipGateTests(unittest.TestCase):
     """P1-3: 未设 VIDEO_READER_YES_PIP=1 不静默装包。"""
@@ -158,6 +163,21 @@ class PipGateTests(unittest.TestCase):
                 VR.cmd_transcribe(args)
             self.assertEqual(cm.exception.code, 4)
             pr.assert_not_called(), "transcribe 在未放行时也不能静默装 torch"
+
+    def test_help_exits0_without_cv2_or_numpy(self):
+        code = (
+            "import runpy, sys\n"
+            "class Blocker:\n"
+            "    def find_spec(self, name, path=None, target=None):\n"
+            "        if name in ('cv2', 'numpy') or name.startswith(('cv2.', 'numpy.')):\n"
+            "            raise AssertionError(f'unexpected import: {name}')\n"
+            "sys.meta_path.insert(0, Blocker())\n"
+            f"sys.argv = [{repr(str(SCRIPT))}, '--help']\n"
+            f"runpy.run_path({repr(str(SCRIPT))}, run_name='__main__')\n"
+        )
+        r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=30)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("usage:", r.stdout.lower())
 
 
 if __name__ == "__main__":

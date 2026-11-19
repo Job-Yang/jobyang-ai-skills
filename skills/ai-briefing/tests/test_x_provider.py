@@ -68,6 +68,19 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
 
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        if "/2/tweets/search/recent" in self.path:
+            assert "query=agent" in self.path
+            assert "search_type=" not in self.path
+            assert "count=" not in self.path
+        elif "/2/accounts/username/" in self.path:
+            assert self.path.startswith("/2/accounts/username/sama")
+            assert "count=" not in self.path
+        self.wfile.write(json.dumps(FAKE_ITEMS).encode())
+
     def do_POST(self):
         n = int(self.headers.get("Content-Length", 0))
         body = json.loads(self.rfile.read(n) or b"{}")
@@ -135,8 +148,33 @@ class TestXProvider(unittest.TestCase):
         self.assertEqual(items[0]["id"], "2055312187124744476")
 
     def test_env_var_injected_into_headers(self):
-        h = xp._env({"x-test-key": "$TEST_X_KEY"})
+        h = xp._env({"x-test-key": "$TEST_X_KEY", "Authorization": "Bearer $TEST_X_KEY", "_comment": "$UNSET_DOC_VAR"})
         self.assertEqual(h["x-test-key"], "secret123")
+        self.assertEqual(h["Authorization"], "Bearer secret123")
+        self.assertEqual(h["_comment"], "$UNSET_DOC_VAR")
+
+    def test_get_url_template_and_explicit_params_no_alias_dump(self):
+        prof = {
+            "name": "v2-get",
+            "mode": "http",
+            "headers": {"Authorization": "Bearer $TEST_X_KEY"},
+            "actions": {
+                "search_posts": {
+                    "url": f"http://127.0.0.1:{self.port}/2/tweets/search/recent?max_results=20",
+                    "method": "GET",
+                    "params": {"query": "{value}"},
+                },
+                "user_posts": {
+                    "url": f"http://127.0.0.1:{self.port}/2/accounts/username/{{value}}?user.fields=id",
+                    "method": "GET",
+                },
+            },
+            "maps": {"items_path": "data.items", "id": "id", "text": "title", "author_path": "author", "author_handle_path": "screen_name", "stats": "statistics"},
+        }
+        items1 = xp.call_action(prof, "search_posts", query="agent", count=10)
+        self.assertEqual(len(items1), 2)
+        items2 = xp.call_action(prof, "user_posts", handle="sama", count=10)
+        self.assertEqual(len(items2), 2)
 
     def test_stdin_mode_accepts_host_read_items(self):
         p = subprocess.run(

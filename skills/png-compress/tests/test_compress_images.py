@@ -151,6 +151,45 @@ class GuardrailTests(unittest.TestCase):
             self.assertTrue(dest.exists(), f"副本应写到 {dest}")
             self.assertNotEqual(md5(dest), before_md5, "副本应是压缩后的产物")
 
+    def test_output_dir_same_as_root_rejected_on_non_git(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d) / "proj"
+            img = root / "a.png"
+            make_png(img)
+            before = md5(img)
+            r = run_main(root, "--output-dir", str(root))
+            self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+            self.assertIn("原地覆盖", r.stdout + r.stderr)
+            self.assertEqual(md5(img), before)
+
+    def test_nested_output_dir_excluded_from_scan(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d) / "proj"
+            img = root / "a.png"
+            make_png(img)
+            out = root / "out"
+            before = md5(img)
+            r1 = run_main(root, "--output-dir", str(out))
+            self.assertEqual(r1.returncode, 0, r1.stdout + r1.stderr)
+            self.assertEqual(md5(img), before)
+            self.assertTrue((out / "a.png").exists())
+            r2 = run_main(root, "--output-dir", str(out))
+            self.assertEqual(r2.returncode, 0, r2.stdout + r2.stderr)
+            self.assertIn("扫描到 PNG: 1 张", r2.stdout)
+
+    def test_escaping_symlink_skipped(self):
+        with tempfile.TemporaryDirectory() as d:
+            outside = Path(d) / "outside.png"
+            make_png(outside)
+            before = md5(outside)
+            root = Path(d) / "proj"
+            root.mkdir()
+            make_png(root / "inside.png")
+            (root / "escape.png").symlink_to(outside)
+            r = run_main(root, "--allow-non-git")
+            self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+            self.assertEqual(md5(outside), before, "指向工作区外的软链不得被压缩")
+
 
 class ExitCodeAndCacheTests(unittest.TestCase):
     """P1-2/P1-3/P2-1: 坏缓存不崩; 有图失败 exit 2; 坏图 hash 持久化二次跳过。"""

@@ -171,7 +171,7 @@ def _parse_blocks(body):
                 cur["items"].append({"k": k, "v": v})
             continue
         if mb and "**" in mb.group(1):
-            # 冒号前加粗（如「**刘铭儇**（男）：老羊的…」）是叙事句，整句按文本交给 md() 渲染，
+            # 冒号前加粗（如「**陈明**（男）：用户的…」）是叙事句，整句按文本交给 md() 渲染，
             # 不能当「字段：值」（否则 **人名** 残留且冒号前半句被当字段重复）。
             t = _clean_inline(re.match(r"^-\s*(.+)", s).group(1))
             if t and not _is_placeholder(t):
@@ -321,7 +321,7 @@ def _is_group(meta, eid, members=None):
 
 
 def _entity_members(body):
-    """从「## 成员」分节解析成员名，如 **刘铭儇**（男）…。返回中文名有序列表。"""
+    """从「## 成员」分节解析成员名，如 **陈明**（男）…。返回中文名有序列表。"""
     names = []
     m = re.search(r"^##\s*成员[^\n]*\n(.*?)(?=^##\s|\Z)", body, re.M | re.S)
     seg = m.group(1) if m else ""
@@ -333,8 +333,8 @@ def _entity_members(body):
 
 
 def _entity_display(label, members, eid, is_group):
-    """网络节点中文显示名：群组→成员名（刘铭儇·吴雪婷）；否则去括号取称呼。
-    任何情况下都不返回英文 slug（friends-liu-wu 之类）。"""
+    """网络节点中文显示名：群组→成员名（陈明·苏敏）；否则去括号取称呼。
+    任何情况下都不返回英文 slug（friends-chen-su 之类）。"""
     if is_group:
         if members:
             return "·".join(members)
@@ -347,7 +347,7 @@ def _entity_display(label, members, eid, is_group):
 
 
 def _group_short(label, members, eid):
-    """群组节点圆下短名（≤4 字，有温度）：朋友夫妇→刘·吴夫妇；父母→父母。"""
+    """群组节点圆下短名（≤4 字，有温度）：朋友夫妇→陈·苏夫妇；父母→父母。"""
     e = (eid or "").lower()
     if "parent" in e or "family" in e:
         return "父母"
@@ -382,7 +382,7 @@ def _me_header(data, audience):
         return v.strip()
 
     raw_name = _clean_field(b.get("称呼")) or "（未命名）"
-    # 称呼与本名拆开：老羊（本名杨权 / Job Yang）→ name=老羊，alt=杨权 / Job Yang
+    # 称呼与本名拆开：林默（本名陈默 / Chen Mo）→ name=林默，alt=陈默 / Chen Mo
     alt = ""
     m = re.search(r"本名\s*([^（)）]+)", raw_name)
     if m:
@@ -752,7 +752,7 @@ def build_payload(data, audience, layer_set, show_l4, reveal_l3_entities, view):
         is_group = info.get("is_group", False)
         if is_group and members:
             realname = "·".join(members[:2])
-            avatar = "".join(_first_han(n) for n in members[:2])  # 刘吴（圆内横排两字）
+            avatar = "".join(_first_han(n) for n in members[:2])  # 陈苏（圆内横排两字）
             short = _group_short(info["label"], members, eid)
         elif is_group:
             realname, short = info["label"], _group_short(info["label"], [], eid)
@@ -1592,7 +1592,7 @@ def build_html(payload, view, data):
 
 def main():
     ap = argparse.ArgumentParser(description="me-context 个人知识图谱（左导航+右档案，纯原生零外链）")
-    ap.add_argument("--data", required=True)
+    ap.add_argument("--data", "--path", dest="data", default=None, help="数据仓路径（默认读 ME_CONTEXT_DATA 或 ~/me-context-data）")
     ap.add_argument("--view", choices=["profile", "network", "all"], default="all")
     ap.add_argument("--audience", choices=["local", "cloud"], default="local")
     ap.add_argument("--layers", default="", help="可选，逗号分隔 L0,L1,...（仅 local 过滤）")
@@ -1602,7 +1602,7 @@ def main():
     ap.add_argument("--out", default="")
     args = ap.parse_args()
 
-    data = os.path.abspath(args.data)
+    data = C.resolve_data_dir(args.data)
     if not os.path.isdir(data):
         print(f"[错误] 数据仓不存在：{data}", file=sys.stderr)
         return 2
@@ -1618,7 +1618,7 @@ def main():
     # 常规查看永远覆盖同一份最新图谱；脱敏版使用另一个固定文件，避免覆盖私人本地版。
     out = args.out or os.path.join(data, "exports",
                                   "我的个人图谱.html" if args.audience == "local" else "我的个人图谱-脱敏版.html")
-    os.makedirs(os.path.dirname(out), exist_ok=True)
+    os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
     with open(out, "w", encoding="utf-8") as f:
         f.write(build_html(payload, args.view, data))
     os.chmod(out, 0o600)  # 本地版带着健康/家人明文，只给本人看

@@ -1,7 +1,7 @@
 {
   "skill_name": "style-compass",
-  "version": "4.2",
-  "how_to_run": "改动技能后逐条过一遍：按 prompt 和 files 准备输入，运行技能，再逐条核对 expectations；checks 里的命令能自动运行的就运行。记录每条通过、不通过或无法判断，不通过的写明原因。用例检查的是技能的行为，不评价审美。",
+  "version": "4.7.0",
+  "how_to_run": "改动技能后逐条过一遍：4.7.0 支持 quick（默认高定直出）、explore（2–4 套高定直选）、audit（现有页面评审）与 full（完整四关与阶段契约）。下列用例覆盖核心行为与底线约束；checks 里的命令能自动运行的就运行，记录通过、不通过或无法判断。用例检查技能行为，不评价审美。",
   "evals": [
     {
       "id": 1,
@@ -112,7 +112,7 @@
         "中文正文行高在 1.5～2.0 之间",
         "中文文字没有负的 letter-spacing",
         "表格里的数字使用 tabular-nums",
-        "字重只用 400、500、600"
+        "正文字重用 400、500、600（主标题与关键指标允许 700 建立层级反差）"
       ],
       "checks": ["python3 scripts/lint_design.py check <页面>.html --phase final --tokens design/tokens.json"]
     },

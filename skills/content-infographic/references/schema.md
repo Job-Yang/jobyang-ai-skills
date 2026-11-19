@@ -1,7 +1,7 @@
 # 信息图 JSON Schema 与布局选型
 
 `render_infographic.py` 只认一份结构化 JSON。它解决的是「多框、多标签、术语/英文原词必须清晰准确」的那类图——
-这些图**不要**用文生图（必糊字）。抽象比喻/场景插画才走文生图，见 `prompt-guide.md`。
+这些图**不要**用文生图（必糊字）。抽象比喻/场景插画才走文生图，见 `references/visual-style.md` 与 `references/backends.md`。
 
 ## 1. 先选布局（按内容的逻辑形态，不按章节数硬凑）
 
@@ -88,7 +88,7 @@
   "gap_label": "差距在拉大"
 }
 ```
-> 若你要的是更具象的场景插画（机器人追代码山那种），别用这个布局，走 `prompt-guide.md` 的文生图后端。
+> 若你要的是更具象的场景插画（机器人追代码山那种），别用这个布局，走 `references/visual-style.md` 与 `references/backends.md` 的文生图后端。
 
 ### compare（多维对照表）
 
@@ -118,8 +118,8 @@ python3 scripts/render_infographic.py spec.json -o out.svg --png                
 python3 scripts/render_infographic.py spec.json -o out.svg --validate-only          # 只校验 schema
 ```
 - 画布固定 1600×1067（约 3:2，横版，贴飞书正文合适）。
-- PNG 转换优先 `rsvg-convert`，没有则回退本机 Chrome headless；两者都没有时只出 SVG 并告警（退出码 3 仅在显式要 PNG 且失败时出现，SVG 始终可用）。
-- 退出码：0 成功；1 参数/IO；2 schema 错；3 PNG 失败（SVG 已生成）。
+- PNG 转换优先 `rsvg-convert`，没有则回退本机 Chrome headless；两者都没有或导出失败时仅 stderr 告警（SVG 仍可用，退出码仍为 0）。
+- 退出码：0 成功；1 参数/IO；2 schema 错。
 
 ## 5. 配色语义（可被 spec.palette 覆盖键名）
 

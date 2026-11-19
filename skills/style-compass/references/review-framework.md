@@ -128,8 +128,8 @@ python3 scripts/validate_review_workspace.py <prototype目录>/index.html
 ```html
 <article
   class="rf-page"
-  data-review-artboard="visual-home-a"
-  data-review-stage="visual"
+  data-review-artboard="final-home-a"
+  data-review-stage="final"
   data-review-page="home"
   data-review-variant="direction-a"
 >

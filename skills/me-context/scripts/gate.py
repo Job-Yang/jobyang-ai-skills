@@ -51,7 +51,7 @@ def classify_task(task):
 
 def main():
     ap = argparse.ArgumentParser(description="me-context 读门禁：预演“如果发给外部 AI，会带出哪些内容”，全程只在你本机计算、不联网、不上传。--emit 才打印切好的档案正文。")
-    ap.add_argument("--data", required=True, help="数据仓路径")
+    ap.add_argument("--data", "--path", dest="data", default=None, help="数据仓路径（默认读 ME_CONTEXT_DATA 或 ~/me-context-data）")
     ap.add_argument("--task", help="一句话任务（脚本只给建议 domain，责任在调用方模型）")
     ap.add_argument("--domain", help="显式指定域（work/goals/preferences/decisions/health/finance/network）")
     ap.add_argument("--entity", action="append", default=[], help="涉及的实体 id（可多次）")
@@ -65,7 +65,7 @@ def main():
     ap.add_argument("--check-consent", action="store_true", help="只读查看本地健康授权状态（scope/日期），不打印任何健康细节")
     args = ap.parse_args()
 
-    data = os.path.abspath(args.data)
+    data = C.resolve_data_dir(args.data)
     if not os.path.isdir(data):
         print(f"[错误] 数据仓不存在：{data}", file=sys.stderr)
         return 1

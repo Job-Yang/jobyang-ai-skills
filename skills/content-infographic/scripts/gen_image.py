@@ -226,8 +226,9 @@ def generate(prompt: str, out: str, dry_run=False, c=None):
     img_url, b64 = parse_response(raw, c)
     import base64
     if img_url:
-        n = download(img_url, out,
-                     headers={"Authorization": "Bearer " + c["key"]} if c["key"] else None)
+        dl_headers = ({"Authorization": "Bearer " + c["key"]}
+                      if c["key"] and os.environ.get("CI_IMAGE_DOWNLOAD_AUTH") == "1" else None)
+        n = download(img_url, out, headers=dl_headers)
     elif b64:
         n = save_bytes(base64.b64decode(b64), out)
     else:
@@ -246,8 +247,9 @@ def main():
     if not prompt:
         print("需要提示词（参数或 --stdin）", file=sys.stderr)
         return 2
+    out_path = args.out or "out.png"
     try:
-        n = generate(prompt, args.out or "out.png", dry_run=args.dry_run)
+        n = generate(prompt, out_path, dry_run=args.dry_run)
     except ValueError as e:
         print(f"配置错：{e}", file=sys.stderr)
         return 2
@@ -255,7 +257,7 @@ def main():
         print(f"生图失败：{e}", file=sys.stderr)
         return 1
     if not args.dry_run:
-        print(f"OK: 已保存图片 -> {args.out} ({n} bytes)")
+        print(f"OK: 已保存图片 -> {out_path} ({n} bytes)")
     return 0
 
 

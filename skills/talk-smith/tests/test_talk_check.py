@@ -354,6 +354,33 @@ class TestTalkCheck(unittest.TestCase):
         _, warns, _ = talk_check.check("article", text)
         self.assertNotIn("段落墙", "\n".join(warns))
 
+    def test_bare_suizhe_and_english_cn_mix_not_false_positive(self):
+        text = (
+            "TL;DR:一句话先把结论说透，数字是 8。\n\n"
+            "## 性能\n随着并发量涨到 1 万，v1.0:重写后的缓存复杂度降到 O(N),所以耗时大幅下降。\n\n"
+            "## 结尾\n你可以明天动手试试。"
+        )
+        errors, _, _ = talk_check.check("article", text)
+        self.assertEqual(errors, [], f"正常技术句不应误报：{errors}")
+
+    def test_suizhe_fazhan_single_error(self):
+        text = "开头数字 8。\n\n随着 AI 的发展，变化很快。\n\n## 结尾\n你可以明天动手。"
+        errors, _, _ = talk_check.check("article", text)
+        opener_errs = [e for e in errors if "开头禁用导语" in e]
+        self.assertEqual(len(opener_errs), 1, errors)
+
+    def test_empty_insight_section_not_passed_by_tldr_lists(self):
+        text = (
+            "> **TL;DR**\n"
+            "> - 干了啥：做了一个工具\n"
+            "> - 最大的坑：延迟太高\n"
+            "> - 真正的收获：少走弯路\n\n"
+            "## 一\n复杂度 O(N)。\n\n"
+            "## 几点启示\n这里空着没写列表。\n"
+        )
+        _, warns, _ = talk_check.check("article", text)
+        self.assertTrue(any("结尾" in w for w in warns), warns)
+
 
 if __name__ == "__main__":
     unittest.main()

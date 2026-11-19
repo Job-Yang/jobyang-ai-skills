@@ -71,6 +71,16 @@ def audience_local(meta):
     return str((meta or {}).get("audience") or "").strip().lower() == LOCAL_AUDIENCE
 
 
+def resolve_data_dir(cli_arg=None):
+    """按契约优先级解析数据仓目录：--data/--path > ME_CONTEXT_DATA > ~/me-context-data。"""
+    if cli_arg:
+        return os.path.abspath(os.path.expanduser(cli_arg))
+    env = os.environ.get("ME_CONTEXT_DATA")
+    if env:
+        return os.path.abspath(os.path.expanduser(env))
+    return os.path.abspath(os.path.expanduser("~/me-context-data"))
+
+
 def outgoing_layer(layer, meta):
     """外发时按哪一层对待：标了 audience: local 的低层文件与 L3 一样，要显式放开才带出去。
     gate 的确认、md 导出、viz 脱敏版共用这一条。"""

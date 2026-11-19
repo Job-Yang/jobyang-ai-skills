@@ -54,7 +54,7 @@ R_HARD_BIND      = ("high", "P001", "平台硬绑定",         "去掉绝对路�
 R_SOFT_BIND      = ("low",  "P002", "平台弱引用待确认",   "确认是软依赖：写明「需要时才用，缺失则降级到通用方式」", "library")
 R_COLLISION      = ("mid",  "T001", "疑似触发撞车",       "人工确认真实 query 是否互抢；重划边界或在 description 互指", "library")
 R_BODY_LONG      = ("low",  "S001", "SKILL.md 超长",      "正文 >500 行，把条件性细节下沉到 references/", "Anthropic 渐进披露")
-R_REF_NOTOC      = ("low",  "S002", "长 reference 缺目录", ">100 行的 reference 文件顶部加目录",     "Anthropic")
+R_REF_NOTOC      = ("low",  "S002", "长 reference 缺目录", ">200 行的 reference 文件顶部加目录",     "Anthropic")
 R_REF_DEEP       = ("low",  "S003", "reference 嵌套超过一层", "reference 只应被 SKILL.md 直接引用一层，抹平层级", "Anthropic")
 R_REF_ORPHAN     = ("low",  "S004", "资源未被主文件引用", "确认该文件是否需要；需要则在 SKILL.md 标明何时读", "Anthropic")
 R_PLACEHOLDER    = ("low",  "S005", "残留占位/待办",      "删除模板示例文件或补全 TODO/占位内容",    "skill-creator/ai-skill-lint")
@@ -75,6 +75,7 @@ HARD_PATTERNS = [
     r"C:\\",
     r"\.doubaowork",
     r"~/\.trae/skills",
+    r"~/\.claude/skills",
 ]
 # 弱引用：平台名/专属工具，命中不代表错，但要确认是否「需要时才用、可降级」
 SOFT_PATTERNS = [r"lark-cli", r"lark-doc", r"feishu\.cn", r"飞书文档?"]
@@ -106,7 +107,8 @@ def strip_fences(text: str) -> str:
     return "\n".join(out)
 
 LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
-BARE_RES_RE = re.compile(r"(?<![\w/.\-])((?:references|reference|scripts|assets)/[A-Za-z0-9_./\-]+)")
+BARE_RES_RE = re.compile(r"(?<![\w/.\-])((?:references|reference|scripts|assets)/[A-Za-z0-9_./\-]*[A-Za-z0-9_\-])")
+REF_FILE_EXT_RE = re.compile(r"\.(?:md|py|sh|mjs|js|json|ya?ml|txt|toml)$", re.I)
 FENCE_RE = re.compile(r"^\s*```")
 SECRET_RE = re.compile(
     r"(?i)(?:api[_-]?key|secret|access[_-]?token|password)\s*[:=]\s*[\"'][A-Za-z0-9_\-]{16,}[\"']"
@@ -167,9 +169,10 @@ def _tiny_yaml(head: str) -> dict:
 
 
 def extract_local_targets(md: str):
-    """抽出 markdown 中指向技能本地文件的目标（排除 URL/锚点/命令）。"""
+    """抽出 markdown 中指向技能本地文件的目标（排除 URL/锚点/命令与行内语法示例）。"""
+    noinline = re.sub(r"`[^`\n]+`", "", md)
     targets = []
-    for raw in LINK_RE.findall(md):
+    for raw in LINK_RE.findall(noinline):
         t = raw.strip().split()[0].strip("\"'")
         # 去掉 #fragment 与 ?query，否则 references/a.md#节 会因文件名带后缀而误判 broken
         t = t.split("#", 1)[0].split("?", 1)[0]
@@ -181,6 +184,23 @@ def extract_local_targets(md: str):
     for raw in BARE_RES_RE.findall(md):
         targets.append(raw)
     # 归一：reference/ 与 references/ 两种写法都试
+    return targets
+
+
+def extract_ref_local_targets(md: str):
+    """从 reference 文档正文中抽取真实本地文件引用（剥除围栏与行内代码语法占位）。"""
+    nofence = strip_fences(md)
+    noinline = re.sub(r"`[^`\n]+`", "", nofence)
+    targets = []
+    for raw in LINK_RE.findall(noinline):
+        t = raw.strip().split()[0].strip("\"'").split("#", 1)[0].split("?", 1)[0]
+        if not t or re.match(r"^(https?:|mailto:|#|/)", t):
+            continue
+        if REF_FILE_EXT_RE.search(t) or t.startswith(("references/", "reference/", "scripts/", "assets/", "../")):
+            targets.append(t)
+    for raw in BARE_RES_RE.findall(nofence):
+        if REF_FILE_EXT_RE.search(raw):
+            targets.append(raw)
     return targets
 
 
@@ -343,7 +363,7 @@ def check_library(root: Path):
         else:
             nm = str(nm).strip()
             names.append(nm)
-            if not re.match(r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$", nm) and not re.match(r"^[a-z0-9]$", nm):
+            if "--" in nm or (not re.match(r"^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$", nm) and not re.match(r"^[a-z0-9]$", nm)):
                 add(R_NAME_BAD, d, f"name='{nm}' 不符合 ^[a-z0-9-]+$ 规范")
             if len(nm) > 64:
                 add(R_NAME_BAD, d, f"name 长度 {len(nm)} > 64")
@@ -386,10 +406,15 @@ def check_library(root: Path):
             if sum(1 for ln in read_text(mf).splitlines() if FENCE_RE.match(ln)) % 2 == 1:
                 add(R_FENCE_OPEN, d, f"{mf.relative_to(root)} 代码围栏未成对闭合")
 
-        # broken references：只看 SKILL.md「正文」（去掉代码围栏/命令）里指向本地的真实链接。
+        # broken references：扫描 SKILL.md 与 references/*.md 正文（去掉代码围栏/命令）里指向本地的真实链接。
         for t in extract_local_targets(strip_fences(raw)):
             if not (sk_dir / t).resolve().exists():
                 add(R_REF_BROKEN, d, f"SKILL.md 引用的 {t} 不存在")
+        if ref_dir.exists():
+            for rf in sorted(ref_dir.rglob("*.md")):
+                for t in extract_ref_local_targets(read_text(rf)):
+                    if not (sk_dir / t).resolve().exists() and not (rf.parent / t).resolve().exists():
+                        add(R_REF_BROKEN, d, f"references/{rf.relative_to(ref_dir)} 引用的 {t} 不存在")
 
         # S002 仅查 references/ 下真正长（>200 行）且顶部没有任何导航/标题结构的文件；
         # README、示例库、有清晰分节标题的都不算。S003（reference 嵌套层级）规则噪声大、
@@ -403,12 +428,15 @@ def check_library(root: Path):
                         f"references/{rf.relative_to(ref_dir)} {len(rtxt.splitlines())} 行，顶部缺目录/清晰分节")
 
         # S004 孤儿 reference（高精确、宁可漏报）：references/ 下的 md，只要在技能目录
-        # 任意 md/py/sh（SKILL 或别的 reference、脚本）里出现过文件名/主干，就算被用
-        #（二级 reference 是正常渐进披露，不算孤儿）。全技能没有任何文件提到才提示。
-        corpus = "\n".join(read_text(p) for p in list(sk_dir.rglob("*.md"))
-                           + list(sk_dir.rglob("*.py")) + list(sk_dir.rglob("*.sh")))
+        # 任意其它 md/py/sh（SKILL 或别的 reference、脚本）里出现过文件名/主干，就算被用
+        #（二级 reference 是正常渐进披露，不算孤儿）。排除文件自身后无其它文件提到才提示。
+        file_texts = {
+            p: read_text(p)
+            for p in list(sk_dir.rglob("*.md")) + list(sk_dir.rglob("*.py")) + list(sk_dir.rglob("*.sh"))
+        }
         if ref_dir.exists():
             for rf in ref_dir.rglob("*.md"):
+                corpus = "\n".join(txt for p, txt in file_texts.items() if p != rf)
                 if rf.name not in corpus and rf.stem not in corpus:
                     add(R_REF_ORPHAN, d,
                         f"references/{rf.relative_to(ref_dir)} 全技能无任何文件点名，确认是否还需要")

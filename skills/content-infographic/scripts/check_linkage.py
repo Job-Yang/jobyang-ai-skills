@@ -208,12 +208,14 @@ def evaluate(pkg: dict):
     kept = str(pkg.get("kept_text", "") or "")
     allow = set(w.lower() for w in pkg.get("allow_new", []))
 
-    # 忠实语料 = 只有原文（+保留正文）是图内容的出处；bridge/caption 不能给图背书，
-    # 否则"图自创的词被写进图注→图注里有→对账通过"就是循环论证。
-    faith = source if mode == "supplement" else (kept or source)
-    faith_all = faith  # 图上术语/数字只能来自原文
-    faith_words, faith_nums = ascii_words(faith), numbers(faith)
-    faith_bg, faith_chars = cjk_bigrams(faith), cjk_chars(faith)
+    # 忠实语料 = 始终认原文 source_text（plus allow_new 显式增补词）；bridge/caption 不能给图背书。
+    faith = source
+    allow_text = " ".join(str(x) for x in pkg.get("allow_new", []))
+    faith_with_allow = f"{faith}\n{allow_text}".strip()
+    faith_words = ascii_words(faith) | ascii_words(allow_text)
+    faith_nums = numbers(faith) | numbers(allow_text)
+    faith_bg = cjk_bigrams(faith_with_allow)
+    faith_chars = cjk_chars(faith_with_allow)
     # 咬合语料（含 bridge/caption）：只用于判断过渡句是否把图带进正文
     joint = "\n".join([faith, bridge, caption])
     joint_bg = cjk_bigrams(joint)
@@ -229,7 +231,7 @@ def evaluate(pkg: dict):
                 if w not in faith_words:
                     err("E2", path, seg, f"英文/术语「{w}」在锚定正文里找不到，图不能自造术语")
             for num in numbers(seg):
-                if num not in numbers(faith_all):
+                if num not in faith_nums:
                     err("E3", path, seg, f"数字「{num}」正文里没有，图不能自造数字/量级")
             cbg = cjk_bigrams(seg)
             if cbg:
@@ -295,8 +297,8 @@ def evaluate(pkg: dict):
 
     # 4) replace 模式：压缩后图+保留正文+过渡句不能丢原文的关键术语
     if mode == "replace" and kept:
-        kept_all = kept + bridge + caption + " ".join(t for _, t, _ in fig_items)
-        for w in faith_words:
+        kept_all = " ".join([kept, bridge, caption, *(t for _, t, _ in fig_items)])
+        for w in ascii_words(source):
             if len(w) >= 3 and w not in ascii_words(kept_all) and w not in allow:
                 warn("W5", "source", w, "原文术语在压缩后的正文+图里都没出现，确认不是被删丢了")
     return E, W, checks

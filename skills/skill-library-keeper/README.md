@@ -58,6 +58,6 @@ python3 scripts/test_doctor.py                                # 先验证体检�
 
 作为技能使用时直接说「我要不要为这个做个新技能」「给技能库做个体检」「这个外部技能要不要收进来」。完整判据见 `references/admission-gate.md` 和 `references/health-check.md`。
 
-## 待补
+## 维护状态
 
-- baseline.json 里还残留少量本机绝对路径引用，尚未完全去路径化（已知缺口）。
+- `baseline.json` 已清空为空基线（仅保留 `{ "root": "skills", "baseline": [] }`），日常仅冒出基线外新增提醒。

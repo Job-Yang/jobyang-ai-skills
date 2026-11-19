@@ -16,7 +16,7 @@ render_infographic.py — 内容信息图的「确定性渲染」后端（零三
   python3 render_infographic.py spec.json -o out.svg
   python3 render_infographic.py spec.json -o out.svg --png          # 同时出 out.png
   python3 render_infographic.py spec.json --stdin -o out.svg        # 从 stdin 读 JSON
-退出码：0 成功；1 参数/IO 错；2 JSON/schema 校验错；3 PNG 转换失败（SVG 仍可用）。
+退出码：0 成功；1 参数/IO 错；2 JSON/schema 校验错（PNG 转换失败仅 stderr 告警，SVG 仍正常交付）。
 """
 import argparse
 import json
@@ -314,7 +314,7 @@ def layout_pipeline(svg, d, pal, fs, top):
                      weight=700, anchor="middle")
         desc = st.get("desc", "")
         dl = wrap_cjk(desc, inner_w, desc_size)[:3]
-        dy = ty + 48
+        dy = ty + max(48, len(tl) * 36 + 14)
         for j, ln in enumerate(dl):
             svg.text(x + cw / 2, dy + j * 31, ln, size=desc_size, fill=pal["ink_soft"],
                      anchor="middle")
@@ -585,24 +585,34 @@ def render(spec, out_svg, png=False, width=1600, height=1067):
     draw_footer(svg, spec, pal, y=footer_y)
     svg.save(out_svg)
     if png:
-        return export_png(out_svg)
+        return export_png(out_svg, width=width, height=height)
     return None
 
 
-def export_png(svg_path):
+def _find_chrome():
+    candidates = [
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        shutil.which("google-chrome"),
+        shutil.which("chromium"),
+        shutil.which("chromium-browser"),
+    ]
+    return next((c for c in candidates if c and os.path.exists(c)), None)
+
+
+def export_png(svg_path, width=1600, height=1067):
     png_path = os.path.splitext(svg_path)[0] + ".png"
     rsvg = shutil.which("rsvg-convert")
-    chrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+    chrome = _find_chrome()
     try:
         if rsvg:
             subprocess.run([rsvg, "-f", "png", "-o", png_path, svg_path], check=True)
             return png_path
-        if os.path.exists(chrome):
+        if chrome:
             with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tf:
                 tmp = tf.name
             url = "file://" + os.path.abspath(svg_path)
             subprocess.run([chrome, "--headless=new", "--disable-gpu", "--force-device-scale-factor=2",
-                            f"--screenshot={tmp}", "--window-size=1600,1067",
+                            f"--screenshot={tmp}", f"--window-size={width},{height}",
                             "--hide-scrollbars", url],
                            check=True, capture_output=True, timeout=90)
             shutil.move(tmp, png_path)

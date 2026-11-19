@@ -367,11 +367,11 @@ def run_checkup(data, today=None):
 
 def main():
     ap = argparse.ArgumentParser(description="lint me-context 数据仓 frontmatter schema（fail-closed）；--checkup 只列过期/旧草稿，不删。")
-    ap.add_argument("--data", required=True)
+    ap.add_argument("--data", "--path", dest="data", default=None, help="数据仓路径（默认读 ME_CONTEXT_DATA 或 ~/me-context-data）")
     ap.add_argument("--checkup", action="store_true", help="体检：只列超期 current/旧 inbox/冲突/疑似误入，不修改任何文件")
     ap.add_argument("--today", help="覆盖今天日期 YYYY-MM-DD（确定性测试用，默认当天）")
     args = ap.parse_args()
-    data = os.path.abspath(args.data)
+    data = C.resolve_data_dir(args.data)
     if not os.path.isdir(data):
         print(f"[错误] 数据仓不存在：{data}", file=sys.stderr)
         return 2
@@ -400,17 +400,20 @@ def main():
     for path in md_files:
         rel = os.path.relpath(path, data)
         if os.path.basename(path) in C.LINT_EXEMPT_BASENAMES:
-            # 结构文件不查档案 schema；但 relations.md 会随默认 md 导出带给外部 AI，备注里的健康/财务细节照样提醒
+            # 结构文件不查档案 schema；但 relations.md 会随默认 md 导出带给外部 AI，备注里的健康/财务细节照样提醒，且检查悬空 to: 边
             if os.path.basename(path) == "relations.md":
-                text = open(path, encoding="utf-8").read()
+                with open(path, encoding="utf-8") as rf:
+                    text = rf.read()
                 hint = outgoing_hint(C.parse_frontmatter(text)[0], text)
                 if hint:
                     print(f"WARN   {rel}: {hint}")
                     tw += 1
+                rel_errs = lint_relations(path, known)
+                for e in rel_errs:
+                    print(f"ERROR  {rel}: {e}")
+                te += len(rel_errs)
             continue
         errs, warns = lint_file(path, rel, today=today)
-        if os.path.basename(path) == "relations.md":
-            errs += lint_relations(path, known)
         for e in errs:
             print(f"ERROR  {rel}: {e}")
         for w in warns:

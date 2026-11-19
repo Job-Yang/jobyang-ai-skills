@@ -1,7 +1,7 @@
-# 信息源清单与可达性（2026-10-20 云电脑实测）
+# 信息源清单与可达性（2026-10-20 无浏览器登录态服务端实测）
 
 > 0.4.0 起分两层：`scripts/collect.py` 每天自动采集的**结构化源**，和 Agent 按需补的**语义搜源**。
-> 可达性是在豆包工作云电脑（无浏览器登录态、纯服务端网络）实测的；本地环境可能不同，
+> 下表可达性基于无浏览器登录态、纯服务端受限网络的实测；本地宿主环境可能不同，
 > 换环境后先跑一次 `collect.py` 看逐源状态。
 
 ## collect.py 自动采集（无需 key、无需登录）
@@ -11,10 +11,10 @@
 | hunted | 当日 Product Hunt 榜 | hunted.space 内嵌 JSON，含票数、评论数、话题 | 票数和评论数都高、评论里有「缺 X」的新品 |
 | ph_feed | Product Hunt 官方 Atom | producthunt.com/feed，近 50 条发布 | 榜单外的长尾新品 |
 | gh_trending | GitHub Trending | trending 页 HTML，daily stars today | 一天涨几百星的新仓=技术能力刚被验证 |
-| gh_new | GitHub 新建高星仓 | Search API：近 3 天建、star>100 | 更早期的能力外溢（无 token 限流 10 次/分，脚本只用 1 次查询） |
-| hn_show | Show HN | Algolia API，近 3 天、>15 分 | 独立开发者的成品发布和评论反馈 |
-| hn_ask | Ask HN | Algolia API，近 7 天、>10 分 | 「我需要/有没有」类真问题 |
-| hn_wishes | HN 评论许愿 | Algolia comment 检索，近 14 天 | 评论里「I wish there was / would pay for」原话，按帖聚合 |
+| gh_new | GitHub 新建高星仓 | Search API：近 `--since-days` 天（默认 5 天）建、star>100 | 更早期的能力外溢（无 token 限流 10 次/分，脚本只用 1 次查询） |
+| hn_show | Show HN | Algolia API，近 `max(since_days, 3)` 天、>15 分 | 独立开发者的成品发布和评论反馈 |
+| hn_ask | Ask HN | Algolia API，近 `max(since_days, 7)` 天、>10 分 | 「我需要/有没有」类真问题 |
+| hn_wishes | HN 评论许愿 | Algolia comment 检索，近 `max(since_days, 14)` 天 | 评论里「I wish there was / would pay for」原话，按帖聚合 |
 | hf_spaces | Hugging Face trending Spaces | HF API | 新模型能力外溢成什么 demo，下一波产品机会跟着能力走 |
 | hf_models | Hugging Face trending 模型 | HF API | 最新模型和能力发布，产品机会跟着新能力走（0.4.1） |
 | hn_front | Hacker News 首页 | Algolia API | 当天业界最热的事和讨论里的机会线索（0.4.1） |
@@ -27,7 +27,7 @@
 逐源状态写在 pool.json 的 sources 字段。单源 blocked 不致命；全部为空 collect.py 退 4，
 上层按「失败留痕」处理，不许静默结束。
 
-## 2026-10-20 实测不可达（云电脑，别再白搜）
+## 2026-10-20 实测不可达（无浏览器登录态服务端网络，别再白搜）
 
 - **Reddit JSON API**（reddit.com/*.json）：403 Blocked。只能用 RSS（.rss），且偶发 429，脚本里已加 1 秒间隔和逐 sub 容错。
 - **X/Twitter**：只有登录空壳，搜不到内容。思潮层改用 HN/Reddit/DEV/V2EX，X 信号靠通用搜拿二手转载，标 assumption。

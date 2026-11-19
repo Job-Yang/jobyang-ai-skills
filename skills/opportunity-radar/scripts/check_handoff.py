@@ -6,9 +6,11 @@
 本脚本让这类 drift 可被自动发现：
 
   每个包的 handoff.md 里出现的 opc_node 必须全部是本节点自己：
-    opportunity-radar    → 只能出现 opc_node: radar
+    opportunity-radar     → 只能出现 opc_node: radar
     opportunity-scorecard → 只能出现 opc_node: assess
-    product-brief       → 只能出现 opc_node: prd
+    product-brief         → 只能出现 opc_node: prd
+    style-compass         → 只能出现 opc_node: design
+    engineering-docs      → 只能出现 opc_node: technical
 
 用法：python3 scripts/check_handoff.py [skill_root ...]
 退出码：0=无 drift；1=发现 drift；2=参数/文件错误。
@@ -21,6 +23,8 @@ EXPECTED = {
     "opportunity-radar": "radar",
     "opportunity-scorecard": "assess",
     "product-brief": "prd",
+    "style-compass": "design",
+    "engineering-docs": "technical",
 }
 _NODE_LINE = re.compile(r"opc_node:\s*([a-z][a-z0-9_-]*)")
 

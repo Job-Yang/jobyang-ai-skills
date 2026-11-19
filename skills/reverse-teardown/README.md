@@ -28,7 +28,7 @@
 
 ## 它不抢谁的活
 
-讲透概念走 feynman-explainer；判断论证成不成立走批判性阅读；为产品想法找证据走 opportunity-radar；技术选型走 outside-view；拆完要写自己的新方案，交 product-brief / style-compass。它只负责「拆」这一段。
+讲透概念走 feynman-explainer；判断论证成不成立走 `argument-reading`；为产品想法找证据走 opportunity-radar；技术选型走 outside-view；拆完要写自己的新方案，交 product-brief / style-compass。它只负责「拆」这一段。
 
 ## 创建之后的两次调整
 

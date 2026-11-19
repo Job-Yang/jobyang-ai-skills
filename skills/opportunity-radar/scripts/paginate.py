@@ -77,6 +77,10 @@ def split_radar(input_path: Path, out_dir: Path, page_size: int) -> int:
     date = (created.group(1)[:10] if created else "unknown-date")
     producer = produced_by.group(1) if produced_by else "standalone"
 
+    if page_size <= 0:
+        print(json.dumps({"status": "rejected", "error": "--page-size 必须为正整数"},
+                         ensure_ascii=False), file=sys.stderr)
+        return 2
     preface, blocks = split_candidates(body)
     if not blocks:
         print(json.dumps({"status": "rejected", "error": "正文没有 ## 候选： 条目，无可分页"},
@@ -116,8 +120,13 @@ def merge_pages(manifest_path: Path, out: Path) -> int:
         print(json.dumps({"status": "rejected", "error": "manifest schema 不是 opc-radar-pages/v1"},
                          ensure_ascii=False), file=sys.stderr)
         return 2
+    pages_list = manifest.get("pages") or []
+    if not pages_list:
+        print(json.dumps({"status": "rejected", "error": "manifest.pages 为空，无可合并页"},
+                         ensure_ascii=False), file=sys.stderr)
+        return 2
     pages_text = [(manifest_path.parent / name).read_text(encoding="utf-8")
-                  for name in manifest["pages"]]
+                  for name in pages_list]
     # 合并：以第一页信封为准（去掉 part 行），正文 = 各页候选块依次拼接。
     m = re.match(r"\A(---[ \t]*\n)(.*?)(\n---[ \t]*\n?)(.*)\Z", pages_text[0], re.S)
     if not m:
@@ -126,8 +135,12 @@ def merge_pages(manifest_path: Path, out: Path) -> int:
         return 2
     fm_lines = [ln for ln in m.group(2).splitlines() if not ln.strip().startswith("part:")]
     bodies = []
-    for p in pages_text:
+    for idx, p in enumerate(pages_text, 1):
         mm = re.match(r"\A---[ \t]*\n.*?\n---[ \t]*(?:\n|\Z)(.*)\Z", p, re.S)
+        if not mm:
+            print(json.dumps({"status": "rejected", "error": f"第 {idx} 页不是合法信封"},
+                             ensure_ascii=False), file=sys.stderr)
+            return 2
         bodies.append(mm.group(1).strip())
     merged = m.group(1) + "\n".join(fm_lines) + m.group(3) + "\n\n" + "\n\n".join(bodies) + "\n"
     _, errors = validate_envelope(merged)

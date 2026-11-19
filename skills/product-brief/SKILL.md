@@ -5,7 +5,7 @@ description: "把一句需求或评分卡转成可验收的 PRD 与执行计划�
 
 # 产品需求与计划
 
-版本口径（2026-10-16 起）：信封 schema 版本 0.2.0，由冻结的 `scripts/artifact_io.py` seal 出，代表信封结构；本 kit（技能包）版本 0.3.1，见 CHANGELOG.md。过去本文档自称"版本 0.2.1"的写法已废弃，不再与信封版本混用。先读包内 `references/handoff.md`。本技能只写产品产物；不自动编码、不自动发布，也不替用户批准计划。
+版本口径（2026-10-16 起）：信封 schema 版本 0.2.0，由冻结的 `scripts/artifact_io.py` seal 出，代表信封结构；本 kit（技能包）版本 0.3.2，见 CHANGELOG.md。过去本文档自称"版本 0.2.1"的写法已废弃，不再与信封版本混用。先读包内 `references/handoff.md`。本技能只写产品产物；不自动编码、不自动发布，也不替用户批准计划。
 
 关于包内 `scripts/artifact_io.py` 和 `scripts/scoring-rules.json`：它们是 opc-envelope 0.2.0 的 vendored 公共副本（见 `scripts/vendor-manifest.json`），作用只是给本节点的 prd/plan 产物做信封校验、打包和导入。本节点**不执行评分**，不读 scoring-rules.json 的权重做计算；需要评分时用 opportunity-scorecard 包。
 
@@ -53,4 +53,4 @@ python3 scripts/artifact_io.py pack --input prd-example-product.md plan-example-
 
 本包自带 opc-envelope 0.2.0 公共文件副本（`scripts/artifact_io.py`、`scripts/scoring-rules.json`，见 `scripts/vendor-manifest.json`），本轮冻结不改内容。发布前跑 `python3 scripts/check_vendored.py` 自检；与其他流水线包并排时跑 `python3 scripts/check_vendored.py --drift <各技能根>` 确认无漂移，跑 `opportunity-radar/scripts/check_handoff.py <三包根>` 确认 handoff 示例 opc_node 无 drift。
 
-每日定时由宿主 cron/云电脑拉起本技能；本技能只管产出 prd/plan 与信封契约，不负责调度、不内置 token、不自动发布。
+按需由用户或编排器调用；本技能只管产出 `prd-<topic>.md` / `plan-<topic>.md` 与信封契约，不负责定时调度、不内置 token、不擅自变更审批状态或自动编码发布。

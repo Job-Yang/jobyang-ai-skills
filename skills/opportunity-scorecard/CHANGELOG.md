@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.3.2 — 2026-11-19
+
+- 修复：`scripts/score.py` 在显式传 `--out` / `--stdout` 且未传 `--producer` / `OPC_PRODUCED_BY` 时强制写入 `produced_by: "standalone"`（不再被环境中恰巧存在的 `ILOOP_DATA_ROOT` 污染）；`--out` 回执补充 `verdict` 与 `dark_horse`，与主机模式对齐。
+- 对齐：`references/scoring-method.md` 维度名统一为 `护城河`（移除括号后缀，抗吞噬说明移入判据列），清除 `docs/scoring-rubric.md` 与 `docs/node-specs.md` 失效外部文档引用，同步 SKILL / handoff / CHANGELOG 版本号为 0.3.2。
+- 加固：`tests/test_scorecard_regression.py` 改用 `tempfile.TemporaryDirectory` 并新增独立运行环境隔离测试。
+
 ## 0.3.1 — 2026-10-16
 
 - 新增：`scripts/score.py` 结果与卡片加"尺子置信度声明"——先验权重/档位/地基门/dark_horse 在 `method_caveats` 与卡片末尾显式标注 `statistical_significance: false`（非统计显著），composite 两位小数仅为交接复算对齐。防把先验尺子当成数据结论。

@@ -7,7 +7,7 @@ GitHub trending page), which the test suite uses for deterministic checks.
 Usage:
   python3 github_trending.py --range weekly --language typescript
   python3 github_trending.py --range weekly --html fixtures/trending_weekly.html
-  python3 github_trending.py --range weekly --json < trending.html
+  python3 github_trending.py --range weekly --stdin < trending.html
 
 Output: JSON on stdout:
   {"range":"weekly","fetched":true,"repos":[{"repo":...,"url":...,

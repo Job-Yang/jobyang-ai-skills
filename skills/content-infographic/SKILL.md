@@ -34,7 +34,7 @@ python3 scripts/doctor.py          # 渲染核心 / PNG 导出 / 文生图三级
 | 产物 | SVG（必）+ PNG（可选） | PNG |
 | 入口 | `scripts/render_infographic.py` | 原生图像工具 / MCP / `scripts/gen_image.py`（见 backends.md） |
 
-内容里有多个要排准确的中文标签、术语、数字或步骤，默认优先渲染器保证信息准确。**用户明确指定文生图、既有立体风格时，按指定方式生成，不静默改成工程流程图，也不为减少解释而删除主副标题、节点用途与关键关系。**先给完整的上屏文字清单，再检查真实图片；错字、虚构案例或错连线不得发布。当前已配置的 Ferry＋Codex 原生图像后端可由 `scripts/gen_image.py` 自动调用，见 `references/ferry-codex.md`。
+内容里有多个要排准确的中文标签、术语、数字或步骤，默认优先渲染器保证信息准确。**用户明确指定文生图、既有立体风格时，按指定方式生成，不静默改成工程流程图，也不为减少解释而删除主副标题、节点用途与关键关系。**先给完整的上屏文字清单，再检查真实图片；错字、虚构案例或错连线最多重试重新生成 2 次，仍不通过则停止调用并降级改用渲染器或减标签，不得带错发布。可选外部/本机 CLI 文生图适配器说明见 `references/backends.md`。
 
 ## 整条链路
 
@@ -50,7 +50,7 @@ python3 scripts/doctor.py          # 渲染核心 / PNG 导出 / 文生图三级
        ▼
 ⑤ 写一句"指图且点出图里具体东西"的过渡句；配插图包跑 check_linkage.py 对账  —— linkage.md
        ▼
-⑥ 按 锚定正文 → 过渡句 → 图 → 图注 排版；要进飞书经作者确认后 media-insert（写操作）
+⑥ 按 锚定正文 → 过渡句 → 图 → 图注 排版；要写入在线文档（如经 lark-doc 写入飞书）经作者确认后执行
 ```
 
 ## 快速上手（渲染器，最常用）
@@ -100,7 +100,7 @@ python3 scripts/doctor.py          # 渲染核心 / PNG 导出 / 文生图三级
 - **代码、API 签名、命令、公式、精确参数不入信息图**；要精确框线、可评审、可编辑的工程结构图/流程图/时序图走
   engineering-docs 的绘图桥接与专用能力兜底——那是“严谨”，本技能是“直观”，两者可成对但不互替。
 - **密度**：按关键节点出，不按章节凑。长文一般 3~6 张承载图 + 1 张封面封顶。
-- **插飞书是写操作**：默认先出图给作者确认，再 lark-doc 插入，原图不压缩。
+- **写入在线文档是写操作（如经 lark-doc 插入飞书）**：默认先出图给作者确认，再调用平台工具插入，原图不压缩。
 - **文生图闭环不了时不静默**：当前平台没有原生/MCP/HTTP 文生图能力时，明说缺什么、怎么补（见 backends.md
   缺口告知契约），并降级——渲染器图照常出、场景图改 `metaphor` 几何版或只交付提示词，主目标不塌。
 - 写正文交给写作技能（talk-smith / feynman / cuihuo 等）；本技能只在收尾可视化环节接手。
@@ -112,11 +112,12 @@ python3 scripts/doctor.py          # 渲染核心 / PNG 导出 / 文生图三级
 - `references/linkage.md` —— 图文一体：锚定正文、过渡句、图注，插图包格式（必守）。
 - `references/schema.md` —— 渲染器 JSON schema、六类布局字段、配色键、退出码。
 - `references/visual-style.md` —— 去品牌视觉语言、默认无吉祥物、中性向导与自定母版、封面。
-- `references/backends.md` —— 文生图三级后端、各平台现状（豆包/Claude Code/Codex/Trae）、3 步自接线口子。
+- `references/backends.md` —— 文生图三级后端、可选本地适配器（如 `references/ferry-codex.md`）、3 步自接线口子。
 - `scripts/render_infographic.py` —— 零三方依赖 SVG/PNG 渲染器（确定性后端）。
 - `scripts/check_linkage.py` —— 图文咬合对账器（术语/数字出处、过渡句、另起比喻）。
 - `scripts/gen_image.py` —— 跨平台文生图 HTTP/CLI 薄适配层（OpenAI 兼容 / 方舟 / generic / command）。
 - `scripts/doctor.py` —— 进场自检（渲染、PNG、文生图三级后端可用性）。
 - `scripts/fetch_image.py` —— 平台无关签名图 URL 下载（魔数校验，防下到错误页）。
+- `scripts/lark_image_replace.py` —— （可选平台辅助脚本）将本地确认图片锚定写入在线文档。
 - `examples/*.json` —— pipeline / columns / metaphor 样例。
 - `tests/` —— 对抗式回归（渲染、英文整词不劈断、图文对账判别、适配器构造与降级）。

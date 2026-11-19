@@ -129,14 +129,16 @@ def is_under_git(path: Path) -> bool:
         return False
 
 
-def find_pngs(root: Path, extra_exclude=frozenset()):
+def find_pngs(root: Path, extra_exclude=frozenset(), exclude_paths=None):
     """递归找出所有 .png。
     - .git 任意层级都跳过;
     - 构建产物名(build/Pods/...)只在 root 的顶层直接子目录命中时跳过;
-    - extra_exclude 里的名字(--exclude)在任意层级都跳过。
+    - extra_exclude 里的名字(--exclude)在任意层级都跳过;
+    - exclude_paths 里的绝对目录(如位于 root 内的 --output-dir)与指向外部的 symlink .png 跳过。
     """
     root = root.resolve()
     extra = frozenset(extra_exclude)
+    excl_resolved = {p.resolve() for p in (exclude_paths or ())}
     for dirpath, dirnames, filenames in os.walk(root):
         rel = Path(dirpath).resolve().relative_to(root)
         depth = len(rel.parts)  # root 自身=0, root 的直接子目录=1
@@ -149,11 +151,20 @@ def find_pngs(root: Path, extra_exclude=frozenset()):
             # dirpath 就是 root 时(depth 0), 它的直接子目录才是"顶层构建产物"
             if depth == 0 and d in TOP_EXCLUDE_DIRS:
                 continue
+            sub_path = Path(dirpath) / d
+            if sub_path.is_symlink() or sub_path.resolve() in excl_resolved:
+                continue
             keep.append(d)
         dirnames[:] = keep
         for fn in filenames:
             if fn.lower().endswith(".png"):
-                yield Path(dirpath) / fn
+                fp = Path(dirpath) / fn
+                if fp.is_symlink():
+                    try:
+                        fp.resolve().relative_to(root)
+                    except ValueError:
+                        continue
+                yield fp
 
 
 def apng_frame_count(path: Path) -> int:
@@ -465,7 +476,7 @@ def compress_one(png_path: Path, rel: Path, cache_hashes: set, error_hashes: set
                 new_hash = cur_hash  # dry-run 不改文件, 缓存不写实
 
             return {"status": "compressed", "path": png_path,
-                    "before": before, "after": after, "hash": new_hash}
+                    "before": before, "after": after, "hash": new_hash, "orig_hash": cur_hash}
     except Exception as e:  # noqa
         return {"status": "error", "path": png_path,
                 "before": 0, "after": 0, "hash": "",
@@ -480,17 +491,21 @@ def human(n):
     return f"{n:.1f}TB"
 
 
-def load_cache(cache_path: Path):
+def load_cache(cache_path: Path, allow_rename: bool = True):
     """读缓存。文件损坏(非法 JSON/合并冲突/磁盘截断)不崩:
-    警告一句、把坏文件改名 .bak 保留证据、按空缓存继续, 本轮结束后重建。"""
+    警告一句、非 dry-run 时把坏文件改名 .bak 保留证据、按空缓存继续, 本轮结束后重建。"""
     if not cache_path.exists():
         return set(), set()
     try:
-        data = json.loads(cache_path.read_text())
+        data = json.loads(cache_path.read_text(encoding="utf-8"))
         hashes = set(data.get("hashes", []))
         errors = set(data.get("errors", []))
         return hashes, errors
     except Exception as e:
+        if not allow_rename:
+            print(f"[WARN] 缓存文件 {cache_path} 损坏({e}), dry-run 保持原样按空缓存继续。",
+                  file=sys.stderr)
+            return set(), set()
         bak = cache_path.parent / (cache_path.name + ".bak")
         try:
             cache_path.replace(bak)
@@ -511,21 +526,30 @@ def run_pass(pngs, root, cache_hashes, error_hashes, retry_errors,
     new_hashes = set(cache_hashes)
     new_errors = set(error_hashes)
 
+    root_res = root.resolve()
     with concurrent.futures.ProcessPoolExecutor(max_workers=jobs) as ex:
-        futs = {ex.submit(compress_one, p, p.resolve().relative_to(root.resolve()),
-                          cache_hashes, error_hashes, retry_errors,
-                          dry_run, gate_cfg, outdir): p
-                for p in pngs}
+        futs = {}
+        for p in pngs:
+            try:
+                rel = p.relative_to(root_res)
+            except ValueError:
+                rel = p.resolve().relative_to(root_res)
+            futs[ex.submit(compress_one, p, rel,
+                           cache_hashes, error_hashes, retry_errors,
+                           dry_run, gate_cfg, outdir)] = p
         done = 0
         for fut in concurrent.futures.as_completed(futs):
             r = fut.result()
             done += 1
             st = r["status"]
+            orig_h = r.get("orig_hash") or r.get("hash")
             if st == "compressed":
                 n_comp += 1
                 tot_before += r["before"]
                 tot_after += r["after"]
                 new_hashes.add(r["hash"])
+                if orig_h:
+                    new_errors.discard(orig_h)
             elif st == "skip_cached":
                 n_skip += 1
             elif st == "skipped_error":
@@ -533,18 +557,26 @@ def run_pass(pngs, root, cache_hashes, error_hashes, retry_errors,
             elif st == "kept_original":
                 n_kept += 1
                 new_hashes.add(r["hash"])
+                if orig_h:
+                    new_errors.discard(orig_h)
             elif st == "kept_animated":
                 n_animated += 1
                 new_hashes.add(r["hash"])
+                if orig_h:
+                    new_errors.discard(orig_h)
             elif st == "kept_hard_gate":
                 n_hard_gate += 1
                 new_hashes.add(r["hash"])
+                if orig_h:
+                    new_errors.discard(orig_h)
                 if n_gate_logs < 50:
                     print(f"  [HARD-GATE] {r['path']}: {r.get('msg','')}")
                     n_gate_logs += 1
             elif st == "kept_quality_gate":
                 n_quality_gate += 1
                 new_hashes.add(r["hash"])
+                if orig_h:
+                    new_errors.discard(orig_h)
                 if n_gate_logs < 50:
                     print(f"  [QUALITY-GATE] {r['path']}: {r.get('msg','')}")
                     n_gate_logs += 1
@@ -615,14 +647,42 @@ def main():
             "注意: Linux 上没有 macOS sips 兜底, Pillow 缺失时硬门禁同样整体失效,\n"
             "      此时需要同时加 --no-hard-gate --no-quality-gate 才能跑通。"
         )
+    if gate_cfg["hard_gate"] and Image is None and shutil.which("sips") is None:
+        sys.exit(  # exit 1
+            "当前环境无 Python Pillow 且无 macOS sips, 硬门禁无法解码 PNG。\n"
+            "请安装 Pillow (python3 -m pip install Pillow), 或显式加 --no-hard-gate --no-quality-gate。"
+        )
 
-    outdir = Path(args.output_dir).expanduser().resolve() if args.output_dir else None
+    outdir_raw = Path(args.output_dir).expanduser().resolve() if args.output_dir else None
+    same_as_root = outdir_raw is not None and outdir_raw == root
+    outdir = None if same_as_root else outdir_raw
 
-    # 缓存位置: 原地模式在工程根; 副本模式在输出目录
+    # ---- 护栏: 非 git 工作树内的原地有损覆盖不可恢复, 默认拒绝 ----
+    # 若 --output-dir 指向 root 自身, 仍视为原地覆盖并走同一护栏
+    in_place = (not args.dry_run) and (outdir is None)
     cache_path = (outdir if outdir is not None else root) / CACHE_NAME
-    cache_hashes, error_hashes = load_cache(cache_path)
+    excl_paths = {outdir} if (outdir is not None and root in outdir.parents) else None
+    pngs = list(find_pngs(root, extra_exclude=frozenset(args.exclude), exclude_paths=excl_paths))
 
-    pngs = list(find_pngs(root, extra_exclude=frozenset(args.exclude)))
+    if in_place and not is_under_git(root) and not args.allow_non_git:
+        ro_hashes, ro_errors = load_cache(cache_path, allow_rename=False)
+        preview = run_pass(pngs, root, ro_hashes, ro_errors, args.retry_errors,
+                          dry_run=True, gate_cfg=gate_cfg, jobs=args.jobs, outdir=None)
+        same_note = "（注意：--output-dir 与目标目录相同，按原地覆盖处理）\n" if same_as_root else ""
+        print(
+            f"\n拒绝原地覆盖: 目标目录 {root} 不在 git 工作树内, "
+            f"有损重编码后原图不可恢复。\n{same_note}"
+            f"  已按 dry-run 预估: 本次将原地覆盖 {preview['n_comp']} 张, "
+            f"另有 {preview['n_err']} 张解码失败。\n"
+            f"  三选一:\n"
+            f"    ① 先 git 提交/备份工程, 再重跑(推荐, 可随时回退);\n"
+            f"    ② 加 --allow-non-git 显式确认你已接受不可恢复;\n"
+            f"    ③ 加 --output-dir DIR(不同于原目录), 把压缩产物写到副本目录, 原图零改动。",
+            file=sys.stderr,
+        )
+        sys.exit(1)  # 护栏拒绝 = 参数/策略错误, exit 1
+
+    cache_hashes, error_hashes = load_cache(cache_path, allow_rename=(not args.dry_run))
     mode_label = "DRY-RUN" if args.dry_run else (
         "副本输出(--output-dir)" if outdir is not None else "原地覆盖")
     print(f"扫描到 PNG: {len(pngs)} 张 | 缓存已记录: {len(cache_hashes)} 张 | "
@@ -634,24 +694,6 @@ def main():
     print(f"自检门禁: hard={'on' if gate_cfg['hard_gate'] else 'off'} | "
           f"quality={quality_state} | ssim={ssim_state}")
 
-    # ---- 护栏: 非 git 工作树内的原地有损覆盖不可恢复, 默认拒绝 ----
-    in_place = (not args.dry_run) and outdir is None
-    if in_place and not is_under_git(root) and not args.allow_non_git:
-        preview = run_pass(pngs, root, cache_hashes, error_hashes, args.retry_errors,
-                          dry_run=True, gate_cfg=gate_cfg, jobs=args.jobs, outdir=None)
-        print(
-            f"\n拒绝原地覆盖: 目标目录 {root} 不在 git 工作树内, "
-            f"有损重编码后原图不可恢复。\n"
-            f"  已按 dry-run 预估: 本次将原地覆盖 {preview['n_comp']} 张, "
-            f"另有 {preview['n_err']} 张解码失败。\n"
-            f"  三选一:\n"
-            f"    ① 先 git 提交/备份工程, 再重跑(推荐, 可随时回退);\n"
-            f"    ② 加 --allow-non-git 显式确认你已接受不可恢复;\n"
-            f"    ③ 加 --output-dir DIR, 把压缩产物写到副本目录, 原图零改动。",
-            file=sys.stderr,
-        )
-        sys.exit(1)  # 护栏拒绝 = 参数/策略错误, exit 1
-
     if not pngs:
         return
 
@@ -660,10 +702,11 @@ def main():
 
     # 写回缓存(dry-run 不写, 避免污染); 坏图 hash 持久化, 下次默认跳过
     if not args.dry_run:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
         cache_path.write_text(json.dumps(
             {"hashes": sorted(st["new_hashes"]),
              "errors": sorted(st["new_errors"])},
-            ensure_ascii=False))
+            ensure_ascii=False), encoding="utf-8")
 
     dt = st["dt"]
     saved = st["tot_before"] - st["tot_after"]

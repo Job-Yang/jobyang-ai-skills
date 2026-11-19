@@ -11,8 +11,10 @@
 跑法：python3 -m unittest discover -s tests -v
 """
 import json
+import os
 import subprocess
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -102,9 +104,9 @@ class ErrorEnvelopeTest(unittest.TestCase):
         """T1（进程层）：坏输入的 stderr 是与 artifact_io 同形的 JSON，exit 1。"""
         bad = _base_input()
         bad["dimensions"].pop()
-        tmp = ROOT / "tests" / "_tmp_bad_input.json"
-        tmp.write_text(json.dumps(bad, ensure_ascii=False), encoding="utf-8")
-        try:
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td) / "bad_input.json"
+            tmp.write_text(json.dumps(bad, ensure_ascii=False), encoding="utf-8")
             proc = subprocess.run(
                 [sys.executable, str(ROOT / "scripts" / "score.py"), "--input", str(tmp)],
                 capture_output=True, text=True)
@@ -113,8 +115,34 @@ class ErrorEnvelopeTest(unittest.TestCase):
             self.assertEqual("rejected", err["status"])
             self.assertIn("缺维度", err["error"])
             self.assertNotIn("Traceback", proc.stderr, "不许裸 traceback")
-        finally:
-            tmp.unlink()
+
+    def test_standalone_out_and_stdout_ignore_iloop_env(self):
+        """显式 --out / --stdout 即使在注入 ILOOP_DATA_ROOT 时也应保持 standalone 并对齐回执字段。"""
+        syn = ROOT / "examples" / "scoring.synthetic.json"
+        with tempfile.TemporaryDirectory() as td:
+            td = Path(td)
+            iloop_root = td / "iloop"
+            out_md = td / "assess-watch.md"
+            env = {k: v for k, v in os.environ.items() if k != "OPC_PRODUCED_BY"}
+            env["ILOOP_DATA_ROOT"] = str(iloop_root)
+            p_out = subprocess.run(
+                [sys.executable, str(ROOT / "scripts" / "score.py"),
+                 "--input", str(syn), "--out", str(out_md)],
+                capture_output=True, text=True, env=env)
+            self.assertEqual(0, p_out.returncode, p_out.stderr)
+            receipt = json.loads(p_out.stdout)
+            self.assertEqual("scored", receipt["status"])
+            self.assertEqual("validate", receipt["verdict"])
+            self.assertIs(receipt["dark_horse"], False)
+            self.assertIn('produced_by: "standalone"', out_md.read_text(encoding="utf-8"))
+            self.assertFalse(iloop_root.exists())
+
+            p_std = subprocess.run(
+                [sys.executable, str(ROOT / "scripts" / "score.py"),
+                 "--input", str(syn), "--stdout"],
+                capture_output=True, text=True, env=env)
+            self.assertEqual(0, p_std.returncode, p_std.stderr)
+            self.assertIn('produced_by: "standalone"', p_std.stdout)
 
 
 class ExamplesTest(unittest.TestCase):

@@ -78,13 +78,20 @@ def _first(item, paths, default=None):
 
 
 def _env(value):
-    """Replace '$VAR' / '${VAR}' markers with environment variables."""
+    """Replace '$VAR' / '${VAR}' markers inside strings with environment variables."""
     if isinstance(value, str):
-        m = re.fullmatch(r"\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?", value.strip())
-        if m:
-            return os.environ.get(m.group(1), "")
+        def _sub(m):
+            var = m.group(1)
+            val = os.environ.get(var, "")
+            if not val:
+                fail("环境变量未设置或为空: %s" % var)
+            return val
+        return re.sub(r"\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?", _sub, value)
     if isinstance(value, dict):
-        return {k: _env(v) for k, v in value.items()}
+        return {
+            k: (v if isinstance(k, str) and k.startswith("_") else _env(v))
+            for k, v in value.items()
+        }
     if isinstance(value, list):
         return [_env(v) for v in value]
     return value
@@ -184,13 +191,13 @@ def normalize_post(item, maps):
     st = _first(item, _candidates(stats_spec), {}) if stats_spec else {}
     if not isinstance(st, dict):
         st = {}
-    # stdin / no-map mode: accept the common metric containers from several
-    # vendors so host-read data normalizes without a profile.
-    for cand in ("statistics", "public_metrics", "metrics", "stats"):
-        v = _get_path(item, cand)
-        if isinstance(v, dict) and v:
-            st = v
-            break
+    # stdin / no-map mode: accept the common metric containers only when explicit stats gave nothing.
+    if not st:
+        for cand in ("statistics", "public_metrics", "metrics", "stats"):
+            v = _get_path(item, cand)
+            if isinstance(v, dict) and v:
+                st = v
+                break
 
     return {
         "id": str(post_id or ""),
@@ -244,9 +251,18 @@ def call_action(profile, action, query=None, handle=None, posts=None, count=20,
         fail("profile 缺少 action 配置: %s" % action)
     url = action_cfg["url"]
     method = (action_cfg.get("method") or "POST").upper()
-    # build body/query from the profile's parameter template
-    params = dict(action_cfg.get("params", {}))
-    for k, v in (
+    from urllib.parse import quote, urlencode
+
+    primary_val = next((x for x in (query, handle, posts) if x not in (None, "")), None)
+    has_url_tpl = "{value}" in url
+    if has_url_tpl:
+        if primary_val is None:
+            fail("action %s 的 URL 模板缺少输入参数" % action)
+        url = url.replace("{value}", quote(str(primary_val), safe=","))
+
+    raw_params = dict(action_cfg.get("params") or {})
+    body_tpl = action_cfg.get("body")
+    alias_pairs = (
         ("query", query), ("q", query), ("keyword", query),
         ("handle", handle), ("screen_name", handle), ("id", handle), ("username", handle),
         ("posts", posts), ("tweet_ids", posts), ("ids", posts),
@@ -254,20 +270,31 @@ def call_action(profile, action, query=None, handle=None, posts=None, count=20,
         ("after", after), ("published_after", after), ("since", after),
         ("before", before), ("published_before", before), ("until", before),
         ("search_type", search_type),
-    ):
-        if v is None or v == "":
-            continue
-        if k in params and "{value}" in str(params[k]):
-            params[k] = str(params[k]).replace("{value}", str(v))
-        elif k not in params:
+    )
+
+    if raw_params or has_url_tpl:
+        params = dict(raw_params)
+        for k, v in alias_pairs:
+            if k in params and v not in (None, ""):
+                if "{value}" in str(params[k]):
+                    params[k] = str(params[k]).replace("{value}", str(v))
+        params = {
+            k: v for k, v in params.items()
+            if v is not None and "{value}" not in str(v)
+        }
+    else:
+        params = {}
+        for k, v in alias_pairs:
+            if v is None or v == "":
+                continue
             params[k] = v
+
     headers = _env(profile.get("headers", {}))
     if method == "GET":
-        from urllib.parse import urlencode
-        url = url + ("&" if "?" in url else "?") + urlencode({k: v for k, v in params.items() if v is not None})
+        if params:
+            url = url + ("&" if "?" in url else "?") + urlencode(params)
         resp = http_json(method, url, headers, None, profile.get("timeout", 30))
     else:
-        body_tpl = action_cfg.get("body")
         if body_tpl:
             body = json.loads(json.dumps(body_tpl))
             for k, v in params.items():

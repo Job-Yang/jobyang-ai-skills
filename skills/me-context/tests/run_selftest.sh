@@ -77,9 +77,14 @@ awk 'BEGIN{c=0} /^---$/{c++; if(c<=2){next}} {print}' "$HERE/examples/profile/wo
 cp /tmp/work_nofm.md "$WORK/profile/work.md"
 expect_rc 1 $PY "$HERE/scripts/export.py" --data "$WORK" --out "$WORK/exports/d3.md"
 echo "$LAST" | grep -q "fail-closed" && ok "fail-closed 报错列出未分级" || bad "未报 fail-closed"
-echo "== 11b) --include-unclassified 后 rc=0 且产物标注含未分级 =="
+echo "== 11b) --include-unclassified 后 rc=0、产物含正文、且坏头 L4 仍被拦截 =="
 expect_rc 0 $PY "$HERE/scripts/export.py" --data "$WORK" --out "$WORK/exports/d4.md" --include-unclassified
 grep -q "含未分级内容" "$WORK/exports/d4.md" && ok "产物头部标注含未分级" || bad "未标注"
+grep -q "文件：profile/work.md（未分级）" "$WORK/exports/d4.md" && ok "未分级导出确含正文节段" || bad "未分级导出静默丢正文"
+printf -- "broken header\nlayer: L4\nL4_LEAK_TOKEN\n" > "$WORK/profile/bad_l4.md"
+expect_rc 0 $PY "$HERE/scripts/export.py" --data "$WORK" --out "$WORK/exports/d5.md" --include-unclassified
+grep -q "L4_LEAK_TOKEN" "$WORK/exports/d5.md" && bad "坏头 L4 在 include-unclassified 下泄露" || ok "坏头 L4 仍被拦截"
+rm -f "$WORK/profile/bad_l4.md"
 cp "$HERE/examples/profile/work.md" "$WORK/profile/work.md"
 
 echo "== 12) zip 默认：敏感串 0、无 private/、不含 L4 =="
@@ -493,22 +498,22 @@ rm -rf "$AVA"
 
 # [v12] 群组实体（夫妇/父母）网络节点显中文、绝不外露英文 slug；成员从「## 成员」解析
 GRP="$(mktemp -d)"; cp -R "$WORK/." "$GRP/"
-cat > "$GRP/entities/friends-liu-wu.md" <<'EOF'
+cat > "$GRP/entities/friends-chen-su.md" <<'EOF'
 ---
 schema: personal-context/v1
-entity: friends-liu-wu
+entity: friends-chen-su
 type: person
 circle: close
 layer: L2
 source: declared
 updated: 2026-10-20
 ---
-# 刘铭儇 & 吴雪婷 夫妇
+# 陈明 & 苏敏 夫妇
 ## 成员
-- **刘铭儇**（男）：吉利后端。
-- **吴雪婷**（女）：设计师。
+- **陈明**（男）：车企后端。
+- **苏敏**（女）：设计师。
 ## 关系
-- 老羊撮合的。
+- 同事介绍认识的。
 EOF
 cat > "$GRP/entities/parents-baoji.md" <<'EOF'
 ---
@@ -531,21 +536,21 @@ sys.path.insert(0, os.path.join(here, "scripts"))
 viz = importlib.import_module("viz")
 payload = viz.build_payload(grp, "local", {"L0","L1","L2","L3"}, False, True, "all")
 people = {p["id"]: p for p in payload["people"]}
-couple = people["friends-liu-wu"]
+couple = people["friends-chen-su"]
 assert couple["is_group"] is True, couple
-assert couple["members"] == ["刘铭儇", "吴雪婷"], couple["members"]
-assert couple["avatar"] == "刘吴", couple["avatar"]
-assert "刘" in couple["short"] and "夫妇" in couple["short"], couple["short"]
+assert couple["members"] == ["陈明", "苏敏"], couple["members"]
+assert couple["avatar"] == "陈苏", couple["avatar"]
+assert "陈" in couple["short"] and "夫妇" in couple["short"], couple["short"]
 assert "**" not in couple.get("summary", ""), couple.get("summary")  # 摘要不带裸 markdown
-assert not couple["summary"].startswith("刘铭儇"), couple["summary"]  # 摘要不重复成员首条
-assert "friends-liu-wu" not in couple["label"] and "friends-liu-wu" not in couple["realname"], couple
+assert not couple["summary"].startswith("陈明"), couple["summary"]  # 摘要不重复成员首条
+assert "friends-chen-su" not in couple["label"] and "friends-chen-su" not in couple["realname"], couple
 assert "（好友）" == couple["identity"], couple["identity"]
 parents = people["parents-baoji"]
 assert parents["is_group"] is True
 assert parents["identity"] == "", parents["identity"]  # 父母第二行不重复括弧
 assert "parents-baoji" not in (parents["label"] + parents["short"]), parents
 assert parents["short"] == "父母", parents["short"]
-# 「**刘铭儇**（男）：…」冒号前加粗是叙事句，必须按文本 {t}（交前端加粗），不能当字段 {k,v} 残留 **
+# 「**陈明**（男）：…」冒号前加粗是叙事句，必须按文本 {t}（交前端加粗），不能当字段 {k,v} 残留 **
 mem_zone = next(z for z in couple["zones"] if z["heading"] == "成员")
 assert all("k" not in it and "**" in it.get("t", "") for it in mem_zone["items"]), mem_zone
 print("OK group naming")
@@ -2025,6 +2030,13 @@ if command -v node >/dev/null 2>&1; then
 else
   echo "SKIP 图模型 Node 单元测：运行技能无需 Node，维护验收机需补测"
 fi
+# lint_relations：悬空 to: 边必须被拦截
+REL_BAD="$(mktemp -d)"; cp -R "$WORK/." "$REL_BAD/"
+printf -- "\n- from: me\n  type: knows\n  to: missing-entity-xyz\n" >> "$REL_BAD/relations.md"
+expect_rc 1 $PY "$HERE/scripts/lint.py" --data "$REL_BAD"
+echo "$LAST" | grep -q "missing-entity-xyz" && ok "lint_relations 检出悬空 to: 边" || bad "lint_relations 未检出悬空边"
+rm -rf "$REL_BAD"
+
 echo "================ 结果：PASS=$PASS FAIL=$FAIL ================"
 rm -rf "$WORK" "$TMP" /tmp/work_nofm.md /tmp/empty /tmp/n.zip
 [ "$FAIL" -eq 0 ] || exit 1

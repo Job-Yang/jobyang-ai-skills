@@ -35,7 +35,7 @@ GOOD_BODY = """# 好技能（合规夹具）
 ## 流程
 1. 读全文，按人/主题归并。
 2. 输出结论与待办。
-完整字段见 [整理手册](references/good-guide.md)；超长会议见 [长手册](references/long-guide.md)。
+完整字段见 [整理手册](references/good-guide.md)；句尾裸路径测试见 references/good-guide.md.；链接语法用 `[标题](url)`；超长会议见 [长手册](references/long-guide.md)。
 执行脚本见 [整理脚本](scripts/do_thing.py)。
 
 ## 收口自检
@@ -103,6 +103,16 @@ def build_bad(root):
     w(root, "orphan-file", "SKILL.md",
       skill_md("orphan-file", GOOD_DESC, "不适用：无。正文没引用任何资源。\n"))
     w(root, "orphan-file", "references/lonely.md", "我没被 SKILL.md 引用。\n")
+    w(root, "double--dash", "SKILL.md",
+      skill_md("double--dash", GOOD_DESC, "边界：不适用时不触发。\n"))
+    w(root, "claude-bind", "SKILL.md",
+      skill_md("claude-bind", GOOD_DESC, "不适用：无。安装到 ~/.claude/skills 目录。\n"))
+    w(root, "self-orphan", "SKILL.md",
+      skill_md("self-orphan", GOOD_DESC, "不适用：无。正文没提任何引用。\n"))
+    w(root, "self-orphan", "references/lone.md", "我只在自己 lone.md 里写了文件名。\n")
+    w(root, "ref-broken", "SKILL.md",
+      skill_md("ref-broken", GOOD_DESC, "不适用：无。见 [手册](references/guide.md)。\n"))
+    w(root, "ref-broken", "references/guide.md", "下一步见 [缺失参考](references/missing.md)。\n")
     w(root, "leaked-secret", "SKILL.md",
       skill_md("leaked-secret", GOOD_DESC,
                '不适用：无。\napi_key="AKIA1234567890ABCDEF" 见脚本。\n'))
@@ -140,13 +150,17 @@ def main():
 
         expect = {
             "bad-name": "F002",
+            "double--dash": "F002",
             "no-desc": "F008",
             "claude-thing": "F003",
             "broken-ref": "R001",
+            "ref-broken": "R001",
             "hard-bind": "P001",
+            "claude-bind": "P001",
             "too-long": "S001",
             "open-fence": "R002",
             "orphan-file": "S004",
+            "self-orphan": "S004",
             "leaked-secret": "S006",
         }
         for skill, need in expect.items():

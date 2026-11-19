@@ -114,6 +114,41 @@ t2i = {**GOOD, "figure": {"kind": "t2i",
 E, _, _ = cl.evaluate(t2i)
 check("t2i 引号文字对账通过", not E, str(E))
 
+# 9) replace 模式：图里保留 source 术语通过，kept+图都丢术语时 W5 告警
+rep_ok = {
+    **GOOD,
+    "mode": "replace",
+    "kept_text": "先看三阶段训练流程。",
+}
+E, W, _ = cl.evaluate(rep_ok)
+check("replace 模式保留图术语无必改", not E, str(E))
+rep_miss = {
+    **rep_ok,
+    "figure": {"kind": "renderer", "spec": {"layout": "columns", "title": "三阶段",
+        "data": {"columns": [
+            {"title": "预训练", "bullets": ["学会了大量世界知识"]},
+            {"title": "指令微调", "bullets": ["当输入是问题时"]},
+            {"title": "RLHF", "bullets": ["回答得让人满意"]}]}}},
+}
+_, W_miss, _ = cl.evaluate(rep_miss)
+check("replace 模式漏 Tokenizer/Instruction 术语触发 W5",
+      any(w["code"] == "W5" and "instruction" in w["text"].lower() for w in W_miss), str(W_miss))
+
+# 10) allow_new 对中文新比喻与数字同样生效
+an = {
+    "mode": "supplement",
+    "source_text": "缓存把热数据留在内存，请求不用每次回源查库。",
+    "allow_new": ["图书馆书车", "24小时"],
+    "bridge": "把缓存想成图书馆书车，流程如下图。",
+    "caption": "图书馆书车比喻",
+    "figure": {"kind": "renderer", "spec": {"layout": "columns", "title": "图书馆书车",
+        "data": {"columns": [
+            {"title": "图书馆书车", "bullets": ["缓存留在内存 24 小时"]},
+            {"title": "回源查库", "bullets": ["书车里没有再查库"]}]}}},
+}
+E_an, _, _ = cl.evaluate(an)
+check("allow_new 对中文与数字生效", not E_an, str(E_an))
+
 print()
 if fails:
     print(f"==== {len(fails)} 项失败：{fails}")

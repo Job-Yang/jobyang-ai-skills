@@ -17,7 +17,7 @@ function loadPlaywright() {
     const exe = p?.chromium?.executablePath?.();
     if (exe && fs.existsSync(exe)) return p;
   } catch {}
-  const home = process.env.HOME || '';
+  const home = process.env.HOME || process.env.USERPROFILE || '';
   const cache = path.join(home, '.npm', '_npx');
   if (home && fs.existsSync(cache)) {
     for (const dir of fs.readdirSync(cache).sort()) {
@@ -60,7 +60,10 @@ function parseArgs(argv) {
     else if (flag === '--desktop') args.desktop = parseViewport(argv[++i], args.desktop);
     else if (flag === '--mobile') args.mobile = parseViewport(argv[++i], args.mobile);
     else if (flag === '--click') args.click = argv[++i] || '';
-    else if (flag === '--wait') args.wait = Math.max(0, Number(argv[++i] || 550));
+    else if (flag === '--wait') {
+      const n = Number(argv[++i]);
+      args.wait = Number.isFinite(n) ? Math.max(0, n) : 550;
+    }
     else if (flag === '--no-mobile') args.noMobile = true;
     else if (flag === '--full-page') args.fullPage = true;
     else {

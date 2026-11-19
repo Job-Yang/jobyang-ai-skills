@@ -52,7 +52,7 @@ Codex / Cursor 等支持 Agent Skills（SKILL.md 形态，已被 30+ 平台采�
 
 ## 5. 与 Claude Code / Codex / Cursor 原生记忆对比（实测，截至 2026-10）
 
-> 事实来源：`_白皮书研究笔记/10_竞品实测与记忆理论.md`（官方文档 + 本机结构只读勘察）。不夸大。
+> 事实来源：基于官方文档与本机目录结构只读勘察整理，不夸大。
 
 | 维度 | Claude Code | Codex CLI（2026 实测） | Cursor | me-context |
 |---|---|---|---|---|

@@ -16,7 +16,7 @@
 
 技能不内置任何 token、文档链接和调度器。宿主参数缺失时不硬跑：sink 缺失就在任务输出里说明缺什么，不写到别的地方。怎么一键开启每日任务（含 query 模板）见 `daily-setup.md`。
 
-依赖：深挖环节调 `opportunity-scorecard`（十维评分）；结果文档是中文时，写前用 `haohao-shuohua` 的 `scripts/quick_scan.py` 过硬闸。脚本都在各技能自己的 `scripts/` 下，纯 Python 标准库，不安装任何东西。
+依赖：深挖环节调 `opportunity-scorecard`（十维评分）；结果文档是中文时，写前用 `haohao-shuohua/scripts/quick_scan.py` 过硬闸。脚本都在各技能自己的 `scripts/` 下，纯 Python 标准库，不安装任何东西。
 
 ## 每日漏斗
 

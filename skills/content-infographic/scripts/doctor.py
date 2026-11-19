@@ -137,8 +137,8 @@ def check_ferry_codex(ping=False):
     spec.loader.exec_module(module)
     backend = module.native_ferry()
     if not backend.available():
-        return {"name": "t2i_ferry_codex", "status": "warn",
-                "detail": "Ferry 原生 CLI 适配器未配置；见 references/ferry-codex.md"}
+        return {"name": "t2i_ferry_codex", "status": "skip",
+                "detail": "可选本地 CLI 适配器未启用（通用环境无需配置；如需本机接入见 references/backends.md）"}
     try:
         backend.isolated_config()
         if ping:
@@ -170,11 +170,11 @@ def main():
         print(json.dumps({"core_ok": core_ok, "checks": checks}, ensure_ascii=False, indent=2))
     else:
         print("content-infographic · 进场自检\n")
-        icon = {"pass": "✅", "fail": "❌", "warn": "⚠️ ", "needs_agent_check": "🔎"}
+        icon = {"pass": "✅", "fail": "❌", "warn": "⚠️ ", "skip": "⏭ ", "needs_agent_check": "🔎"}
         for c in checks:
             print(f"{icon.get(c['status'],'·')} {c['name']:14} {c['detail']}")
         print("\n核心（确定性出 SVG）：", "可用" if core_ok else "不可用")
-        print("文生图：依次看宿主原生/MCP、t2i_ferry_codex、t2i_http；任选其一，都没有就只用渲染器。")
+        print("文生图：依次看宿主原生/MCP 或 t2i_http；都没有就只用渲染器。")
     return 0 if core_ok else 1
 
 

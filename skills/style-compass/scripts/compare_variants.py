@@ -21,6 +21,7 @@ compare_variants.py — 把模型自由渲染的多个 HTML 变体,并排装订�
 """
 import argparse
 import glob
+import html
 import os
 
 
@@ -28,11 +29,12 @@ def build(items):
     """items: list of (label, abs_path)"""
     cols = []
     for label, path in items:
-        # 用 file:// 绝对路径塞进 iframe;截图时本地起 http server 也能用相对路径
-        src = os.path.basename(path)
+        # 用相对路径塞进 iframe;截图时本地起 http server 也能用相对路径
+        src = html.escape(os.path.basename(path), quote=True)
+        safe_label = html.escape(str(label))
         cols.append(f"""
     <div class="col">
-      <div class="col-label">{label}</div>
+      <div class="col-label">{safe_label}</div>
       <iframe class="frame" src="{src}" loading="lazy"></iframe>
     </div>""")
     joined = "\n".join(cols)

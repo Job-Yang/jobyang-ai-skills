@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """OPC 节点1·机会评估 —— 确定性打分与出卡。
 
-分工（对齐 docs/scoring-rubric.md 与 docs/node-specs.md）：
+分工（对齐 references/scoring-method.md 与 references/handoff.md）：
   - LLM 干语义活：判地基门、逐维取证给分、写非共识申辩，填进一份 scoring JSON。
   - 本脚本干确定性活：校验契约硬要求（10 维齐全、每维必挂证据、地基门）→
     算 综合分 = Σ(维度分×权重) ÷ 11.5 → 按阈值定 verdict → 判 dark_horse →
@@ -29,8 +29,8 @@ TOPIC_SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
 # 打分最小步长：证据驱动的判断只支持 0.5 一档，更小的小数是伪精确。
 SCORE_STEP = 0.5
 
-# 维度 → 权重，唯一事实源（对齐 scoring-rubric.md 的 10 维表）。
-# 名称用 node-specs 机器读取表里的写法，保证下游能对上。权重和 = 11.5，即综合分除数。
+# 维度 → 权重，唯一事实源（对齐 references/scoring-method.md 的 10 维表与 scoring-rules.json）。
+# 名称用下游机器读取表里的标准写法，保证跨包一致。权重和 = 11.5，即综合分除数。
 DIMENSIONS = [
     ("痛点强度", 1.0),
     ("离钱近", 1.5),
@@ -305,13 +305,21 @@ def main():
     except ValueError as e:
         return _rejected(str(e))
 
-    md = render(result, args.producer)
+    explicit_producer = args.producer or os.environ.get("OPC_PRODUCED_BY")
+    if not explicit_producer and (args.out or args.stdout):
+        explicit_producer = "standalone"
+    md = render(result, explicit_producer)
     if args.out:
         dest = Path(args.out).expanduser()
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(md, encoding="utf-8")
-        print(json.dumps({"status": "scored", "output": str(dest),
-                          "composite_score": result["composite_score"]}, ensure_ascii=False))
+        print(json.dumps({
+            "status": "scored",
+            "output": str(dest),
+            "composite_score": result["composite_score"],
+            "verdict": result["verdict"],
+            "dark_horse": result["dark_horse"],
+        }, ensure_ascii=False))
         return
 
     # 双模式：

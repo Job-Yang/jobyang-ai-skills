@@ -7,7 +7,7 @@ description: "为产品想法取证并评分，判断值不值得继续验证。
 
 先读包内 `references/handoff.md`。数值评分需要 Python 3.9+，无第三方依赖。独立调用不要求雷达文件，也不自动启动 PRD。
 
-版本口径（2026-10-16 起）：信封 schema 版本 0.2.0，由冻结的 `scripts/artifact_io.py` seal 出，代表信封结构；本 kit（技能包）版本 0.3.0，见 CHANGELOG.md。score.py 渲染卡片时信封写 0.2.0，不再用旧的 0.2.2——信封版本和 kit 版本不是一回事。
+版本口径（2026-10-16 起）：信封 schema 版本 0.2.0，由冻结的 `scripts/artifact_io.py` seal 出，代表信封结构；本 kit（技能包）版本 0.3.2，见 CHANGELOG.md。score.py 渲染卡片时信封写 0.2.0，不再用旧的 0.2.2——信封版本和 kit 版本不是一回事。
 
 ## 这个 kit 是什么
 
@@ -91,7 +91,7 @@ description: "为产品想法取证并评分，判断值不值得继续验证。
 bash "$ILOOP_HELPER" pattern opc.product-pipeline:score.py -- --input "$ILOOP_DATA_ROOT/analysis/opc.product-pipeline/_scoring-<topic>.json"
 ```
 
-**② 独立/别的 harness（Mira 等）**——把渲染好的卡打到 stdout，让那个环境自己存：
+**② 独立/别的宿主（云端或无本地工作区宿主等）**——把渲染好的卡打到 stdout，让那个环境自己存：
 ```bash
 python3 scripts/score.py --input _scoring-<topic>.json --stdout
 python3 scripts/score.py --input _scoring-<topic>.json --out assess-<topic>.md --producer mira

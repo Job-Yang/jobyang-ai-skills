@@ -5,10 +5,12 @@ video_frames.py — 把视频翻译成"带时间戳的关键帧 + 运动时间�
 本脚本不含任何业务逻辑(不懂"卡顿""面板""手势"),只做一件纯粹的事:
 用帧差(相邻帧像素差异)找出"哪几秒画面在动",据此智能抽帧。
 
-两个子命令:
-  scan  —— 粗扫全片(或某段):算运动时间线、折叠静止段、在有动作处稀疏抽帧。
-           先看时间线决定哪里有问题,再用 zoom 下钻。
-  zoom  —— 对指定区间高密度抽帧,看细节。
+四个子命令:
+  scan       —— 粗扫全片(或某段):算运动时间线、折叠静止段、在有动作处稀疏抽帧。
+                先看时间线决定哪里有问题,再用 zoom 下钻。
+  zoom       —— 对指定区间高密度抽帧,看细节。
+  grid       —— 均匀取 rows×cols 帧拼成九宫格大图,一次把握全片节奏。
+  transcribe —— (可选)语音转写:把音频转成带时间戳文字,需 ffmpeg + whisper。
 
 帧差用"分块"方式(把帧缩小成网格逐块比),对翻拍视频的轻微抖动更稳。
 帧不落盘到用户可见目录,只写临时目录供模型 Read 后即弃。
@@ -67,9 +69,47 @@ def _print_banner():
     print(f"  - user-site: {usersite}", file=sys.stderr, flush=True)
 
 
+cv2 = None
+np = None
+
+
+def _build_pip_install_cmd(pkgs, allow_break=True):
+    cmd = [sys.executable, "-m", "pip", "install"]
+    # venv 内传 --user 会失败
+    if sys.prefix == sys.base_prefix:
+        cmd.append("--user")
+    if allow_break:
+        cmd.append("--break-system-packages")
+    cmd.append("--quiet")
+    cmd.extend(pkgs)
+    return cmd
+
+
+def _run_pip_install(pkgs):
+    try:
+        subprocess.run(_build_pip_install_cmd(pkgs, allow_break=True), check=True)
+    except subprocess.CalledProcessError:
+        # 兼容旧版 pip (<23.0.1) 不识别 --break-system-packages
+        subprocess.run(_build_pip_install_cmd(pkgs, allow_break=False), check=True)
+
+
+def _require_cv2():
+    """延迟加载 cv2/numpy, 仅在 scan/zoom/grid 需要解帧时检查并导入。"""
+    global cv2, np
+    if cv2 is not None and np is not None:
+        return
+    _print_banner()
+    _ensure_deps()
+    import cv2 as _cv2
+    import numpy as _np
+    _cv2.setNumThreads(1)
+    cv2 = _cv2
+    np = _np
+
+
 def _ensure_deps():
     """依赖自检 + 自愈。
-    先尝试导入;缺了就自动 pip 装(--user --break-system-packages,不污染系统);
+    先尝试导入;缺了且 VIDEO_READER_YES_PIP=1 时按环境自动 pip 装;
     装不动就打印一句人话提示让用户手动装,然后退出,绝不抛一堆栈让人懵。
 
     关键:无论成败都先 _print_banner() 自报家门。因为最常见的坑不是"没装",
@@ -82,9 +122,6 @@ def _ensure_deps():
         "cv2": "opencv-python-headless",   # import 名 -> pip 包名
         "numpy": "numpy",
     }
-    # 用 find_spec 判断包是否可用,而不是真的 import_module 把模块执行进来:
-    # ① 依赖自检只关心"装没装/找不找得到",不需要执行模块副作用;
-    # ② 避免动态导入(import_module/__import__),模块来源更可控、静态可审计。
     missing = [(mod, pkg) for mod, pkg in required.items()
                if importlib.util.find_spec(mod) is None]
 
@@ -96,39 +133,39 @@ def _ensure_deps():
     # 未设 VIDEO_READER_YES_PIP=1 → 打印体量预告+手动命令, exit 3, 不动用户环境。
     if not _pip_allowed():
         exe, ver, _ = _interpreter_id()
+        manual = " ".join(_build_pip_install_cmd(pkgs, allow_break=True)).replace(" --quiet", "")
         print(
             f"[video-reader] 检测到缺少依赖: {', '.join(pkgs)}(opencv 约 90MB)。\n"
             "  为避免 Agent 静默修改用户 Python 环境, 未设放行变量前不执行安装。\n"
             f"  放行(本次允许自动装): {PIP_GATE_ENV}=1 python3 {sys.argv[0]} ...\n"
-            f"  或手动安装到当前解释器: {exe} -m pip install --user --break-system-packages {' '.join(pkgs)}",
+            f"  或手动安装到当前解释器: {manual}",
             file=sys.stderr, flush=True)
         sys.exit(3)
 
     print(f"[video-reader] 检测到缺少依赖: {', '.join(pkgs)},尝试用上面这个解释器自动安装…",
           file=sys.stderr, flush=True)
-    cmd = [sys.executable, "-m", "pip", "install",
-           "--user", "--break-system-packages", "--quiet"] + pkgs
     try:
-        subprocess.run(cmd, check=True)
+        _run_pip_install(pkgs)
     except Exception as e:
         exe, ver, _ = _interpreter_id()
+        manual = " ".join(_build_pip_install_cmd(pkgs, allow_break=True)).replace(" --quiet", "")
         print(
             f"\n[video-reader] 自动安装失败。当前跑脚本的解释器是: {exe} (Python {ver})\n"
             "  排查思路: 一台机器常有多个 python3(系统/homebrew/pyenv)。\n"
             "  ① 若依赖其实装在'别的' python 上,直接换那个解释器跑脚本即可,例如:\n"
             f"       /opt/homebrew/opt/python@{ver.rsplit('.', 1)[0]}/bin/python{ver.rsplit('.', 1)[0]} <本脚本> ...\n"
             "  ② 若确实没装,手动执行下面这条(注意开头就是当前这个解释器)后重试:\n"
-            f"       {exe} -m pip install --user --break-system-packages {' '.join(pkgs)}\n"
+            f"       {manual}\n"
             f"  (失败原因: {e})",
             file=sys.stderr, flush=True)
         sys.exit(3)
 
-    # 装完重新校验,确认真的能找到。先清 import 缓存,否则刚装的包 find_spec 可能看不到。
     importlib.invalidate_caches()
     still = [pkg for mod, pkg in missing
              if importlib.util.find_spec(mod) is None]
     if still:
         exe, ver, usersite = _interpreter_id()
+        manual = " ".join(_build_pip_install_cmd(still, allow_break=True)).replace(" --quiet", "")
         print(
             "\n[video-reader] 依赖已装但仍 import 不到——典型的'装在 A、跑在 B'解释器错配。\n"
             f"  当前解释器 : {exe} (Python {ver})\n"
@@ -136,20 +173,11 @@ def _ensure_deps():
             "  也就是说包大概率装到了'另一个 python'的目录里,当前这个看不见。\n"
             "  解法(任选一): \n"
             "    ① 找到真正装了包的那个 python,用它的绝对路径跑本脚本(最省事);\n"
-            f"    ② 或强制给当前解释器再装一遍: {exe} -m pip install --user --break-system-packages {' '.join(still)}\n"
+            f"    ② 或强制给当前解释器再装一遍: {manual}\n"
             "    ③ 最干净: 建个 venv 锁死解释器+包(python3.x -m venv .venv,再用 .venv/bin/python 跑)。",
             file=sys.stderr, flush=True)
         sys.exit(3)
     print("[video-reader] 依赖安装完成(已装到上面这个解释器)。", file=sys.stderr, flush=True)
-
-
-_print_banner()
-_ensure_deps()
-
-import cv2
-import numpy as np
-
-cv2.setNumThreads(1)
 
 
 def log(*a):
@@ -157,6 +185,7 @@ def log(*a):
 
 
 def open_video(path):
+    _require_cv2()
     cap = cv2.VideoCapture(path)
     if not cap.isOpened():
         log(f"ERROR: 无法打开视频: {path}")
@@ -339,19 +368,21 @@ def dump_debug(outdir, samples, thr, segs, extra=None):
     }
     if extra:
         data.update(extra)
-    with open(os.path.join(debug_dir, "motion_data.json"), "w") as f:
+    with open(os.path.join(debug_dir, "motion_data.json"), "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     # 2. 运动曲线可视化(看帧差曲线 + 阈值线 + 活动段底纹)
-    #    matplotlib 是 --debug 专用软依赖:缺了先尝试自动装,装不动再降级为只出 JSON。
+    #    matplotlib 是 --debug 专用软依赖: 仅当设了 VIDEO_READER_YES_PIP=1 才自动装, 否则跳过画图仅保留 JSON。
     if importlib.util.find_spec("matplotlib") is None:
-        log("  [debug] 未检测到 matplotlib,尝试自动安装(仅用于画曲线图)…")
-        try:
-            subprocess.run(
-                [sys.executable, "-m", "pip", "install",
-                 "--user", "--break-system-packages", "--quiet", "matplotlib"],
-                check=True)
-        except Exception as e:
-            log(f"  [debug] matplotlib 自动安装失败,跳过曲线图(不影响主流程): {e}")
+        if not _pip_allowed():
+            exe, _, _ = _interpreter_id()
+            manual = " ".join(_build_pip_install_cmd(["matplotlib"], allow_break=True)).replace(" --quiet", "")
+            log(f"  [debug] 未检测到 matplotlib，且未设 {PIP_GATE_ENV}=1，跳过安装与曲线图（不影响 motion_data.json）。手动安装：{manual}")
+        else:
+            log("  [debug] 未检测到 matplotlib,尝试自动安装(仅用于画曲线图)…")
+            try:
+                _run_pip_install(["matplotlib"])
+            except Exception as e:
+                log(f"  [debug] matplotlib 自动安装失败,跳过曲线图(不影响主流程): {e}")
     try:
         import matplotlib
         matplotlib.use("Agg")
@@ -393,7 +424,9 @@ def save_frame(cap, fps, t, outdir, quality, max_w):
         nh = int(h * max_w / w)
         frame = cv2.resize(frame, (max_w, nh), interpolation=cv2.INTER_AREA)
     fn = os.path.join(outdir, f"t{t:07.2f}s.jpg")
-    cv2.imwrite(fn, frame, [cv2.IMWRITE_JPEG_QUALITY, quality])
+    if not cv2.imwrite(fn, frame, [cv2.IMWRITE_JPEG_QUALITY, quality]):
+        log(f"  [WARN] 写帧失败: {fn}")
+        return None
     return fn
 
 
@@ -504,6 +537,7 @@ def cmd_transcribe(args):
       - 需要 openai-whisper(pip 包,会顺带拉 torch,较重,故设计成"用到才装")。
     任一缺失 → 打印安装方法 + 退出码 4(区别于硬错误),让上层据此决定降级。
     """
+    _print_banner()
     video = args.video
     if not os.path.exists(video):
         log(f"ERROR: 文件不存在: {video}")
@@ -521,22 +555,22 @@ def cmd_transcribe(args):
     if importlib.util.find_spec("whisper") is None:
         if not _pip_allowed():
             exe, ver, _ = _interpreter_id()
+            manual = " ".join(_build_pip_install_cmd(["openai-whisper"], allow_break=True)).replace(" --quiet", "")
             log("[transcribe] 未检测到 openai-whisper, 自动安装会顺带拉约 2GB 的 torch。\n"
                 "  为避免 Agent 静默装大包, 未设放行变量前不执行安装。\n"
                 f"  放行(本次允许自动装): {PIP_GATE_ENV}=1 python3 {sys.argv[0]} transcribe ...\n"
-                f"  或手动安装: {exe} -m pip install --user --break-system-packages openai-whisper\n"
+                f"  或手动安装: {manual}\n"
                 "  本次跳过语音转写。")
             sys.exit(4)
         log("[transcribe] 未检测到 openai-whisper,尝试按需安装(较大,含 torch)…")
         try:
-            subprocess.run([sys.executable, "-m", "pip", "install",
-                            "--user", "--break-system-packages", "--quiet",
-                            "openai-whisper"], check=True)
+            _run_pip_install(["openai-whisper"])
             importlib.invalidate_caches()
         except Exception as e:
             exe, ver, _ = _interpreter_id()
+            manual = " ".join(_build_pip_install_cmd(["openai-whisper"], allow_break=True)).replace(" --quiet", "")
             log(f"[transcribe] 自动安装 openai-whisper 失败。\n"
-                f"  手动装: {exe} -m pip install --user --break-system-packages openai-whisper\n"
+                f"  手动装: {manual}\n"
                 f"  (失败原因: {e})  本次跳过语音转写。")
             sys.exit(4)
     if importlib.util.find_spec("whisper") is None:
@@ -544,7 +578,8 @@ def cmd_transcribe(args):
         sys.exit(4)
 
     # 3) 抽音轨到临时 wav(16k 单声道,whisper 的标准输入)。无音轨则提示并跳过。
-    tmp_wav = tempfile.mktemp(suffix=".wav", prefix="vr_audio_")
+    fd, tmp_wav = tempfile.mkstemp(suffix=".wav", prefix="vr_audio_")
+    os.close(fd)
     rc = subprocess.run(
         ["ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
          "-i", video, "-vn", "-acodec", "pcm_s16le", "-ar", "16000", "-ac", "1", tmp_wav],
@@ -593,10 +628,15 @@ def cmd_transcribe(args):
 def cmd_zoom(args):
     cap, fps, total, duration, w, h = open_video(args.video)
     if args.start is None or args.end is None:
+        cap.release()
         log("ERROR: zoom 必须指定 --start 和 --end")
         sys.exit(2)
     t_start = max(0.0, args.start)
     t_end = min(args.end, duration if duration > 0 else args.end)
+    if t_end <= t_start:
+        cap.release()
+        log(f"ERROR: zoom 区间无效: start={t_start:.2f}s >= end={t_end:.2f}s")
+        sys.exit(2)
 
     log(f"视频: {args.video}  (fps {fps:.2f}, 时长 {duration:.2f}s)")
     log(f"  zoom 区间 {t_start:.2f}s - {t_end:.2f}s @ {args.density} fps")
@@ -681,7 +721,9 @@ def cmd_grid(args):
     os.makedirs(outdir, exist_ok=True)
     register_frame_dir_hint(outdir)
     grid_path = os.path.join(outdir, "grid.jpg")
-    cv2.imwrite(grid_path, grid_img, [cv2.IMWRITE_JPEG_QUALITY, args.quality])
+    if not cv2.imwrite(grid_path, grid_img, [cv2.IMWRITE_JPEG_QUALITY, args.quality]):
+        log(f"ERROR: 写入九宫格图像失败: {grid_path}")
+        sys.exit(2)
 
     result = {
         "mode": "grid",

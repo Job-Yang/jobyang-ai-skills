@@ -66,7 +66,15 @@ def export_md(data, layer_set, include_l4, include_unclassified, out_path):
         body, _note = C.consent_filtered_body(rel, body, cc)
         layer, meta, ok = C.file_layer(path)
         if not ok or layer is None:
+            if C.sniff_declared_l4(path):
+                if include_l4:
+                    exported.append((rel, "L4-坏头", body))
+                else:
+                    skipped_l4.append(rel + "（坏头但嗅出 layer:L4）")
+                return
             skipped_unclassified.append(rel)
+            if include_unclassified:
+                exported.append((rel, "未分级", body))
             return
         if layer == "L4":
             if include_l4:
@@ -149,7 +157,7 @@ def export_md(data, layer_set, include_l4, include_unclassified, out_path):
         body_out.append(f"\n\n<!-- 文件：{rel}（{layer}） -->\n\n{body.strip()}")
     body_out.append("\n\n</me-context-data>\n")
 
-    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
     with open(out_path, "w", encoding="utf-8") as f:
         f.write("".join(body_out))
     os.chmod(out_path, 0o600)  # 导出产物是档案原文，只给本人看；要发给谁由本人自己决定
@@ -178,7 +186,7 @@ def export_zip(data, out_path, include_private, include_unclassified, include_jo
     had_unclassified_skip=True 表示默认配置下有未分级/头部异常 md 被跳过（调用方据此给退出码 4）。
     过程层 journal/ 默认不进 zip；include_journal 才纳入（仍过 L4 与健康授权裁剪）。
     """
-    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
     if os.path.exists(out_path):
         os.remove(out_path)
     cc = C.parse_consent(data)  # zip 同样过本地健康授权门（与 md/gate 同一函数）
@@ -249,7 +257,7 @@ def export_zip(data, out_path, include_private, include_unclassified, include_jo
 
 def main():
     ap = argparse.ArgumentParser(description="导出 me-context 档案为可移植 md 或 zip 备份（fail-closed）。")
-    ap.add_argument("--data", required=True, help="数据仓路径")
+    ap.add_argument("--data", "--path", dest="data", default=None, help="数据仓路径（默认读 ME_CONTEXT_DATA 或 ~/me-context-data）")
     ap.add_argument("--format", choices=["md", "zip"], default="md", help="导出格式（默认 md）")
     ap.add_argument("--layers", help="md 导出层集合，逗号分隔（默认 L0,L1）")
     ap.add_argument("--all-layers", action="store_true", help="md 导出放开 L2/L3")
@@ -263,7 +271,7 @@ def main():
     ap.add_argument("--out", help="输出路径（默认 <数据仓>/exports/me-context-YYYYMMDD[-layers].md|zip）")
     args = ap.parse_args()
 
-    data = os.path.abspath(args.data)
+    data = C.resolve_data_dir(args.data)
     if not os.path.isdir(data):
         print(f"[错误] 数据仓不存在：{data}", file=sys.stderr)
         return 2
