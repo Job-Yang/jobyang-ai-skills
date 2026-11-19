@@ -51,7 +51,7 @@ description: 给好好说话（haohao-shuohua）做每日改写打分与 badcase
 - **召回文档**：在「每日迭代日志」里把「Dxx 你的判断：＿＿」填上有、没有或跳过，后面可以跟一句为什么；在「你的交代」里加一行就是一条作者说明，删掉一行就作废那一条。这些不用你执行命令，定时任务开跑时 `loop.py doc read` 自动读、自动记。
 - **会话里说一句**：照下表执行，执行完把命令输出原样告诉作者。命令都在本技能目录下跑。
 
-数据目录留不住的平台（比如 Mira），数据要先从状态文档接上才能执行下表的命令。所以不在定时任务里的时候，作者的回话只回一句「收到，下次开跑时处理」，别的不做；定时任务开轮前会处理（见 `references/daily-loop.md` 第零步）。
+数据目录留不住的平台（比如无本地持久目录的云端定时任务环境），数据要先从远程状态文档接上才能执行下表的命令。所以不在定时任务里的时候，作者的回话只回一句「收到，下次开跑时处理」，别的不做；定时任务开轮前会处理（见 `references/daily-loop.md` 第零步）。
 
 | 作者说 | 执行 |
 |---|---|
@@ -98,12 +98,12 @@ inbox.jsonl          作者回话的执行记录，日报据此列出当天记�
 metrics.jsonl        每天的改坏率、残留率、误改率
 releases/            每个版本的细则（v0000 起），预发布是 rc0001 起
 runs/<日期>/          当天的题、改写、检查、盲评队列、裁判答案、决策、日报，只留 14 天
-exports/             要写进飞书文档的内容：state-doc.xml、record-<日期>.xml
+exports/             要写进远程文档的导出内容：state-doc.xml、record-<日期>.xml
 ```
 
 细则发布在 `$XDG_DATA_HOME/haohao-shuohua/daily-learning.md`（没有 `XDG_DATA_HOME` 就是 `~/.local/share/haohao-shuohua/daily-learning.md`），`haohao-shuohua` 干活前会读它。
 
-本地文件留不住的平台（比如 Mira 定时任务），数据目录只当当天的工作区，跨天靠两篇飞书文档：
+本地文件留不住的平台（如无本地持久目录的云端定时任务环境），数据目录只当当天的工作区，跨天靠两篇远程状态文档与召回文档（如飞书云文档或同类在线文档）：
 
 - **状态文档**：除了 `runs/`、`exports/` 以外的数据目录全部内容，加上已发布的细则，按行存成 JSON，放在文档的代码块里，头一行记着第几份、多少行和 sha256。开头有一段「现在的情况」和「现用细则」给人看。`state load` 恢复时校验不过就停下；本地比文档新时不覆盖，覆盖前把原来的挪走备份。`state check` 核对写进去的跟本地是不是同一份。
 - **召回文档**：作者的文档，最后一节「每日迭代日志」由 `doc record` 每天追加一条，作者在这一节里填判断、写交代，`doc read` 读回来。
@@ -131,7 +131,7 @@ data/manual_edits.json          作者手改种子库；start --manual-seeds N �
 scripts/fit_weights.py、scripts/build_labels.py、data/archive/   历史离线工具，不进每日流程；fit_weights 需要 scipy（见 requirements-optional.txt）
 ```
 
-BadCase 母表：飞书多维表 `YClTbfJYHa8u6MsAI6IcoUZunle`，table `tblQwBoiuetAOo4T`（作者自己的表）。表里的 BadCase 默认当真实材料用，一天最多 3 条，行里的「人工评价」跟着题走、当判例；不想让召回读这张表，把 `config.json` 的 `sources.read_new_badcases` 改成 false。在别人机器上跑、不想把作者的表 ID 写进配置时，用环境变量 `HAOHAO_EVAL_BADCASE_BASE` / `HAOHAO_EVAL_BADCASE_TABLE` 指定；都没配置时 `loop start` 会提示「今天不从母表新增材料」，不影响当天流程。
+BadCase 母表（可选外部数据源，如在线多维表格）：通过 `config.json` 的 `sources.badcase_base` / `sources.badcase_table` 或环境变量 `HAOHAO_EVAL_BADCASE_BASE` / `HAOHAO_EVAL_BADCASE_TABLE` 指定，默认留空不硬绑定私人表 ID。配置后表里的 BadCase 默认当真实材料用，一天最多 3 条，行里的「人工评价」跟着题走、当判例；不想让召回读外部表，把 `config.json` 的 `sources.read_new_badcases` 改成 `false`。未配置表 ID 时 `loop start` 会提示「今天不从母表新增材料」，不影响当天流程。
 
 ---
 

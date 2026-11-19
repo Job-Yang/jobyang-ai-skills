@@ -635,6 +635,14 @@ class LoopTest(unittest.TestCase):
         run("--date", day(2), "start", "--force")
         self.assertEqual([i for i in loop.load_json(os.path.join(env.rd(day(2)), "items.json")) if i.get("manual_seed")], [])
 
+    def test_manual_seeds_respects_cli_count(self):
+        env = self.env
+        code, out = run("--date", day(0), "start", "--manual-seeds", "1")
+        self.assertEqual(code, 0, out)
+        self.assertIn("作者手改种子题 1 条", out)
+        items = [i for i in loop.load_json(os.path.join(env.rd(day(0)), "items.json")) if i.get("manual_seed")]
+        self.assertEqual(len(items), 1)
+
     def test_dead_manual_seed_findings_evicted(self):
         env = self.env
         date = day(0)

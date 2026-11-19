@@ -170,8 +170,11 @@ def cmd_start(args):
                                   "力度": snap.get("力度", "标准"), "原文": snap.get("原文", ""),
                                   "上下文": snap.get("上下文", ""), "事实": snap.get("事实", [])})
         manual_seed_n = 0
-        if getattr(args, "manual_seeds", False):
-            m_items = manual_seed_items(cfg["daily"].get("manual_seeds", 0), today)
+        raw_manual = getattr(args, "manual_seeds", 0)
+        if raw_manual:
+            n_manual = (raw_manual if isinstance(raw_manual, int) and not isinstance(raw_manual, bool)
+                        else cfg["daily"].get("manual_seeds", 0))
+            m_items = manual_seed_items(n_manual, today)
             manual_seed_n = len(m_items)
             items += m_items
         write_jsonl(os.path.join(rd, "calib", "queue.jsonl"), calib_q)

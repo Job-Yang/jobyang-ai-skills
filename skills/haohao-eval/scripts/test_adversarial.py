@@ -278,6 +278,56 @@ class AdversarialTest(unittest.TestCase):
         self.assertIn("scipy", text)
         self.assertNotIn("traceback", text)
 
+    def test_preflight_warnings_and_shuohua_dir(self):
+        from unittest import mock
+        import hh_eval.preflight as pf_mod
+
+        with mock.patch.object(pf_mod, "find_shuohua_dir", lambda cfg: ""):
+            code, out = run("preflight", "--json")
+        self.assertEqual(code, 0, out)
+        obj = json.loads(out)
+        self.assertTrue(any("没找到 haohao-shuohua" in w for w in obj["warnings"]), obj["warnings"])
+        self.assertFalse(any("没给文件" in w for w in obj["warnings"]), obj["warnings"])
+
+        fake_sd = os.path.join(self.env.tmp, "fake-shuohua")
+        os.makedirs(fake_sd, exist_ok=True)
+        with open(os.path.join(fake_sd, "SKILL.md"), "w", encoding="utf-8") as f:
+            f.write("---\nname: haohao-shuohua\n---\n")
+        code, out = run("preflight", "--shuohua-dir", fake_sd, "--json")
+        self.assertEqual(code, 0, out)
+        obj2 = json.loads(out)
+        sd_check = next(c for c in obj2["checks"] if c["name"] == "shuohua_dir")
+        self.assertTrue(sd_check["ok"])
+        self.assertFalse(any("没找到 haohao-shuohua" in w for w in obj2["warnings"]))
+
+    def test_unclosed_constitution_marker_stops(self):
+        import hh_eval.fp as fp_mod
+
+        bad_md = os.path.join(self.env.tmp, "unclosed-SKILL.md")
+        with open(bad_md, "w", encoding="utf-8") as f:
+            f.write("<!-- 底线条款:开始:01 -->\n未闭合内容\n")
+        with self.assertRaises(loop.Stop):
+            fp_mod.constitution_text(bad_md)
+
+    def test_score_residual_register_exempts_ceremonial_not_hard_errors(self):
+        import scorer
+
+        txt = "非常荣幸，衷心感谢各位！请您放心，祝您前程似锦。不是速度慢，而是思路错了。"
+        _, det_plain = scorer.score_residual(txt)
+        by_plain = {d["类别"]: d for d in det_plain}
+        self.assertGreater(by_plain["谄媚/寒暄"]["小计"], 0)
+        self.assertGreater(by_plain["四字成语堆"]["小计"], 0)
+        self.assertGreater(by_plain["B2不是X是Y/翻案体"]["小计"], 0)
+
+        _, det_reg = scorer.score_residual(txt, register="敬语")
+        by_reg = {d["类别"]: d for d in det_reg}
+        self.assertEqual(by_reg["谄媚/寒暄"]["小计"], 0)
+        self.assertTrue(by_reg["谄媚/寒暄"]["场合豁免"])
+        self.assertEqual(by_reg["四字成语堆"]["小计"], 0)
+        self.assertTrue(by_reg["四字成语堆"]["场合豁免"])
+        self.assertGreater(by_reg["B2不是X是Y/翻案体"]["小计"], 0)
+        self.assertFalse(by_reg["B2不是X是Y/翻案体"]["场合豁免"])
+
 
 def glob_any(pattern):
     import glob

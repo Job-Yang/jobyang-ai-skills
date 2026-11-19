@@ -132,7 +132,7 @@ def mechanical_check(item, output_text):
     half = re.findall(r"[\u4e00-\u9fff][,;:](?=[\u4e00-\u9fff])", body)
     if half:
         hints.append(f"中文里夹了半角标点 {len(half)} 处")
-    res, detail = scorer.score_residual(body)
+    res, detail = scorer.score_residual(body, register=item.get("场合") or item.get("文体"))
     for d in detail:
         if d["小计"] > 0 and "密度" not in d["类别"]:
             hints.append(f"正则提示·{d['类别']}：{' / '.join(d['样本'][:2])}")

@@ -84,18 +84,39 @@ BASE = 100
 # 被字句:1-2个正常,≥3个是滥用被动(AI偏好),阶梯扣
 RX_BEI = re.compile(r'被[一-鿿]')
 
-def score_residual(text, style=None):
+CEREMONIAL_RULES = {
+    "谄媚/寒暄", "段末拔高/口号", "强调副词堆", "文言公文腔",
+    "分号排比句", "四字成语堆", "排比连接词",
+}
+CEREMONIAL_REGISTERS = {"敬语", "官方对外", "要气势"}
+CEREMONIAL_GENRE_REGISTER = {
+    "培训": "官方对外", "培训材料": "官方对外",
+    "公关": "官方对外", "危机公关": "官方对外", "发布公告": "官方对外", "对外故障说明": "官方对外",
+    "招聘": "官方对外", "招聘文案": "官方对外", "活动宣传": "官方对外", "落地页": "官方对外", "产品落地页": "官方对外",
+    "感谢信": "敬语", "邀请函": "敬语", "客服回复": "敬语", "给客户的邮件": "敬语",
+    "致歉信": "敬语", "答复邮件": "敬语", "自我介绍": "敬语",
+    "内部信": "要气势", "年会致辞": "要气势", "开工寄语": "要气势", "团队口号": "要气势",
+    "slogan": "要气势", "项目启动动员": "要气势",
+}
+
+
+def score_residual(text, style=None, register=None):
     """style: 指定名家风格名(如 '鲁迅'/'王小波')时,豁免「疑似(maybe=True)」类的
     节奏信号扣分——破折号、三连、分号排比这些本就是名家的签名笔法,机器判不了
-    前后通不通,原本就只标「疑似,需人念」。**硬病(零容忍)永不豁免**:翻译腔、
-    翻案体「不是X是Y」这类,呼应 SKILL.md 软硬边界——风格只能盖「中性缺省口味」,
-    盖不了「硬病红线」。所以 style 只关掉 maybe 档的机器误伤,零容忍照扣。"""
+    前后通不通,原本就只标「疑似,需人念」。
+    register: 指定礼仪/宣传场合(敬语/官方对外/要气势，或对应 12 类特殊文体)时，
+    豁免官腔、敬语与排比气势等礼仪修辞规则。
+    **硬病(零容忍)永不豁免**:翻译腔、翻案体「不是X是Y」这类,呼应 SKILL.md
+    软硬边界——风格与场合都只能盖中性口味，盖不了「硬病红线」。"""
+    reg_key = register if register in CEREMONIAL_REGISTERS else CEREMONIAL_GENRE_REGISTER.get((register or "").strip(), "")
     total, detail = 0, []
     for name, rx, per, zero, maybe in RESIDUAL_RULES:
         n = len(rx.findall(text))
         if n:
-            # 风格签名豁免:声明名家风格时,只豁免「疑似」类节奏信号,零容忍硬病照扣
-            exempt = bool(style) and maybe and not zero
+            # 风格签名/特殊场合豁免:仅豁免对应非零容忍项,硬病红线照扣
+            style_exempt = bool(style) and maybe and not zero
+            reg_exempt = bool(reg_key) and (name in CEREMONIAL_RULES) and not zero
+            exempt = style_exempt or reg_exempt
             pen = 0 if exempt else n * per
             total += pen
             samples = []
@@ -105,7 +126,7 @@ def score_residual(text, style=None):
                 if len(samples) >= 3: break
             detail.append({"类别": name, "命中数": n, "小计": pen,
                            "零容忍": zero, "疑似": maybe, "样本": samples,
-                           "风格豁免": exempt})
+                           "风格豁免": style_exempt, "场合豁免": reg_exempt})
     # 被字句阶梯:≥3个才扣,每个4分
     nb = len(RX_BEI.findall(text))
     if nb >= 3:
@@ -115,8 +136,8 @@ def score_residual(text, style=None):
                        "零容忍": False, "疑似": False,
                        "样本": [m.group(0) for m in list(RX_BEI.finditer(text))[:3]]})
     # 密度惩罚:全文命中总数 >5,超出部分每处 +3(呼应"某段命中超5处整段重写"红线)
-    # 风格豁免掉的命中不计入密度(否则名家签名笔法会把密度顶穿,等于没豁免干净)
-    total_hits = sum(d["命中数"] for d in detail if not d.get("风格豁免"))
+    # 已豁免的命中不计入密度(否则名家签名笔法或礼仪套语会把密度顶穿,等于没豁免干净)
+    total_hits = sum(d["命中数"] for d in detail if not (d.get("风格豁免") or d.get("场合豁免")))
     if total_hits > 5:
         dens = (total_hits - 5) * 3
         total += dens
@@ -216,6 +237,7 @@ def main():
     ap.add_argument("--calibrate", help="[已废弃] 50 条自洽性校准,打印废弃提示不再出分")
     ap.add_argument("--labels")
     ap.add_argument("--style", help="声明名家风格(如 鲁迅/王小波),豁免疑似类节奏信号,硬病照扣")
+    ap.add_argument("--register", help="声明场合(如 敬语/官方对外/要气势,或对应特殊文体),豁免礼仪修辞项,硬病照扣")
     a = ap.parse_args()
 
     if a.calibrate:
@@ -225,11 +247,21 @@ def main():
         print(DEPRECATED_NOTICE); return 0
 
     txt = sys.stdin.read()
-    sc, det = score_residual(txt, style=a.style)
-    print(f"残留分 {sc}/100" + (f" (风格 {a.style} 疑似类豁免)" if a.style else ""))
+    sc, det = score_residual(txt, style=a.style, register=a.register)
+    tags = []
+    if a.style:
+        tags.append(f"风格 {a.style} 疑似类豁免")
+    if a.register:
+        tags.append(f"场合 {a.register} 礼仪修辞豁免")
+    print(f"残留分 {sc}/100" + (f" ({'；'.join(tags)})" if tags else ""))
     for d in det:
         tag = "‼零容忍" if d["零容忍"] else ("?疑似" if d["疑似"] else "·症状")
-        ex = " [风格豁免]" if d.get("风格豁免") else ""
+        ex_parts = []
+        if d.get("风格豁免"):
+            ex_parts.append("风格豁免")
+        if d.get("场合豁免"):
+            ex_parts.append("场合豁免")
+        ex = f" [{'/'.join(ex_parts)}]" if ex_parts else ""
         print(f"  [{tag}] {d['类别']}: {d['命中数']}处 = -{d['小计']}{ex}  例: {' / '.join(d['样本'])}")
 
 # ---------- 校准运行器【已废弃 · 只读死代码 · CLI 已不再调用】 ----------

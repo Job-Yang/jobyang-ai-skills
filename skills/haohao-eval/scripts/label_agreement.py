@@ -106,9 +106,9 @@ def main(argv=None):
     pairs_, cases, anns = pairs(rows)
 
     if args.disagreements:
-        a, b = anns[0], anns[1] if len(anns) >= 2 else (None, None)
         if len(anns) < 2:
             raise SystemExit("只有一个标注者，没有分歧可导出——先标第二遍")
+        a, b = anns[0], anns[1]
         with open(args.disagreements, "w", encoding="utf-8", newline="") as f:
             w = csv.writer(f)
             w.writerow(["case_id", f"{a}_f", f"{b}_f", "差几档", "以谁为准", "备注"])
@@ -122,12 +122,33 @@ def main(argv=None):
         print(f"导出 {n} 条 f 档分歧 → {args.disagreements}")
         return 0
 
+    def fmt(v):
+        return f"{v:>9.2f}" if v is not None else f"{'N/A':>9}"
+
+    if args.matrix:
+        if len(anns) < 2:
+            print("（只有一个标注者，暂无两两一致率矩阵）")
+            return 0
+        lookup = {}
+        for p in pairs_:
+            lookup[(p["a"], p["b"])] = p["raw_f"]
+            lookup[(p["b"], p["a"])] = p["raw_f"]
+        col = max(10, max(len(a) for a in anns) + 2)
+        print(f"{'':<{col}}" + "".join(f"{a:>{col}}" for a in anns))
+        for a in anns:
+            cells = []
+            for b in anns:
+                val = 1.0 if a == b else lookup.get((a, b))
+                cells.append(f"{val:>{col}.2f}" if val is not None else f"{'N/A':>{col}}")
+            print(f"{a:<{col}}" + "".join(cells))
+        return 0
+
     header = f"{'标注者对':<16}{'共同题':>5}{'f一致率':>9}{'f kappa':>9}{'l一致率':>9}"
     print(header)
     print("-" * len(header))
     for p in pairs_:
         tag = f"{p['a']}×{p['b']}"
-        print(f"{tag:<16}{p['n']:>5}{p['raw_f']:>9.2f}{p['kappa_f']:>9.2f}{(p['raw_l'] or 0):>9.2f}")
+        print(f"{tag:<16}{p['n']:>5}{fmt(p['raw_f'])}{fmt(p['kappa_f'])}{fmt(p['raw_l'])}")
     print()
     print("kappa 解读：<0.2 极差，0.2–0.4 一般，0.4–0.6 中等，0.6–0.8 高度，>0.8 几乎完美。")
     print("样本量提醒：共同题 n<20 时 kappa 抖动很大，先当粗看，别当结论。")

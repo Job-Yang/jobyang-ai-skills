@@ -217,7 +217,7 @@ def state_doc_xml(header, body, summary, rules):
         size += len(ln) + 1
     blocks.append(cur)
     x = [f"<title>{STATE_DOC_TITLE}</title>",
-         "<callout><p>这份文档是每日召回跨天的记忆，Mira 每天收尾时整篇重写。「现在的情况」和「现用细则」可以随时看；"
+         "<callout><p>这份文档是每日召回跨天的记忆，每日召回定时任务收尾时整篇重写。「现在的情况」和「现用细则」可以随时看；"
          "下面的机器状态别手改，改过就对不上，第二天会停下来等你处理。"
          f"要交代什么，写在召回文档「{SECTION_TITLE}」里的「{NOTES_TITLE}」，或者直接在任务对话里说。</p></callout>",
          "<h2>现在的情况</h2>", bullets(summary)]

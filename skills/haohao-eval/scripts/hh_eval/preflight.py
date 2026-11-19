@@ -44,6 +44,8 @@ def run_preflight(args):
         checks.append(_check("data_dir", False, str(e), blocking=True))
     # 4 被测技能（haohao-shuohua）在不在：找不到只是底线哈希跳过，不 block，但给人话提示
     cfg = load_config()
+    if getattr(args, "shuohua_dir", None):
+        cfg["shuohua_skill_dir"] = os.path.abspath(args.shuohua_dir)
     shuohua = find_shuohua_dir(cfg)
     checks.append(_check("shuohua_dir", bool(shuohua), shuohua or
                          "没找到 haohao-shuohua 技能目录：底线哈希先跳过，不影响当天流程；"
@@ -72,7 +74,7 @@ def run_preflight(args):
         checks.append(_check("recall_doc", None, "没给文件", blocking=False))
 
     blocked = [c["detail"] for c in checks if c["ok"] is False and c["blocking"]]
-    warnings = [c["detail"] for c in checks if c["ok"] is None and c["blocking"] is False]
+    warnings = [c["detail"] for c in checks if c["ok"] is False and not c["blocking"]]
     offline_ok = all(c["ok"] is not False for c in checks if c["blocking"] and c["name"] in
                      ("version", "skill_dir", "data_dir"))
     given = [c for c in checks if c["name"] in ("state_doc", "recall_doc") and c["ok"] is not None]

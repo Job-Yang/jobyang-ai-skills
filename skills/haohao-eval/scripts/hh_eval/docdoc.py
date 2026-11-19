@@ -154,7 +154,7 @@ def apply_doc_answers(cfg, st, sec, today, apply):
 def section_head(cfg):
     days = cfg["disputes"]["default_after_days"]
     return [f"<h1>{SECTION_TITLE}</h1>",
-            para("这一节由 Mira 的每日召回任务自动追加，每天一条，最新的在最下面。它只往这一节末尾加内容，文档前面的部分只读不改。"),
+            para("这一节由每日召回任务自动追加，每天一条，最新的在最下面。它只往这一节末尾加内容，文档前面的部分只读不改。"),
             para("你要做的只有两件事，都可以不做："),
             bullets([f"记录里有「待你判断」时，把「Dxx 你的判断：{BLANK}」的横线换成 有 / 没有 / 跳过，后面可以跟一句为什么。"
                      f"不填也行，{days} 天后按默认处理。",

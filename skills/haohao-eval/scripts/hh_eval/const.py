@@ -75,7 +75,7 @@ DEFAULTS = {
     "monitor": {"window_days": 7, "harm_rate_margin": 0.10, "min_days_after_release": 2, "min_harm_items": 3},
     "disputes": {"max_per_day": 3, "default_after_days": 3, "audit_weekday": 1, "audit_count": 3,
                  "auto_match_similarity": 0.75, "audit_miss_pause": 0.1, "audit_min_answered": 5},
-    "sources": {"badcase_base": "YClTbfJYHa8u6MsAI6IcoUZunle", "badcase_table": "tblQwBoiuetAOo4T",
+    "sources": {"badcase_base": "", "badcase_table": "",
                 "read_new_badcases": True},
     "retain": {"pool_days": 30, "snapshots_per_cluster": 8, "disputes_days": 30, "precedents_max": 300,
                "notes_dropped_days": 30, "inbox_days": 14, "metrics_days": 120, "regression_extra_max": 30,

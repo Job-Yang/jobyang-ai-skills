@@ -4,7 +4,7 @@ import glob
 import json
 import os
 
-from hh_eval.const import MARK_END, MARK_START
+from hh_eval.const import MARK_END, MARK_START, Stop
 from hh_eval.fs import file_sha, published_path, read_text, sha, skill_dir
 
 
@@ -17,7 +17,7 @@ def constitution_text(skill_md):
             break
         e = text.find(MARK_END, s)
         if e < 0:
-            break
+            raise Stop(f"{skill_md} 中的 {MARK_START} 缺少闭合标记 {MARK_END}，无法完整提取底线条款")
         parts.append(text[s:e])
         pos = e + len(MARK_END)
     return "\n".join(parts)
