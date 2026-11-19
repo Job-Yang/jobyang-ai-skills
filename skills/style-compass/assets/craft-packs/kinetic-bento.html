@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kinetic Bento · 光年多模态体验展厅</title>
+  <style>
+    :root {
+      --canvas: #F3F2ED;
+      --ink: #16171B;
+      --ink-muted: #555863;
+      --graphite: #14171D;
+      --graphite-2: #1E232C;
+      --forest: #0F4C3A;
+      --forest-ink: #ECFDF5;
+      --terracotta: #C85A32;
+      --white: #FFFFFF;
+      --warm-stone: #EAE8E0;
+      --border: rgba(22, 23, 27, 0.09);
+      --emerald: #10B981;
+      --sky: #38BDF8;
+      --amber: #F59E0B;
+      --font-sans: 'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+      --font-display: 'SF Pro Display', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --spring-snappy: linear(
+        0, 0.0677, 0.2181, 0.3941, 0.5621, 0.7053, 0.8177, 0.8999,
+        0.9559, 0.9912, 1.011, 1.02, 1.023, 1.021, 1.018, 1.014,
+        1.01, 1.007, 1.004, 1.002, 1
+      );
+      --spring-bouncy: linear(
+        0, 0.1029, 0.3304, 0.5864, 0.8104, 0.974, 1.072, 1.115,
+        1.118, 1.097, 1.067, 1.037, 1.013, 0.997, 0.9883, 0.9856,
+        0.9867, 0.9898, 0.9936, 0.9969, 1
+      );
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.56;
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+      letter-spacing: 0;
+      cursor: pointer;
+    }
+
+    button:focus-visible {
+      outline: 2px solid var(--terracotta);
+      outline-offset: 2px;
+    }
+
+    .container {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 20px 28px 28px;
+    }
+
+    .studio-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--graphite);
+      color: #FFFFFF;
+      display: grid;
+      place-items: center;
+    }
+
+    .brand-group strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .brand-group span {
+      display: block;
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .bar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bar-badge {
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--warm-stone);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .inspect-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 36px;
+      padding: 0 15px;
+      border-radius: 999px;
+      border: 0;
+      background: var(--graphite);
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 600;
+      transition: transform 150ms var(--ease-out), background-color 150ms var(--ease-out);
+    }
+
+    .inspect-btn:hover { background: #262B35; }
+    .inspect-btn:active { transform: scale(0.96); }
+
+    /* 12 列不对称高反差便当矩阵：外半径 24px / 内间距 12px => 子控件圆角 12px */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .bento-mod {
+      position: relative;
+      border-radius: 24px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      transition: transform 420ms var(--spring-snappy), box-shadow 220ms var(--ease-out);
+    }
+
+    .bento-mod:hover {
+      box-shadow: 0 18px 38px -18px rgba(22, 23, 27, 0.16);
+    }
+
+    /* 主模块 1：左 7 列 × 2 行 深石墨指针微光英雄台 */
+    .hero-mod {
+      grid-column: span 7;
+      grid-row: span 2;
+      background: var(--graphite);
+      color: #F4F5F7;
+      border-color: rgba(255, 255, 255, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 24px 48px -20px rgba(0, 0, 0, 0.35);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .hero-mod::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(320px circle at var(--mx, 68%) var(--my, 24%), rgba(56, 189, 248, 0.14), transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-top {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .cap-pills {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 4px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    .cap-pill {
+      height: 30px;
+      padding: 0 12px;
+      border-radius: 10px;
+      border: 0;
+      background: transparent;
+      color: #A1A9B8;
+      font-size: 12.5px;
+      font-weight: 500;
+      transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out);
+    }
+
+    .cap-pill[aria-selected="true"] {
+      background: #FFFFFF;
+      color: var(--graphite);
+      font-weight: 600;
+    }
+
+    .live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: #6EE7B7;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(16, 185, 129, 0.14);
+    }
+
+    @keyframes blur-replace-in {
+      from { opacity: 0; filter: blur(4px); transform: translateY(4px); }
+      to { opacity: 1; filter: blur(0); transform: translateY(0); }
+    }
+
+    .hero-body {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-body[data-entering="true"] {
+      animation: blur-replace-in 240ms var(--ease-out) both;
+    }
+
+    .hero-body h1 {
+      margin: 0 0 8px;
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.24;
+    }
+
+    .hero-body p {
+      margin: 0;
+      color: #A7B0C0;
+      font-size: 14px;
+      line-height: 1.66;
+      max-width: 560px;
+    }
+
+    .curve-stage {
+      position: relative;
+      z-index: 1;
+      border-radius: 14px;
+      padding: 14px 16px;
+      background: var(--graphite-2);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .curve-svg {
+      width: 240px;
+      height: 62px;
+      flex: none;
+    }
+
+    .hero-cta-row {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .accent-action {
+      height: 36px;
+      padding: 0 15px;
+      border-radius: 12px;
+      border: 0;
+      background: var(--terracotta);
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 600;
+      transition: transform 150ms var(--ease-out), opacity 150ms var(--ease-out);
+    }
+
+    .accent-action:active { transform: scale(0.96); }
+
+    /* 模块 2：右上 5 列 纯白反差数字指标卡 */
+    .kpi-mod {
+      grid-column: span 5;
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .kpi-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .kpi-num {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+      margin: 4px 0;
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .mini-bars {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      align-items: end;
+      gap: 5px;
+      height: 44px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    .mini-bars span {
+      border-radius: 4px;
+      background: rgba(15, 76, 58, 0.16);
+      transition: height 420ms var(--spring-snappy), background-color 220ms var(--ease-out);
+    }
+
+    .mini-bars span.hi {
+      background: var(--forest);
+    }
+
+    /* 模块 3：右中 3 列 深森绿物理弹簧开关卡 */
+    .forest-mod {
+      grid-column: span 3;
+      background: var(--forest);
+      color: var(--forest-ink);
+      border-color: rgba(255, 255, 255, 0.10);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .spring-switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 6px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      width: 100%;
+    }
+
+    .switch-track {
+      position: relative;
+      width: 58px;
+      height: 30px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 3px;
+      flex: none;
+      transition: background-color 220ms var(--ease-out);
+    }
+
+    .spring-switch[aria-pressed="true"] .switch-track {
+      background: #10B981;
+    }
+
+    .switch-knob {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: #FFFFFF;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.28);
+      transition: transform 560ms var(--spring-bouncy);
+    }
+
+    .spring-switch[aria-pressed="true"] .switch-knob {
+      transform: translateX(28px);
+    }
+
+    /* 模块 4：右中 2 列 陶土材质徽章 */
+    .terra-mod {
+      grid-column: span 2;
+      background: var(--terracotta);
+      color: #FFFFFF;
+      border-color: rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .terra-code {
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    /* 模块 5：左下 5 列 工艺基准列表 */
+    .spec-mod {
+      grid-column: span 5;
+      background: var(--warm-stone);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .spec-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 0;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .spec-row:first-of-type { border-top: 0; padding-top: 2px; }
+    .spec-row span { color: var(--ink-muted); font-family: var(--font-mono); font-size: 12px; }
+
+    /* 模块 6：右下 7 列 跑道实时速度对比 */
+    .race-mod {
+      grid-column: span 7;
+      background: var(--white);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .race-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .race-track {
+      position: relative;
+      height: 36px;
+      border-radius: 12px;
+      background: var(--canvas);
+      border: 1px solid var(--border);
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .race-puck {
+      position: relative;
+      z-index: 2;
+      height: 26px;
+      padding: 0 11px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      font-size: 11.5px;
+      font-weight: 600;
+      transform: translateX(0);
+    }
+
+    .race-puck.spring {
+      background: var(--graphite);
+      color: #FFFFFF;
+      transition: transform 560ms var(--spring-bouncy);
+    }
+
+    .race-puck.flat {
+      background: #9CA3AF;
+      color: #FFFFFF;
+      transition: transform 520ms ease-in;
+    }
+
+    .race-mod[data-run="true"] .race-puck {
+      transform: translateX(220px);
+    }
+
+    /* 聚焦参数模态框（非 scale(0) 起步，使用 scale(0.94) + blur） */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      background: rgba(20, 23, 29, 0.45);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms var(--ease-out);
+    }
+
+    .modal-backdrop[data-open="true"] {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .focus-modal {
+      width: min(500px, 100%);
+      border-radius: 24px;
+      padding: 22px;
+      background: var(--white);
+      border: 1px solid var(--border);
+      box-shadow: 0 28px 60px -16px rgba(0, 0, 0, 0.35);
+      transform: scale(0.94);
+      transition: transform 420ms var(--spring-snappy);
+    }
+
+    .modal-backdrop[data-open="true"] .focus-modal {
+      transform: scale(1);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 1040px) {
+      .hero-mod { grid-column: span 12; grid-row: auto; }
+      .kpi-mod { grid-column: span 12; }
+      .forest-mod { grid-column: span 7; }
+      .terra-mod { grid-column: span 5; }
+      .spec-mod { grid-column: span 12; }
+      .race-mod { grid-column: span 12; }
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 14px; }
+      .forest-mod, .terra-mod { grid-column: span 12; }
+      .cap-pills { width: 100%; justify-content: space-between; flex-wrap: nowrap; }
+      .cap-pill { padding: 0 8px; font-size: 11.5px; white-space: nowrap; }
+      .hero-body h1 { font-size: 24px; }
+      .curve-stage { flex-direction: column; align-items: flex-start; }
+      .race-mod[data-run="true"] .race-puck { transform: translateX(130px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="studio-bar">
+      <div class="brand-group">
+        <span class="brand-mark" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <rect x="3" y="3" width="8" height="10" rx="2"/><rect x="13" y="3" width="8" height="6" rx="2"/><rect x="13" y="11" width="8" height="10" rx="2"/><rect x="3" y="15" width="8" height="6" rx="2"/>
+          </svg>
+        </span>
+        <div>
+          <strong>光年体验引擎 · Kinetic Bento</strong>
+          <span>不对称便当展厅 × 原生 CSS linear() 物理弹簧</span>
+        </div>
+      </div>
+
+      <div class="bar-actions">
+        <span class="bar-badge">VARIANCE 8 · MOTION 8</span>
+        <button type="button" class="inspect-btn" data-action="open-modal">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/>
+          </svg>
+          <span>展开参数明细</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="bento-grid">
+      <!-- 1. 主舞台深石墨模块 -->
+      <section class="bento-mod hero-mod" data-role="hero-mod">
+        <div class="hero-top">
+          <div class="cap-pills" role="tablist" aria-label="核心体验基因">
+            <button type="button" class="cap-pill" role="tab" aria-selected="true" data-cap="0">物理弹簧动效</button>
+            <button type="button" class="cap-pill" role="tab" aria-selected="false" data-cap="1">液态光学材质</button>
+            <button type="button" class="cap-pill" role="tab" aria-selected="false" data-cap="2">空间反差构图</button>
+          </div>
+          <span class="live-pill">CSS linear() 实跑</span>
+        </div>
+
+        <div class="hero-body" data-role="hero-body">
+          <h1 data-role="hero-title">第一帧即响应，告别拖泥带水的塑料模板</h1>
+          <p data-role="hero-desc">把弹性微分方程采样为零 JS 负担的原生 CSS linear() 弹簧曲线；配合指针微光与 Blur-Replace 内容替换，每一处切屏都有真实的物理重量感。</p>
+        </div>
+
+        <div class="curve-stage">
+          <div>
+            <strong style="display:block;font-size:13.5px;margin-bottom:3px;" data-role="curve-name">曲线性格：Snappy（2.3% 微过冲收敛）</strong>
+            <span style="font-size:12px;color:#9CA3AF;" data-role="curve-meta">transform 420ms var(--spring-snappy) · opacity 180ms ease-out</span>
+          </div>
+          <svg class="curve-svg" viewBox="0 0 240 62" aria-hidden="true">
+            <line x1="0" y1="16" x2="240" y2="16" stroke="rgba(255,255,255,0.14)" stroke-dasharray="3 3"/>
+            <path data-role="curve-path" d="M 8 54 C 42 54, 66 8, 118 11 C 155 13, 185 17, 232 16" fill="none" stroke="#38BDF8" stroke-width="2.4" stroke-linecap="round"/>
+            <circle cx="118" cy="11" r="4" fill="#F59E0B"/>
+          </svg>
+        </div>
+
+        <div class="hero-cta-row">
+          <span style="font-size:12px;color:#9CA3AF;">移动鼠标体验深石墨表面跟随镜面微光</span>
+          <button type="button" class="accent-action" data-action="open-modal">查看等效原生规格</button>
+        </div>
+      </section>
+
+      <!-- 2. 右上数字反差 KPI -->
+      <section class="bento-mod kpi-mod">
+        <div class="kpi-pair">
+          <div>
+            <div class="kpi-label">稳定帧率</div>
+            <div class="kpi-num" data-role="kpi-fps">120fps</div>
+            <div class="kpi-label" style="color:var(--forest);font-weight:600;">零重排仅合成</div>
+          </div>
+          <div>
+            <div class="kpi-label">响应起手</div>
+            <div class="kpi-num" data-role="kpi-ms">16ms</div>
+            <div class="kpi-label" data-role="kpi-tag">禁用 ease-in 延迟</div>
+          </div>
+        </div>
+        <div class="mini-bars" aria-hidden="true">
+          <span style="height:40%;"></span><span style="height:56%;"></span><span style="height:72%;"></span><span style="height:64%;"></span>
+          <span style="height:88%;" class="hi"></span><span style="height:95%;" class="hi"></span><span style="height:80%;"></span><span style="height:92%;" class="hi"></span>
+          <span style="height:74%;"></span><span style="height:84%;"></span><span style="height:98%;" class="hi"></span><span style="height:90%;" class="hi"></span>
+        </div>
+      </section>
+
+      <!-- 3. 深森绿弹簧开关卡 -->
+      <section class="bento-mod forest-mod">
+        <div>
+          <strong style="display:block;font-size:15px;margin-bottom:4px;">弹性过冲调节</strong>
+          <span style="font-size:12px;opacity:0.84;" data-role="spring-note">当前：--spring-bouncy（11.8% 回弹）</span>
+        </div>
+        <button type="button" class="spring-switch" aria-pressed="true" data-action="toggle-spring" aria-label="切换弹簧过冲状态">
+          <span style="padding-left:10px;font-size:12.5px;font-weight:600;" data-role="spring-label">明快回弹</span>
+          <span class="switch-track"><span class="switch-knob" style="display:block;"></span></span>
+        </button>
+      </section>
+
+      <!-- 4. 陶土材质模块 -->
+      <section class="bento-mod terra-mod">
+        <span style="font-size:12px;opacity:0.88;">几何规则</span>
+        <div class="terra-code">R24 − P12<br>= R12</div>
+        <span style="font-size:11.5px;opacity:0.9;">同心圆角严格锁死</span>
+      </section>
+
+      <!-- 5. 左下规格清单 -->
+      <section class="bento-mod spec-mod">
+        <strong style="font-size:14.5px;">隐形工程细节清单</strong>
+        <div>
+          <div class="spec-row"><strong>频率铁律</strong><span>100+次/天 → 0ms 瞬切</span></div>
+          <div class="spec-row"><strong>分轨过渡</strong><span>transform 弹簧 / opacity 180ms</span></div>
+          <div class="spec-row"><strong>热区扩展</strong><span>::after 保底 40×40px</span></div>
+        </div>
+      </section>
+
+      <!-- 6. 右下可重播曲线对比跑道 -->
+      <section class="bento-mod race-mod" data-role="race-mod" data-run="false">
+        <div class="race-head">
+          <div>
+            <strong style="display:block;font-size:14.5px;">一秒看懂曲线差异</strong>
+            <span style="font-size:12px;color:var(--ink-muted);">上方为物理弹簧，下方为被禁用的拖沓 ease-in</span>
+          </div>
+          <button type="button" class="inspect-btn" style="height:32px;font-size:12px;" data-action="run-race">触发对比动画</button>
+        </div>
+        <div class="race-track"><span class="race-puck spring">物理弹簧 · 迅捷落位</span><span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);padding-right:8px;">linear()</span></div>
+        <div class="race-track"><span class="race-puck flat">传统 ease-in · 起手发黏</span><span style="font-family:var(--font-mono);font-size:11px;color:var(--ink-muted);padding-right:8px;">avoid</span></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 聚焦详情模态框 -->
+  <div class="modal-backdrop" data-role="modal-backdrop" data-open="false">
+    <section class="focus-modal" role="dialog" aria-modal="true" aria-label="等效原生与工程规格">
+      <div class="modal-head">
+        <strong style="font-size:17px;">光年体验引擎 · 原生等效映射</strong>
+        <button type="button" class="inspect-btn" style="height:30px;padding:0 12px;font-size:12px;" data-action="close-modal">关闭</button>
+      </div>
+      <p style="margin:0 0 12px;color:var(--ink-muted);font-size:13.5px;">本方案遵循 scale(0.94) 入场规则，并可直接一对一交付 Apple 原生工程落地：</p>
+      <div class="spec-row"><strong>便当表面材质</strong><span>.glassEffect() / 分层阴影</span></div>
+      <div class="spec-row"><strong>原生物理弹簧</strong><span>.spring(duration: 0.45, bounce: 0.22)</span></div>
+      <div class="spec-row"><strong>视图切换替换</strong><span>.transition(.blurReplace)</span></div>
+    </section>
+  </div>
+
+  <script>
+    const CAPS = [
+      {
+        title: '第一帧即响应，告别拖泥带水的塑料模板',
+        desc: '把弹性微分方程采样为零 JS 负担的原生 CSS linear() 弹簧曲线；配合指针微光与 Blur-Replace 内容替换，每一处切屏都有真实的物理重量感。',
+        curve: '曲线性格：Snappy（2.3% 微过冲收敛）',
+        meta: 'transform 420ms var(--spring-snappy) · opacity 180ms ease-out',
+        path: 'M 8 54 C 42 54, 66 8, 118 11 C 155 13, 185 17, 232 16',
+        fps: 120,
+        ms: 16,
+        tag: '禁用 ease-in 延迟'
+      },
+      {
+        title: '高饱和折射玻璃与实体内容的绝对分界',
+        desc: '严格遵守只在悬浮导航层用玻璃、绝不玻璃叠玻璃、同心圆角严格等于外半径减去内间距，杜绝发灰发脏。',
+        curve: '光学性格：135° Fresnel 镜面亮边',
+        meta: 'backdrop-filter: blur(22px) saturate(185%) · R24 / R12',
+        path: 'M 8 52 C 58 46, 98 18, 232 16',
+        fps: 120,
+        ms: 14,
+        tag: '同心圆角公式锁定'
+      },
+      {
+        title: '用五轴基因自由合成，永不陷入同构格子',
+        desc: '打破四宫格平均分配魔咒，让核心交互舞台占据视觉主导，次要面板按深石墨、深森绿与陶土材质自然分区。',
+        curve: '空间性格：VARIANCE 8 · 非对称 12 列',
+        meta: '7:5 黄金主舞台 + 3:2 材质徽章 + 底部行为对比区',
+        path: 'M 8 54 C 35 12, 95 28, 145 14 C 185 6, 210 16, 232 16',
+        fps: 90,
+        ms: 12,
+        tag: '破格不对称展厅'
+      }
+    ];
+
+    const heroBody = document.querySelector('[data-role="hero-body"]');
+    const kpiFps = document.querySelector('[data-role="kpi-fps"]');
+    const kpiMs = document.querySelector('[data-role="kpi-ms"]');
+
+    function countTo(el, from, to, suffix) {
+      const start = performance.now();
+      const dur = 320;
+      const step = (now) => {
+        const t = Math.min(1, (now - start) / dur);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = `${Math.round(from + (to - from) * eased)}${suffix}`;
+        if (t < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+
+    document.querySelectorAll('[data-cap]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.cap);
+        const item = CAPS[idx];
+        document.querySelectorAll('[data-cap]').forEach((b) => {
+          b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+        });
+        heroBody.dataset.entering = 'false';
+        void heroBody.offsetWidth;
+        heroBody.dataset.entering = 'true';
+        document.querySelector('[data-role="hero-title"]').textContent = item.title;
+        document.querySelector('[data-role="hero-desc"]').textContent = item.desc;
+        document.querySelector('[data-role="curve-name"]').textContent = item.curve;
+        document.querySelector('[data-role="curve-meta"]').textContent = item.meta;
+        document.querySelector('[data-role="curve-path"]').setAttribute('d', item.path);
+        document.querySelector('[data-role="kpi-tag"]').textContent = item.tag;
+        const curFps = parseInt(kpiFps.textContent, 10) || 120;
+        const curMs = parseInt(kpiMs.textContent, 10) || 16;
+        countTo(kpiFps, curFps, item.fps, 'fps');
+        countTo(kpiMs, curMs, item.ms, 'ms');
+      });
+    });
+
+    // 深森绿弹簧开关
+    document.querySelector('[data-action="toggle-spring"]').addEventListener('click', (e) => {
+      const btn = e.currentTarget;
+      const on = btn.getAttribute('aria-pressed') === 'true';
+      btn.setAttribute('aria-pressed', on ? 'false' : 'true');
+      document.querySelector('[data-role="spring-label"]').textContent = on ? '临界平滑' : '明快回弹';
+      document.querySelector('[data-role="spring-note"]').textContent = on
+        ? '当前：--spring-smooth（零过冲收敛）'
+        : '当前：--spring-bouncy（11.8% 回弹）';
+    });
+
+    // 跑道对比动画
+    document.querySelector('[data-action="run-race"]').addEventListener('click', () => {
+      const mod = document.querySelector('[data-role="race-mod"]');
+      mod.dataset.run = mod.dataset.run === 'true' ? 'false' : 'true';
+    });
+
+    // 聚焦模态框
+    const modal = document.querySelector('[data-role="modal-backdrop"]');
+    function toggleModal(open) {
+      modal.dataset.open = open ? 'true' : 'false';
+    }
+    document.querySelectorAll('[data-action="open-modal"]').forEach((b) => {
+      b.addEventListener('click', () => toggleModal(true));
+    });
+    document.querySelector('[data-action="close-modal"]').addEventListener('click', () => toggleModal(false));
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) toggleModal(false);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.dataset.open === 'true') toggleModal(false);
+    });
+
+    // 指针跟随微光
+    const heroMod = document.querySelector('[data-role="hero-mod"]');
+    heroMod.addEventListener('pointermove', (e) => {
+      const r = heroMod.getBoundingClientRect();
+      heroMod.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      heroMod.style.setProperty('--my', `${e.clientY - r.top}px`);
+    });
+  </script>
+</body>
+</html>

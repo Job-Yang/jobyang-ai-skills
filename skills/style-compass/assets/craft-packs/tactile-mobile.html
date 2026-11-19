@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tactile Mobile · 轻记账消费级体验</title>
+  <style>
+    :root {
+      --stage: #EAECEF;
+      --bg: #F6F7F9;
+      --surface: #FFFFFF;
+      --ink: #181B22;
+      --ink-muted: #5C6270;
+      --ink-faint: #8C92A0;
+      --coral: #E85D3F;
+      --coral-soft: #FCECE8;
+      --sage: #1E8E62;
+      --sage-soft: #E7F6EF;
+      --border: rgba(24, 27, 34, 0.08);
+      --font-sans: 'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+      --font-num: 'SF Pro Display', 'PingFang SC', sans-serif;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --spring: cubic-bezier(0.34, 1.35, 0.64, 1);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(232, 93, 63, 0.09), transparent 45%),
+        radial-gradient(circle at 80% 80%, rgba(30, 142, 98, 0.08), transparent 45%),
+        var(--stage);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+
+    button, input { font: inherit; color: inherit; letter-spacing: 0; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible { outline: 2px solid var(--coral); outline-offset: 2px; }
+
+    /* 桌面展示外台 + 移动端真机全屏兼容 */
+    .stage-shell {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 16px;
+      gap: 14px;
+    }
+
+    .stage-caption {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .phone-frame {
+      position: relative;
+      width: min(396px, 100%);
+      height: 812px;
+      max-height: calc(100vh - 76px);
+      background: var(--bg);
+      border-radius: 38px;
+      border: 6px solid #FFFFFF;
+      box-shadow:
+        0 1px 2px rgba(24, 27, 34, 0.08),
+        0 26px 60px -18px rgba(24, 27, 34, 0.24);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: phone-rise 420ms var(--ease) both;
+    }
+
+    @keyframes phone-rise {
+      from { opacity: 0; transform: translateY(12px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .phone-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 18px 98px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .top-greeting {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .top-greeting strong { font-size: 20px; font-weight: 700; display: block; }
+    .top-greeting span { font-size: 12px; color: var(--ink-muted); }
+
+    .month-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(24, 27, 34, 0.04);
+    }
+
+    /* 深色雕塑感预算主卡 */
+    .hero-card {
+      position: relative;
+      padding: 20px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 88% 18%, rgba(232, 93, 63, 0.34), transparent 52%),
+        linear-gradient(145deg, #1E2430, #251E24);
+      color: #F8FAFC;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        0 18px 34px -16px rgba(30, 36, 48, 0.55);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 92px;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .hero-label {
+      font-size: 12px;
+      color: rgba(248, 250, 252, 0.72);
+    }
+
+    .hero-balance {
+      margin: 4px 0 10px;
+      font-family: var(--font-num);
+      font-variant-numeric: tabular-nums;
+      font-size: 32px;
+      line-height: 1.15;
+      font-weight: 700;
+    }
+
+    .hero-sub {
+      display: flex;
+      gap: 14px;
+      font-size: 12px;
+      color: rgba(248, 250, 252, 0.78);
+    }
+
+    .ring-wrap {
+      position: relative;
+      width: 92px;
+      height: 92px;
+      display: grid;
+      place-items: center;
+    }
+
+    .ring-wrap svg { transform: rotate(-90deg); }
+
+    .ring-arc {
+      transition: stroke-dashoffset 480ms var(--ease);
+    }
+
+    .ring-center {
+      position: absolute;
+      text-align: center;
+      font-family: var(--font-num);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ring-center strong { display: block; font-size: 17px; font-weight: 700; line-height: 1.1; }
+    .ring-center span { font-size: 10px; color: rgba(248, 250, 252, 0.68); }
+
+    /* 分类胶囊条 */
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .cat-chip {
+      height: 32px;
+      padding: 0 13px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink-muted);
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: background-color 180ms var(--ease), color 180ms var(--ease), transform 140ms var(--spring);
+    }
+
+    .cat-chip:active { transform: scale(0.95); }
+    .cat-chip[aria-pressed="true"] {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    /* 账单分组卡片 */
+    .day-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-muted);
+      padding: 0 4px 6px;
+    }
+
+    .tx-group {
+      background: var(--surface);
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 16px -8px rgba(24, 27, 34, 0.08);
+      overflow: hidden;
+    }
+
+    .tx-row {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 15px;
+      border-bottom: 1px solid var(--border);
+      animation: row-in 260ms var(--ease) both;
+    }
+
+    .tx-row:last-child { border-bottom: 0; }
+
+    @keyframes row-in {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tx-ico {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: var(--coral-soft);
+      color: var(--coral);
+    }
+
+    .tx-ico.sage { background: var(--sage-soft); color: var(--sage); }
+    .tx-ico.slate { background: #EEF1F5; color: #475569; }
+
+    .tx-info strong { display: block; font-size: 14px; font-weight: 600; }
+    .tx-info span { display: block; font-size: 12px; color: var(--ink-faint); }
+
+    .tx-amt {
+      font-family: var(--font-num);
+      font-variant-numeric: tabular-nums;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    /* 底部毛玻璃悬浮 Dock */
+    .dock {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 14px;
+      height: 60px;
+      padding: 0 12px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 10px 30px rgba(24, 27, 34, 0.14);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+    }
+
+    .dock-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      border: 0;
+      background: transparent;
+      color: var(--ink-faint);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 12px;
+      transition: color 160ms var(--ease);
+    }
+
+    .dock-tab[aria-current="page"] { color: var(--ink); font-weight: 600; }
+
+    .fab-btn {
+      height: 44px;
+      padding: 0 18px;
+      border-radius: 16px;
+      border: 0;
+      background: var(--coral);
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 8px 18px -4px rgba(232, 93, 63, 0.55);
+      transition: transform 180ms var(--spring), background-color 160ms var(--ease);
+    }
+
+    .fab-btn:hover { background: #D94E30; }
+    .fab-btn:active { transform: scale(0.94); }
+
+    /* 底部滑出记账抽屉 */
+    .sheet-mask {
+      position: absolute;
+      inset: 0;
+      background: rgba(24, 27, 34, 0.34);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms var(--ease);
+      z-index: 20;
+    }
+
+    .sheet-mask[data-open="true"] { opacity: 1; pointer-events: auto; }
+
+    .bottom-sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--surface);
+      border-radius: 24px 24px 0 0;
+      padding: 18px 20px 26px;
+      box-shadow: 0 -12px 32px rgba(24, 27, 34, 0.16);
+      transform: translateY(104%);
+      transition: transform 280ms var(--spring);
+      z-index: 25;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .bottom-sheet[data-open="true"] { transform: translateY(0); }
+
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      border-radius: 999px;
+      background: #D6DBE2;
+      margin: 0 auto 2px;
+    }
+
+    .sheet-input {
+      width: 100%;
+      height: 44px;
+      padding: 0 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .submit-expense {
+      height: 44px;
+      border: 0;
+      border-radius: 13px;
+      background: var(--coral);
+      color: #FFF;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 520px) {
+      .stage-shell { padding: 0; justify-content: flex-start; }
+      .stage-caption { display: none; }
+      .phone-frame {
+        width: 100%;
+        height: 100vh;
+        max-height: none;
+        border-radius: 0;
+        border: 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage-shell">
+    <div class="stage-caption">
+      <span>灵动消费级 App 交互画框</span>
+      <span>·</span>
+      <span>点击底部「记一笔」体验弹层与环形进度联动</span>
+    </div>
+
+    <div class="phone-frame">
+      <main class="phone-scroll">
+        <header class="top-greeting">
+          <div>
+            <strong>十一月账本</strong>
+            <span>距离预算上限还充裕</span>
+          </div>
+          <span class="month-pill">2026 · 11月</span>
+        </header>
+
+        <section class="hero-card" aria-label="月度预算概览">
+          <div>
+            <div class="hero-label">本月剩余可用预算</div>
+            <div class="hero-balance" id="remainText">¥2,640</div>
+            <div class="hero-sub">
+              <span>已花 <strong id="spentText">¥3,360</strong></span>
+              <span>总额 ¥6,000</span>
+            </div>
+          </div>
+          <div class="ring-wrap">
+            <svg width="92" height="92" viewBox="0 0 92 92" aria-hidden="true">
+              <circle cx="46" cy="46" r="37" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="8"/>
+              <circle id="ringArc" class="ring-arc" cx="46" cy="46" r="37" fill="none" stroke="#E85D3F" stroke-width="8" stroke-linecap="round" stroke-dasharray="232.48" stroke-dashoffset="102.29"/>
+            </svg>
+            <div class="ring-center">
+              <strong id="pctText">56%</strong>
+              <span>已使用</span>
+            </div>
+          </div>
+        </section>
+
+        <div class="chip-row" role="group" aria-label="分类筛选">
+          <button type="button" class="cat-chip" data-cat="全部" aria-pressed="true">全部记录</button>
+          <button type="button" class="cat-chip" data-cat="餐饮" aria-pressed="false">餐饮美食</button>
+          <button type="button" class="cat-chip" data-cat="交通" aria-pressed="false">出行交通</button>
+          <button type="button" class="cat-chip" data-cat="订阅" aria-pressed="false">软件订阅</button>
+        </div>
+
+        <section aria-label="最近消费明细">
+          <div class="day-head"><span>今天 · 11月19日</span><span id="txCount">4 笔</span></div>
+          <div class="tx-group" id="txGroup"></div>
+        </section>
+      </main>
+
+      <nav class="dock" aria-label="底部功能栏">
+        <button type="button" class="dock-tab" aria-current="page">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <span>账本</span>
+        </button>
+        <button type="button" class="fab-btn" id="openSheetBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>记一笔</span>
+        </button>
+        <button type="button" class="dock-tab">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>统计</span>
+        </button>
+      </nav>
+
+      <div class="sheet-mask" id="sheetMask" data-open="false"></div>
+      <form class="bottom-sheet" id="expenseSheet" data-open="false" aria-label="新增支出">
+        <div class="sheet-handle"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong style="font-size:16px;">快速记一笔</strong>
+          <button type="button" id="closeSheetBtn" class="cat-chip" aria-pressed="false" style="height:28px;">取消</button>
+        </div>
+        <input type="text" class="sheet-input" id="expTitle" placeholder="消费项目（如：中午轻食沙拉）" value="精品手冲咖啡">
+        <input type="number" class="sheet-input" id="expAmt" placeholder="金额（元）" value="38" min="1" step="1">
+        <button type="submit" class="submit-expense">记入本月账单</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const BUDGET = 6000;
+    let spent = 3360;
+    let activeCat = '全部';
+    const RECORDS = [
+      { title: '公司园区午餐', sub: '餐饮 · 12:18', amt: 42, cat: '餐饮', tone: '' },
+      { title: '高德打车通勤', sub: '交通 · 09:04', amt: 29, cat: '交通', tone: 'sage' },
+      { title: '云存储月度续费', sub: '订阅 · 昨天 21:10', amt: 68, cat: '订阅', tone: 'slate' },
+      { title: '超市生鲜采购', sub: '餐饮 · 昨天 19:35', amt: 126, cat: '餐饮', tone: '' }
+    ];
+
+    function esc(s) {
+      return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function catSvg(cat) {
+      if (cat === '交通') {
+        return '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>';
+      }
+      if (cat === '订阅') {
+        return '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>';
+      }
+      return '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>';
+    }
+
+    function syncBudget() {
+      const remain = Math.max(0, BUDGET - spent);
+      const ratio = Math.min(1, spent / BUDGET);
+      document.getElementById('remainText').textContent = `¥${remain.toLocaleString('en-US')}`;
+      document.getElementById('spentText').textContent = `¥${spent.toLocaleString('en-US')}`;
+      document.getElementById('pctText').textContent = `${Math.round(ratio * 100)}%`;
+      const circ = 2 * Math.PI * 37;
+      document.getElementById('ringArc').setAttribute('stroke-dashoffset', (circ * (1 - ratio)).toFixed(2));
+    }
+
+    function renderRecords() {
+      const box = document.getElementById('txGroup');
+      const filtered = RECORDS.filter((r) => activeCat === '全部' || r.cat === activeCat);
+      document.getElementById('txCount').textContent = `${filtered.length} 笔`;
+      box.innerHTML = '';
+      filtered.forEach((r) => {
+        const el = document.createElement('div');
+        el.className = 'tx-row';
+        el.innerHTML = `
+          <div class="tx-ico ${esc(r.tone)}" aria-hidden="true">${catSvg(r.cat)}</div>
+          <div class="tx-info"><strong>${esc(r.title)}</strong><span>${esc(r.sub)}</span></div>
+          <div class="tx-amt">-¥${r.amt}</div>
+        `;
+        box.appendChild(el);
+      });
+    }
+
+    document.querySelectorAll('.cat-chip[data-cat]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeCat = btn.dataset.cat;
+        document.querySelectorAll('.cat-chip[data-cat]').forEach((b) => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+        renderRecords();
+      });
+    });
+
+    const sheet = document.getElementById('expenseSheet');
+    const mask = document.getElementById('sheetMask');
+    function openSheet() { sheet.dataset.open = 'true'; mask.dataset.open = 'true'; }
+    function closeSheet() { sheet.dataset.open = 'false'; mask.dataset.open = 'false'; }
+
+    document.getElementById('openSheetBtn').addEventListener('click', openSheet);
+    document.getElementById('closeSheetBtn').addEventListener('click', closeSheet);
+    mask.addEventListener('click', closeSheet);
+
+    sheet.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const title = document.getElementById('expTitle').value.trim() || '日常支出';
+      const amt = Math.max(1, Number(document.getElementById('expAmt').value || 25));
+      spent += amt;
+      RECORDS.unshift({ title, sub: '餐饮 · 刚刚', amt, cat: '餐饮', tone: '' });
+      syncBudget();
+      renderRecords();
+      closeSheet();
+    });
+
+    syncBudget();
+    renderRecords();
+  </script>
+</body>
+</html>

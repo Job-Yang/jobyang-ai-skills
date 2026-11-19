@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## 4.7.0 — 2026-11-19
+
+拓展多流派审美库、引入自由基因混搭引擎，并炼化业界顶尖动效与交互细节规范（完全保留 `4.6.0`、`4.5.0-candidate` 与既有 `full`/OPC 全套契约）：
+
+- **新增 4 套高风格反差工艺包（扩展至 9 套）**：新增 Apple 液态磨砂玻璃 `liquid-glass`（悬浮岛折射＋135° Fresnel 亮边＋严禁玻璃叠玻璃）、极光雾面双态工作台 `nordic-frost`（分离式圆角雾面侧栏＋深空雾暗/冰川浅雾切换＋Sonner 堆叠撤销）、精密触感工业 `tactile-hardware`（哑光阳极铝机身＋凹陷 OLED 示波窗＋3D 塌陷机械键帽）与灵动便当展厅 `kinetic-bento`（12 列高反差材质拼贴＋指针跟随微光）。
+- **自由工艺基因混搭引擎（`references/craft-genome.md`）**：打破“固定风格 9 选 1”限制，提出五条正交工艺轴（表面物理、空间构图、色温光氛、字形配对、动效性格）、三根创作旋钮（`VARIANCE / MOTION / DENSITY`）与跨案 Remix 协议，以及 Web 工艺到 Apple 原生 SwiftUI API 的映射表。
+- **业界顶尖动效与隐形交互工艺炼化（`references/motion-craft.md`）**：吸收 Emil Kowalski / animations.dev（频率分级、禁 `ease-in` 与 `scale(0)`、起源点缩放浮层、Blur-Replace 模糊桥接、景深堆叠 Toast）、Apple Fluid Interfaces（全程可打断、原生 `linear()` 三套物理弹簧与分轨过渡）、Jakub Krehel 与 Rauno Freiberg（同心圆角数学律、光学内边距、`40×40px` 热区扩展、10% 慢放验收法）。
+- **画廊升级（`scripts/build_gallery.py`）**：候选上限扩至 12 个以容纳多流派完整展廊，优化多标签横滑排版与同心圆角，补充 `--spring-snappy` 按压回弹与 `ArrowLeft / ArrowRight`、`1–9` 键盘快切。
+
+## 4.6.0 — 2026-11-19
+
+升级为高审美下限与物理动效驱动的 UI 生成引擎（兼容保留 `4.5.0-candidate` 与既有 `full`/OPC 全套契约）：
+
+- **5 套高定视觉工艺包（`assets/craft-packs/*.html` + `*.png` + `references/craft-packs.md`）**：内置精密暗色仪器 `obsidian-precision`、温润瓷感节奏 `porcelain-craft`、纸墨编辑专栏 `editorial-ink`、精密数据驾驶舱 `executive-telemetry` 与灵动消费端 `tactile-mobile`，将普通用户的日常意图直接翻译为带视觉锚点图、表面光影配方、强字阶反差、细线 SVG 图标和可点样本的起点。
+- **物理动效体系（`references/motion-craft.md`）**：补全 5 套流派缓动性格与 8 类微交互配方（首屏错峰、滑动分段胶囊、`0fr -> 1fr` 零回流手风琴、空间抽屉、按压反馈、SVG 对勾/圆环扫描、等宽滚动计数、即时撤销浮条），统一保留 `prefers-reduced-motion` 降级底线。
+- **高定直选路径 `explore` 与极简画廊（`scripts/build_gallery.py`）**：需求模糊或关键新品可跳过灰阶线框，直接用 2–3 个不同工艺包并行产出可点关键屏并装入单页切换/并排画廊直选，选定后再锁 tokens 扩全页；同时保留 `full` 正式四关工作台。
+- **独立双端截屏与审美自查（`scripts/capture_preview.mjs` + 六点审视清单）**：零额外依赖自动发现本机 Playwright Chromium，一键捕捉 1440×900 桌面图、390×844 移动图及点击交互态，测量横向溢出与控制台报错。
+- **放宽半透明物理光影误报（`scripts/lint_design.py` + `references/cjk-typography.md`）**：允许低彩度半透明阴影/顶部高光及基于已注册 token 色推导的半透明光晕通过 `TOKEN-COLOR` 检查；放开主标题与英雄指标 `700` 粗体字重，继续严守中文字体回退、正文字号行高与 `tabular-nums` 等宽底线。
+
 ## 4.5.0-candidate — 2026-11-07
 
 本候选只升级提交给既有评审链路的视觉与交互方法；4.4 quick 分流、full／OPC 阶段契约、固定工作台、服务器、runtime、vendored 脚本和用户批准边界均未改变。

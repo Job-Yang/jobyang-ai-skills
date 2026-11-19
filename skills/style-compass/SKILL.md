@@ -1,34 +1,35 @@
 ---
 name: "style-compass"
-description: "把已有 PRD 或一句需求做成可交互 UI 原型、设计 tokens 与开发规格。做产品界面设计、视觉方向选择、页面加改版、现有页面评审（如「帮我把这个页面做个可点原型」）时用；基础单页、简单组件和明确需求默认快速交付，复杂流程与正式评审走完整流程。纯落地页和通用出图不走这里，也不做需求发现。可独立使用；明确进入 OPC 时服从其输入、审批和编排。"
+description: "把已有 PRD 或一句需求做成高质感、带动效的可交互 UI 原型、设计 tokens 与开发规格。做产品界面设计、视觉方向选择、页面加改版、现有页面评审（如「帮我把这个页面做个可点原型」「先出几套高级风格给我选」）时用；基础单页与明确需求默认直出高定可点版，说不清风格或重要新品走轻量多方案盲选，复杂跨角色规范与 OPC 走完整评审。纯落地页和通用出图不走这里，也不做需求发现。可独立使用；明确进入 OPC 时服从其输入、审批和编排。"
 ---
 
-# 设计罗盘 · UI/UX 设计节点
+# 设计罗盘 · UI/UX 审美与动效引擎
 
-给有代码能力、缺设计经验的人做产品界面：按任务风险选择 quick、audit 或 full，不让基础 UI 被完整评审流程拖住，也不把高风险流程误判成“小页面”。
+给有代码能力或不懂专业审美术语的人做产品界面：把“高级感、好看一点”先编译成具体的视觉工艺包与动效手感，默认直接做出高完成度可点网页；需要对齐品味时直接出 2–3 套高定样板让用户点选，不靠枯燥问卷和丑灰阶线框锁死创意。
 
-- **quick 输出**：完整可交互 prototype 代码＋实际使用的 tokens＋简短使用说明与假设。
+- **quick / explore 输出**：高定可交互 HTML prototype（内置细线 SVG 图标与物理动效）＋实际使用的 tokens＋必要说明与假设（`explore` 额外附带轻量对比画廊 `gallery.html`）。
 - **full 输出**：`prototype/`＋`design-spec-<topic>.md`＋设计档案（`DESIGN.md`、`design/tokens.json`，见 `references/design-archive.md`）。
-- 脚本只依赖 Python 3.9+ 标准库；视觉验收需要宿主浏览器，缺少时明确标注“未视觉验收”。
+- 脚本只依赖 Python 3.9+ 标准库；视觉验收通过 `scripts/capture_preview.mjs` 驱动宿主 Chromium 完成，缺少时明确标注“未视觉验收”。
 - 明确作为 OPC 设计节点（`.design`）运行时一律走 full，契约、门禁和输出目录服从适配器，不重开问诊；交接见 `references/handoff.md`。
 
 ## 入场先选路径
 
 | 路径 | 何时选择 | 核心方法 |
 |---|---|---|
-| `quick`（默认） | 基础单页、简单组件、需求已明确，或用户说“直接做一版” | 合并结构、交互和视觉，一次做成并批量验证；读 `references/quick-ui.md` |
-| `audit` | 任务只是评审现有页面 | 读 `references/audit-guide.md`；若随后要产出改版，再按风险进入 quick 或 full |
-| `full` | 多页面跨角色复杂流程、新设计系统、用户明确要完整评审，或 OPC | 保留四关、固定工作台、阶段契约和正式交付 |
+| `quick`（默认） | 基础单页、简单组件、需求已明确，或用户说“直接做一版” | 读取 `references/craft-packs.md` 与 `references/craft-genome.md`（9 套视觉锚点＋五轴自由混搭基因）配合 `references/motion-craft.md`，直出高定可点页并实测截屏挑刺；读 `references/quick-ui.md` |
+| `explore`（高定直选） | 用户说不清风格，或新产品重要首屏想看不同气质挑定方向（无需重量级线框评审） | 跳过问卷与灰阶线框，拉开正交轴挑 2–4 套迥异流派或混搭配方（液态玻璃/双态雾面/触感硬件/便当展厅等）并行做可点关键屏，用 `scripts/build_gallery.py` 装进画廊直选；支持选中后一句 Remix 并锁定 tokens 扩全页 |
+| `audit` | 任务只是评审现有页面 | 读 `references/audit-guide.md`；若随后要产出改版，再按复杂度进入 quick 或 full |
+| `full` | 多页面跨角色复杂流程、新设计系统、用户明确要完整评审，或 OPC | 保留四关、固定工作台、阶段契约和正式交付；第 3 关视觉突破直接挂载工艺包＋自由基因轴，不为填线框外壳牺牲表现力 |
 
-已有品牌、已确认行为和上游约束在三条路径都继承。不要只按页数分流：单页若要定义支付规则、改变权限模型、设计不可逆写入、跨角色交接或复杂异常恢复，也应走 full；仅展示现有规则或无外部副作用的本地演示，不因出现这些词自动升档。只有真实业务歧义会改变任务或验收时才追问；内容充分时直接做。
+已有品牌、已确认行为和上游约束在全部路径都继承。不要只按页数分流：单页若要定义支付规则、改变权限模型、设计不可逆写入、跨角色交接或复杂异常恢复，也应走 full；仅展示现有规则或无外部副作用的本地演示，不因出现这些词自动升档。只有真实业务歧义会改变任务或验收时才追问；内容充分时直接做。
 
-## quick：直接做成
+## quick / explore：高质感直出与画廊直选
 
-1. 读取 `references/quick-ui.md`、`references/design-kernel.md`、`references/interaction-craft.md`、`references/visual-craft.md` 和 `references/cjk-typography.md`。
-2. 合并结构、交互和视觉，不重新做口味问诊，不要求先列 8–12 个想法或制作 2–4 个候选。
-3. 不强制固定工作台、持久评论服务、全量 `DESIGN.md` 建档或导出全部平台 tokens；但 prototype 必须完整可点，tokens 必须是页面实际使用值。
-4. 交付前用实际 tokens 跑 final lint，再由独立 Playwright 在桌面、移动宽度走关键操作；集中修复最多一轮，不逐个样式向用户提问。浏览器不可用时标“未视觉验收”，不能以测试通过代替好看。
-5. 个人口味持久写入、外部发布和危险动作仍按原授权边界执行；quick 稿不得称为正式审批通过。
+1. 读取 `references/craft-packs.md`、`references/craft-genome.md`、`references/motion-craft.md`、`references/design-kernel.md`、`references/interaction-craft.md`、`references/visual-craft.md` 和 `references/cjk-typography.md`；先看对应工艺包视觉锚点图 `assets/craft-packs/<id>.png`。
+2. `quick` 不把 9 套工艺包当死板模板，可按五轴（表面物理、空间隐喻、色温、字形、动效）与三旋钮（`VARIANCE / MOTION / DENSITY`）自由合成适配当前产品的独特表面与交互；`explore` 挑 2–4 套在明暗双态、材质物理、空间构图与动效节奏上真正拉开的流派（独立上下文分别生成，不互相抄表面），用 `python3 scripts/build_gallery.py` 生成交互画廊（`单看 / 并排 / 桌面 / 手机 / 重播动效`，支持方向键与 `1–9` 切案），支持用户直选或一句跨案 Remix 混搭后再锁定 tokens 展开全应用。
+3. 不强制固定“空间画室”工作台、持久评论服务、全量 `DESIGN.md` 建档或导出全部平台 tokens；但 prototype 必须搭载 3 类以上标准微交互、使用成套细线 SVG 图标且真实可点，tokens 必须是页面实际使用值。
+4. 交付前用实际 tokens 跑 final lint，再运行 `node scripts/capture_preview.mjs`（或独立 Playwright）在桌面、移动宽度检查溢出与关键点击态，亲眼对照 `references/craft-packs.md` 六点清单查看 PNG 截图后集中修复一轮；浏览器不可用时标“未视觉验收”，不能以测试通过代替好看。
+5. 个人口味持久写入、外部发布和危险动作仍按原授权边界执行；quick／explore 稿在明确归档前不得称为正式审批通过。
 
 ## full：四关与正式门禁
 
@@ -38,18 +39,18 @@ description: "把已有 PRD 或一句需求做成可交互 UI 原型、设计 to
 | 理结构 | `references/structure-guide.md` | —（画完自查每个需求有落点） | 灰阶线框 HTML |
 | 问诊 | `references/intake-questions.md` | `design_memory.py taste` | `design/direction.md`（3–4 个风格坐标，含反向候选） |
 | 确认 UX | `references/interaction-guide.md`＋`references/interaction-craft.md` | `validate_stage_contract.py --phase direction` | 灰阶可点原型 |
-| 视觉定稿 | `references/design-kernel.md`＋`references/visual-craft.md`＋`references/cjk-typography.md` | `lint_design.py diverge prototype/directions.json`；`lint_design.py check <页面>.html --phase direction`；选定后 `--phase final --tokens design/tokens.json` | tokens.json＋高保真页 |
+| 视觉定稿 | `references/craft-packs.md`＋`references/craft-genome.md`＋`references/motion-craft.md`＋`references/design-kernel.md`＋`references/visual-craft.md`＋`references/cjk-typography.md` | `lint_design.py diverge prototype/directions.json`；`lint_design.py check <页面>.html --phase direction`；`capture_preview.mjs` 截屏验收；选定后 `--phase final --tokens design/tokens.json` | tokens.json＋高定高保真页 |
 | 交付 | `references/prototype-guide.md`＋`references/handoff.md` | `export_spec.py` → `export_tokens.py design/tokens.json --out design --targets all --design-md DESIGN.md` → `design_memory.py check <目录>` | spec＋DESIGN.md＋档案 |
 
 四关确认边界、`R/P/J/A/S` 编号和危险动作字段见 `references/stage-contracts.md`。full 的原多方向协议、正式阶段校验和固定工作台全部保留。多版并排仍用 `compare_variants.py`，不改变原跨目录限制。
 
 ## quick 与 full 共用的设计内核
 
-视觉创作先用 `references/design-kernel.md` 决定主对象、主动作、构图和产品重点，再读 visual-craft 与 CJK 规则；代表性任务用 `references/interaction-craft.md` 检查动作、状态、反馈、恢复和上下文。这些是创作与提交前自查，不新增用户审批关卡，也不改变 full／OPC 原评审决策链路。
+视觉创作先按 `references/craft-packs.md` 与 `references/craft-genome.md`（9 套视觉锚点＋五轴自由基因混搭＋`VARIANCE / MOTION / DENSITY` 三旋钮）锁定表面光学与材质上限，再用 `references/design-kernel.md` 决定主对象、主动作与非对称空间分配，接着套用 `references/motion-craft.md` 物理动效（原生 CSS `linear()` 弹簧、Blur-Replace、频率分级与微交互工艺）与 CJK 规则；代表性任务用 `references/interaction-craft.md` 检查动作、状态、反馈、恢复和上下文。这些是创作与提交前自查，不新增用户审批关卡，也不改变 full／OPC 原评审决策链路；full 在视觉定稿关应直接用工艺基因重构关键屏质感，不被线框 DOM 框住上限。
 
-内部方向最多五行：任务、首屏构图、字体角色、颜色分工、一个产品专属视觉或互动亮点。用户要求更有表现力时，要落实到比例、色面、形状、内容和动势，不能惯性回到灰白中性；对比度和可用性是底线，但“只能一个强调色”“全局禁某字体”不是默认规则。
+内部方向最多五行：流派锚点或跨轴混搭、首屏非对称构图、字阶反差角色、表面光影与强调色、默认搭载的物理微动效亮点。用户要求更有表现力时，要落实到表面层级、尺度对比、色面、形状、内容和物理动势，不能惯性回到灰白中性；对比度和可用性是底线，但“只能一个强调色”“全局禁某字体”“全页面禁止回弹曲线”不是默认规则。
 
-quick 只有在用户明确要多方案或存在真正设计分歧时才给 2–3 个候选，缩略图必须一眼可区分，不为凑标签差异而做卡片。每案先达到同一视觉与 UX 底线，再判断差异；full 仍按 `references/visual-craft.md` 的多方向协议执行。
+quick 只有在用户明确要多方案或存在真正设计分歧时才转 `explore` 出 2–4 个高定候选（用 `scripts/build_gallery.py` 收口切换，并支持跨案 Remix），缩略图与首屏构图必须一眼可区分，不为凑标签差异而做同构卡片。每案先达到同一视觉与动效底线，再判断差异；full 仍按 `references/visual-craft.md` 的多方向协议执行。
 
 ## 固定工作台（仅 full／OPC）
 

@@ -1,0 +1,1087 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Obsidian Precision · Agent 执行与验收台</title>
+  <style>
+    :root {
+      --bg: #0C0D10;
+      --surface: #14161C;
+      --surface-2: #1A1D25;
+      --inset: #090A0D;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.15);
+      --ink: #F3F4F6;
+      --ink-muted: #9CA3AF;
+      --ink-faint: #6B7280;
+      --accent: #10B981;
+      --accent-soft: rgba(16, 185, 129, 0.14);
+      --amber: #F59E0B;
+      --amber-soft: rgba(245, 158, 11, 0.14);
+      --sky: #38BDF8;
+      --sky-soft: rgba(56, 189, 248, 0.14);
+      --font-sans: 'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-sm: 7px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(ellipse 68% 42% at 38% 0%, rgba(16, 185, 129, 0.09), transparent 70%),
+        radial-gradient(ellipse 45% 32% at 88% 8%, rgba(56, 189, 248, 0.06), transparent 65%),
+        var(--bg);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.55;
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input {
+      font: inherit;
+      color: inherit;
+      letter-spacing: 0;
+    }
+
+    button { cursor: pointer; }
+
+    button:focus-visible, input:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr) 336px;
+      min-height: 100vh;
+    }
+
+    /* 左侧窄工作轨 */
+    .rail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 0;
+      gap: 10px;
+      background: rgba(14, 16, 21, 0.85);
+      border-right: 1px solid var(--border);
+    }
+
+    .rail-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(155deg, rgba(16, 185, 129, 0.28), rgba(16, 185, 129, 0.06));
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+      color: #6EE7B7;
+      margin-bottom: 10px;
+    }
+
+    .rail-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink-muted);
+      display: grid;
+      place-items: center;
+      transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out), border-color 160ms var(--ease-out), transform 120ms var(--ease-out);
+    }
+
+    .rail-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--ink);
+    }
+
+    .rail-btn:active { transform: scale(0.95); }
+
+    .rail-btn[aria-current="page"] {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--border-strong);
+      color: var(--ink);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .rail-spacer { flex: 1; }
+
+    /* 中央主舞台 */
+    .stage {
+      padding: 20px 28px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .crumb {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .env-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid rgba(16, 185, 129, 0.28);
+      color: #6EE7B7;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .beacon {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+      animation: pulse-ring 2.2s infinite;
+    }
+
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.55); }
+      70% { box-shadow: 0 0 0 7px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .run-id {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cmd-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 9px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      color: var(--ink-muted);
+      font-size: 13px;
+      transition: border-color 160ms var(--ease-out), color 160ms var(--ease-out), background-color 160ms var(--ease-out);
+    }
+
+    .cmd-trigger:hover {
+      border-color: var(--border-strong);
+      color: var(--ink);
+      background: var(--surface-2);
+    }
+
+    .kbd {
+      padding: 1px 6px;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-muted);
+    }
+
+    /* 主任务头卡 */
+    .hero-card {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 48%), var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 16px 40px -20px rgba(0, 0, 0, 0.65);
+      padding: 22px 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: center;
+      animation: fade-rise 360ms var(--ease-out) both;
+    }
+
+    @keyframes fade-rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-kicker {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin-bottom: 6px;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.3;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .hero-desc {
+      margin: 8px 0 0;
+      color: var(--ink-muted);
+      font-size: 14px;
+      max-width: 68ch;
+    }
+
+    .hero-metrics {
+      display: flex;
+      gap: 22px;
+      padding: 12px 18px;
+      border-radius: var(--radius-md);
+      background: var(--inset);
+      border: 1px solid var(--border);
+    }
+
+    .metric-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 78px;
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: var(--ink-faint);
+    }
+
+    .metric-val {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--ink);
+    }
+
+    .metric-val.is-ok { color: #34D399; }
+
+    /* 过滤分段与执行时间线 */
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .seg-tabs {
+      display: inline-flex;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .seg-tab {
+      height: 30px;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--ink-muted);
+      font-size: 13px;
+      font-weight: 500;
+      transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out), transform 120ms var(--ease-out);
+    }
+
+    .seg-tab:hover { color: var(--ink); }
+    .seg-tab:active { transform: scale(0.97); }
+    .seg-tab[aria-selected="true"] {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--ink);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .step-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+      transition: border-color 180ms var(--ease-out), transform 180ms var(--ease-out);
+      animation: fade-rise 380ms var(--ease-out) both;
+    }
+
+    .step-card:nth-child(2) { animation-delay: 50ms; }
+    .step-card:nth-child(3) { animation-delay: 100ms; }
+    .step-card:nth-child(4) { animation-delay: 150ms; }
+
+    .step-card[data-open="true"] {
+      border-color: rgba(16, 185, 129, 0.34);
+    }
+
+    .step-card.is-waiting[data-open="true"] {
+      border-color: rgba(245, 158, 11, 0.38);
+    }
+
+    .step-trigger {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr) auto 18px;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 0;
+      background: transparent;
+      text-align: left;
+      transition: background-color 150ms var(--ease-out);
+    }
+
+    .step-trigger:hover { background: rgba(255, 255, 255, 0.025); }
+
+    .step-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      flex: none;
+    }
+
+    .step-icon.ok { background: var(--accent-soft); color: #34D399; }
+    .step-icon.wait { background: var(--amber-soft); color: #FBBF24; }
+    .step-icon.info { background: var(--sky-soft); color: #7DD3FC; }
+
+    .step-main strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .step-main span {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .step-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .status-tag {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .status-tag.ok { background: var(--accent-soft); color: #6EE7B7; }
+    .status-tag.wait { background: var(--amber-soft); color: #FCD34D; }
+
+    .chev {
+      color: var(--ink-faint);
+      transition: transform 220ms var(--ease-out);
+    }
+
+    .step-card[data-open="true"] .chev {
+      transform: rotate(180deg);
+      color: var(--ink);
+    }
+
+    /* CSS Grid 0fr -> 1fr 手风琴平滑展开 */
+    .step-drawer {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 240ms var(--ease-out);
+    }
+
+    .step-card[data-open="true"] .step-drawer {
+      grid-template-rows: 1fr;
+    }
+
+    .step-drawer-inner {
+      overflow: hidden;
+    }
+
+    .log-box {
+      margin: 0 16px 16px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      background: var(--inset);
+      border: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.65;
+      color: #D1D5DB;
+      overflow-x: auto;
+    }
+
+    .log-line { display: flex; gap: 12px; }
+    .log-ts { color: var(--ink-faint); user-select: none; }
+    .log-add { color: #34D399; }
+    .log-warn { color: #FBBF24; }
+
+    /* 审批动作条 */
+    .gate-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.1), rgba(16, 185, 129, 0.06)), var(--surface);
+      border: 1px solid rgba(245, 158, 11, 0.28);
+      flex-wrap: wrap;
+      transition: border-color 220ms var(--ease-out), background 220ms var(--ease-out);
+    }
+
+    .gate-bar.is-approved {
+      background: linear-gradient(90deg, rgba(16, 185, 129, 0.14), rgba(16, 185, 129, 0.04)), var(--surface);
+      border-color: rgba(16, 185, 129, 0.36);
+    }
+
+    .gate-copy strong {
+      display: block;
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .gate-copy span {
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .gate-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-primary, .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 36px;
+      padding: 0 15px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: transform 130ms var(--ease-out), background-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
+    }
+
+    .btn-primary {
+      border: 1px solid rgba(52, 211, 153, 0.45);
+      background: #10B981;
+      color: #052E1E;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 6px 18px -6px rgba(16, 185, 129, 0.55);
+    }
+
+    .btn-primary:hover { background: #34D399; }
+    .btn-primary:active, .btn-ghost:active { transform: scale(0.975); }
+
+    .btn-ghost {
+      border: 1px solid var(--border-strong);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    .btn-ghost:hover { background: rgba(255, 255, 255, 0.09); }
+
+    /* 右侧遥测与队列边栏 */
+    .aside {
+      padding: 20px 20px 28px;
+      border-left: 1px solid var(--border);
+      background: rgba(12, 14, 18, 0.72);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .aside-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      padding: 15px 16px;
+    }
+
+    .aside-title {
+      margin: 0 0 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .aside-sub {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--ink-faint);
+    }
+
+    .queue-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .queue-item {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.02);
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: background-color 160ms var(--ease-out), border-color 160ms var(--ease-out), transform 140ms var(--ease-out);
+    }
+
+    .queue-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border-strong);
+    }
+
+    .queue-item[aria-current="true"] {
+      background: rgba(16, 185, 129, 0.09);
+      border-color: rgba(16, 185, 129, 0.35);
+    }
+
+    .queue-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .queue-row strong {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .queue-desc {
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .meter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .meter-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 5px;
+      color: var(--ink-muted);
+    }
+
+    .meter-head strong {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .meter-track {
+      height: 6px;
+      border-radius: 999px;
+      background: var(--inset);
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #059669, #34D399);
+      transition: width 380ms var(--ease-out);
+    }
+
+    .meter-fill.sky {
+      background: linear-gradient(90deg, #0284C7, #38BDF8);
+    }
+
+    /* 命令面板浮层 */
+    .palette-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 7, 10, 0.68);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: grid;
+      place-items: start center;
+      padding-top: 14vh;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms var(--ease-out);
+      z-index: 40;
+    }
+
+    .palette-backdrop[data-open="true"] {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .palette-dialog {
+      width: min(520px, 92vw);
+      background: #171A22;
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 28px 60px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      transform: translateY(-8px) scale(0.98);
+      transition: transform 200ms var(--ease-out);
+    }
+
+    .palette-backdrop[data-open="true"] .palette-dialog {
+      transform: translateY(0) scale(1);
+    }
+
+    .palette-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .palette-input {
+      flex: 1;
+      background: transparent;
+      border: 0;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    .palette-list {
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .palette-cmd {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 12px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      text-align: left;
+      font-size: 13px;
+      color: var(--ink);
+      transition: background-color 140ms var(--ease-out);
+    }
+
+    .palette-cmd:hover { background: rgba(255, 255, 255, 0.07); }
+
+    @media (max-width: 1080px) {
+      .app { grid-template-columns: 56px minmax(0, 1fr); }
+      .aside {
+        grid-column: 2;
+        border-left: 0;
+        border-top: 1px solid var(--border);
+      }
+    }
+
+    @media (max-width: 680px) {
+      .app { grid-template-columns: minmax(0, 1fr); }
+      .rail { display: none; }
+      .stage { padding: 16px; }
+      .hero-card { grid-template-columns: minmax(0, 1fr); padding: 18px; }
+      .hero-metrics { width: 100%; justify-content: space-between; }
+      .aside { grid-column: 1; padding: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <nav class="rail" aria-label="主工作区导航">
+      <div class="rail-logo" aria-hidden="true">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M12 12l8-4.5"/><path d="M12 12v9"/><path d="M12 12L4 7.5"/>
+        </svg>
+      </div>
+      <button type="button" class="rail-btn" aria-current="page" aria-label="实时运行队列" title="运行队列">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </button>
+      <button type="button" class="rail-btn" aria-label="沙箱与权限策略" title="权限策略">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </button>
+      <button type="button" class="rail-btn" aria-label="历史基线评测" title="评测对比">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+      </button>
+      <div class="rail-spacer"></div>
+      <button type="button" class="rail-btn" id="openCmdRail" aria-label="打开快捷指令" title="快捷指令">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+    </nav>
+
+    <main class="stage">
+      <header class="topbar">
+        <div class="crumb">
+          <span class="env-chip"><span class="beacon" aria-hidden="true"></span><span>沙箱隔离中</span></span>
+          <span class="run-id">RUN #4829 · checkout-retry-worker</span>
+        </div>
+        <div class="top-actions">
+          <button type="button" class="cmd-trigger" id="openCmdBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <span>快捷指令与切换任务</span>
+            <span class="kbd">⌘K</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="hero-card" aria-labelledby="activeTitle">
+        <div>
+          <div class="hero-kicker">
+            <span>阶段 3 / 4</span>
+            <span>·</span>
+            <span>写入门禁等待人审确认</span>
+          </div>
+          <h1 class="hero-title" id="activeTitle">修复结算队列幂等键漏判并补齐单测</h1>
+          <p class="hero-desc" id="activeDesc">已定位重试消息未校验租户前缀导致的重复扣减，38 项关联单元测试与并发竞态回放均已通过，合并写操作前需确认补丁。</p>
+        </div>
+        <div class="hero-metrics">
+          <div class="metric-col">
+            <span class="metric-label">验证通过</span>
+            <strong class="metric-val is-ok" id="metricPass">38/38</strong>
+          </div>
+          <div class="metric-col">
+            <span class="metric-label">端到端耗时</span>
+            <strong class="metric-val" id="metricTime">42.6s</strong>
+          </div>
+          <div class="metric-col">
+            <span class="metric-label">修改文件</span>
+            <strong class="metric-val" id="metricFiles">3 处</strong>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-head">
+        <div class="seg-tabs" role="tablist" aria-label="步骤筛选">
+          <button type="button" class="seg-tab" role="tab" data-filter="all" aria-selected="true">全部步骤（4）</button>
+          <button type="button" class="seg-tab" role="tab" data-filter="tool" aria-selected="false">工具与单测</button>
+          <button type="button" class="seg-tab" role="tab" data-filter="gate" aria-selected="false">人工门禁</button>
+        </div>
+        <span style="font-size:12px; color:var(--ink-faint);">点击任意步骤展开结构化执行日志</span>
+      </div>
+
+      <section class="timeline" id="stepList" aria-label="Agent 执行时间线">
+        <article class="step-card" data-kind="tool" data-open="false">
+          <button type="button" class="step-trigger" aria-expanded="false">
+            <span class="step-icon info" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            <span class="step-main">
+              <strong>1. 检索慢日志与死信队列样本</strong>
+              <span>定位过去 2 小时内重复投递的 14 条异常轨迹</span>
+            </span>
+            <span class="step-meta"><span class="status-tag ok">已取证</span><span>6.4s</span></span>
+            <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="step-drawer"><div class="step-drawer-inner">
+            <div class="log-box">
+              <div class="log-line"><span class="log-ts">11:42:08</span><span>query dlq_events where reason="duplicate_ledger" limit=20</span></div>
+              <div class="log-line"><span class="log-ts">11:42:11</span><span class="log-add">✓ 命中同一键格式 collision：idempotency_key 缺少 tenant_id 隔离前缀</span></div>
+            </div>
+          </div></div>
+        </article>
+
+        <article class="step-card" data-kind="tool" data-open="true">
+          <button type="button" class="step-trigger" aria-expanded="true">
+            <span class="step-icon ok" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <span class="step-main">
+              <strong>2. 修订幂等校验逻辑并补充并发测试</strong>
+              <span>变更 ledger_guard.py 与 test_idempotency.py（+48 / -9 行）</span>
+            </span>
+            <span class="step-meta"><span class="status-tag ok">38 项全过</span><span>21.8s</span></span>
+            <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="step-drawer"><div class="step-drawer-inner">
+            <div class="log-box">
+              <div class="log-line"><span class="log-ts">11:42:29</span><span>+ key = f"{tenant_id}:{raw_request_id}"  # enforce tenant scope</span></div>
+              <div class="log-line"><span class="log-ts">11:42:34</span><span class="log-add">✓ pytest tests/settlement -k idempotency → 38 passed in 4.12s</span></div>
+            </div>
+          </div></div>
+        </article>
+
+        <article class="step-card" data-kind="tool" data-open="false">
+          <button type="button" class="step-trigger" aria-expanded="false">
+            <span class="step-icon ok" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </span>
+            <span class="step-main">
+              <strong>3. 影子流量 10 分钟比对回归</strong>
+              <span>新旧规则并行比对 1.2 万笔流水，零误拦、拦下 3 笔同号并发重试</span>
+            </span>
+            <span class="step-meta"><span class="status-tag ok">通过门禁</span><span>14.4s</span></span>
+            <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="step-drawer"><div class="step-drawer-inner">
+            <div class="log-box">
+              <div class="log-line"><span class="log-ts">11:42:49</span><span>shadow_replay --samples 12000 --strict-balance</span></div>
+              <div class="log-line"><span class="log-ts">11:42:52</span><span class="log-add">✓ 账面核对差异 = 0.00，成功拦截 3 笔重复扣款重试</span></div>
+            </div>
+          </div></div>
+        </article>
+
+        <article class="step-card is-waiting" data-kind="gate" data-open="false">
+          <button type="button" class="step-trigger" aria-expanded="false">
+            <span class="step-icon wait" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </span>
+            <span class="step-main">
+              <strong>4. 合并生产配置并启动 5% 灰度发布</strong>
+              <span>属于高风险资金路径写入，等待值班负责人审批后继续</span>
+            </span>
+            <span class="step-meta"><span class="status-tag wait" id="gateStatusTag">待确认</span><span>阻塞中</span></span>
+            <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="step-drawer"><div class="step-drawer-inner">
+            <div class="log-box">
+              <div class="log-line"><span class="log-ts">11:42:55</span><span class="log-warn">⏸ 命中写操作门禁 POLICY-SETTLEMENT-02：需确认灰度比例 5% 与 5 分钟自动回滚阈值</span></div>
+            </div>
+          </div></div>
+        </article>
+      </section>
+
+      <div class="gate-bar" id="gateBar">
+        <div class="gate-copy">
+          <strong id="gateHeading">写入前人工核准 · 资金核心链路</strong>
+          <span id="gateSub">确认补丁后仅推入 5% 灰度泳道，异常率高于 0.1% 将在 30 秒内自动摘流。</span>
+        </div>
+        <div class="gate-actions">
+          <button type="button" class="btn-ghost" id="rejectBtn">退回修改说明</button>
+          <button type="button" class="btn-primary" id="approveBtn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>批准合并并灰度</span>
+          </button>
+        </div>
+      </div>
+    </main>
+
+    <aside class="aside" aria-label="任务队列与预算">
+      <section class="aside-card">
+        <h2 class="aside-title"><span>并发任务池</span><span class="aside-sub">点击切换实例</span></h2>
+        <div class="queue-list" id="queueList">
+          <button type="button" class="queue-item" aria-current="true" data-task="0">
+            <span class="queue-row"><strong>#4829 结算幂等键修复</strong><span class="status-tag wait">待批准</span></span>
+            <span class="queue-desc">38/38 单测通过 · 影子回归零偏差</span>
+          </button>
+          <button type="button" class="queue-item" aria-current="false" data-task="1">
+            <span class="queue-row"><strong>#4831 图表渲染器边界护栏</strong><span class="status-tag ok">已验收</span></span>
+            <span class="queue-desc">24/24 单测通过 · 已合入主干</span>
+          </button>
+          <button type="button" class="queue-item" aria-current="false" data-task="2">
+            <span class="queue-row"><strong>#4834 缓存穿透降级开关</strong><span class="status-tag ok">验证中</span></span>
+            <span class="queue-desc">正在对比 BO2 压测延迟分位</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="aside-card">
+        <h2 class="aside-title"><span>本轮资源预算</span><span class="aside-sub">限额保护开启</span></h2>
+        <div class="meter-list">
+          <div>
+            <div class="meter-head"><span>上下文窗口</span><strong>44.2k / 128k</strong></div>
+            <div class="meter-track"><div class="meter-fill" style="width:35%;"></div></div>
+          </div>
+          <div>
+            <div class="meter-head"><span>沙箱执行时间</span><strong>42.6s / 180s</strong></div>
+            <div class="meter-track"><div class="meter-fill sky" style="width:24%;"></div></div>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <div class="palette-backdrop" id="paletteModal" data-open="false" role="dialog" aria-modal="true" aria-label="快捷指令面板">
+    <div class="palette-dialog">
+      <div class="palette-input-row">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="palette-input" id="cmdInput" placeholder="输入动作或跳转任务（如：全部展开、批准灰度）…">
+        <span class="kbd">ESC</span>
+      </div>
+      <div class="palette-list">
+        <button type="button" class="palette-cmd" data-cmd="expand-all"><span>展开全部执行步骤日志</span><span class="kbd">4 条</span></button>
+        <button type="button" class="palette-cmd" data-cmd="approve"><span>批准当前任务进入 5% 灰度</span><span class="kbd">Enter</span></button>
+        <button type="button" class="palette-cmd" data-cmd="switch-2"><span>切换至 #4831 图表边界护栏实例</span><span class="kbd">#4831</span></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TASKS = [
+      {
+        title: '修复结算队列幂等键漏判并补齐单测',
+        desc: '已定位重试消息未校验租户前缀导致的重复扣减，38 项关联单元测试与并发竞态回放均已通过，合并写操作前需确认补丁。',
+        pass: '38/38', time: '42.6s', files: '3 处'
+      },
+      {
+        title: '图表渲染器同排连线绕行与边界护栏',
+        desc: '已把紧凑节点横跨标签改成顶部 U 型通道，5 组标准渲染与对比度测试全绿，所有改动已安全合并。',
+        pass: '24/24', time: '28.1s', files: '2 处'
+      },
+      {
+        title: '缓存穿透热点 Key 降级开关压测验证',
+        desc: '单飞合并器在模拟 15 倍突刺下 P99 回落至 34ms，正在记录回归基线对照指标。',
+        pass: '19/20', time: '51.4s', files: '4 处'
+      }
+    ];
+
+    document.querySelectorAll('.step-trigger').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const card = btn.closest('.step-card');
+        const nextOpen = card.dataset.open !== 'true';
+        card.dataset.open = String(nextOpen);
+        btn.setAttribute('aria-expanded', String(nextOpen));
+      });
+    });
+
+    document.querySelectorAll('.seg-tab').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.seg-tab').forEach((t) => t.setAttribute('aria-selected', t === tab ? 'true' : 'false'));
+        const f = tab.dataset.filter;
+        document.querySelectorAll('.step-card').forEach((card) => {
+          card.style.display = (f === 'all' || card.dataset.kind === f) ? '' : 'none';
+        });
+      });
+    });
+
+    const gateBar = document.getElementById('gateBar');
+    const approveBtn = document.getElementById('approveBtn');
+    const rejectBtn = document.getElementById('rejectBtn');
+    const gateHeading = document.getElementById('gateHeading');
+    const gateSub = document.getElementById('gateSub');
+    const gateStatusTag = document.getElementById('gateStatusTag');
+
+    approveBtn.addEventListener('click', () => {
+      gateBar.classList.add('is-approved');
+      gateHeading.textContent = '已批准合入 · 正在推进 5% 灰度泳道';
+      gateSub.textContent = '预计 3 分钟内完成第一批流量观测，可随时点击右侧退回。';
+      gateStatusTag.className = 'status-tag ok';
+      gateStatusTag.textContent = '已放行';
+      approveBtn.innerHTML = '<span>已放行灰度 ✓</span>';
+    });
+
+    rejectBtn.addEventListener('click', () => {
+      gateBar.classList.remove('is-approved');
+      gateHeading.textContent = '已退回修改 · 等待补充断言后再提交';
+      gateSub.textContent = '请补充租户空前缀边界用例，重新跑完测试门禁后再次发起确认。';
+      gateStatusTag.className = 'status-tag wait';
+      gateStatusTag.textContent = '需修改';
+      approveBtn.innerHTML = '<span>批准合并并灰度</span>';
+    });
+
+    document.querySelectorAll('.queue-item').forEach((item) => {
+      item.addEventListener('click', () => {
+        document.querySelectorAll('.queue-item').forEach((q) => q.setAttribute('aria-current', q === item ? 'true' : 'false'));
+        const t = TASKS[Number(item.dataset.task)];
+        document.getElementById('activeTitle').textContent = t.title;
+        document.getElementById('activeDesc').textContent = t.desc;
+        document.getElementById('metricPass').textContent = t.pass;
+        document.getElementById('metricTime').textContent = t.time;
+        document.getElementById('metricFiles').textContent = t.files;
+      });
+    });
+
+    const modal = document.getElementById('paletteModal');
+    const cmdInput = document.getElementById('cmdInput');
+    function openModal() {
+      modal.dataset.open = 'true';
+      setTimeout(() => cmdInput.focus(), 40);
+    }
+    function closeModal() {
+      modal.dataset.open = 'false';
+    }
+    document.getElementById('openCmdBtn').addEventListener('click', openModal);
+    document.getElementById('openCmdRail').addEventListener('click', openModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openModal(); }
+      if (e.key === 'Escape' && modal.dataset.open === 'true') closeModal();
+    });
+    document.querySelectorAll('.palette-cmd').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const c = btn.dataset.cmd;
+        if (c === 'expand-all') {
+          document.querySelectorAll('.step-card').forEach((s) => { s.dataset.open = 'true'; });
+        } else if (c === 'approve') {
+          approveBtn.click();
+        } else if (c === 'switch-2') {
+          document.querySelector('.queue-item[data-task="1"]').click();
+        }
+        closeModal();
+      });
+    });
+  </script>
+</body>
+</html>

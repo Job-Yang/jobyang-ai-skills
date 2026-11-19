@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tactile Hardware · T-04 专注合成器工作台</title>
+  <style>
+    :root {
+      --desk: #D8D5CC;
+      --chassis-top: #F0EEE8;
+      --chassis-bot: #E3E0D7;
+      --seam: #C6C2B7;
+      --well: #D6D3C9;
+      --oled: #121519;
+      --oled-sub: #1A1F26;
+      --oled-ink: #F7F3EA;
+      --oled-muted: #8E97A4;
+      --key-face: #F9F8F4;
+      --key-skirt: #BFBBB0;
+      --ink: #1F1E1B;
+      --ink-muted: #5F5C55;
+      --orange: #EA4A1F;
+      --orange-dark: #B9330F;
+      --emerald: #10B981;
+      --amber: #F59E0B;
+      --font-sans: 'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --spring-snappy: linear(
+        0, 0.0677, 0.2181, 0.3941, 0.5621, 0.7053, 0.8177, 0.8999,
+        0.9559, 0.9912, 1.011, 1.02, 1.023, 1.021, 1.018, 1.014,
+        1.01, 1.007, 1.004, 1.002, 1
+      );
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(ellipse 75% 60% at 50% 25%, rgba(255, 255, 255, 0.45), transparent 70%),
+        var(--desk);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.55;
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input {
+      font: inherit;
+      color: inherit;
+      letter-spacing: 0;
+    }
+
+    button { cursor: pointer; }
+
+    button:focus-visible, input:focus-visible {
+      outline: 2px solid var(--orange);
+      outline-offset: 2px;
+    }
+
+    .stage {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 26px 24px;
+    }
+
+    /* 阳极工程机身：外半径 28px，内嵌间距 18px -> 内部模块圆角 12px */
+    .chassis {
+      width: min(1160px, 100%);
+      border-radius: 28px;
+      padding: 18px;
+      background: linear-gradient(180deg, var(--chassis-top) 0%, var(--chassis-bot) 100%);
+      border: 1px solid #B9B5A9;
+      box-shadow:
+        0 32px 68px -22px rgba(24, 24, 22, 0.32),
+        0 4px 12px rgba(24, 24, 22, 0.10),
+        inset 0 1.5px 0 rgba(255, 255, 255, 0.92),
+        inset 0 -2px 0 rgba(130, 126, 114, 0.25);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* 顶部铭牌与硬件指示灯 */
+    .plate-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 4px 8px 12px;
+      border-bottom: 1px solid var(--seam);
+      flex-wrap: wrap;
+    }
+
+    .plate-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .speaker-grill {
+      display: block;
+      flex: none;
+    }
+
+    .model-title {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .model-title strong {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .model-title span {
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+
+    .plate-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .led-strip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 12px;
+      border-radius: 10px;
+      background: var(--well);
+      border: 1px solid var(--seam);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-muted);
+    }
+
+    .led-unit {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .led {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #9E9A8E;
+      transition: background-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+    }
+
+    .led.on-green { background: var(--emerald); box-shadow: 0 0 8px rgba(16, 185, 129, 0.75); }
+    .led.on-amber { background: var(--amber); box-shadow: 0 0 8px rgba(245, 158, 11, 0.75); }
+    .led.on-orange { background: var(--orange); box-shadow: 0 0 10px rgba(234, 74, 31, 0.85); }
+
+    /* 上半舞台：左侧深碳 OLED 示波与读数 + 右侧实体模式键帽 */
+    .upper-deck {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .oled-bezel {
+      border-radius: 16px;
+      padding: 6px;
+      background: #272A30;
+      border: 1px solid #0E1013;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.55), 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    .oled-screen {
+      position: relative;
+      border-radius: 10px;
+      padding: 20px 22px 16px;
+      background:
+        radial-gradient(ellipse 70% 55% at 25% 15%, rgba(234, 74, 31, 0.12), transparent 65%),
+        radial-gradient(ellipse 55% 45% at 85% 20%, rgba(16, 185, 129, 0.08), transparent 60%),
+        var(--oled);
+      color: var(--oled-ink);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 286px;
+      overflow: hidden;
+    }
+
+    .oled-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--oled-muted);
+    }
+
+    .oled-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: var(--oled-sub);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      color: var(--oled-ink);
+      white-space: nowrap;
+    }
+
+    .oled-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--oled-muted);
+      transition: background-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+    }
+
+    .oled-screen[data-running="true"] .oled-dot {
+      background: var(--orange);
+      box-shadow: 0 0 8px var(--orange);
+    }
+
+    .oled-center {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 14px 0 12px;
+      flex-wrap: wrap;
+    }
+
+    .timer-digits {
+      font-family: var(--font-mono);
+      font-size: 56px;
+      font-weight: 700;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+      color: var(--oled-ink);
+      text-shadow: 0 0 22px rgba(247, 243, 234, 0.18);
+    }
+
+    .oled-mode-info {
+      text-align: right;
+    }
+
+    .oled-mode-info strong {
+      display: block;
+      font-size: 18px;
+      font-weight: 600;
+      color: #FFFFFF;
+    }
+
+    .oled-mode-info span {
+      display: block;
+      font-size: 12.5px;
+      color: var(--oled-muted);
+      margin-top: 2px;
+    }
+
+    .scope-box {
+      border-top: 1px solid rgba(255, 255, 255, 0.10);
+      padding-top: 12px;
+    }
+
+    .scope-svg {
+      width: 100%;
+      height: 68px;
+      display: block;
+    }
+
+    /* 右侧：机械模式键帽面板 */
+    .key-bay {
+      border-radius: 16px;
+      padding: 14px;
+      background: var(--well);
+      border: 1px solid var(--seam);
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.06), 0 1px 0 rgba(255, 255, 255, 0.75);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .bay-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-muted);
+    }
+
+    .mode-keys {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* 实体 3D 机械键帽 */
+    .mech-key {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 11px;
+      border: 1px solid #C6C2B8;
+      background: linear-gradient(180deg, #FFFFFF 0%, var(--key-face) 100%);
+      box-shadow:
+        0 4px 0 var(--key-skirt),
+        0 6px 12px rgba(24, 24, 22, 0.08),
+        inset 0 1px 0 #FFFFFF;
+      text-align: left;
+      transition:
+        transform 160ms var(--ease-out),
+        box-shadow 160ms var(--ease-out),
+        border-color 160ms var(--ease-out);
+    }
+
+    .mech-key:hover {
+      border-color: #9D988C;
+    }
+
+    .mech-key:active,
+    .mech-key[aria-pressed="true"] {
+      transform: translateY(2px);
+      box-shadow:
+        0 1.5px 0 var(--key-skirt),
+        0 2px 4px rgba(24, 24, 22, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      border-color: var(--orange);
+    }
+
+    .key-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .key-pip {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #CFCBC0;
+      transition: background-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
+    }
+
+    .mech-key[aria-pressed="true"] .key-pip {
+      background: var(--orange);
+      box-shadow: 0 0 8px rgba(234, 74, 31, 0.7);
+    }
+
+    .key-title {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .key-sub {
+      display: block;
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .key-code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      color: var(--ink-muted);
+    }
+
+    .bay-summary {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid var(--seam);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--ink-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* 下半操作甲板：三路声场推子 + 信号橙主执行拨键 */
+    .lower-deck {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .fader-deck {
+      border-radius: 16px;
+      padding: 14px 16px;
+      background: var(--well);
+      border: 1px solid var(--seam);
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.06), 0 1px 0 rgba(255, 255, 255, 0.75);
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .fader-unit {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1px solid var(--seam);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .fader-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .fader-val {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      color: var(--orange);
+    }
+
+    .fader-range {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: #C8C4B9;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25);
+      cursor: pointer;
+    }
+
+    .fader-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      background: #272A30;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+      cursor: pointer;
+    }
+
+    .fader-ticks {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--ink-muted);
+    }
+
+    .transport-deck {
+      border-radius: 16px;
+      padding: 14px;
+      background: var(--well);
+      border: 1px solid var(--seam);
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.06), 0 1px 0 rgba(255, 255, 255, 0.75);
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+      gap: 10px;
+    }
+
+    .orange-rocker {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-radius: 11px;
+      border: 1px solid var(--orange-dark);
+      background: linear-gradient(180deg, #F45B32 0%, var(--orange) 100%);
+      color: #FFFFFF;
+      box-shadow:
+        0 4px 0 var(--orange-dark),
+        0 8px 18px rgba(234, 74, 31, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.38);
+      transition: transform 420ms var(--spring-snappy), box-shadow 160ms var(--ease-out);
+    }
+
+    .orange-rocker:active {
+      transform: translateY(2px) scale(0.985);
+      box-shadow:
+        0 1.5px 0 var(--orange-dark),
+        0 3px 8px rgba(234, 74, 31, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .orange-rocker strong {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .orange-rocker span {
+      font-size: 11.5px;
+      opacity: 0.9;
+    }
+
+    .sub-rockers {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .mini-key {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-radius: 10px;
+      border: 1px solid #C6C2B8;
+      background: linear-gradient(180deg, #FFFFFF 0%, var(--key-face) 100%);
+      box-shadow: 0 3px 0 var(--key-skirt), inset 0 1px 0 #FFFFFF;
+      font-size: 12.5px;
+      font-weight: 600;
+      transition: transform 140ms var(--ease-out), box-shadow 140ms var(--ease-out);
+    }
+
+    .mini-key:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 var(--key-skirt);
+    }
+
+    @media (max-width: 960px) {
+      .upper-deck, .lower-deck { grid-template-columns: 1fr; }
+      .fader-deck { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .stage { padding: 10px; }
+      .chassis { padding: 12px; border-radius: 20px; }
+      .model-title { flex-wrap: wrap; gap: 6px; }
+      .model-title strong { font-size: 14px; white-space: nowrap; }
+      .timer-digits { font-size: 42px; }
+      .oled-mode-info { text-align: left; }
+      .transport-deck { grid-template-columns: 1fr; }
+      .sub-rockers { grid-template-columns: 1fr 1fr; grid-template-rows: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <main class="chassis" aria-label="T-04 专注合成器硬件工作台">
+      <header class="plate-bar">
+        <div class="plate-left">
+          <svg class="speaker-grill" width="38" height="22" viewBox="0 0 38 22" aria-hidden="true">
+            <circle cx="5" cy="5" r="2" fill="#B5B1A6"/><circle cx="14" cy="5" r="2" fill="#B5B1A6"/><circle cx="23" cy="5" r="2" fill="#B5B1A6"/><circle cx="32" cy="5" r="2" fill="#B5B1A6"/>
+            <circle cx="5" cy="11" r="2" fill="#B5B1A6"/><circle cx="14" cy="11" r="2" fill="#B5B1A6"/><circle cx="23" cy="11" r="2" fill="#B5B1A6"/><circle cx="32" cy="11" r="2" fill="#B5B1A6"/>
+            <circle cx="5" cy="17" r="2" fill="#B5B1A6"/><circle cx="14" cy="17" r="2" fill="#B5B1A6"/><circle cx="23" cy="17" r="2" fill="#B5B1A6"/><circle cx="32" cy="17" r="2" fill="#B5B1A6"/>
+          </svg>
+          <div class="model-title">
+            <strong>T-04 仪器台</strong>
+            <span>专注声场合成与时间盒控制器</span>
+          </div>
+        </div>
+
+        <div class="plate-right">
+          <div class="led-strip" aria-label="硬件指示灯状态">
+            <span class="led-unit"><span class="led on-green" aria-hidden="true"></span>电源</span>
+            <span class="led-unit"><span class="led on-amber" data-role="led-sync" aria-hidden="true"></span>声场</span>
+            <span class="led-unit"><span class="led" data-role="led-run" aria-hidden="true"></span>运行</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="upper-deck">
+        <div class="oled-bezel">
+          <div class="oled-screen" data-role="oled-screen" data-running="false">
+            <div class="oled-top">
+              <span class="oled-badge"><span class="oled-dot" aria-hidden="true"></span><span data-role="oled-channel">CH-01 · 深度创作</span></span>
+              <span data-role="oled-hz">合成器混合 输出中 · 48kHz</span>
+            </div>
+
+            <div class="oled-center">
+              <div class="timer-digits" data-role="timer-readout">25:00</div>
+              <div class="oled-mode-info">
+                <strong data-role="mode-name">深度创作时间盒</strong>
+                <span data-role="mode-state">等待拨键启动 · 目标已锁定</span>
+              </div>
+            </div>
+
+            <div class="scope-box">
+              <svg class="scope-svg" viewBox="0 0 540 72" preserveAspectRatio="none" aria-hidden="true">
+                <line x1="0" y1="36" x2="540" y2="36" stroke="rgba(255,255,255,0.12)" stroke-dasharray="4 4"/>
+                <path data-role="wave-bg" d="" fill="none" stroke="rgba(16, 185, 129, 0.35)" stroke-width="1.5"/>
+                <path data-role="wave-main" d="" fill="none" stroke="#EA4A1F" stroke-width="2.2" stroke-linecap="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="key-bay">
+          <div class="bay-label">
+            <span>工作档位机械键帽</span>
+            <span>物理程控开关</span>
+          </div>
+
+          <div class="mode-keys" role="group" aria-label="时间盒档位">
+            <button type="button" class="mech-key" aria-pressed="true" data-mode="0">
+              <span class="key-left">
+                <span class="key-pip" aria-hidden="true"></span>
+                <span>
+                  <strong class="key-title">深度创作</strong>
+                  <span class="key-sub">高隔离 · 自动压低提示音</span>
+                </span>
+              </span>
+              <span class="key-code">25:00</span>
+            </button>
+
+            <button type="button" class="mech-key" aria-pressed="false" data-mode="1">
+              <span class="key-left">
+                <span class="key-pip" aria-hidden="true"></span>
+                <span>
+                  <strong class="key-title">架构评审</strong>
+                  <span class="key-sub">长时专注 · 节奏稳态推子</span>
+                </span>
+              </span>
+              <span class="key-code">45:00</span>
+            </button>
+
+            <button type="button" class="mech-key" aria-pressed="false" data-mode="2">
+              <span class="key-left">
+                <span class="key-pip" aria-hidden="true"></span>
+                <span>
+                  <strong class="key-title">轻度休整</strong>
+                  <span class="key-sub">柔和细雨声场 · 恢复视野</span>
+                </span>
+              </span>
+              <span class="key-code">10:00</span>
+            </button>
+          </div>
+
+          <div class="bay-summary">
+            <span>今日已完成 3 轮时间盒</span>
+            <span>累计 85 分钟</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="lower-deck">
+        <div class="fader-deck" aria-label="三路声场混合推子">
+          <div class="fader-unit">
+            <div class="fader-head">
+              <span>白噪底纹</span>
+              <span class="fader-val" data-val="f1">62%</span>
+            </div>
+            <input class="fader-range" type="range" min="0" max="100" value="62" data-fader="f1" aria-label="白噪底纹音量">
+            <div class="fader-ticks"><span>0</span><span>50</span><span>100</span></div>
+          </div>
+
+          <div class="fader-unit">
+            <div class="fader-head">
+              <span>细雨声场</span>
+              <span class="fader-val" data-val="f2">44%</span>
+            </div>
+            <input class="fader-range" type="range" min="0" max="100" value="44" data-fader="f2" aria-label="细雨声场音量">
+            <div class="fader-ticks"><span>0</span><span>50</span><span>100</span></div>
+          </div>
+
+          <div class="fader-unit">
+            <div class="fader-head">
+              <span>机械节拍</span>
+              <span class="fader-val" data-val="f3">28%</span>
+            </div>
+            <input class="fader-range" type="range" min="0" max="100" value="28" data-fader="f3" aria-label="机械节拍强度">
+            <div class="fader-ticks"><span>0</span><span>50</span><span>100</span></div>
+          </div>
+        </div>
+
+        <div class="transport-deck" aria-label="硬件主执行拨键">
+          <button type="button" class="orange-rocker" data-action="toggle-run">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-role="run-glyph">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+            <div>
+              <strong data-role="run-label">开始聚焦</strong>
+              <span style="display:block;" data-role="run-hint">触发计时与实时声波</span>
+            </div>
+          </button>
+
+          <div class="sub-rockers">
+            <button type="button" class="mini-key" data-action="add-five">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+              <span>加 5 分钟</span>
+            </button>
+            <button type="button" class="mini-key" data-action="reset">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+              <span>机械复位</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const MODES = [
+      { code: 'CH-01 · 深度创作', name: '深度创作时间盒', mins: 25, f1: 62, f2: 44, f3: 28 },
+      { code: 'CH-02 · 架构评审', name: '系统架构评审盒', mins: 45, f1: 38, f2: 68, f3: 18 },
+      { code: 'CH-03 · 轻度休整', name: '视听休整恢复盒', mins: 10, f1: 20, f2: 86, f3: 0 }
+    ];
+
+    let currentMode = 0;
+    let remainingSec = MODES[0].mins * 60;
+    let running = false;
+    let phase = 0;
+    let tickTimer = null;
+    let rafId = null;
+    const faders = { f1: 62, f2: 44, f3: 28 };
+
+    const readoutEl = document.querySelector('[data-role="timer-readout"]');
+    const waveMain = document.querySelector('[data-role="wave-main"]');
+    const waveBg = document.querySelector('[data-role="wave-bg"]');
+    const ledRun = document.querySelector('[data-role="led-run"]');
+
+    function formatTime(sec) {
+      const m = String(Math.floor(sec / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function drawWave(offset = 0) {
+      const a1 = 6 + (faders.f1 / 100) * 16;
+      const a2 = 4 + (faders.f2 / 100) * 10;
+      const pulse = running ? 1.15 : 0.72;
+      let dMain = '';
+      let dBg = '';
+      for (let x = 0; x <= 540; x += 12) {
+        const rad = (x / 540) * Math.PI * 5 + offset;
+        const env = Math.sin((x / 540) * Math.PI);
+        const y = 36 + (Math.sin(rad) * a1 + Math.cos(rad * 2.1 + 0.6) * a2) * env * pulse;
+        const y2 = 36 + (Math.cos(rad * 0.85) * (a2 + 4)) * env;
+        dMain += (x === 0 ? 'M' : 'L') + x + ' ' + y.toFixed(1) + ' ';
+        dBg += (x === 0 ? 'M' : 'L') + x + ' ' + y2.toFixed(1) + ' ';
+      }
+      waveMain.setAttribute('d', dMain.trim());
+      waveBg.setAttribute('d', dBg.trim());
+    }
+
+    function syncFadersUI() {
+      Object.keys(faders).forEach((k) => {
+        document.querySelector(`[data-fader="${k}"]`).value = faders[k];
+        document.querySelector(`[data-val="${k}"]`).textContent = `${faders[k]}%`;
+      });
+      drawWave(phase);
+    }
+
+    function selectMode(idx) {
+      currentMode = idx;
+      const m = MODES[idx];
+      remainingSec = m.mins * 60;
+      faders.f1 = m.f1;
+      faders.f2 = m.f2;
+      faders.f3 = m.f3;
+      document.querySelectorAll('[data-mode]').forEach((b) => {
+        b.setAttribute('aria-pressed', Number(b.dataset.mode) === idx ? 'true' : 'false');
+      });
+      document.querySelector('[data-role="oled-channel"]').textContent = m.code;
+      document.querySelector('[data-role="mode-name"]').textContent = m.name;
+      readoutEl.textContent = formatTime(remainingSec);
+      syncFadersUI();
+    }
+
+    function setRunning(next) {
+      running = next;
+      ledRun.classList.toggle('on-orange', running);
+      document.querySelector('[data-role="oled-screen"]').dataset.running = running ? 'true' : 'false';
+      document.querySelector('[data-role="run-label"]').textContent = running ? '暂停聚焦' : '开始聚焦';
+      document.querySelector('[data-role="run-hint"]').textContent = running ? '波形输出激活 · 点击暂停' : '触发计时与实时声波';
+      document.querySelector('[data-role="mode-state"]').textContent = running ? '正在运行 · 外部干扰已屏蔽' : '已暂停 · 等待再次拨键';
+      document.querySelector('[data-role="run-glyph"]').innerHTML = running
+        ? '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>'
+        : '<path d="M8 5v14l11-7z"/>';
+
+      clearInterval(tickTimer);
+      cancelAnimationFrame(rafId);
+      if (running) {
+        tickTimer = setInterval(() => {
+          if (remainingSec > 0) remainingSec -= 1;
+          readoutEl.textContent = formatTime(remainingSec);
+        }, 1000);
+        const animateWave = () => {
+          if (!running) return;
+          phase += 0.06;
+          drawWave(phase);
+          rafId = requestAnimationFrame(animateWave);
+        };
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          rafId = requestAnimationFrame(animateWave);
+        }
+      } else {
+        drawWave(phase);
+      }
+    }
+
+    document.querySelectorAll('[data-mode]').forEach((btn) => {
+      btn.addEventListener('click', () => selectMode(Number(btn.dataset.mode)));
+    });
+
+    document.querySelectorAll('[data-fader]').forEach((range) => {
+      range.addEventListener('input', () => {
+        const key = range.dataset.fader;
+        faders[key] = Number(range.value);
+        syncFadersUI();
+      });
+    });
+
+    document.querySelector('[data-action="toggle-run"]').addEventListener('click', () => {
+      setRunning(!running);
+    });
+
+    document.querySelector('[data-action="add-five"]').addEventListener('click', () => {
+      remainingSec += 300;
+      readoutEl.textContent = formatTime(remainingSec);
+    });
+
+    document.querySelector('[data-action="reset"]').addEventListener('click', () => {
+      setRunning(false);
+      remainingSec = MODES[currentMode].mins * 60;
+      readoutEl.textContent = formatTime(remainingSec);
+      document.querySelector('[data-role="mode-state"]').textContent = '已机械复位 · 目标准备就绪';
+    });
+
+    drawWave(0);
+  </script>
+</body>
+</html>

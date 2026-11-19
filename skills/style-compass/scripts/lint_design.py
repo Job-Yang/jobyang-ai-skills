@@ -668,8 +668,12 @@ def lint_page(html: str, phase: str, tokens: Optional[dict], source: str = "page
             if gray_scope and not is_grayish(rgba, 0.04):
                 colored.setdefault(hexed, d["line"])
             if visual and palette:
-                if rgba[3] < 1 and (is_grayish(rgba, 0.01)):
-                    continue
+                if rgba[3] < 1:
+                    if is_grayish(rgba, 0.03):
+                        continue
+                    opaque = (rgba[0], rgba[1], rgba[2], 1.0)
+                    if any(delta_e(opaque, c) <= 6.0 for c in palette.values()):
+                        continue
                 if min(delta_e(rgba, c) for c in palette.values()) > 2.5:
                     off_token.setdefault(hexed, (d["line"], d["selector"]))
     if colored:

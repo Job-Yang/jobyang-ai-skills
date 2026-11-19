@@ -1,0 +1,1306 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="daylight">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Liquid Glass · 浮光空间灵感与听单</title>
+  <style>
+    :root {
+      --bg-base: #E7F0F6;
+      --bg-glow-1: rgba(14, 165, 233, 0.24);
+      --bg-glow-2: rgba(245, 158, 11, 0.22);
+      --bg-glow-3: rgba(20, 184, 166, 0.20);
+      --ink: #0F172A;
+      --ink-muted: #475569;
+      --ink-faint: #64748B;
+      --card-bg: #FFFFFF;
+      --card-tinted: #F4F9FC;
+      --card-border: rgba(15, 23, 42, 0.08);
+      --glass-bg: rgba(255, 255, 255, 0.56);
+      --glass-bg-strong: rgba(255, 255, 255, 0.72);
+      --glass-border: rgba(255, 255, 255, 0.58);
+      --glass-shadow: 0 18px 42px -12px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(15, 23, 42, 0.06);
+      --glass-inset: rgba(255, 255, 255, 0.85);
+      --glass-rim-a: rgba(255, 255, 255, 0.88);
+      --glass-rim-b: rgba(255, 255, 255, 0.18);
+      --pill-active-bg: rgba(255, 255, 255, 0.92);
+      --pill-active-ink: #0F172A;
+      --accent: #0284C7;
+      --accent-ink: #FFFFFF;
+      --accent-soft: rgba(2, 132, 199, 0.12);
+      --warm: #D97706;
+      --warm-soft: rgba(217, 119, 6, 0.12);
+      --font-sans: 'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+      --font-display: 'SF Pro Display', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --spring-snappy: linear(
+        0, 0.0677, 0.2181, 0.3941, 0.5621, 0.7053, 0.8177, 0.8999,
+        0.9559, 0.9912, 1.011, 1.02, 1.023, 1.021, 1.018, 1.014,
+        1.01, 1.007, 1.004, 1.002, 1
+      );
+      --spring-smooth: linear(
+        0, 0.0539, 0.1705, 0.3058, 0.437, 0.5536, 0.6521, 0.7325,
+        0.7965, 0.8466, 0.8852, 0.9147, 0.9369, 0.9536, 0.966,
+        0.9751, 0.9819, 0.9869, 0.9905, 0.9931, 1
+      );
+    }
+
+    html[data-theme="dusk"] {
+      --bg-base: #0B131B;
+      --bg-glow-1: rgba(14, 165, 233, 0.22);
+      --bg-glow-2: rgba(245, 158, 11, 0.16);
+      --bg-glow-3: rgba(16, 185, 129, 0.16);
+      --ink: #F1F5F9;
+      --ink-muted: #94A3B8;
+      --ink-faint: #64748B;
+      --card-bg: #131E29;
+      --card-tinted: #162330;
+      --card-border: rgba(255, 255, 255, 0.10);
+      --glass-bg: rgba(19, 30, 41, 0.62);
+      --glass-bg-strong: rgba(24, 38, 52, 0.78);
+      --glass-border: rgba(255, 255, 255, 0.18);
+      --glass-shadow: 0 22px 48px -12px rgba(0, 0, 0, 0.55), 0 4px 14px rgba(0, 0, 0, 0.3);
+      --glass-inset: rgba(255, 255, 255, 0.22);
+      --glass-rim-a: rgba(255, 255, 255, 0.38);
+      --glass-rim-b: rgba(255, 255, 255, 0.06);
+      --pill-active-bg: rgba(255, 255, 255, 0.16);
+      --pill-active-ink: #F8FAFC;
+      --accent: #38BDF8;
+      --accent-ink: #082032;
+      --accent-soft: rgba(56, 189, 248, 0.16);
+      --warm: #FBBF24;
+      --warm-soft: rgba(251, 191, 36, 0.16);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(ellipse 60% 48% at 18% 12%, var(--bg-glow-1), transparent 72%),
+        radial-gradient(ellipse 52% 45% at 86% 18%, var(--bg-glow-2), transparent 70%),
+        radial-gradient(ellipse 55% 42% at 54% 88%, var(--bg-glow-3), transparent 70%),
+        var(--bg-base);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.58;
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 300ms var(--ease-out), color 220ms var(--ease-out);
+    }
+
+    button, input, textarea {
+      font: inherit;
+      color: inherit;
+      letter-spacing: 0;
+    }
+
+    button { cursor: pointer; }
+
+    button:focus-visible, input:focus-visible, textarea:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Apple 液态玻璃基础材质层：只用于悬浮导航、控件与浮动胶囊 */
+    .glass-surface {
+      position: relative;
+      background: var(--glass-bg);
+      backdrop-filter: blur(22px) saturate(185%);
+      -webkit-backdrop-filter: blur(22px) saturate(185%);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      transition:
+        background-color 220ms var(--ease-out),
+        border-color 220ms var(--ease-out),
+        transform 420ms var(--spring-snappy);
+    }
+
+    .glass-surface::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(
+        135deg,
+        var(--glass-rim-a) 0%,
+        var(--glass-rim-b) 42%,
+        rgba(255, 255, 255, 0.04) 70%,
+        var(--glass-rim-b) 100%
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .glass-surface::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(
+        260px circle at var(--mx, 50%) var(--my, 0%),
+        rgba(255, 255, 255, 0.24),
+        transparent 70%
+      );
+      opacity: var(--sheen, 0);
+      transition: opacity 220ms var(--ease-out);
+      pointer-events: none;
+    }
+
+    .glass-surface:hover {
+      --sheen: 1;
+    }
+
+    .page-shell {
+      position: relative;
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 16px 28px 116px;
+    }
+
+    /* 顶部悬浮液态玻璃导航岛 */
+    .top-island-wrap {
+      position: sticky;
+      top: 14px;
+      z-index: 30;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 22px;
+      pointer-events: none;
+    }
+
+    .top-island {
+      pointer-events: auto;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 7px 10px 7px 14px;
+      border-radius: 999px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-gem {
+      width: 30px;
+      height: 30px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, rgba(2, 132, 199, 0.22), rgba(20, 184, 166, 0.28));
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      color: var(--accent);
+      flex: none;
+    }
+
+    .brand-name {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .brand-name strong {
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .brand-name span {
+      font-size: 11px;
+      color: var(--ink-muted);
+      white-space: nowrap;
+    }
+
+    /* 滑动液态分段控制器 */
+    .seg-bar {
+      position: relative;
+      display: inline-grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 4px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      min-width: 312px;
+    }
+
+    html[data-theme="dusk"] .seg-bar {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .seg-indicator {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: calc((100% - 8px) / 3);
+      height: calc(100% - 8px);
+      border-radius: 999px;
+      background: var(--pill-active-bg);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+      transition: transform 420ms var(--spring-snappy);
+      pointer-events: none;
+    }
+
+    .seg-btn {
+      position: relative;
+      z-index: 1;
+      height: 32px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--ink-muted);
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: color 180ms var(--ease-out);
+    }
+
+    .seg-btn[aria-selected="true"] {
+      color: var(--pill-active-ink);
+      font-weight: 600;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: none;
+    }
+
+    .glass-pill-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 34px;
+      padding: 0 13px 0 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      background: rgba(255, 255, 255, 0.45);
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: transform 160ms var(--ease-out), background-color 180ms var(--ease-out);
+    }
+
+    html[data-theme="dusk"] .glass-pill-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    .glass-pill-btn:hover {
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    html[data-theme="dusk"] .glass-pill-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .glass-pill-btn:active {
+      transform: scale(0.96);
+    }
+
+    .count-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* 主工作流布局：左侧悬浮玻璃工具轨 + 右侧高可读实体内容流 */
+    .workspace {
+      display: grid;
+      grid-template-columns: 58px minmax(0, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .left-glass-rail {
+      position: sticky;
+      top: 84px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 7px;
+      border-radius: 999px;
+    }
+
+    .rail-icon-btn {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      border: 0;
+      background: transparent;
+      color: var(--ink-muted);
+      display: grid;
+      place-items: center;
+      transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out), transform 140ms var(--ease-out);
+    }
+
+    .rail-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.55);
+      color: var(--ink);
+    }
+
+    html[data-theme="dusk"] .rail-icon-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .rail-icon-btn:active { transform: scale(0.94); }
+
+    .rail-icon-btn[aria-pressed="true"] {
+      background: var(--accent);
+      color: var(--accent-ink);
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.28);
+    }
+
+    .rail-divider {
+      width: 24px;
+      height: 1px;
+      background: var(--card-border);
+      margin: 2px 0;
+    }
+
+    /* 主体内容：严禁玻璃叠玻璃，使用干净的同心圆角实面 */
+    .stage-main {
+      min-width: 0;
+    }
+
+    @keyframes blur-replace-in {
+      from {
+        opacity: 0;
+        filter: blur(5px);
+        transform: translateY(6px) scale(0.99);
+      }
+      to {
+        opacity: 1;
+        filter: blur(0);
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .stage-main[data-entering="true"] .content-grid {
+      animation: blur-replace-in 260ms var(--ease-out) both;
+    }
+
+    .hero-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 18px;
+      padding: 0 4px;
+    }
+
+    .hero-head h1 {
+      margin: 0 0 4px;
+      font-family: var(--font-display);
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1.24;
+    }
+
+    .hero-head p {
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: 14px;
+    }
+
+    .filter-summary {
+      font-size: 12px;
+      color: var(--ink-muted);
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    /* 实体内容表面（外半径 26px，内间距 12px → 内元素圆角 14px） */
+    .surface-tile {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 26px;
+      padding: 12px;
+      box-shadow: 0 8px 26px -12px rgba(15, 23, 42, 0.08);
+      transition: transform 420ms var(--spring-smooth), box-shadow 220ms var(--ease-out), border-color 180ms var(--ease-out);
+    }
+
+    .surface-tile:hover {
+      border-color: rgba(2, 132, 199, 0.24);
+      box-shadow: 0 16px 34px -14px rgba(15, 23, 42, 0.14);
+    }
+
+    .hero-media {
+      position: relative;
+      height: 210px;
+      border-radius: 14px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0E4D64 0%, #177E89 48%, #E6A960 100%);
+    }
+
+    .hero-media > svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .media-pill {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.56);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.34);
+      color: #FFFFFF;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .media-pill svg {
+      flex: none;
+    }
+
+    .tile-body {
+      padding: 16px 10px 8px;
+    }
+
+    .tile-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .tag-chip.warm {
+      background: var(--warm-soft);
+      color: var(--warm);
+    }
+
+    .tile-title {
+      margin: 0 0 6px;
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+
+    .tile-desc {
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: 13.5px;
+      line-height: 1.65;
+    }
+
+    .spotlight-tile {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: var(--card-tinted);
+    }
+
+    .palette-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .swatch-box {
+      border-radius: 14px;
+      padding: 10px 8px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      height: 72px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .metric-mini {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+    }
+
+    .metric-mini span {
+      display: block;
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin-bottom: 2px;
+    }
+
+    .metric-mini strong {
+      font-size: 22px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .bookmark-btn {
+      position: relative;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid var(--card-border);
+      background: transparent;
+      color: var(--ink-muted);
+      display: grid;
+      place-items: center;
+      transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out), transform 140ms var(--ease-out);
+    }
+
+    .bookmark-btn::after {
+      content: "";
+      position: absolute;
+      inset: -4px;
+    }
+
+    .bookmark-btn:hover {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .bookmark-btn:active { transform: scale(0.92); }
+
+    .bookmark-btn[aria-pressed="true"] {
+      background: var(--accent-soft);
+      border-color: rgba(2, 132, 199, 0.35);
+      color: var(--accent);
+    }
+
+    /* 下半部三列灵感卡片 */
+    .feed-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .feed-visual {
+      height: 112px;
+      border-radius: 14px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .feed-title {
+      margin: 0 0 6px;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .feed-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--card-border);
+      font-size: 12px;
+      color: var(--ink-faint);
+    }
+
+    /* 底部悬浮液态玻璃 Dock（分离双胶囊 Container） */
+    .bottom-dock-wrap {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 18px;
+      z-index: 40;
+      display: flex;
+      justify-content: center;
+      padding: 0 20px;
+      pointer-events: none;
+    }
+
+    .dock-cluster {
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      max-width: 100%;
+    }
+
+    .player-dock {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 14px 8px 9px;
+      border-radius: 999px;
+      min-width: 340px;
+    }
+
+    .play-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      border: 0;
+      background: var(--accent);
+      color: var(--accent-ink);
+      display: grid;
+      place-items: center;
+      flex: none;
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.30);
+      transition: transform 320ms var(--spring-snappy);
+    }
+
+    .play-circle:active { transform: scale(0.92); }
+
+    .track-info {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .track-info strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .track-sub {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--ink-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .eq-bars {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 2.5px;
+      height: 14px;
+      margin-left: 4px;
+    }
+
+    .eq-bars span {
+      width: 2.5px;
+      height: 5px;
+      border-radius: 2px;
+      background: var(--accent);
+      transition: height 180ms var(--ease-out);
+    }
+
+    .player-dock[data-playing="true"] .eq-bars span {
+      animation: eq-wave 640ms var(--ease-out) infinite alternate;
+    }
+
+    .player-dock[data-playing="true"] .eq-bars span:nth-child(2) { animation-delay: 140ms; }
+    .player-dock[data-playing="true"] .eq-bars span:nth-child(3) { animation-delay: 280ms; }
+
+    @keyframes eq-wave {
+      from { height: 4px; }
+      to { height: 14px; }
+    }
+
+    .add-glass-btn {
+      height: 54px;
+      padding: 0 20px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+
+    .add-glass-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* 起源点缩放速记浮层（transform-origin: bottom right） */
+    .composer-anchor {
+      position: relative;
+    }
+
+    .origin-popover {
+      position: absolute;
+      right: 0;
+      bottom: 66px;
+      width: min(360px, calc(100vw - 32px));
+      padding: 16px;
+      border-radius: 24px;
+      background: var(--glass-bg-strong);
+      backdrop-filter: blur(26px) saturate(190%);
+      -webkit-backdrop-filter: blur(26px) saturate(190%);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-inset);
+      transform-origin: bottom right;
+      opacity: 0;
+      transform: scale(0.94) translateY(8px);
+      pointer-events: none;
+      transition:
+        transform 420ms var(--spring-snappy),
+        opacity 180ms var(--ease-out);
+    }
+
+    .origin-popover[data-open="true"] {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+    }
+
+    .popover-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .popover-head strong {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .popover-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      border: 0;
+      background: rgba(15, 23, 42, 0.08);
+      display: grid;
+      place-items: center;
+    }
+
+    .popover-input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--ink);
+      margin-bottom: 10px;
+      resize: none;
+    }
+
+    .popover-submit {
+      width: 100%;
+      height: 38px;
+      border-radius: 999px;
+      border: 0;
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    @media (max-width: 960px) {
+      .content-grid { grid-template-columns: 1fr; }
+      .feed-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .top-island { flex-wrap: wrap; border-radius: 26px; padding: 10px 12px; }
+      .brand-name span, .count-chip { display: none; }
+    }
+
+    @media (max-width: 720px) {
+      .page-shell { padding: 12px 14px 104px; }
+      .workspace { grid-template-columns: 1fr; }
+      .left-glass-rail { display: none; }
+      .feed-grid { grid-template-columns: 1fr; }
+      .seg-bar { width: 100%; min-width: 0; order: 3; }
+      .hero-head { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .hero-head h1 { font-size: 24px; }
+      .player-dock { min-width: 0; flex: 1 1 auto; }
+      .add-glass-btn span { display: none; }
+      .add-glass-btn { padding: 0 15px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <div class="top-island-wrap">
+      <header class="top-island glass-surface">
+        <div class="brand">
+          <span class="brand-gem" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18"/><path d="M12 7v10"/>
+            </svg>
+          </span>
+          <div class="brand-name">
+            <strong>浮光空间</strong>
+            <span>通透导航岛与实体内容分层</span>
+          </div>
+        </div>
+
+        <div class="seg-bar" role="tablist" aria-label="视图类别">
+          <div class="seg-indicator" data-role="seg-indicator"></div>
+          <button type="button" class="seg-btn" role="tab" aria-selected="true" data-tab="0" data-filter="all">视觉灵感</button>
+          <button type="button" class="seg-btn" role="tab" aria-selected="false" data-tab="1" data-filter="podcast">播客精选</button>
+          <button type="button" class="seg-btn" role="tab" aria-selected="false" data-tab="2" data-filter="notes">空间摘录</button>
+        </div>
+
+        <div class="top-actions">
+          <button type="button" class="glass-pill-btn" data-action="toggle-theme" aria-label="切换晴空与暮色氛围">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/>
+            </svg>
+            <span data-role="theme-label">暮色晶透</span>
+          </button>
+          <span class="count-chip" data-role="count-chip">6 项馆藏</span>
+        </div>
+      </header>
+    </div>
+
+    <div class="workspace">
+      <aside class="left-glass-rail glass-surface" aria-label="空间通道切换">
+        <button type="button" class="rail-icon-btn" aria-pressed="true" aria-label="全部收藏" title="全部收藏" data-rail="all">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>
+          </svg>
+        </button>
+        <button type="button" class="rail-icon-btn" aria-pressed="false" aria-label="建筑光影" title="建筑光影" data-rail="space">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 20h18"/><path d="M5 20V8l7-4 7 4v12"/><path d="M9 20v-6h6v6"/>
+          </svg>
+        </button>
+        <button type="button" class="rail-icon-btn" aria-pressed="false" aria-label="声音切片" title="声音切片" data-rail="audio">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 18v3"/><path d="M8 14v7"/><path d="M16 14v7"/><path d="M4 11v2"/><path d="M20 11v2"/><rect x="9" y="3" width="6" height="9" rx="3"/>
+          </svg>
+        </button>
+        <div class="rail-divider" role="separator"></div>
+        <button type="button" class="rail-icon-btn" aria-pressed="false" aria-label="仅看标星" title="仅看标星" data-rail="starred">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+          </svg>
+        </button>
+      </aside>
+
+      <main class="stage-main" data-role="stage-main">
+        <div class="hero-head">
+          <div>
+            <h1>本周空间光影与声场采集</h1>
+            <p>悬浮栏采用高饱和折射玻璃与 135° 镜面亮边，下方正文层保持清脆高可读实面。</p>
+          </div>
+          <div class="filter-summary" data-role="filter-summary">当前视角：全部灵感 · 按采集时间倒序</div>
+        </div>
+
+        <section class="content-grid">
+          <article class="surface-tile">
+            <div class="hero-media">
+              <svg viewBox="0 0 760 280" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <defs>
+                  <linearGradient id="skyWash" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#0C4A6E"/>
+                    <stop offset="52%" stop-color="#0D9488"/>
+                    <stop offset="100%" stop-color="#F59E0B"/>
+                  </linearGradient>
+                  <radialGradient id="sunOrb" cx="0.72" cy="0.32" r="0.45">
+                    <stop offset="0%" stop-color="#FEF3C7" stop-opacity="0.95"/>
+                    <stop offset="45%" stop-color="#F59E0B" stop-opacity="0.45"/>
+                    <stop offset="100%" stop-color="#0D9488" stop-opacity="0"/>
+                  </radialGradient>
+                </defs>
+                <rect width="760" height="280" fill="url(#skyWash)"/>
+                <circle cx="545" cy="90" r="145" fill="url(#sunOrb)"/>
+                <path d="M0 198 C160 152, 310 228, 495 178 C610 148, 690 176, 760 154 L760 280 L0 280 Z" fill="rgba(12, 74, 110, 0.44)"/>
+                <path d="M0 228 C190 192, 370 250, 560 212 C645 195, 710 215, 760 205 L760 280 L0 280 Z" fill="rgba(15, 23, 42, 0.34)"/>
+              </svg>
+              <span class="media-pill">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9"/><path d="m10 8 6 4-6 4z"/>
+                </svg>
+                <span>空间实地录音 · 08:42</span>
+              </span>
+            </div>
+
+            <div class="tile-body">
+              <div class="tile-meta-row">
+                <span class="tag-chip">建筑与自然光学</span>
+                <button type="button" class="bookmark-btn" aria-pressed="true" aria-label="收藏主条目" data-star="hero">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+                  </svg>
+                </button>
+              </div>
+              <h2 class="tile-title">直岛美术馆天窗：当漫反射混凝土接住海面碎金</h2>
+              <p class="tile-desc">下午三点半太阳斜射过 12 度倾斜天窗时，墙面从冷青灰逐渐染出一条温柔的暖琥珀光带——恰如液态玻璃边缘捉住的那道 135° Fresnel 高光。</p>
+            </div>
+          </article>
+
+          <aside class="surface-tile spotlight-tile">
+            <div class="tile-body" style="padding-top: 8px;">
+              <div class="tile-meta-row">
+                <span class="tag-chip warm">本日光影色谱</span>
+                <span style="font-size:12px;color:var(--ink-faint);">同心圆角 26/14px</span>
+              </div>
+              <h2 class="tile-title">海雾天青 × 琥珀晴光</h2>
+              <p class="tile-desc">液态玻璃需要身后有明暗与冷暖落差才能显出折射通透，用纯净天青与晨光金代替陈旧紫蓝渐变。</p>
+
+              <div class="palette-strip">
+                <div class="swatch-box" style="background:#0284C7;color:#FFFFFF;">#0284C7</div>
+                <div class="swatch-box" style="background:#0D9488;color:#FFFFFF;">#0D9488</div>
+                <div class="swatch-box" style="background:#F59E0B;color:#1C1917;">#F59E0B</div>
+                <div class="swatch-box" style="background:#E7F0F6;color:#0F172A;">#E7F0F6</div>
+              </div>
+            </div>
+
+            <div class="metric-row">
+              <div class="metric-mini">
+                <span>本周采撷片段</span>
+                <strong data-role="stat-total">6 条</strong>
+              </div>
+              <div class="metric-mini">
+                <span>已设重点标记</span>
+                <strong data-role="stat-starred">2 处</strong>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section class="feed-grid" data-role="feed-grid" aria-label="灵感馆藏列表"></section>
+      </main>
+    </div>
+  </div>
+
+  <!-- 底部悬浮液态玻璃 Dock（播放器胶囊 + 速记按钮分开置于独立玻璃组） -->
+  <div class="bottom-dock-wrap">
+    <div class="dock-cluster">
+      <div class="player-dock glass-surface" data-role="player-dock" data-playing="false">
+        <button type="button" class="play-circle" data-action="toggle-play" aria-label="播放或暂停当前声音切片">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" data-role="play-icon">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        </button>
+        <div class="track-info">
+          <strong>EP.14 材质物理学：为什么真玻璃不发灰</strong>
+          <div class="track-sub">
+            <span data-role="play-time">03:18 / 18:40</span>
+            <span class="eq-bars" aria-hidden="true"><span></span><span></span><span></span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="composer-anchor">
+        <div class="origin-popover" data-role="popover" data-open="false" role="dialog" aria-label="速记新灵感">
+          <div class="popover-head">
+            <strong>速记空间灵感</strong>
+            <button type="button" class="popover-close" data-action="close-popover" aria-label="关闭速记浮层">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+              </svg>
+            </button>
+          </div>
+          <textarea class="popover-input" rows="3" placeholder="记下一句触动你的光线、颜色或交互手感..." data-role="note-input"></textarea>
+          <button type="button" class="popover-submit" data-action="submit-note">写入灵感馆藏</button>
+        </div>
+
+        <button type="button" class="add-glass-btn glass-surface" data-action="toggle-popover" aria-expanded="false">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M12 5v14"/><path d="M5 12h14"/>
+          </svg>
+          <span>速记一条</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ITEMS = [
+      {
+        id: 'c1',
+        kind: 'podcast',
+        rail: 'audio',
+        tag: '播客 · 声学与交互',
+        title: '手指触摸屏幕的 16 毫秒心理学',
+        desc: '探讨如何通过 ease-out 与原生弹簧在第一帧建立“跟手感”，消除动画迟滞。',
+        meta: '18 分钟 · 正在收听',
+        gradient: 'linear-gradient(135deg, #0E7490, #38BDF8)',
+        starred: false
+      },
+      {
+        id: 'c2',
+        kind: 'notes',
+        rail: 'space',
+        tag: '摘录 · 建筑光学',
+        title: '从同心圆角推导嵌套卡片的视觉秩序',
+        desc: '外框 26px 减掉 12px 内边距得到精确的 14px，消除嵌套边界的挤压错位。',
+        meta: '昨日采集 · 空间法则',
+        gradient: 'linear-gradient(135deg, #D97706, #FCD34D)',
+        starred: true
+      },
+      {
+        id: 'c3',
+        kind: 'podcast',
+        rail: 'audio',
+        tag: '播客 · 设计工程',
+        title: '永远不要让玻璃层叠在另一层玻璃之上',
+        desc: '导航浮动在内容之上建立空间纵深，内容卡片自身则必须沉稳好读。',
+        meta: '24 分钟 · 待听',
+        gradient: 'linear-gradient(135deg, #0F766E, #34D399)',
+        starred: false
+      }
+    ];
+
+    let activeTab = 0;
+    let activeRail = 'all';
+    let playing = false;
+    let playSec = 198;
+    let playTimer = null;
+
+    const feedGrid = document.querySelector('[data-role="feed-grid"]');
+    const stageMain = document.querySelector('[data-role="stage-main"]');
+    const segIndicator = document.querySelector('[data-role="seg-indicator"]');
+    const popover = document.querySelector('[data-role="popover"]');
+    const noteInput = document.querySelector('[data-role="note-input"]');
+
+    function esc(text) {
+      return String(text ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function filteredItems() {
+      const tabFilter = ['all', 'podcast', 'notes'][activeTab];
+      return ITEMS.filter((item) => {
+        if (tabFilter !== 'all' && item.kind !== tabFilter) return false;
+        if (activeRail === 'starred' && !item.starred) return false;
+        if (activeRail === 'space' && item.rail !== 'space') return false;
+        if (activeRail === 'audio' && item.rail !== 'audio') return false;
+        return true;
+      });
+    }
+
+    function renderFeed() {
+      const list = filteredItems();
+      const starredCount = ITEMS.filter((i) => i.starred).length + 1;
+      document.querySelector('[data-role="stat-total"]').textContent = `${ITEMS.length + 3} 条`;
+      document.querySelector('[data-role="stat-starred"]').textContent = `${starredCount} 处`;
+      document.querySelector('[data-role="count-chip"]').textContent = `${list.length + 3} 项馆藏`;
+
+      if (list.length === 0) {
+        feedGrid.innerHTML = `
+          <article class="surface-tile" style="grid-column: 1 / -1; text-align:center; padding: 36px 20px;">
+            <h3 class="tile-title" style="font-size:16px;">当前筛选下暂无卡片</h3>
+            <p class="tile-desc">试试切回「全部收藏」或点右下角速记一条新灵感。</p>
+          </article>
+        `;
+        return;
+      }
+
+      feedGrid.innerHTML = list.map((item) => `
+        <article class="surface-tile">
+          <div class="feed-visual" style="background: ${esc(item.gradient)};">
+            <svg width="72" height="36" viewBox="0 0 72 36" fill="none" stroke="rgba(255,255,255,0.86)" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+              <path d="M4 26 Q18 6 36 18 T68 12"/><circle cx="36" cy="18" r="3.5" fill="rgba(255,255,255,0.95)"/>
+            </svg>
+          </div>
+          <div class="tile-meta-row">
+            <span class="tag-chip">${esc(item.tag)}</span>
+            <button type="button" class="bookmark-btn" aria-pressed="${item.starred ? 'true' : 'false'}" aria-label="收藏 ${esc(item.title)}" data-toggle-star="${esc(item.id)}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="${item.starred ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+              </svg>
+            </button>
+          </div>
+          <h3 class="feed-title">${esc(item.title)}</h3>
+          <p class="tile-desc">${esc(item.desc)}</p>
+          <div class="feed-foot">
+            <span>${esc(item.meta)}</span>
+            <span>点击星标即刻保存</span>
+          </div>
+        </article>
+      `).join('');
+
+      feedGrid.querySelectorAll('[data-toggle-star]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.toggleStar;
+          const target = ITEMS.find((x) => x.id === id);
+          if (target) {
+            target.starred = !target.starred;
+            renderFeed();
+          }
+        });
+      });
+    }
+
+    function triggerBlurReplace() {
+      stageMain.dataset.entering = 'false';
+      void stageMain.offsetWidth;
+      stageMain.dataset.entering = 'true';
+    }
+
+    document.querySelectorAll('[data-tab]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeTab = Number(btn.dataset.tab);
+        document.querySelectorAll('[data-tab]').forEach((b) => {
+          b.setAttribute('aria-selected', b === btn ? 'true' : 'false');
+        });
+        segIndicator.style.transform = `translateX(${activeTab * 100}%)`;
+        const names = ['视觉灵感', '播客精选', '空间摘录'];
+        document.querySelector('[data-role="filter-summary"]').textContent = `当前视角：${names[activeTab]} · 按采集时间倒序`;
+        triggerBlurReplace();
+        renderFeed();
+      });
+    });
+
+    document.querySelectorAll('[data-rail]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeRail = btn.dataset.rail;
+        document.querySelectorAll('[data-rail]').forEach((b) => {
+          b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+        });
+        triggerBlurReplace();
+        renderFeed();
+      });
+    });
+
+    document.querySelector('[data-action="toggle-theme"]').addEventListener('click', () => {
+      const root = document.documentElement;
+      const isDusk = root.dataset.theme === 'dusk';
+      root.dataset.theme = isDusk ? 'daylight' : 'dusk';
+      document.querySelector('[data-role="theme-label"]').textContent = isDusk ? '暮色晶透' : '晴空通透';
+    });
+
+    document.querySelector('[data-star="hero"]').addEventListener('click', (e) => {
+      const btn = e.currentTarget;
+      const on = btn.getAttribute('aria-pressed') === 'true';
+      btn.setAttribute('aria-pressed', on ? 'false' : 'true');
+      btn.querySelector('svg').setAttribute('fill', on ? 'none' : 'currentColor');
+    });
+
+    // 底部玻璃播放器
+    const dock = document.querySelector('[data-role="player-dock"]');
+    const playIcon = document.querySelector('[data-role="play-icon"]');
+    const playTime = document.querySelector('[data-role="play-time"]');
+    document.querySelector('[data-action="toggle-play"]').addEventListener('click', () => {
+      playing = !playing;
+      dock.dataset.playing = playing ? 'true' : 'false';
+      playIcon.innerHTML = playing
+        ? '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>'
+        : '<path d="M8 5v14l11-7z"/>';
+      if (playing) {
+        playTimer = setInterval(() => {
+          playSec += 1;
+          const m = String(Math.floor(playSec / 60)).padStart(2, '0');
+          const s = String(playSec % 60).padStart(2, '0');
+          playTime.textContent = `${m}:${s} / 18:40`;
+        }, 1000);
+      } else {
+        clearInterval(playTimer);
+      }
+    });
+
+    // 起源点缩放速记浮层
+    function setPopover(open) {
+      popover.dataset.open = open ? 'true' : 'false';
+      document.querySelector('[data-action="toggle-popover"]').setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) setTimeout(() => noteInput.focus(), 80);
+    }
+
+    document.querySelector('[data-action="toggle-popover"]').addEventListener('click', () => {
+      setPopover(popover.dataset.open !== 'true');
+    });
+
+    document.querySelector('[data-action="close-popover"]').addEventListener('click', () => setPopover(false));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && popover.dataset.open === 'true') setPopover(false);
+    });
+
+    document.querySelector('[data-action="submit-note"]').addEventListener('click', () => {
+      const val = noteInput.value.trim();
+      if (!val) return;
+      ITEMS.unshift({
+        id: 'n-' + Date.now(),
+        kind: 'notes',
+        rail: 'space',
+        tag: '摘录 · 即时速记',
+        title: val.slice(0, 28),
+        desc: val,
+        meta: '刚刚写入 · 浮光速记',
+        gradient: 'linear-gradient(135deg, #0284C7, #F59E0B)',
+        starred: true
+      });
+      noteInput.value = '';
+      setPopover(false);
+      triggerBlurReplace();
+      renderFeed();
+    });
+
+    // 指针跟随镜面光泽
+    document.querySelectorAll('.glass-surface').forEach((el) => {
+      el.addEventListener('pointermove', (e) => {
+        const r = el.getBoundingClientRect();
+        el.style.setProperty('--mx', `${e.clientX - r.left}px`);
+        el.style.setProperty('--my', `${e.clientY - r.top}px`);
+      });
+    });
+
+    renderFeed();
+  </script>
+</body>
+</html>

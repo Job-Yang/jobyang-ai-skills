@@ -23,7 +23,7 @@ AI 时代最容易被低估的，是那些能反复起作用的工作方式。�
 | [opportunity-radar](./skills/opportunity-radar/) | 机会雷达：从公开信息或用户材料中筛出产品线索，逐条保留来源、证据和信号强度。 |
 | [opportunity-scorecard](./skills/opportunity-scorecard/) | 机会评分卡：为想法取证、按十维评估潜力，由脚本计算综合分和结论。 |
 | [product-brief](./skills/product-brief/) | 产品需求与计划：把直接需求或研究材料整理成 PRD、可验证验收和里程碑安排。 |
-| [style-compass](./skills/style-compass/) | 设计罗盘：用固定评审工作台完成 UI/UX，保留高保真候选、区域评论、定稿原型和设计规格。 |
+| [style-compass](./skills/style-compass/) | 设计罗盘：内置 9 套高定视觉与原生物理动效工艺包及五轴基因混搭引擎，支持单页直出、画廊盲选与完整四关评审。 |
 | [engineering-docs](./skills/engineering-docs/) | 研发技术文档统一入口：读取上下文、协作成文、形成工程决定，按需生成图示并验证可实施性。 |
 | [outside-view](./skills/outside-view/) | 兼听：只补会改变决定的外部证据，判断来源与冲突，并及时停止无效检索。 |
 | [sansi-erhouxing](./skills/sansi-erhouxing/) | 三思而后行：改任何成形文档前先通读全文骨架，别只盯一段、别补丁摞补丁。 |

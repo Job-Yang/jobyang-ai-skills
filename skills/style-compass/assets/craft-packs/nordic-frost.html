@@ -1,0 +1,1209 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nordic Frost · 极光雾面双态工作台</title>
+  <style>
+    :root {
+      --canvas: #0D1620;
+      --glow-a: rgba(38, 102, 138, 0.24);
+      --glow-b: rgba(16, 185, 129, 0.11);
+      --panel: rgba(20, 31, 44, 0.78);
+      --panel-solid: #152130;
+      --panel-elev: rgba(28, 43, 60, 0.86);
+      --border: rgba(226, 238, 248, 0.10);
+      --border-strong: rgba(226, 238, 248, 0.18);
+      --inset-top: rgba(255, 255, 255, 0.08);
+      --ink: #EDF3F8;
+      --ink-muted: #98AAB9;
+      --ink-faint: #677A8C;
+      --accent: #38BDF8;
+      --accent-strong: #0EA5E9;
+      --accent-soft: rgba(56, 189, 248, 0.14);
+      --accent-ink: #082032;
+      --ok: #10B981;
+      --ok-soft: rgba(16, 185, 129, 0.14);
+      --amber: #F59E0B;
+      --amber-soft: rgba(245, 158, 11, 0.14);
+      --shadow-shell: 0 18px 46px -18px rgba(0, 0, 0, 0.55);
+      --font-sans: 'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --spring-snappy: linear(
+        0, 0.0677, 0.2181, 0.3941, 0.5621, 0.7053, 0.8177, 0.8999,
+        0.9559, 0.9912, 1.011, 1.02, 1.023, 1.021, 1.018, 1.014,
+        1.01, 1.007, 1.004, 1.002, 1
+      );
+      --spring-smooth: linear(
+        0, 0.0539, 0.1705, 0.3058, 0.437, 0.5536, 0.6521, 0.7325,
+        0.7965, 0.8466, 0.8852, 0.9147, 0.9369, 0.9536, 0.966,
+        0.9751, 0.9819, 0.9869, 0.9905, 0.9931, 1
+      );
+    }
+
+    html[data-theme="light"] {
+      --canvas: #E8EFF4;
+      --glow-a: rgba(56, 189, 248, 0.16);
+      --glow-b: rgba(15, 118, 110, 0.10);
+      --panel: rgba(250, 253, 255, 0.84);
+      --panel-solid: #FFFFFF;
+      --panel-elev: rgba(236, 244, 249, 0.92);
+      --border: rgba(22, 42, 60, 0.09);
+      --border-strong: rgba(22, 42, 60, 0.18);
+      --inset-top: rgba(255, 255, 255, 0.90);
+      --ink: #132230;
+      --ink-muted: #4D6275;
+      --ink-faint: #75899B;
+      --accent: #0284C7;
+      --accent-strong: #0369A1;
+      --accent-soft: rgba(2, 132, 199, 0.11);
+      --accent-ink: #FFFFFF;
+      --ok: #059669;
+      --ok-soft: rgba(5, 150, 105, 0.11);
+      --amber: #D97706;
+      --amber-soft: rgba(217, 119, 6, 0.11);
+      --shadow-shell: 0 18px 42px -18px rgba(19, 34, 48, 0.13);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      overflow-x: hidden;
+      background:
+        radial-gradient(ellipse 68% 48% at 22% 8%, var(--glow-a), transparent 72%),
+        radial-gradient(ellipse 52% 40% at 86% 85%, var(--glow-b), transparent 68%),
+        var(--canvas);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.56;
+      letter-spacing: 0;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 260ms var(--ease-out), color 200ms var(--ease-out);
+    }
+
+    button, input {
+      font: inherit;
+      color: inherit;
+      letter-spacing: 0;
+    }
+
+    button { cursor: pointer; }
+
+    button:focus-visible, input:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* 分离式雾面双容器布局：外框边距 16px，面板圆角 20px，内部控件 12px */
+    .shell {
+      display: grid;
+      grid-template-columns: 224px minmax(0, 1fr);
+      gap: 14px;
+      padding: 16px;
+      min-height: 100vh;
+      max-width: 1480px;
+      margin: 0 auto;
+    }
+
+    .frost-panel {
+      background: var(--panel);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow-shell), inset 0 1px 0 var(--inset-top);
+      transition: background-color 240ms var(--ease-out), border-color 200ms var(--ease-out);
+    }
+
+    /* 左侧独立雾面侧栏 */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      padding: 16px 12px;
+      min-width: 0;
+      min-height: calc(100vh - 32px);
+      position: sticky;
+      top: 16px;
+      max-height: calc(100vh - 32px);
+    }
+
+    .workspace-id {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 8px 16px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    .avatar-orb {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0284C7, #0F766E);
+      display: grid;
+      place-items: center;
+      color: #FFFFFF;
+      flex: none;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    .workspace-id strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    .workspace-id span {
+      display: block;
+      font-size: 11px;
+      color: var(--ink-muted);
+    }
+
+    .nav-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1 1 auto;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink-muted);
+      font-size: 13.5px;
+      font-weight: 500;
+      text-align: left;
+      transition: background-color 140ms var(--ease-out), color 140ms var(--ease-out), border-color 140ms var(--ease-out), transform 120ms var(--ease-out);
+    }
+
+    .nav-btn-left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .nav-btn:hover {
+      background: var(--accent-soft);
+      color: var(--ink);
+    }
+
+    .nav-btn:active { transform: scale(0.98); }
+
+    .nav-btn[aria-current="page"] {
+      background: var(--accent-soft);
+      border-color: rgba(56, 189, 248, 0.25);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .nav-count {
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: var(--panel-elev);
+      color: var(--ink-muted);
+    }
+
+    .nav-section-label {
+      font-size: 11px;
+      color: var(--ink-faint);
+      padding: 14px 10px 6px;
+      font-weight: 500;
+    }
+
+    .side-foot {
+      padding: 12px 10px 4px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .status-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--ok);
+      box-shadow: 0 0 8px var(--ok);
+    }
+
+    /* 主工作区 */
+    .main-pane {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 20px 24px 24px;
+      gap: 18px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .topbar-title h1 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .topbar-title p {
+      margin: 3px 0 0;
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+
+    .topbar-tools {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 11px;
+      color: var(--ink-faint);
+      pointer-events: none;
+    }
+
+    .search-input {
+      height: 36px;
+      width: 210px;
+      padding: 0 12px 0 32px;
+      border-radius: 11px;
+      border: 1px solid var(--border);
+      background: var(--panel-elev);
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    .theme-switch {
+      position: relative;
+      display: inline-grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 3px;
+      border-radius: 11px;
+      background: var(--panel-elev);
+      border: 1px solid var(--border);
+    }
+
+    .theme-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: calc(50% - 3px);
+      height: calc(100% - 6px);
+      border-radius: 8px;
+      background: var(--panel-solid);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.14);
+      transition: transform 420ms var(--spring-snappy);
+      pointer-events: none;
+    }
+
+    html[data-theme="light"] .theme-thumb {
+      transform: translateX(100%);
+    }
+
+    .theme-opt {
+      position: relative;
+      z-index: 1;
+      height: 28px;
+      padding: 0 11px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--ink-muted);
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .theme-opt[aria-pressed="true"] {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .butler-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 36px;
+      padding: 0 14px 0 12px;
+      border-radius: 11px;
+      border: 0;
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 8px 18px -6px rgba(14, 165, 233, 0.42);
+      transition: transform 160ms var(--ease-out), background-color 160ms var(--ease-out);
+    }
+
+    .butler-btn:hover { background: var(--accent-strong); }
+    .butler-btn:active { transform: scale(0.96); }
+
+    /* 内容板块 */
+    .block {
+      min-width: 0;
+      background: var(--panel-elev);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 18px;
+      box-shadow: inset 0 1px 0 var(--inset-top);
+    }
+
+    .block-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .block-title {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .block-title h2 {
+      margin: 0;
+      font-size: 15.5px;
+      font-weight: 600;
+    }
+
+    .block-title span {
+      font-size: 12px;
+      color: var(--ink-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ghost-btn {
+      height: 30px;
+      padding: 0 11px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--ink-muted);
+      font-size: 12px;
+      font-weight: 500;
+      transition: background-color 150ms var(--ease-out), color 150ms var(--ease-out);
+    }
+
+    .ghost-btn:hover {
+      background: var(--accent-soft);
+      color: var(--ink);
+    }
+
+    /* 决策队列：用发丝线区分行，不堆砌卡片嵌套 */
+    .decision-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .decision-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 16px;
+      padding: 13px 4px;
+      border-top: 1px solid var(--border);
+      transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
+    }
+
+    .decision-row > div {
+      min-width: 0;
+    }
+
+    .decision-row:first-child { border-top: 0; padding-top: 4px; }
+    .decision-row:last-child { padding-bottom: 4px; }
+
+    .decision-title-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .level-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 7px;
+      font-size: 11.5px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .level-pill.amber { background: var(--amber-soft); color: var(--amber); }
+    .level-pill.ok { background: var(--ok-soft); color: var(--ok); }
+    .level-pill.sky { background: var(--accent-soft); color: var(--accent); }
+
+    .decision-title-line strong {
+      font-size: 14.5px;
+      font-weight: 600;
+    }
+
+    .lineage {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .lineage-chip {
+      padding: 1px 7px;
+      border-radius: 6px;
+      background: var(--amber-soft);
+      color: var(--amber);
+      font-weight: 500;
+    }
+
+    .decision-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-approve {
+      height: 32px;
+      padding: 0 13px;
+      border-radius: 9px;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      background: var(--ok-soft);
+      color: var(--ok);
+      font-size: 12.5px;
+      font-weight: 600;
+      transition: transform 140ms var(--ease-out), background-color 150ms var(--ease-out);
+    }
+
+    .btn-approve:hover { background: var(--ok); color: #FFFFFF; }
+    .btn-approve:active { transform: scale(0.96); }
+
+    /* 下方推进节点流 */
+    .flow-wrap {
+      position: relative;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--panel-solid);
+      padding: 16px;
+      overflow-x: auto;
+    }
+
+    .flow-stage {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(175px, 1fr));
+      gap: 28px;
+      min-width: 760px;
+      align-items: center;
+    }
+
+    .flow-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .flow-line {
+      fill: none;
+      stroke: var(--ink-faint);
+      stroke-width: 2;
+      stroke-dasharray: 4 3;
+      transition: stroke 240ms var(--ease-out), stroke-width 240ms var(--ease-out);
+    }
+
+    .flow-line[data-active="true"] {
+      stroke: var(--accent);
+      stroke-width: 2.5;
+      stroke-dasharray: none;
+    }
+
+    .flow-node {
+      position: relative;
+      z-index: 2;
+      text-align: left;
+      padding: 12px 13px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--panel-elev);
+      transition: border-color 180ms var(--ease-out), transform 360ms var(--spring-snappy), box-shadow 220ms var(--ease-out);
+    }
+
+    .flow-node:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .flow-node[data-selected="true"] {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .node-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .node-head strong {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .node-meta {
+      font-size: 11.5px;
+      color: var(--ink-muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .node-inspector {
+      margin-top: 12px;
+      padding: 11px 14px;
+      border-radius: 12px;
+      background: var(--panel-elev);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 12.5px;
+    }
+
+    /* Sonner 景深堆叠撤销 Toast */
+    .toast-stack {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 60;
+      width: min(350px, calc(100vw - 32px));
+      height: 64px;
+      pointer-events: none;
+    }
+
+    .toast-item {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: var(--panel-solid);
+      border: 1px solid var(--border-strong);
+      box-shadow: 0 18px 36px -10px rgba(0, 0, 0, 0.35);
+      pointer-events: auto;
+      transition: transform 420ms var(--spring-snappy), opacity 200ms var(--ease-out);
+    }
+
+    .toast-item span {
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .toast-undo {
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 0;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      flex: none;
+    }
+
+    /* 右侧 AI 助理雾面抽屉 */
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      background: rgba(9, 15, 22, 0.45);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms var(--ease-out);
+    }
+
+    .drawer-backdrop[data-open="true"] {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .butler-drawer {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      bottom: 14px;
+      z-index: 80;
+      width: min(410px, calc(100vw - 28px));
+      border-radius: 20px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      visibility: hidden;
+      transform: translateX(108%);
+      transition: transform 460ms var(--spring-smooth), visibility 0ms linear 460ms;
+    }
+
+    .butler-drawer[data-open="true"] {
+      visibility: visible;
+      transform: translateX(0);
+      transition: transform 460ms var(--spring-smooth), visibility 0ms;
+    }
+
+    .drawer-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .drawer-messages {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .msg-bubble {
+      padding: 11px 13px;
+      border-radius: 13px;
+      font-size: 13px;
+      line-height: 1.55;
+      background: var(--panel-elev);
+      border: 1px solid var(--border);
+    }
+
+    .msg-bubble.user {
+      align-self: flex-end;
+      background: var(--accent-soft);
+      border-color: rgba(56, 189, 248, 0.25);
+    }
+
+    .quick-prompts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    @media (max-width: 960px) {
+      .shell { grid-template-columns: minmax(0, 1fr); padding: 10px; }
+      .sidebar {
+        position: static;
+        min-height: auto;
+        max-height: none;
+        padding: 12px;
+        overflow: hidden;
+      }
+      .nav-list {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+      .nav-btn { width: auto; white-space: nowrap; }
+      .nav-section-label, .side-foot { display: none; }
+      .main-pane { padding: 16px 14px; }
+      .search-input { width: 150px; }
+    }
+
+    @media (max-width: 600px) {
+      .decision-row { grid-template-columns: 1fr; }
+      .search-box { display: none; }
+      .topbar-title h1 { font-size: 22px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar frost-panel" aria-label="主导航">
+      <div class="workspace-id">
+        <span class="avatar-orb" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+        </span>
+        <div>
+          <strong>北境工作台</strong>
+          <span>双态极光雾面工作台</span>
+        </div>
+      </div>
+
+      <nav class="nav-list">
+        <button type="button" class="nav-btn" aria-current="page" data-nav="today">
+          <span class="nav-btn-left">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>
+            <span>我的一天</span>
+          </span>
+          <span class="nav-count" data-role="nav-badge">3</span>
+        </button>
+        <button type="button" class="nav-btn" data-nav="decisions">
+          <span class="nav-btn-left">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <span>决策</span>
+          </span>
+          <span class="nav-count">2</span>
+        </button>
+        <button type="button" class="nav-btn" data-nav="matters">
+          <span class="nav-btn-left">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>
+            <span>事情推进流</span>
+          </span>
+        </button>
+        <button type="button" class="nav-btn" data-nav="runs">
+          <span class="nav-btn-left">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span>Agent 运行</span>
+          </span>
+        </button>
+        <div class="nav-section-label">置顶专项</div>
+        <button type="button" class="nav-btn" data-nav="ai-desk">
+          <span class="nav-btn-left">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 10h8"/><path d="M8 14h5"/></svg>
+            <span>AI 工作台升级</span>
+          </span>
+        </button>
+      </nav>
+
+      <div class="side-foot">
+        <span class="status-live"><span class="status-dot" aria-hidden="true"></span>本地引擎已连</span>
+        <span>v2.4</span>
+      </div>
+    </aside>
+
+    <main class="main-pane frost-panel">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h1 data-role="page-heading">我的一天</h1>
+          <p data-role="page-sub">分离式雾面面板、决策快速拍板与节点推进链路</p>
+        </div>
+
+        <div class="topbar-tools">
+          <div class="search-box">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+            </svg>
+            <input class="search-input" type="search" placeholder="筛选待决事项..." data-role="search-input" aria-label="筛选待决事项">
+          </div>
+
+          <div class="theme-switch" role="group" aria-label="双态雾面主题">
+            <span class="theme-thumb" aria-hidden="true"></span>
+            <button type="button" class="theme-opt" data-theme-set="dark" aria-pressed="true">深空雾暗</button>
+            <button type="button" class="theme-opt" data-theme-set="light" aria-pressed="false">冰川浅雾</button>
+          </div>
+
+          <button type="button" class="butler-btn" data-action="open-butler">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            <span>AI 助理</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="block" aria-label="决策队列">
+        <div class="block-head">
+          <div class="block-title">
+            <h2>决策</h2>
+            <span data-role="decision-count">3 项待处理</span>
+          </div>
+          <button type="button" class="ghost-btn" data-action="restore-all">恢复全部样例</button>
+        </div>
+
+        <div class="decision-list" data-role="decision-list"></div>
+      </section>
+
+      <section class="block" aria-label="事情节点推进流">
+        <div class="block-head">
+          <div class="block-title">
+            <h2>事情 · AI 工作台重构主线</h2>
+            <span>点击节点高亮上游因果与当前证据</span>
+          </div>
+          <span class="level-pill sky">2 并行 · 1 待你处理</span>
+        </div>
+
+        <div class="flow-wrap">
+          <div class="flow-stage" data-role="flow-stage">
+            <svg class="flow-svg" viewBox="0 0 1000 100" preserveAspectRatio="none" aria-hidden="true">
+              <path class="flow-line" d="M 228 50 C 240 50, 244 50, 257 50" data-edge="1"/>
+              <path class="flow-line" d="M 485 50 C 497 50, 502 50, 515 50" data-edge="2"/>
+              <path class="flow-line" d="M 743 50 C 755 50, 760 50, 773 50" data-edge="3"/>
+            </svg>
+
+            <button type="button" class="flow-node" data-node="0" data-selected="false">
+              <div class="node-head">
+                <strong>明确目标与拆分</strong>
+                <span class="level-pill ok">已验收</span>
+              </div>
+              <div class="node-meta">
+                <span>agent-arch</span>
+                <span>1 份方案</span>
+              </div>
+            </button>
+
+            <button type="button" class="flow-node" data-node="1" data-selected="true">
+              <div class="node-head">
+                <strong>双态雾面视觉稿</strong>
+                <span class="level-pill amber">等你决定</span>
+              </div>
+              <div class="node-meta">
+                <span>style-compass</span>
+                <span>2 套状态</span>
+              </div>
+            </button>
+
+            <button type="button" class="flow-node" data-node="2" data-selected="false">
+              <div class="node-head">
+                <strong>多端同步与测试</strong>
+                <span class="level-pill sky">执行中</span>
+              </div>
+              <div class="node-meta">
+                <span>runner-ci</span>
+                <span>69/69 通过</span>
+              </div>
+            </button>
+
+            <button type="button" class="flow-node" data-node="3" data-selected="false">
+              <div class="node-head">
+                <strong>灰度发布许可</strong>
+                <span class="level-pill">未开始</span>
+              </div>
+              <div class="node-meta">
+                <span>gate-owner</span>
+                <span>等待上游</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div class="node-inspector" data-role="node-inspector">
+          <strong>当前焦点：双态雾面视觉稿（等你决定）</strong>
+          <span style="color:var(--ink-muted);">上游「明确目标与拆分」已验收通过 · 点右上方「通过」或切亮/暗态即可核对细节</span>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Sonner 景深堆叠撤销 Toast 容器 -->
+  <div class="toast-stack" data-role="toast-stack" aria-live="polite"></div>
+
+  <!-- AI 助理右侧雾面抽屉 -->
+  <div class="drawer-backdrop" data-role="drawer-backdrop" data-open="false"></div>
+  <aside class="butler-drawer frost-panel" data-role="butler-drawer" data-open="false" aria-label="AI 助理抽屉">
+    <div class="drawer-head">
+      <div style="display:flex;align-items:center;gap:9px;">
+        <span class="avatar-orb" style="width:28px;height:28px;" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/></svg>
+        </span>
+        <div>
+          <strong style="display:block;font-size:14px;">北境 AI 助理</strong>
+          <span style="font-size:11.5px;color:var(--ok);">就绪 · 上下文已挂载</span>
+        </div>
+      </div>
+      <button type="button" class="ghost-btn" data-action="close-butler">关闭</button>
+    </div>
+
+    <div class="drawer-messages" data-role="drawer-messages">
+      <div class="msg-bubble">已载入当前工作台 3 项待决记录与「AI 工作台重构」节点流。直接点选下方指令即可生成摘要或调整视图。</div>
+    </div>
+
+    <div class="quick-prompts">
+      <button type="button" class="ghost-btn" data-prompt="帮我汇总最紧迫的一条待决项">汇总紧迫待决</button>
+      <button type="button" class="ghost-btn" data-prompt="切到冰川浅雾看对比度">切换浅雾体检</button>
+    </div>
+  </aside>
+
+  <script>
+    const INITIAL_DECISIONS = [
+      {
+        id: 'd1',
+        badge: '待验收',
+        badgeKind: 'amber',
+        title: '验收 AI 助理资料整理与当前视觉基线',
+        from: '3 条输入',
+        mid: '等你验收',
+        to: '后续排期',
+        meta: 'AI 工作台 · 20:00 截止'
+      },
+      {
+        id: 'd2',
+        badge: '待确认',
+        badgeKind: 'amber',
+        title: '放行日历安排与截止提醒分离重构',
+        from: '当前事项',
+        mid: '等你确认',
+        to: '回归验证',
+        meta: '时间线专项 · 无副作用变更'
+      },
+      {
+        id: 'd3',
+        badge: '建议通过',
+        badgeKind: 'ok',
+        title: '锁定双态极光雾面令牌并同步 3 个宿主端',
+        from: 'tokens.json',
+        mid: '可自动归档',
+        to: '交付完成',
+        meta: '设计系统 · 已过单测'
+      }
+    ];
+
+    const NODE_DETAILS = [
+      { title: '明确目标与拆分（已验收）', desc: '已锁定双态雾面与节点推进核心流，产出一份可验证拆分方案。' },
+      { title: '双态雾面视觉稿（等你决定）', desc: '上游「明确目标与拆分」已验收通过 · 支持一键切换深空雾暗与冰川浅雾。' },
+      { title: '多端同步与测试（执行中）', desc: '自动化回归已跑通 69 项单测与双端溢出检查，正在等待发布节点确认。' },
+      { title: '灰度发布许可（未开始）', desc: '等待前序两项决策确认完成后，一键开启灰度推送。' }
+    ];
+
+    let decisions = INITIAL_DECISIONS.map((x) => ({ ...x }));
+    let archived = [];
+    let query = '';
+    let toasts = [];
+
+    const listEl = document.querySelector('[data-role="decision-list"]');
+    const toastStack = document.querySelector('[data-role="toast-stack"]');
+
+    function esc(text) {
+      return String(text ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function renderDecisions() {
+      const visible = decisions.filter((d) => !query || d.title.includes(query) || d.meta.includes(query));
+      document.querySelector('[data-role="decision-count"]').textContent = `${visible.length} 项待处理`;
+      document.querySelector('[data-role="nav-badge"]').textContent = String(decisions.length);
+
+      if (visible.length === 0) {
+        listEl.innerHTML = '<div style="padding:18px 4px;color:var(--ink-muted);font-size:13px;">当前待决已全部清空，可点右上角「恢复全部样例」继续体验。</div>';
+        return;
+      }
+
+      listEl.innerHTML = visible.map((d) => `
+        <div class="decision-row">
+          <div>
+            <div class="decision-title-line">
+              <span class="level-pill ${esc(d.badgeKind)}">${esc(d.badge)}</span>
+              <strong>${esc(d.title)}</strong>
+            </div>
+            <div class="lineage">
+              <span>${esc(d.from)}</span>
+              <span>→</span>
+              <span class="lineage-chip">${esc(d.mid)}</span>
+              <span>→</span>
+              <span>${esc(d.to)}</span>
+              <span>· ${esc(d.meta)}</span>
+            </div>
+          </div>
+          <div class="decision-actions">
+            <button type="button" class="ghost-btn" data-act="defer" data-id="${esc(d.id)}">延后</button>
+            <button type="button" class="btn-approve" data-act="approve" data-id="${esc(d.id)}">通过</button>
+          </div>
+        </div>
+      `).join('');
+
+      listEl.querySelectorAll('[data-act]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.id;
+          const act = btn.dataset.act;
+          const idx = decisions.findIndex((x) => x.id === id);
+          if (idx === -1) return;
+          const [removed] = decisions.splice(idx, 1);
+          archived.push({ item: removed, idx });
+          pushToast(`${act === 'approve' ? '已通过' : '已延后'}：${removed.title}`, removed.id);
+          renderDecisions();
+        });
+      });
+    }
+
+    function renderToasts() {
+      const slice = toasts.slice(0, 3);
+      toastStack.innerHTML = slice.map((t, i) => {
+        const scale = 1 - i * 0.05;
+        const y = -i * 11;
+        const op = 1 - i * 0.2;
+        return `
+          <div class="toast-item" style="transform: translateY(${y}px) scale(${scale}); opacity: ${op}; z-index: ${10 - i};">
+            <span>${esc(t.label)}</span>
+            <button type="button" class="toast-undo" data-undo="${esc(t.itemId)}">撤销</button>
+          </div>
+        `;
+      }).join('');
+
+      toastStack.querySelectorAll('[data-undo]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.undo;
+          const aIdx = archived.findIndex((x) => x.item.id === id);
+          if (aIdx !== -1) {
+            const { item, idx } = archived.splice(aIdx, 1)[0];
+            decisions.splice(Math.min(idx, decisions.length), 0, item);
+          }
+          toasts = toasts.filter((t) => t.itemId !== id);
+          renderDecisions();
+          renderToasts();
+        });
+      });
+    }
+
+    function pushToast(label, itemId) {
+      toasts.unshift({ label, itemId });
+      if (toasts.length > 3) toasts.length = 3;
+      renderToasts();
+    }
+
+    document.querySelector('[data-action="restore-all"]').addEventListener('click', () => {
+      decisions = INITIAL_DECISIONS.map((x) => ({ ...x }));
+      archived = [];
+      toasts = [];
+      renderDecisions();
+      renderToasts();
+    });
+
+    document.querySelector('[data-role="search-input"]').addEventListener('input', (e) => {
+      query = e.target.value.trim();
+      renderDecisions();
+    });
+
+    // 主题切换（深空雾暗 / 冰川浅雾）
+    function setTheme(mode) {
+      document.documentElement.dataset.theme = mode;
+      document.querySelectorAll('[data-theme-set]').forEach((b) => {
+        b.setAttribute('aria-pressed', b.dataset.themeSet === mode ? 'true' : 'false');
+      });
+    }
+
+    document.querySelectorAll('[data-theme-set]').forEach((btn) => {
+      btn.addEventListener('click', () => setTheme(btn.dataset.themeSet));
+    });
+
+    // 左侧导航切换视图提示
+    document.querySelectorAll('[data-nav]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-nav]').forEach((b) => {
+          b.setAttribute('aria-current', b === btn ? 'page' : 'false');
+        });
+        const label = btn.querySelector('.nav-btn-left span')?.textContent || '工作台';
+        document.querySelector('[data-role="page-heading"]').textContent = label;
+      });
+    });
+
+    // 节点推进流交互
+    document.querySelectorAll('[data-node]').forEach((node) => {
+      node.addEventListener('click', () => {
+        const idx = Number(node.dataset.node);
+        document.querySelectorAll('[data-node]').forEach((n) => {
+          n.dataset.selected = n === node ? 'true' : 'false';
+        });
+        document.querySelectorAll('[data-edge]').forEach((edge) => {
+          edge.dataset.active = Number(edge.dataset.edge) <= idx ? 'true' : 'false';
+        });
+        const info = NODE_DETAILS[idx];
+        document.querySelector('[data-role="node-inspector"]').innerHTML = `
+          <strong>当前焦点：${esc(info.title)}</strong>
+          <span style="color:var(--ink-muted);">${esc(info.desc)}</span>
+        `;
+      });
+    });
+    document.querySelector('[data-edge="1"]').dataset.active = 'true';
+
+    // AI 助理抽屉
+    const drawer = document.querySelector('[data-role="butler-drawer"]');
+    const backdrop = document.querySelector('[data-role="drawer-backdrop"]');
+    const msgWrap = document.querySelector('[data-role="drawer-messages"]');
+
+    function toggleDrawer(open) {
+      drawer.dataset.open = open ? 'true' : 'false';
+      backdrop.dataset.open = open ? 'true' : 'false';
+    }
+
+    document.querySelector('[data-action="open-butler"]').addEventListener('click', () => toggleDrawer(true));
+    document.querySelector('[data-action="close-butler"]').addEventListener('click', () => toggleDrawer(false));
+    backdrop.addEventListener('click', () => toggleDrawer(false));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && drawer.dataset.open === 'true') toggleDrawer(false);
+    });
+
+    document.querySelectorAll('[data-prompt]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const q = btn.dataset.prompt;
+        msgWrap.innerHTML += `<div class="msg-bubble user">${esc(q)}</div>`;
+        if (q.includes('浅雾')) {
+          setTheme('light');
+          msgWrap.innerHTML += '<div class="msg-bubble">已为你切换至「冰川浅雾」，主文字与次要描述对比度均高于 4.5:1。</div>';
+        } else {
+          const top = decisions[0];
+          const text = top ? `建议优先拍板「${top.title}」（${top.meta}），它卡住了后续节点放行。` : '当前待决已全部清空。';
+          msgWrap.innerHTML += `<div class="msg-bubble">${esc(text)}</div>`;
+        }
+        msgWrap.scrollTop = msgWrap.scrollHeight;
+      });
+    });
+
+    renderDecisions();
+  </script>
+</body>
+</html>

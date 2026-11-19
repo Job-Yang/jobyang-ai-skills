@@ -23,7 +23,7 @@ This repository is not a prompt cheat sheet. Each Skill should be a compact piec
 | [opportunity-radar](./skills/opportunity-radar/README.en.md) | Finds product leads in public sources or supplied material, retaining evidence and signal strength. |
 | [opportunity-scorecard](./skills/opportunity-scorecard/README.en.md) | Evaluates product ideas across ten dimensions, with deterministic scoring and verdicts. |
 | [product-brief](./skills/product-brief/README.en.md) | Turns direct requirements or research into a PRD, testable acceptance conditions, and milestones. |
-| [style-compass](./skills/style-compass/README.en.md) | Creates UI/UX in a shared review workbench, preserving high-fidelity candidates, region comments, prototypes, and specifications. |
+| [style-compass](./skills/style-compass/README.en.md) | Style Compass: UI/UX aesthetic and motion engine with 9 high-craft visual packs, composable 5-axis craft genome, interactive gallery picking, and full 4-stage review. |
 | [engineering-docs](./skills/engineering-docs/README.en.md) | Unified engineering-document entry point for context gathering, co-authoring, technical decisions, diagrams, and implementation validation. |
 | [outside-view](./skills/outside-view/README.en.md) | Retrieves evidence only when it can change a decision, resolves conflicts, and stops unproductive research. |
 | [sansi-erhouxing](./skills/sansi-erhouxing/README.en.md) | Think before you edit: read the whole skeleton of an existing document before changing it, instead of patching one paragraph at a time. |

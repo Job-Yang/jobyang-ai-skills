@@ -1,6 +1,6 @@
 # Style Compass — 风格坐标库 (Style Coordinate Library)
 #
-# 本库提供方向线索，不提供固定审美配方或效果保证。
+# 本库提供方向线索，不提供固定审美配方或效果保证。使用前读 craft-genome.md 与 craft-packs.md，可自由混搭五轴工艺基因，不局限固定流派。
 # 使用前读 visual-craft.md，从任务与真实内容选择具体手段。
 # archetypes 是查找参考的线索，不代表已核验该产品当前的设计；借关系，不借长相。
 # render_hint 描述这个方向的结构关系和取舍，不写具体色值：色值从方向简报推出来。
@@ -31,6 +31,8 @@ coordinates:
 
   - id: calm-tech
     name: 克制工程感
+    craft_pack: obsidian-precision
+    motion_profile: 精密干脆（160ms）
     archetypes: [Linear, Vercel, Raycast]
     mood: [专业, 冷静, 高效, 锋利]
     axes: { friend_authority: 1, young_mature: 0, playful_serious: 2, mass_elite: 1 }
@@ -51,6 +53,8 @@ coordinates:
 
   - id: cn-enterprise
     name: 规整企业感
+    craft_pack: executive-telemetry
+    motion_profile: 精密数据（220ms）
     archetypes: [Ant Design, Arco Design, Semi Design, TDesign]
     mood: [规整, 可靠, 熟悉, 高效]
     axes: { friend_authority: 1, young_mature: 1, playful_serious: 2, mass_elite: 0 }
@@ -71,6 +75,8 @@ coordinates:
 
   - id: warm-clarity
     name: 温暖清爽
+    craft_pack: porcelain-craft
+    motion_profile: 温润跟手（240ms + 完成回弹）
     archetypes: [Things 3, Craft, Bear]
     mood: [温暖, 清爽, 亲和, 有条理]
     axes: { friend_authority: -1, young_mature: 0, playful_serious: 0, mass_elite: 0 }
@@ -89,6 +95,8 @@ coordinates:
 
   - id: neutral-flexible
     name: 中性灵活
+    craft_pack: nordic-frost
+    motion_profile: 极光跟手（220ms 抽屉 + 堆叠撤销）
     archetypes: [Notion, Coda, Slite]
     mood: [中性, 克制, 灵活, 内容优先]
     axes: { friend_authority: 0, young_mature: 0, playful_serious: 1, mass_elite: 0 }
@@ -106,6 +114,8 @@ coordinates:
 
   - id: playful-gamified
     name: 活泼游戏化
+    craft_pack: tactile-mobile
+    motion_profile: 灵动微弹（260ms 弹簧）
     archetypes: [Duolingo, Cash App, Headspace(部分)]
     mood: [活泼, 友好, 有奖励感, 大胆]
     axes: { friend_authority: -2, young_mature: -2, playful_serious: -2, mass_elite: -1 }
@@ -124,6 +134,8 @@ coordinates:
 
   - id: editorial
     name: 编辑杂志感
+    craft_pack: editorial-ink
+    motion_profile: 从容印刷（300ms）
     archetypes: [Readwise, Medium, Substack]
     mood: [文雅, 有序, 阅读友好, 有观点]
     axes: { friend_authority: 1, young_mature: 1, playful_serious: 1, mass_elite: 1 }
@@ -142,6 +154,8 @@ coordinates:
 
   - id: minimal-zen
     name: 极简禅意
+    craft_pack: liquid-glass
+    motion_profile: 空间晶透（--spring-snappy + Blur-Replace，可混搭 tactile-hardware）
     archetypes: [Apple, Teenage Engineering, 无印良品]
     mood: [极简, 高级, 留白, 精确]
     axes: { friend_authority: 1, young_mature: 1, playful_serious: 1, mass_elite: 2 }
@@ -160,6 +174,8 @@ coordinates:
 
   - id: bold-expressive
     name: 大胆潮流
+    craft_pack: kinetic-bento
+    motion_profile: 灵动张力（--spring-bouncy 物理回弹 + 指针微光）
     archetypes: [Gumroad(新), Figma 品牌页, Framer]
     mood: [大胆, 潮流, 有态度, 高对比]
     axes: { friend_authority: -1, young_mature: -2, playful_serious: -1, mass_elite: 1 }
@@ -179,6 +195,8 @@ coordinates:
 
   - id: soft-wellness
     name: 柔和疗愈
+    craft_pack: porcelain-craft
+    motion_profile: 从容轻柔（300ms）
     archetypes: [Calm, Headspace, Oak]
     mood: [平静, 疗愈, 柔和, 安心]
     axes: { friend_authority: -2, young_mature: 0, playful_serious: 0, mass_elite: 0 }

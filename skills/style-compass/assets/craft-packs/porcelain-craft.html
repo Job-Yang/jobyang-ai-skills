@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Porcelain Craft · 个人专注与日程台</title>
+  <style>
+    :root {
+      --bg: #F6F4EF;
+      --surface: #FFFFFF;
+      --rail: #EFECE5;
+      --border: rgba(28, 25, 23, 0.09);
+      --border-soft: rgba(28, 25, 23, 0.06);
+      --ink: #1C1917;
+      --ink-muted: #6B655E;
+      --ink-faint: #9C958C;
+      --accent: #C85A32;
+      --accent-soft: #FBEDE7;
+      --sage: #2D7A56;
+      --sage-soft: #E8F3ED;
+      --font-sans: 'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+      --font-num: 'SF Pro Display', 'PingFang SC', sans-serif;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+
+    button, input {
+      font: inherit;
+      color: inherit;
+      letter-spacing: 0;
+    }
+
+    button { cursor: pointer; }
+
+    button:focus-visible, input:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr);
+      min-height: 100vh;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+
+    /* 温暖浅石左侧导航 */
+    .sidebar {
+      padding: 28px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 8px;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+      background: var(--accent);
+      color: #FFFDFB;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 6px 14px -4px rgba(200, 90, 50, 0.45);
+      flex: none;
+    }
+
+    .brand-row strong { font-size: 16px; font-weight: 700; }
+    .brand-row span { display: block; font-size: 12px; color: var(--ink-muted); }
+
+    .nav-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-label {
+      padding: 0 10px 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-faint);
+    }
+
+    .nav-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 11px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--ink-muted);
+      font-weight: 500;
+      transition: background-color 180ms var(--ease), color 180ms var(--ease), transform 140ms var(--ease);
+    }
+
+    .nav-btn:hover { background: rgba(28, 25, 23, 0.045); color: var(--ink); }
+    .nav-btn:active { transform: scale(0.98); }
+
+    .nav-btn[aria-current="page"] {
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(28, 25, 23, 0.06);
+    }
+
+    .nav-left { display: flex; align-items: center; gap: 9px; }
+
+    .count-pill {
+      font-family: var(--font-num);
+      font-variant-numeric: tabular-nums;
+      font-size: 12px;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: rgba(28, 25, 23, 0.06);
+      color: var(--ink-muted);
+    }
+
+    .focus-card {
+      margin-top: auto;
+      padding: 16px;
+      border-radius: 14px;
+      background: var(--rail);
+      border: 1px solid var(--border-soft);
+    }
+
+    .focus-card strong { display: block; font-size: 13px; margin-bottom: 4px; }
+    .focus-card p { margin: 0 0 10px; font-size: 12px; color: var(--ink-muted); line-height: 1.5; }
+
+    .progress-bar {
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(28, 25, 23, 0.08);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--sage);
+      transition: width 360ms var(--ease);
+    }
+
+    /* 主瓷感画布 */
+    .canvas-wrap {
+      padding: 18px 24px 28px 6px;
+      display: flex;
+      min-width: 0;
+    }
+
+    .paper-sheet {
+      flex: 1;
+      min-width: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow:
+        0 1px 2px rgba(28, 25, 23, 0.04),
+        0 18px 42px -18px rgba(28, 25, 23, 0.11);
+      padding: 32px 40px 44px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      animation: sheet-in 380ms var(--ease) both;
+    }
+
+    @keyframes sheet-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sheet-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .date-kicker {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .sheet-title {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.25;
+      font-weight: 700;
+    }
+
+    /* 滑动胶囊分段器 */
+    .seg-control {
+      position: relative;
+      display: inline-grid;
+      grid-template-columns: repeat(3, 88px);
+      padding: 4px;
+      border-radius: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border-soft);
+    }
+
+    .seg-indicator {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 88px;
+      height: calc(100% - 8px);
+      border-radius: 9px;
+      background: var(--surface);
+      box-shadow: 0 2px 6px rgba(28, 25, 23, 0.08);
+      transition: transform 240ms var(--ease);
+    }
+
+    .seg-btn {
+      position: relative;
+      z-index: 1;
+      height: 32px;
+      border: 0;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-muted);
+      transition: color 180ms var(--ease);
+    }
+
+    .seg-btn[aria-selected="true"] {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* 快速录入条 */
+    .composer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px 8px 16px;
+      border-radius: 13px;
+      background: #FAF9F6;
+      border: 1px solid var(--border);
+      transition: border-color 180ms var(--ease), box-shadow 180ms var(--ease);
+    }
+
+    .composer:focus-within {
+      border-color: rgba(200, 90, 50, 0.45);
+      box-shadow: 0 0 0 4px rgba(200, 90, 50, 0.08);
+    }
+
+    .composer input {
+      flex: 1;
+      min-width: 0;
+      border: 0;
+      background: transparent;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .add-btn {
+      height: 34px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 9px;
+      background: var(--accent);
+      color: #FFFDFB;
+      font-size: 13px;
+      font-weight: 600;
+      transition: transform 150ms var(--spring), background-color 160ms var(--ease);
+    }
+
+    .add-btn:hover { background: #B54E28; }
+    .add-btn:active { transform: scale(0.96); }
+
+    /* 任务清单 */
+    .task-group-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-faint);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .task-row {
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr) auto;
+      align-items: start;
+      gap: 12px;
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--border-soft);
+      border-radius: 10px;
+      transition: background-color 160ms var(--ease), opacity 220ms var(--ease);
+    }
+
+    .task-row:hover { background: #FAF8F4; }
+    .task-row.is-done { opacity: 0.56; }
+    .task-row.is-done .task-title { text-decoration: line-through; color: var(--ink-muted); }
+
+    .check-btn {
+      width: 24px;
+      height: 24px;
+      margin-top: 2px;
+      border-radius: 8px;
+      border: 1.6px solid #C9C2B8;
+      background: var(--surface);
+      display: grid;
+      place-items: center;
+      padding: 0;
+      transition: transform 200ms var(--spring), background-color 180ms var(--ease), border-color 180ms var(--ease);
+    }
+
+    .check-btn:hover { border-color: var(--accent); transform: scale(1.06); }
+    .check-btn:active { transform: scale(0.9); }
+
+    .check-btn[aria-pressed="true"] {
+      background: var(--sage);
+      border-color: var(--sage);
+    }
+
+    .check-svg path {
+      stroke-dasharray: 24;
+      stroke-dashoffset: 24;
+      transition: stroke-dashoffset 260ms var(--ease);
+    }
+
+    .check-btn[aria-pressed="true"] .check-svg path {
+      stroke-dashoffset: 0;
+    }
+
+    .task-body {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      text-align: left;
+      width: 100%;
+    }
+
+    .task-title {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .task-note {
+      display: block;
+      margin-top: 3px;
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+
+    .task-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .tag-chip {
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .tag-chip.warm { background: var(--accent-soft); color: #9F3E1D; }
+    .tag-chip.calm { background: var(--sage-soft); color: #205B40; }
+    .tag-chip.neutral { background: var(--bg); color: var(--ink-muted); }
+
+    .time-chip {
+      font-family: var(--font-num);
+      font-variant-numeric: tabular-nums;
+      font-size: 12px;
+      color: var(--ink-faint);
+    }
+
+    /* 右侧滑出详情抽屉 */
+    .drawer-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(28, 25, 23, 0.18);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms var(--ease);
+      z-index: 30;
+    }
+
+    .drawer-mask[data-open="true"] {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .detail-drawer {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      bottom: 14px;
+      width: min(400px, calc(100vw - 28px));
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: -8px 20px 50px rgba(28, 25, 23, 0.14);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transform: translateX(calc(100% + 24px));
+      transition: transform 280ms var(--ease);
+      z-index: 35;
+    }
+
+    .detail-drawer[data-open="true"] {
+      transform: translateX(0);
+    }
+
+    .drawer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      display: grid;
+      place-items: center;
+    }
+
+    /* 底部撤销浮条 */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translate(-50%, 16px);
+      opacity: 0;
+      pointer-events: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 14px 10px 18px;
+      border-radius: 999px;
+      background: #1C1917;
+      color: #FAF8F4;
+      box-shadow: 0 12px 30px rgba(28, 25, 23, 0.25);
+      font-size: 13px;
+      transition: opacity 200ms var(--ease), transform 240ms var(--spring);
+      z-index: 45;
+    }
+
+    .toast[data-open="true"] {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, 0);
+    }
+
+    .undo-btn {
+      padding: 4px 12px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #FFF;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: minmax(0, 1fr); }
+      .sidebar { display: none; }
+      .canvas-wrap { padding: 12px; }
+      .paper-sheet { padding: 22px 18px 28px; border-radius: 16px; }
+      .sheet-title { font-size: 24px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" aria-label="灵感与日程视图">
+      <div class="brand-row">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
+        </div>
+        <div><strong>拾光清单</strong><span>温润瓷感节奏台</span></div>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-label">日常节奏</div>
+        <button type="button" class="nav-btn" aria-current="page">
+          <span class="nav-left">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span>今日聚焦</span>
+          </span>
+          <span class="count-pill" id="leftCount">4</span>
+        </button>
+        <button type="button" class="nav-btn">
+          <span class="nav-left">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+            <span>收集箱灵感</span>
+          </span>
+          <span class="count-pill">7</span>
+        </button>
+        <button type="button" class="nav-btn">
+          <span class="nav-left">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>本周里程碑</span>
+          </span>
+          <span class="count-pill">5</span>
+        </button>
+      </div>
+
+      <div class="focus-card">
+        <strong>今日推进度 <span id="doneText" style="color:var(--sage);">1 / 4</span></strong>
+        <p>把最重要的两块整段时间留给上午，细节打磨留到下午。</p>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:25%;"></div></div>
+      </div>
+    </aside>
+
+    <div class="canvas-wrap">
+      <main class="paper-sheet">
+        <header class="sheet-header">
+          <div>
+            <div class="date-kicker">11 月 19 日 · 周四上午</div>
+            <h1 class="sheet-title">今日聚焦三件事</h1>
+          </div>
+          <div class="seg-control" role="tablist" aria-label="视图切换">
+            <div class="seg-indicator" id="segIndicator"></div>
+            <button type="button" class="seg-btn" role="tab" data-idx="0" aria-selected="true">今日聚焦</button>
+            <button type="button" class="seg-btn" role="tab" data-idx="1" aria-selected="false">待确认</button>
+            <button type="button" class="seg-btn" role="tab" data-idx="2" aria-selected="false">已完成</button>
+          </div>
+        </header>
+
+        <form class="composer" id="quickAddForm">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9C958C" stroke-width="1.8" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <input type="text" id="quickInput" placeholder="记一条刚想到的事项，回车直接放进今日主清单…" aria-label="新建今日事项">
+          <button type="submit" class="add-btn">添加事项</button>
+        </form>
+
+        <section aria-label="主工作区任务">
+          <div class="task-group-title">
+            <span>深度工作时段 · 上午</span>
+            <span>点击条目右侧可看详情抽屉</span>
+          </div>
+          <div class="task-list" id="taskList"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="drawer-mask" id="drawerMask" data-open="false"></div>
+  <aside class="detail-drawer" id="detailDrawer" data-open="false" aria-label="事项详情">
+    <div class="drawer-top">
+      <span class="tag-chip warm" id="drawerTag">核心设计</span>
+      <button type="button" class="close-btn" id="closeDrawerBtn" aria-label="关闭详情抽屉">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <h2 id="drawerTitle" style="margin:0; font-size:20px; line-height:1.35;">标题</h2>
+    <p id="drawerNote" style="margin:0; color:var(--ink-muted); font-size:14px;">说明</p>
+    <div style="padding:14px; border-radius:12px; background:var(--bg); font-size:13px;">
+      <strong style="display:block; margin-bottom:6px;">验收要点</strong>
+      <ul id="drawerSteps" style="margin:0; padding-left:18px; color:var(--ink-muted);"></ul>
+    </div>
+  </aside>
+
+  <div class="toast" id="undoToast" data-open="false" role="status" aria-live="polite">
+    <span id="toastText">已完成事项</span>
+    <button type="button" class="undo-btn" id="undoBtn">撤销</button>
+  </div>
+
+  <script>
+    const INITIAL = [
+      { id: 1, title: '打磨 5 套高定视觉工艺包并出图验真', note: '覆盖暗色控制台、温润瓷感、编辑纸墨、数据驾驶舱与触感移动端。', tag: '核心产出', tone: 'warm', time: '45 分钟', done: false, steps: ['统一内置 1.5px 线性图标', '补齐微物理阴影与入场错峰动画', 'Chromium 双端实测零横向溢出'] },
+      { id: 2, title: '把复杂 App 流程瘦身为高定盲选画廊', note: '去掉灰阶填表阻塞，选定风格后再锁定 tokens 展开多页面。', tag: '流程减负', tone: 'calm', time: '30 分钟', done: false, steps: ['保留 48px 轻量切换顶栏', '支持桌面与手机视口一键切换', '兼容原有 OPC 正式交接门禁'] },
+      { id: 3, title: '梳理中文字体回退与混排微距规则', note: '放开主标题与大数字字重到 700，拉出明显尺度反差。', tag: '排版底座', tone: 'neutral', time: '20 分钟', done: false, steps: ['正文维持 400 到 600', '数据列启用 tabular-nums 等宽对齐'] },
+      { id: 4, title: '回迁 engineering-docs 四类高密度图型', note: '验证架构蓝图与飞轮样张完成多端运行目录同步。', tag: '昨日收口', tone: 'calm', time: '已完成', done: true, steps: ['全量 370 项单测通过', '多端运行目录已更新一致'] }
+    ];
+
+    let items = [...INITIAL];
+    let currentTab = 0;
+    let lastToggledId = null;
+    let toastTimer = null;
+
+    const listEl = document.getElementById('taskList');
+    const indicator = document.getElementById('segIndicator');
+    const drawer = document.getElementById('detailDrawer');
+    const mask = document.getElementById('drawerMask');
+    const toast = document.getElementById('undoToast');
+
+    function esc(s) {
+      return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function updateProgress() {
+      const doneCount = items.filter((i) => i.done).length;
+      document.getElementById('doneText').textContent = `${doneCount} / ${items.length}`;
+      document.getElementById('leftCount').textContent = String(items.length - doneCount);
+      const pct = items.length ? Math.round((doneCount / items.length) * 100) : 0;
+      document.getElementById('progressFill').style.width = `${pct}%`;
+    }
+
+    function showToast(label, id) {
+      lastToggledId = id;
+      const short = label.length > 15 ? `${label.slice(0, 14)}…` : label;
+      document.getElementById('toastText').textContent = `已完成「${short}」`;
+      toast.dataset.open = 'true';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { toast.dataset.open = 'false'; }, 4200);
+    }
+
+    function openDetail(item) {
+      document.getElementById('drawerTitle').textContent = item.title;
+      document.getElementById('drawerNote').textContent = item.note;
+      const dTag = document.getElementById('drawerTag');
+      dTag.textContent = item.tag;
+      dTag.className = `tag-chip ${item.tone}`;
+      document.getElementById('drawerSteps').innerHTML = item.steps.map((s) => `<li>${esc(s)}</li>`).join('');
+      drawer.dataset.open = 'true';
+      mask.dataset.open = 'true';
+    }
+
+    function closeDetail() {
+      drawer.dataset.open = 'false';
+      mask.dataset.open = 'false';
+    }
+
+    function render() {
+      const filtered = items.filter((i) => {
+        if (currentTab === 1) return !i.done && i.tone === 'warm';
+        if (currentTab === 2) return i.done;
+        return true;
+      });
+      listEl.innerHTML = '';
+      filtered.forEach((item) => {
+        const row = document.createElement('div');
+        row.className = `task-row ${item.done ? 'is-done' : ''}`;
+        row.innerHTML = `
+          <button type="button" class="check-btn" aria-label="切换 ${esc(item.title)} 完成状态" aria-pressed="${item.done}">
+            <svg class="check-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l5 5L19 7"/></svg>
+          </button>
+          <button type="button" class="task-body">
+            <span class="task-title">${esc(item.title)}</span>
+            <span class="task-note">${esc(item.note)}</span>
+          </button>
+          <div class="task-right">
+            <span class="tag-chip ${item.tone}">${esc(item.tag)}</span>
+            <span class="time-chip">${esc(item.time)}</span>
+          </div>
+        `;
+        row.querySelector('.check-btn').addEventListener('click', () => {
+          item.done = !item.done;
+          updateProgress();
+          render();
+          if (item.done) showToast(item.title, item.id);
+        });
+        row.querySelector('.task-body').addEventListener('click', () => openDetail(item));
+        listEl.appendChild(row);
+      });
+      updateProgress();
+    }
+
+    document.querySelectorAll('.seg-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        currentTab = Number(btn.dataset.idx);
+        indicator.style.transform = `translateX(${currentTab * 88}px)`;
+        document.querySelectorAll('.seg-btn').forEach((b) => b.setAttribute('aria-selected', b === btn ? 'true' : 'false'));
+        render();
+      });
+    });
+
+    document.getElementById('quickAddForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('quickInput');
+      const val = input.value.trim();
+      if (!val) return;
+      items.unshift({
+        id: Date.now(),
+        title: val,
+        note: '刚刚记入的新专注事项，可随时点开补充步骤。',
+        tag: '新录入',
+        tone: 'warm',
+        time: '15 分钟',
+        done: false,
+        steps: ['明确一步可验收完成标准', '完成后勾选自动记入节奏统计']
+      });
+      input.value = '';
+      render();
+    });
+
+    document.getElementById('undoBtn').addEventListener('click', () => {
+      const target = items.find((i) => i.id === lastToggledId);
+      if (target) {
+        target.done = false;
+        render();
+      }
+      toast.dataset.open = 'false';
+    });
+
+    document.getElementById('closeDrawerBtn').addEventListener('click', closeDetail);
+    mask.addEventListener('click', closeDetail);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDetail(); });
+
+    render();
+  </script>
+</body>
+</html>

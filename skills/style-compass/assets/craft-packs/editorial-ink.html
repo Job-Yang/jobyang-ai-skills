@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Editorial Ink · 深度研报与边注台</title>
+  <style>
+    :root {
+      --bg: #FBF9F5;
+      --paper-alt: #F3EFE6;
+      --rule: rgba(23, 22, 20, 0.14);
+      --rule-light: rgba(23, 22, 20, 0.08);
+      --ink: #171614;
+      --ink-muted: #58544E;
+      --ink-faint: #8C867E;
+      --accent: #B43425;
+      --accent-soft: #F9EAE7;
+      --highlight: #FDF0C4;
+      --font-serif: 'Source Han Serif SC', 'Noto Serif SC', 'Songti SC', Georgia, serif;
+      --font-sans: 'SF Pro Text', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+      --ease: cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    body[data-tone="vellum"] {
+      --bg: #F4EFE4;
+      --paper-alt: #EAE2D3;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.8;
+      letter-spacing: 0;
+      transition: background-color 260ms var(--ease);
+    }
+
+    button { font: inherit; color: inherit; cursor: pointer; letter-spacing: 0; }
+    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    .read-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 34%;
+      height: 2.5px;
+      background: var(--accent);
+      transition: width 220ms var(--ease);
+      z-index: 30;
+    }
+
+    .masthead {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 18px 32px;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .pub-left {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+    }
+
+    .pub-name {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .pub-issue {
+      font-size: 12px;
+      color: var(--ink-muted);
+    }
+
+    .pub-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 999px;
+      border: 1px solid var(--rule);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-muted);
+      transition: background-color 180ms var(--ease), color 180ms var(--ease), border-color 180ms var(--ease);
+    }
+
+    .pill-btn:hover { background: var(--paper-alt); color: var(--ink); }
+    .pill-btn[aria-pressed="true"] {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--bg);
+    }
+
+    /* 64% / 36% 不对称编辑阅读网格 */
+    .editorial-grid {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 26px 32px 44px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.82fr) minmax(300px, 1fr);
+      gap: 48px;
+      align-items: start;
+    }
+
+    .article-col {
+      min-width: 0;
+      max-width: 46em;
+      animation: fade-in 420ms var(--ease) both;
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .kicker {
+      display: inline-block;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .headline {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 32px;
+      line-height: 1.28;
+      font-weight: 700;
+    }
+
+    .standfirst {
+      margin: 12px 0 18px;
+      font-size: 16px;
+      line-height: 1.68;
+      color: var(--ink-muted);
+    }
+
+    .byline {
+      padding: 10px 0;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--ink-muted);
+      margin-bottom: 18px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .chapter-tabs {
+      display: flex;
+      gap: 20px;
+      border-bottom: 1px solid var(--rule-light);
+      margin-bottom: 18px;
+    }
+
+    .chap-btn {
+      padding: 6px 0 10px;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-muted);
+      transition: color 180ms var(--ease), border-color 180ms var(--ease);
+    }
+
+    .chap-btn:hover { color: var(--ink); }
+    .chap-btn[aria-selected="true"] {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .prose p {
+      margin: 0 0 14px;
+      font-size: 15.5px;
+      line-height: 1.76;
+    }
+
+    .cite-btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 0 6px;
+      margin: 0 2px;
+      border-radius: 4px;
+      border: 1px solid rgba(180, 52, 37, 0.28);
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.45;
+      vertical-align: baseline;
+      transition: background-color 160ms var(--ease), color 160ms var(--ease), transform 140ms var(--ease);
+    }
+
+    .cite-btn:hover { background: var(--accent); color: #FFF; }
+    .cite-btn:active { transform: scale(0.95); }
+
+    .pull-quote {
+      margin: 18px 0;
+      padding: 16px 20px;
+      border-left: 3px solid var(--accent);
+      background: var(--paper-alt);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .pull-quote blockquote {
+      margin: 0;
+      font-family: var(--font-serif);
+      font-size: 18px;
+      line-height: 1.62;
+    }
+
+    .bookmark-btn {
+      flex: none;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--rule);
+      background: var(--bg);
+      display: grid;
+      place-items: center;
+      color: var(--ink-muted);
+      transition: color 180ms var(--ease), border-color 180ms var(--ease), transform 180ms var(--ease);
+    }
+
+    .bookmark-btn[aria-pressed="true"] {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .bookmark-btn[aria-pressed="true"] svg { fill: var(--accent); }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0 0;
+      font-size: 14px;
+    }
+
+    .compare-table th {
+      text-align: left;
+      padding: 10px 12px;
+      border-top: 1.5px solid var(--ink);
+      border-bottom: 1px solid var(--rule);
+      font-weight: 600;
+    }
+
+    .compare-table td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--rule-light);
+      color: var(--ink-muted);
+    }
+
+    /* 右侧粘性边注与证据栏 */
+    .margin-col {
+      position: sticky;
+      top: 24px;
+      border-left: 1px solid var(--rule);
+      padding-left: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .margin-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 10px;
+    }
+
+    .margin-head strong { font-size: 13px; font-weight: 700; }
+    .margin-head span { font-size: 12px; color: var(--ink-faint); }
+
+    .note-card {
+      padding: 14px 16px;
+      border-radius: 6px;
+      border: 1px solid var(--rule-light);
+      background: var(--paper-alt);
+      transition: background-color 320ms var(--ease), border-color 320ms var(--ease), transform 200ms var(--ease);
+    }
+
+    .note-card.is-lit {
+      background: var(--highlight);
+      border-color: var(--accent);
+      transform: translateX(-4px);
+    }
+
+    .note-ref {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .note-card h3 {
+      margin: 0 0 4px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .note-card p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--ink-muted);
+    }
+
+    @media (max-width: 920px) {
+      .editorial-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 24px 18px 48px; }
+      .masthead { padding: 14px 18px; }
+      .headline { font-size: 28px; }
+      .margin-col { position: static; border-left: 0; border-top: 1px solid var(--rule); padding-left: 0; padding-top: 24px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body data-tone="cream">
+  <div class="read-progress" id="progressLine" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <div class="pub-left">
+      <span class="pub-name">系统方法论内刊</span>
+      <span class="pub-issue">第 14 辑 · 界面生成可靠性研究</span>
+    </div>
+    <div class="pub-controls">
+      <button type="button" class="pill-btn" id="toneToggle" aria-pressed="false">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
+        <span>羊皮纸底色</span>
+      </button>
+      <span class="pill-btn" id="savedBadge" style="border-style:dashed;">已摘录 0 处</span>
+    </div>
+  </header>
+
+  <main class="editorial-grid">
+    <article class="article-col">
+      <span class="kicker">方法观察 · 编译视觉品味</span>
+      <h1 class="headline">为什么“审美靠提示词”总在真实交付里落空</h1>
+      <p class="standfirst">普通业务方很难准确说出“我想要温暖矿物瓷感配弹簧阻尼”。当模型收不到明确方向与视觉标尺时，为了不出错，只能退回高安全度的灰白表格模板。</p>
+
+      <div class="byline">
+        <span>整理自近半年前端与文档生成复盘</span>
+        <span>阅读约 4 分钟 · 含 3 条实证对照</span>
+      </div>
+
+      <div class="chapter-tabs" role="tablist" aria-label="章节切换">
+        <button type="button" class="chap-btn" role="tab" data-chap="0" aria-selected="true">一、均值收敛现象</button>
+        <button type="button" class="chap-btn" role="tab" data-chap="1" aria-selected="false">二、工艺包作为先验</button>
+        <button type="button" class="chap-btn" role="tab" data-chap="2" aria-selected="false">三、流程减负实验</button>
+      </div>
+
+      <div class="prose" id="proseBody">
+        <p>观察三十余次实际生成记录可以发现：阻碍页面拉开档次的，往往不是模型的 CSS 编码能力，而是上游描述与验收机制把模型挤进了狭窄的均值地带<button type="button" class="cite-btn" data-cite="n1">[1]</button>。当约束清单只强调“不要什么、哪一像素不守规范”，却没有提供一个具体流派的材质与空间基准时，模型最快达成零报错的路径永远是最小改动。</p>
+
+        <div class="pull-quote">
+          <blockquote>“高下限不是教模型背诵一百条审美术语，而是提前炼好五套站得住脚的视觉与动效母版。”</blockquote>
+          <button type="button" class="bookmark-btn" id="quoteSaveBtn" aria-pressed="false" aria-label="收藏这条核心论断" title="收藏金句">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          </button>
+        </div>
+
+        <p>另一个被普遍低估的差距在动态手感<button type="button" class="cite-btn" data-cite="n2">[2]</button>。静态截图看得出排版，却看不出分段器滑动指示条是否跟手、抽屉滑出有没有物理减速度、勾选后是否有即时撤销闭环。一旦把阻尼曲线与微交互写进默认模板，即便不附加任何形容词，生成物的完成度也会立刻越过工程 demo 门槛<button type="button" class="cite-btn" data-cite="n3">[3]</button>。</p>
+
+        <table class="compare-table">
+          <thead>
+            <tr><th>工作模式</th><th>首稿到达时间</th><th>人类把关精力</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>四关灰阶线框瀑布</td><td>30 分钟以上反复对齐</td><td>大量消耗在早期修丑与填表</td></tr>
+            <tr><td>高定工艺包直选</td><td>2 分钟直出可点样板</td><td>专注选定方向与核心业务规则</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+    <aside class="margin-col" aria-label="来源核查与边注">
+      <div class="margin-head">
+        <strong>交互式边注与依据</strong>
+        <span>点击正文角标高亮</span>
+      </div>
+
+      <article class="note-card" id="n1">
+        <span class="note-ref">[1] 收敛机制观察</span>
+        <h3>惩罚规则对创意的挤压效应</h3>
+        <p>当静态检查对半透明阴影色值与非常规间距直接报错时，生成器会主动收缩视觉丰富度以换取一次通过。</p>
+      </article>
+
+      <article class="note-card" id="n2">
+        <span class="note-ref">[2] 动效物理基元</span>
+        <h3>八类高频微交互清单</h3>
+        <p>含入场错峰、胶囊指示条滑动、零回流手风琴、矢量勾选路径描绘以及支持键盘退出的空间弹层。</p>
+      </article>
+
+      <article class="note-card" id="n3">
+        <span class="note-ref">[3] 视觉锚点实验</span>
+        <h3>截图对齐强于纯散文提示</h3>
+        <p>配齐实际渲染截图作参照后，布局比例与字号反差的还原稳定度显著高于单纯口头描述。</p>
+      </article>
+    </aside>
+  </main>
+
+  <script>
+    const CHAPTERS = [
+      { progress: '34%', body: document.getElementById('proseBody').innerHTML },
+      {
+        progress: '68%',
+        body: `<p>把审美翻译成工艺包的本质，是在“人类模糊表达”与“前端精确代码”之间架起一座中间层<button type="button" class="cite-btn" data-cite="n3">[3]</button>。用户只需要说出产品是给开发者盯实时日志、给自己管理灵感，还是给消费端看预算账单，技能就自动对号入座到对应流派。</p><p>每个流派里真正需要固化的只有四件东西：带色温差的表面分层、至少 2.2 倍以上的标题与正文字号比、不对称的屏幕注意力分配，以及贴合该气质的缓动曲线<button type="button" class="cite-btn" data-cite="n2">[2]</button>。</p>`
+      },
+      {
+        progress: '100%',
+        body: `<p>流程做减法并不等于放弃质量控制。把冗长的灰阶线框从默认路径拿掉，改为直接交付 2 到 3 个高完成度、带着真实数据和真实交互的可点网页，评审才能立刻聚焦到“哪个真像我要的产品”。</p><p>等到方向一经选定，再顺势锁定设计变量与组件规则并向多页面展开，复杂应用也能兼顾美感上限与跨页一致性<button type="button" class="cite-btn" data-cite="n1">[1]</button>。</p>`
+      }
+    ];
+
+    function bindCitations() {
+      document.querySelectorAll('.cite-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.note-card').forEach((c) => c.classList.remove('is-lit'));
+          const target = document.getElementById(btn.dataset.cite);
+          if (target) {
+            target.classList.add('is-lit');
+            setTimeout(() => target.classList.remove('is-lit'), 2200);
+          }
+        });
+      });
+    }
+
+    document.querySelectorAll('.chap-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.chap);
+        document.querySelectorAll('.chap-btn').forEach((b) => b.setAttribute('aria-selected', b === btn ? 'true' : 'false'));
+        document.getElementById('proseBody').innerHTML = CHAPTERS[idx].body;
+        document.getElementById('progressLine').style.width = CHAPTERS[idx].progress;
+        bindCitations();
+        const qBtn = document.getElementById('quoteSaveBtn');
+        if (qBtn) bindBookmark(qBtn);
+      });
+    });
+
+    function bindBookmark(btn) {
+      btn.addEventListener('click', () => {
+        const next = btn.getAttribute('aria-pressed') !== 'true';
+        btn.setAttribute('aria-pressed', String(next));
+        document.getElementById('savedBadge').textContent = next ? '已摘录 1 处' : '已摘录 0 处';
+      });
+    }
+
+    document.getElementById('toneToggle').addEventListener('click', (e) => {
+      const btn = e.currentTarget;
+      const next = btn.getAttribute('aria-pressed') !== 'true';
+      btn.setAttribute('aria-pressed', String(next));
+      document.body.dataset.tone = next ? 'vellum' : 'cream';
+    });
+
+    bindCitations();
+    bindBookmark(document.getElementById('quoteSaveBtn'));
+  </script>
+</body>
+</html>
