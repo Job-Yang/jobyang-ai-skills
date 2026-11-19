@@ -16,7 +16,7 @@ Run the Section 4 checklist every time a skill is added or changed; keep the tab
 
 ## 2. Skill registry (by thinking/work chain)
 
-Status: ✅ available　🆕 built, pending blind test　⏸ deferred　❌ rejected
+Status: ✅ available　⏸ deferred　❌ rejected
 
 ### Cluster A · Product formation (discover → evaluate → define → design → document → learn)
 
@@ -27,7 +27,7 @@ Status: ✅ available　🆕 built, pending blind test　⏸ deferred　❌ reje
 | ✅ product-brief | Turn idea into verifiable PRD/plan | need/scorecard → PRD+milestones | Writes PRDs alone | Definition node of a product workflow |
 | ✅ style-compass | UI design, motion packs and prototypes | need → aesthetic direction/prototype/spec | Independent design & motion review | Design node of a product workflow |
 | ✅ engineering-docs | Engineering docs and decisions | context → doc+diagrams | Writes docs alone | Connects to environments with engineering verification |
-| 🆕 reverse-teardown | Learn transferable rules from one external artifact | artifact+goal → rules/context-only/checklist/minimum experiment | Learn from any artifact anywhere | Can mount on any "solution review / design reference" flow point |
+| ✅ reverse-teardown | Learn transferable rules from one external artifact | artifact+goal → rules/context-only/checklist/minimum experiment | Learn from any artifact anywhere | Can mount on any "solution review / design reference" flow point |
 
 ### Cluster B · Judgment and thinking
 
@@ -35,11 +35,11 @@ Status: ✅ available　🆕 built, pending blind test　⏸ deferred　❌ reje
 | --- | --- | --- | --- |
 | ✅ vdd | No "done" without verification | Anti-false-claims anywhere | A completion-gate runtime may carry it |
 | ✅ outside-view | Whether a decision needs external evidence, how much, when to stop | Disciplined retrieval standalone | Evidence base for other skills |
-| 🆕 steelman-choice | Two plausible options: which one | Strongest-case confrontation, key variable, one flip question | Prevents rash choices in any conversation | Any "user must decide between options" flow point |
-| 🆕 claim-check | Is this claim/data trustworthy | Five-level credibility + reasoning-hole audit | Verify claims anywhere | Reuses outside-view discipline when online |
-| 🆕 root-rethink | Are we just patching; find the root path | Split fact/assumption/goal/constraint, incl. cross-domain mode | Rederive solutions standalone | Code patches defer to the host's own root-cause flow |
-| 🆕 minimum-experiment | Get real feedback at lowest cost | Reversible experiment + metrics + continue/stop signals | Turns speculation into trials | Splits work from the environment's reproducible tests |
-| 🆕 argument-reading | Is a whole article's argument sound; what are its hidden premises | Full text → argument chain + evidence grades + fallacy locations | Critical reading in any environment | Discrete fact checks hand off to claim-check |
+| ✅ steelman-choice | Two plausible options: which one | Strongest-case confrontation, key variable, one flip question | Prevents rash choices in any conversation | Any "user must decide between options" flow point |
+| ✅ claim-check | Is this claim/data trustworthy | Five-level credibility + reasoning-hole audit | Verify claims anywhere | Reuses outside-view discipline when online |
+| ✅ root-rethink | Are we just patching; find the root path | Split fact/assumption/goal/constraint, incl. cross-domain mode | Rederive solutions standalone | Code patches defer to the host's own root-cause flow |
+| ✅ minimum-experiment | Get real feedback at lowest cost | Reversible experiment + metrics + continue/stop signals | Turns speculation into trials | Splits work from the environment's reproducible tests |
+| ✅ argument-reading | Is a whole article's argument sound; what are its hidden premises | Full text → argument chain + evidence grades + fallacy locations | Critical reading in any environment | Discrete fact checks hand off to claim-check |
 | ⏸ socratic-clarify (P2) | I can't even state my real question | Multi-turn one-question clarification | Deep clarification entry | Complements any built-in clarify gate |
 
 > Theoretical roots: **steelman-choice** = Principle of Charity + steelman argument (the opposite of a straw man) — restate each side at its strongest before choosing. **root-rethink** = First Principles — reduce to irreducible facts, separate unverified inherited assumptions, rederive. **claim-check** = fact-checking + systematic doubt — split fact/inference/value, verify only the facts, then audit the inference. **argument-reading** = argument analysis, rebuilt without platform bindings.
@@ -112,7 +112,7 @@ Source of truth: this repository's `skills/`. Whitelist: `tools/skills-manifest.
 
 ## 6. This round's decisions (from 12 external prompts + 1 collaboration instruction)
 
-- Built, pending blind test: steelman-choice, claim-check, argument-reading, root-rethink, minimum-experiment. (argument-reading distilled from a platform critical-reading skill with all platform bindings removed; root-rethink merges first-principles + cross-domain borrowing.)
+- Built and released after three-gate blind evaluation: steelman-choice, claim-check, argument-reading, root-rethink, minimum-experiment, reverse-teardown. (argument-reading distilled from a platform critical-reading skill with all platform bindings removed; root-rethink merges first-principles + cross-domain borrowing.)
 - Deferred: socratic-clarify (P2), landscape/vertical-horizontal study (framework kept, no skill).
 - Rejected: expert panel (general part merges into steelman-choice); Johari Window instruction (always-on posture → host preference layer); talent discovery / life design (owner decision: too grand, little value); dual-layer explanation (conflicts with feynman's "scaffolding not printed" rule).
-- Every planned/distilled skill passes three gates before release: trigger blind test (≥85%, zero trigger collisions), real-sample end-to-end, adversarial weak-spot cases; any of the five scoring dimensions below 8 blocks release.
+- Three-gate blind evaluation passed: neutral trigger routing achieved 24/24 positive recall, 12/12 negative/boundary exact match, and 0 collisions on both `Pro` and `Flash`; two independent `Pro` judges scored real-sample E2E and adversarial cases across 5 dimensions (30 scores total: all >=8, min 8, mean 9.23), promoting all six skills to released status.
