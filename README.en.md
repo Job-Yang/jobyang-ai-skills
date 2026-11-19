@@ -14,19 +14,23 @@ This repository is not a prompt cheat sheet. Each Skill should be a compact piec
 
 | Skill | What it does |
 | --- | --- |
-| [vdd](./skills/vdd/README.en.md) | Verification-driven development: run a verification pass before claiming "done" or "no problem" — no false optimism, no forced nitpicking, and the confidence to say it's fine. |
-| [haohao-shuohua](./skills/haohao-shuohua/README.en.md) | Cleans Chinese writing so it sounds like a person wrote it: keeps facts, removes AI flavor, restores Chinese rhythm, and blocks fake profundity. |
-| [haohao-eval](./skills/haohao-eval/README.en.md) | Evaluates Chinese rewrites with blind judging, daily failure recall, candidate gates, release monitoring, and automatic rollback. |
-| [cuihuo](./skills/cuihuo/README.en.md) | An opinion-hardening engine: turn a technical point into a plain, restrained op-ed with one idea per section, or distill it into a short note. |
-| [tangshan-style](./skills/tangshan-style/README.en.md) | A writing engine for future-facing speculative essays with historical depth and lines worth chewing on. |
-| [feynman-explainer](./skills/feynman-explainer/README.en.md) | Uses the Feynman technique to truly explain hard things: one reasoning chain, derived step by step, so non-experts actually get it. |
-| [opportunity-radar](./skills/opportunity-radar/README.en.md) | Finds product leads in public sources or supplied material, retaining evidence and signal strength. |
-| [opportunity-scorecard](./skills/opportunity-scorecard/README.en.md) | Evaluates product ideas across ten dimensions, with deterministic scoring and verdicts. |
-| [product-brief](./skills/product-brief/README.en.md) | Turns direct requirements or research into a PRD, testable acceptance conditions, and milestones. |
-| [style-compass](./skills/style-compass/README.en.md) | Style Compass: UI/UX aesthetic and motion engine with 9 high-craft visual packs, composable 5-axis craft genome, interactive gallery picking, and full 4-stage review. |
+| [vdd](./skills/vdd/) | Verification-driven development: run a verification pass before claiming "done" or "no problem" — no false optimism, no forced nitpicking, and the confidence to say it's fine. |
+| [haohao-shuohua](./skills/haohao-shuohua/) | Cleans Chinese writing so it sounds like a person wrote it: keeps facts, removes AI flavor, restores Chinese rhythm, and blocks fake profundity. |
+| [haohao-eval](./skills/haohao-eval/) | Evaluates Chinese rewrites with blind judging, daily failure recall, candidate gates, release monitoring, and automatic rollback. |
+| [cuihuo](./skills/cuihuo/) | An opinion-hardening engine: turn an opinion into a plain, restrained essay with one idea per section, or distill it into a short note. |
+| [talk-smith](./skills/talk-smith/) | Technical Talk Smith: crafts technical topics, engineering practice, or project postmortems into engaging articles, talks, or slides. |
+| [tangshan-style](./skills/tangshan-style/) | A writing engine for future-facing speculative essays with historical depth and lines worth chewing on. |
+| [feynman-explainer](./skills/feynman-explainer/) | Uses the Feynman technique to truly explain hard things: one reasoning chain, derived step by step, so non-experts actually get it. |
+| [content-infographic](./skills/content-infographic/) | Content Infographic: turns key article concepts into clear visual infographics and covers anchored tightly to the prose. |
+| [ai-briefing](./skills/ai-briefing/) | Daily AI Briefing: a 5-minute daily AI/tech digest with facts, judgment, and opportunity scores, plus Friday GitHub Trending recaps. |
+| [me-context](./skills/me-context/README.en.md) | Portable personal AI context: stores facts, preferences, and health notes in tiered local Markdown; AI drafts, humans confirm. |
+| [opportunity-radar](./skills/opportunity-radar/) | Finds product leads in public sources or supplied material, retaining evidence and signal strength. |
+| [opportunity-scorecard](./skills/opportunity-scorecard/) | Evaluates product ideas across ten dimensions, with deterministic scoring and verdicts. |
+| [product-brief](./skills/product-brief/) | Turns direct requirements or research into a PRD, testable acceptance conditions, and milestones. |
+| [style-compass](./skills/style-compass/) | Style Compass: UI/UX aesthetic and motion engine with 9 high-craft visual packs, composable 5-axis craft genome, interactive gallery picking, and full 4-stage review. |
 | [engineering-docs](./skills/engineering-docs/README.en.md) | Unified engineering-document entry point for context gathering, co-authoring, technical decisions, diagrams, and implementation validation. |
-| [outside-view](./skills/outside-view/README.en.md) | Retrieves evidence only when it can change a decision, resolves conflicts, and stops unproductive research. |
-| [sansi-erhouxing](./skills/sansi-erhouxing/README.en.md) | Think before you edit: read the whole skeleton of an existing document before changing it, instead of patching one paragraph at a time. |
+| [outside-view](./skills/outside-view/) | Retrieves evidence only when it can change a decision, resolves conflicts, and stops unproductive research. |
+| [sansi-erhouxing](./skills/sansi-erhouxing/) | Think before you edit: read the whole skeleton of an existing document before changing it, instead of patching one paragraph at a time. |
 | [reverse-teardown](./skills/reverse-teardown/README.en.md) | Reverse-tear down a strong artifact into its structure and key choices, separate transferable rules from context-only details, and output an action checklist plus a minimum experiment. |
 | [steelman-choice](./skills/steelman-choice/) | Steelman choice: when two options both sound right, build each side at its strongest (Principle of Charity), surface the real disagreement and one decision-flip question before choosing. |
 | [claim-check](./skills/claim-check/) | Claim check: split a discrete claim into fact/inference/value, verify facts on a five-level credibility scale, then audit the reasoning chain. |
@@ -39,10 +43,10 @@ This repository is not a prompt cheat sheet. Each Skill should be a compact piec
 
 The collection can be read as four capability groups:
 
-- **Judgment and verification**: VDD, outside-view, haohao-eval, steelman choice, claim check, and argument reading.
-- **Product formation**: opportunity radar, opportunity scorecard, product brief, style compass, and reverse teardown (learning from artifacts).
-- **Engineering delivery**: engineering docs, PNG compression, and video reader.
-- **Writing**: haohao-shuohua, cuihuo, tangshan-style, Feynman explainer, and sansi-erhouxing.
+- **Judgment and verification**: VDD, outside-view, haohao-eval, steelman choice, claim check, argument reading, skill-library-keeper, and AI briefing.
+- **Product formation**: opportunity radar, opportunity scorecard, product brief, style compass, reverse teardown, root rethink, and minimum experiment.
+- **Engineering delivery**: engineering docs, PNG compression, video reader, and portable personal context (me-context).
+- **Writing**: haohao-shuohua, cuihuo, talk-smith, tangshan-style, Feynman explainer, sansi-erhouxing, and content infographic.
 
 Each README explains capabilities, usage, design rationale, evaluation evidence, and boundaries. `SKILL.md` is the execution entry read by the agent. Complex Skills add references, scripts, templates, or runtime assets as needed.
 
@@ -102,27 +106,32 @@ Keep each Skill directory intact. Do not copy only `SKILL.md`, because some Skil
 ├── README.md
 ├── README.en.md
 └── skills/
-    ├── vdd/
-    ├── haohao-shuohua/
-    ├── haohao-eval/
+    ├── ai-briefing/
+    ├── argument-reading/
+    ├── claim-check/
+    ├── content-infographic/
     ├── cuihuo/
-    ├── tangshan-style/
+    ├── engineering-docs/
     ├── feynman-explainer/
+    ├── haohao-eval/
+    ├── haohao-shuohua/
+    ├── me-context/
+    ├── minimum-experiment/
     ├── opportunity-radar/
     ├── opportunity-scorecard/
-    ├── product-brief/
-    ├── style-compass/
-    ├── engineering-docs/
     ├── outside-view/
-    ├── sansi-erhouxing/
+    ├── png-compress/
+    ├── product-brief/
     ├── reverse-teardown/
-    ├── steelman-choice/
-    ├── claim-check/
-    ├── argument-reading/
     ├── root-rethink/
-    ├── minimum-experiment/
-    ├── video-reader/
-    └── png-compress/
+    ├── sansi-erhouxing/
+    ├── skill-library-keeper/
+    ├── steelman-choice/
+    ├── style-compass/
+    ├── talk-smith/
+    ├── tangshan-style/
+    ├── vdd/
+    └── video-reader/
 ```
 
 Each Skill directory uses `SKILL.md` as its entry point; some also ship `references/`, `scripts/`, or `assets/`.

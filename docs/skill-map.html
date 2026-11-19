@@ -110,7 +110,7 @@
 </div>
 
 <div class="layout">
-  <div class="card"><svg id="chart" viewBox="0 0 1460 740"></svg></div>
+  <div class="card"><svg id="chart" viewBox="0 0 1460 810"></svg></div>
   <aside class="aside" id="aside">
     <div class="hint">
       <b>这张图怎么读</b><br>
@@ -136,7 +136,8 @@ function n(o){N[o.id]=o;}
  ['t_learn','学习优秀成品'],
  ['t_build','做需求 / 设计 / 技术方案'],
  ['t_write','写文章 / 分享 / 改稿'],
- ['t_tool','处理素材 / 出日报']
+ ['t_tool','处理素材 / 出日报'],
+ ['t_meta','个人档案 / 技能库治理']
 ].forEach(([id,label])=>n({id,label,d:0,c:'src'}));
 
 // —— 列 2：技能 ——
@@ -152,7 +153,8 @@ function n(o){N[o.id]=o;}
  ['haohao','去 AI 味','write','exist'],['cuihuo','淬火硬文','write','exist'],
  ['tangshan','汤山体','write','exist'],['talk','技术分享','write','exist'],['haohao-eval','评测台','write','exist'],
  ['png','PNG 压缩','util','exist'],['video','视频解读','util','exist'],
- ['briefing','AI 日报','util','exist'],['infographic','信息图','util','exist']
+ ['briefing','AI 日报','util','exist'],['infographic','信息图','util','exist'],
+ ['me-context','个人档案','util','exist'],['skill-library-keeper','技能管家','util','exist']
 ].forEach(([id,label,c,st])=>n({id,label,d:1,c,status:st}));
 
 // —— 列 3：共用枢纽 ——
@@ -171,7 +173,8 @@ n({id:'vdd',label:'完成验证',d:3,c:'prod'});
 [
  ['o_opp','机会 / 评分结论'],['o_decide','更清醒的选择'],['o_truth','可信的判断'],
  ['o_exp','实验反馈'],['o_rule','可迁移规律'],['o_plan','PRD / 原型'],
- ['o_ship','交付'],['o_write','对外成稿'],['o_tool','即取即用产物']
+ ['o_ship','交付'],['o_write','对外成稿'],['o_tool','即取即用产物'],
+ ['o_meta','档案 / 治理结论']
 ].forEach(([id,label])=>n({id,label,d:4,c:'res'}));
 
 // —— 流：[源, 目标, 权重] ——
@@ -185,6 +188,7 @@ e('t_learn','reverse-teardown',2);
 e('t_build','brief',2);e('t_build','compass',2);e('t_build','engineering-docs',2);
 e('t_write','feynman');e('t_write','sansi');e('t_write','cuihuo');e('t_write','tangshan');e('t_write','talk');
 e('t_tool','png');e('t_tool','video');e('t_tool','briefing');e('t_tool','infographic');
+e('t_meta','me-context',2);e('t_meta','skill-library-keeper',2);
 // 产品主干
 e('radar','scorecard');e('scorecard','o_opp');e('radar','o_opp');
 e('scorecard','brief',2);e('brief','hub_brief',3);e('compass','hub_design',3);
@@ -203,10 +207,11 @@ e('reverse-teardown','o_rule',2);e('reverse-teardown','hub_design',2);e('reverse
 e('talk','feynman');e('feynman','o_write');
 ['cuihuo','tangshan','talk','sansi','haohao-eval'].forEach(x=>e(x,'hub_lint'));
 e('feynman','hub_lint');e('hub_lint','o_write',3);
-// 工具
+// 工具与治理
 ['png','video','briefing','infographic'].forEach(x=>e(x,'o_tool'));
+e('me-context','o_meta');e('skill-library-keeper','o_meta');
 
-const COLX=[200,430,720,1000,1290], NW=12, GAP=13, TOP=66, H=690;
+const COLX=[200,430,720,1000,1290], NW=12, GAP=12, TOP=56, H=770;
 Object.values(N).forEach(x=>{x.in=0;x.out=0;});
 E.forEach(({s,t,w})=>{N[s].out+=w;N[t].in+=w;});
 const cols={};Object.values(N).forEach(x=>(cols[x.d]=cols[x.d]||[]).push(x));
@@ -216,11 +221,11 @@ function order(d){ // 同列按簇纵向分组，减少交叉
   const arr=cols[d];
   if(d===1) arr.sort((a,b)=>rank[a.c]-rank[b.c] || a.label.localeCompare(b.label));
   if(d===0) arr.sort((a,b)=>{
-    const w={t_find:0,t_decide:1,t_verify:1,t_try:1,t_learn:1,t_build:2,t_write:3,t_tool:4};
+    const w={t_find:0,t_decide:1,t_verify:1,t_try:1,t_learn:1,t_build:2,t_write:3,t_tool:4,t_meta:5};
     return w[a.id]-w[b.id];});
   if(d===2) arr.sort((a,b)=>rank[a.c]-rank[b.c]);
   if(d===4) arr.sort((a,b)=>{
-    const w={o_opp:0,o_decide:1,o_truth:1,o_exp:2,o_rule:2,o_plan:3,o_ship:3,o_write:4,o_tool:5};
+    const w={o_opp:0,o_decide:1,o_truth:1,o_exp:2,o_rule:2,o_plan:3,o_ship:3,o_write:4,o_tool:5,o_meta:6};
     return w[a.id]-w[b.id];});
 }
 [0,1,2,3,4].forEach(order);
@@ -317,12 +322,12 @@ const DET={
  'minimum-experiment':['挑最致命的一个假设，设计低成本可逆可证伪试错。','把空想变成一周内见分晓的反馈。','拿到本周能做、做砸能退的动作。','怎么算输说不清，或等于先把产品做出来。'],
  'reverse-teardown':['从优秀成品还原结构与关键选择，分清能搬和只适合对方的。','任意环境看到好东西都能带走做法。','能说出"照做3件事"和"千万别搬的点"。','全是"高级/简洁"的夸，没具体改什么。'],
  brief:['把想法/评分转成可验收 PRD、MVP 边界和里程碑。','独立产出能开工的需求计划。','每条功能都有可验证的验收条件。','写成无法验收的愿望清单。'],
- compass:['UI/UX 评审，产出线框、原型和设计规格。','单独完成一轮设计。','原型能点，关键旅程有落点。','只有好看的图，没回答需求落点。'],
+ compass:['内置 9 套高定视觉与原生物理动效工艺包，支持单页直出、盲选与四关评审。','单独完成一轮设计与动效原型。','原型可交互，视觉与动效有统一方向。','只有好看的图，没回答需求落点。'],
  'engineering-docs':['写研发技术方案与决定，按需出图。','独立成文并记录决定代价。','关键决定附事实、假设、代价和回退。','目录全但看不出为什么这么定。'],
  feynman:['一条逻辑链把复杂概念讲透给自己懂。','任意主题讲明白。','外行也能顺着复述。','要点清单和术语堆砌。'],
  sansi:['改成形文档前先通读全文骨架，防补丁式改稿。','小改有投入闸门。','改完全局一致不补丁摞补丁。','只盯一段改，前后矛盾。'],
  haohao:['中文成稿清洗：保事实去机器腔，支持扩展屏蔽表。','对任意成稿 lint。','读着像人写的，事实没丢。','改完没 AI 味但意思也没了。'],
- cuihuo:['技术观点淬成一节一观点的对外硬文。','独立写观点文。','观点立得住、删尽车轱辘话。','气势足但论证空心。'],
+ cuihuo:['把观点写成一节一观点的硬文，或提炼成短手记。','独立写观点文与锻造手记。','观点立得住、删尽车轱辘话。','气势足但论证空心。'],
  tangshan:['面向未来有历史纵深的技术畅想长文。','独立写畅想文。','推演有路径感不喊口号。','宏大词汇堆砌。'],
  talk:['技术分享中长文/演讲稿/slides。','独立做完一场分享。','听众跟得住、有记忆点。','把技术文档念一遍。'],
  'haohao-eval':['盲评、每日召回、门禁评测改稿质量。','独立的改稿评测台。','坏改被召回拦截。','评分指导不了怎么改。'],
@@ -330,6 +335,8 @@ const DET={
  video:['视频转带时间戳关键帧和运动时间线。','任意环境看懂视频。','能定位"第几秒发生了什么"。','只给截图没有时间线。'],
  briefing:['5 分钟 AI/科技日报，事实+判断+机会卡片。','任意环境生成情报简报。','宁缺毋滥、每条有判断。','信息堆砌没有取舍。'],
  infographic:['把关键道理做成"图自己讲清一件事"的信息图。','零依赖渲染高清 SVG/PNG。','图不看正文也能懂那一个点。','装饰配图、图文两张皮。'],
+ 'me-context':['带 L0–L4 敏感分层的可移植个人档案，AI 起草、人确认。','数据与技能分离，跨宿主携带个人背景。','高敏信息默认拦截、档案结构清晰。','未确认擅自写档或泄露高敏层。'],
+ 'skill-library-keeper':['库级治理：准入五问、静态健康体检与外部技能收录裁决。','自动发现技能库位置，零平台强绑定。','新技能不撞车、孤儿与硬绑定被拦下。','未体检就新造轮子或遗漏规则冲突。'],
  hub_proof:['只补会改变决定的外部证据，判冲突、定停止。多个思维技能汇到这里统一取证。','独立做有纪律的检索。','该搜的搜了、冲突解释清、知道何时停。','为全面而乱搜。'],
  hub_brief:['产品需求/计划的汇聚点：评分、钢人结论、实验结果都回流到这里。','—','所有上游判断落成可验收的计划。','判断停在口头，落不了地。'],
  hub_design:['设计/原型汇聚点：反向拆解学来的规律、PRD 都汇到这里。','—','学来的规律真正变成界面。','学归学，做界面时没用上。'],
@@ -357,16 +364,16 @@ const LINE_GUIDE={
    when:'讲透一个概念、改已有稿子、写技术观点硬文、写未来畅想、做技术分享。',
    nodes:[['sansi',1],['feynman',2],['cuihuo',3],['tangshan',3],['talk',3],['haohao-eval',4],['hub_lint',5]],
    branches:[]},
- util:{title:'工具线 · 随取随用',color:'var(--util)',
-   sub:'不参与主流程的独立工具，需要时直接用，直接产出可用产物。',
-   when:'要批量压图、看懂一个视频、出一期 AI 日报、给文章配信息图。',
-   nodes:[['png',1],['video',2],['briefing',3],['infographic',4]],
+ util:{title:'工具与治理线 · 随取随用',color:'var(--util)',
+   sub:'不参与产品主流程的独立工具与个人档案、库级治理技能，需要时直接使用。',
+   when:'要批量压图、看懂视频、出 AI 日报、配信息图、维护个人档案或体检技能库。',
+   nodes:[['png',1],['video',2],['briefing',3],['infographic',4],['me-context',5],['skill-library-keeper',6]],
    branches:[]}
 };
 // 节点在链路上的角色一句话（没有则回退到 DET）
 const LINE_ROLE={
  radar:'扫出有哪些机会/痛点，带来源证据',scorecard:'给想法打分，决定先做哪个',
- brief:'把结论落成可验收的需求和计划',compass:'把需求变成界面原型与设计规格',
+ brief:'把结论落成可验收的需求和计划',compass:'把需求变成高质感界面原型、动效与设计规格',
  'engineering-docs':'形成技术方案与决定，附代价和回退',vdd:'做完前拿出测试/日志等验证证据',
  'reverse-teardown':'从优秀成品学可迁移规律',
  'root-rethink':'怀疑在打补丁时，拆回事实/假设/目标重新推导',
@@ -377,11 +384,13 @@ const LINE_ROLE={
  'minimum-experiment':'用最低成本的可逆实验拿到真实反馈',
  sansi:'改稿前先通读全文骨架，防补丁式改稿',
  feynman:'先把硬概念讲透（也是各文体的讲白助手）',
- cuihuo:'写一节一观点的技术观点硬文',tangshan:'写面向未来的技术畅想长文',
+ cuihuo:'把观点写成一节一观点的硬文，或提炼成短手记',tangshan:'写面向未来的技术畅想长文',
  talk:'做技术分享中长文/演讲稿/slides','haohao-eval':'用盲评和召回给改稿质量把关',
  hub_lint:'共用枢纽：所有成稿统一去机器腔',
  png:'本地批量压缩工程 PNG',video:'把视频转成带时间戳的关键帧',
- briefing:'生成宁缺毋滥的 AI/科技日报',infographic:'把关键道理做成自解释信息图'
+ briefing:'生成宁缺毋滥的 AI/科技日报',infographic:'把关键道理做成自解释信息图',
+ 'me-context':'按 L0–L4 敏感门禁存取可移植个人档案',
+ 'skill-library-keeper':'执行准入五问、全库静态体检与外部技能收录裁决'
 };
 function roleOf(id){return LINE_ROLE[id]||(DET[id]&&DET[id][0])||'';}
 function lineRow(id,idx,branch){
@@ -389,7 +398,7 @@ function lineRow(id,idx,branch){
   const num=branch?'旁':idx;
   return `<div class="lg-row ${branch?'branch':''}" onclick="detail(N['${id}'])">
     <div class="lg-idx" style="background:${branch?'#fff':PAL[x.c][0]};color:${branch?'#8b95a0':'#fff'};border-color:${PAL[x.c][0]}">${num}</div>
-    <div><b>${x.label}</b><span>${branch===true?(LINE_GUIDE[activeLine].branches.find(b=>b[0]==='${id}')||[])[1]||roleOf(id):roleOf(id)}</span></div></div>`;
+    <div><b>${x.label}</b><span>${branch===true?(LINE_GUIDE[activeLine].branches.find(b=>b[0]===id)||[])[1]||roleOf(id):roleOf(id)}</span></div></div>`;
 }
 function renderLine(f){
   activeLine=f;const g=LINE_GUIDE[f];

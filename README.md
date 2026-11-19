@@ -17,9 +17,13 @@ AI 时代最容易被低估的，是那些能反复起作用的工作方式。�
 | [vdd](./skills/vdd/) | 面向验证的开发：在说“做完了/没问题”之前先走一遍验证，不乱报喜、不硬挤问题、敢说没问题。 |
 | [haohao-shuohua](./skills/haohao-shuohua/) | 把中文写得更像人说的：保事实、去 AI 味、加中文味、不许造词充深刻。 |
 | [haohao-eval](./skills/haohao-eval/) | 好好说话评测台：盲评中文改稿，按真实 BadCase 做每日召回、候选门禁、发布监控与自动回滚。 |
-| [cuihuo](./skills/cuihuo/) | 观点淬硬引擎：把一个技术观点写成平实克制、一节一观点的对外硬文，或提炼成短思考手记。 |
+| [cuihuo](./skills/cuihuo/) | 观点淬硬引擎：把一个观点写成平实克制、一节一观点的硬文，或提炼成短思考手记。 |
+| [talk-smith](./skills/talk-smith/) | 面向读者的技术分享锻造：把技术主题、实践或项目复盘做成有叙事弧的文章、演讲稿或 slides。 |
 | [tangshan-style](./skills/tangshan-style/) | 汤山体：把面向未来的想象与推演写成有历史纵深、每句耐嚼的畅想文。 |
 | [feynman-explainer](./skills/feynman-explainer/) | 用费曼技巧把复杂的东西讲透：一条逻辑链层层推导，让外行也能真正理解。 |
+| [content-infographic](./skills/content-infographic/) | 内容信息图：用零依赖渲染器或文生图把文章关键机制画成直观且与正文咬合的信息图与封面。 |
+| [ai-briefing](./skills/ai-briefing/) | AI 每日早报：一份 5 分钟读完的每日 AI/科技简报，含事实、判断与机会分，周五复盘本周 GitHub Trending。 |
+| [me-context](./skills/me-context/) | 可移植个人档案：将个人事实、偏好与健康关系存为带敏感分层的本地 Markdown，AI 起草、人确认。 |
 | [opportunity-radar](./skills/opportunity-radar/) | 机会雷达：从公开信息或用户材料中筛出产品线索，逐条保留来源、证据和信号强度。 |
 | [opportunity-scorecard](./skills/opportunity-scorecard/) | 机会评分卡：为想法取证、按十维评估潜力，由脚本计算综合分和结论。 |
 | [product-brief](./skills/product-brief/) | 产品需求与计划：把直接需求或研究材料整理成 PRD、可验证验收和里程碑安排。 |
@@ -39,10 +43,10 @@ AI 时代最容易被低估的，是那些能反复起作用的工作方式。�
 
 可以把这些 Skill 看成几组能力：
 
-- **判断与验证**：VDD、兼听、好好说话评测台、钢人抉择、说法核查、论证精读。
-- **产品形成**：机会雷达、机会评分卡、产品需求与计划、设计罗盘、反向拆解（成品学习）。
-- **工程交付**：研发技术文档、PNG 压缩、视频读取。
-- **写作表达**：好好说话、淬火、汤山体、费曼讲解、三思而后行。
+- **判断与验证**：VDD、兼听、好好说话评测台、钢人抉择、说法核查、论证精读、技能管家、AI 每日早报。
+- **产品形成**：机会雷达、机会评分卡、产品需求与计划、设计罗盘、反向拆解（成品学习）、归本重推、最小实验。
+- **工程交付**：研发技术文档、PNG 压缩、视频读取、可移植个人档案（me-context）。
+- **写作表达**：好好说话、淬火、技术分享锻造（talk-smith）、汤山体、费曼讲解、三思而后行、内容信息图。
 
 每个 Skill 的 README 负责讲清功能、用法、设计理由、实测结果和边界；`SKILL.md` 是 Agent 真正执行时读取的入口。复杂 Skill 还会附带 references、脚本、模板或运行资产，按任务需要加载。
 
@@ -102,27 +106,32 @@ cp -R jobyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
 ├── README.md
 ├── README.en.md
 └── skills/
-    ├── vdd/
-    ├── haohao-shuohua/
-    ├── haohao-eval/
+    ├── ai-briefing/
+    ├── argument-reading/
+    ├── claim-check/
+    ├── content-infographic/
     ├── cuihuo/
-    ├── tangshan-style/
+    ├── engineering-docs/
     ├── feynman-explainer/
+    ├── haohao-eval/
+    ├── haohao-shuohua/
+    ├── me-context/
+    ├── minimum-experiment/
     ├── opportunity-radar/
     ├── opportunity-scorecard/
-    ├── product-brief/
-    ├── style-compass/
-    ├── engineering-docs/
     ├── outside-view/
-    ├── sansi-erhouxing/
+    ├── png-compress/
+    ├── product-brief/
     ├── reverse-teardown/
-    ├── steelman-choice/
-    ├── claim-check/
-    ├── argument-reading/
     ├── root-rethink/
-    ├── minimum-experiment/
-    ├── video-reader/
-    └── png-compress/
+    ├── sansi-erhouxing/
+    ├── skill-library-keeper/
+    ├── steelman-choice/
+    ├── style-compass/
+    ├── talk-smith/
+    ├── tangshan-style/
+    ├── vdd/
+    └── video-reader/
 ```
 
 每个技能目录都以 `SKILL.md` 为入口，部分带 `references/`、`scripts/` 或 `assets/`。

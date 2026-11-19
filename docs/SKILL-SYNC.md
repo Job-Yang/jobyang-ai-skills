@@ -5,7 +5,7 @@
 ## 用法
 
 ```bash
-# 1) 首次：复制配置模板，填入本机的技能运行目录、zip 目录、备份目录
+# 1) 首次：复制配置模板，填入本机的技能运行目录、zip 目录
 cp tools/sync.example.json tools/sync.local.json
 
 # 2) 预览差异（不写入）
@@ -18,7 +18,7 @@ python3 tools/sync_skills.py --apply
 - `tools/sync.local.json` 已被 git 忽略，不同机器各填各的，不进入公开仓。
 - 白名单在 `tools/skills-manifest.json`：只同步其中的自有技能；运行目录里的公司内部/第三方技能一律不碰。
 - 同步会排除 `.git .deps __pycache__ .pytest_cache *.pyc .DS_Store` 和悬空符号链接。
-- 若某目标存在权威源里没有的文件（可能在该目录直接改过没回灌），会标 `ALERT`；`--apply` 时先整体备份到 `backup_root/<时间戳>/` 再覆盖，不会静默丢东西。
+- 若某目标存在权威源里没有的文件（可能在该目录直接改过没回灌），会标 `ALERT`；脚本本身不创建自动备份目录（唯一备份是 Git 历史），`--apply` 会直接覆盖并清理这些源外文件，请先回灌 Git 或手动备份再写入。
 - 新增技能后：放进 `skills/<name>/`，在 manifest 加一行，跑一次同步即可。
 
 ## 手动安装到任意宿主

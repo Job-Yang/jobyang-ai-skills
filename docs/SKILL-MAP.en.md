@@ -25,7 +25,7 @@ Status: ✅ available　🆕 built, pending blind test　⏸ deferred　❌ reje
 | ✅ opportunity-radar | Find opportunities with sourced evidence | domain/material → candidates+evidence | One-off opportunity scan | Start of a product workflow |
 | ✅ opportunity-scorecard | Score one idea, script-generated | idea+evidence → 10-dim score | Runs independently | Evaluation node of a product workflow |
 | ✅ product-brief | Turn idea into verifiable PRD/plan | need/scorecard → PRD+milestones | Writes PRDs alone | Definition node of a product workflow |
-| ✅ style-compass | UI design and prototypes | need → wireframes/prototype/spec | Independent design review | Design node of a product workflow |
+| ✅ style-compass | UI design, motion packs and prototypes | need → aesthetic direction/prototype/spec | Independent design & motion review | Design node of a product workflow |
 | ✅ engineering-docs | Engineering docs and decisions | context → doc+diagrams | Writes docs alone | Connects to environments with engineering verification |
 | 🆕 reverse-teardown | Learn transferable rules from one external artifact | artifact+goal → rules/context-only/checklist/minimum experiment | Learn from any artifact anywhere | Can mount on any "solution review / design reference" flow point |
 
@@ -46,7 +46,7 @@ Status: ✅ available　🆕 built, pending blind test　⏸ deferred　❌ reje
 
 ### Cluster C · Chinese writing (input-type vs output-type boundaries)
 
-✅ feynman-explainer (understand a concept), haohao-shuohua (de-AI lint), cuihuo (opinion essay), tangshan-style (speculative essay), sansi-erhouxing (read full skeleton before editing), talk-smith (talks/slides), haohao-eval (blind evaluation/recall).
+✅ feynman-explainer (understand a concept), haohao-shuohua (de-AI lint), cuihuo (opinion essay or short note), tangshan-style (speculative essay), sansi-erhouxing (read full skeleton before editing), haohao-eval (blind evaluation/recall).
 
 ### Cluster D · Data & engineering execution
 
@@ -59,6 +59,10 @@ Status: ✅ available　🆕 built, pending blind test　⏸ deferred　❌ reje
 ### Cluster F · Information & content production
 
 ✅ ai-briefing (5-minute AI/tech daily brief, fact/judgment/opportunity cards; channels via config, no internal endpoints in the skill body); content-infographic (deterministic infographics where the image itself makes one point; zero-dependency SVG/PNG renderer); talk-smith (technical talks and slides).
+
+### Cluster G · Library governance
+
+✅ skill-library-keeper (five-question admission gate for new skills, static health audit across collisions/orphans/hard bindings, use/distill/rebuild intake decisions; auto-discovers the library path with zero platform lock-in).
 
 ## 3. Collaboration
 
