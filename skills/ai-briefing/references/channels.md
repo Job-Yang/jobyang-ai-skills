@@ -6,7 +6,7 @@
 
 **技能本体不含任何固定 X 端点、内网域名或密钥**，也不依赖任何公司内部技能。X 能力拆成"取数后端（可换）+ 统一数据结构（不变）"，四档按可用性降级：
 
-1. **host_read（默认，零依赖）**：让宿主 Agent 的网页读取能力直接打开 `watch_handles` 里的个人主页（`https://x.com/<handle>`），提取最近推文、时间、互动量。X **搜索页**常对非登录访问关闭，不要硬刷；主页读到登录壳就视为失败并降档。
+1. **host_read（默认，零依赖）**：让宿主 Agent 的网页读取能力直接打开 `config.json` 中 `watch_handles` 里的个人主页（`https://x.com/<handle>`），提取最近推文、时间、互动量。X **搜索页**常对非登录访问关闭，不要硬刷；主页读到登录壳就视为失败并降档。
 2. **http**：用 `scripts/x_provider.py`（纯标准库）调你有权使用的 X 数据服务。端点、请求体、字段映射全在一个 provider profile JSON 里（`examples/x-provider.example.json`、`examples/x-provider.twitterv2.json`），凭证只从环境变量注入（`"Authorization":"Bearer $X_API_KEY"`）。动作：
    - `search_posts --query ... [--after/--before/--count]`
    - `user_posts --handle ... [--count]`

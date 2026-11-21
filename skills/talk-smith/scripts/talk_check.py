@@ -121,7 +121,7 @@ def check(state: str, text: str):
     # 3. 字数区间
     cn = count_cn(body)
     if cn < rules["cn_min"]:
-        warns.append(f"中文字数 {cn} 低于 {rules['cn_min']}（{rules['desc']}）——太薄或漏了进阶层")
+        warns.append(f"中文字数 {cn} 低于 {rules['cn_min']}（{rules['desc']}）——太薄或漏了核心机制与工程细节")
     if cn > rules["cn_max"]:
         warns.append(f"中文字数 {cn} 超过 {rules['cn_max']}（{rules['desc']}）——考虑拆分或删水段")
 
@@ -156,17 +156,17 @@ def check(state: str, text: str):
             errors.append(f"中文正文夹半角标点 {len(half)} 处（围栏代码/行内码/URL/数字千分位除外）——换全角，示例：{half[:3]}")
 
     # 8. 文体提示 WARN（只查字面结构，不判路由；路由以 SKILL 边界表为准）
-    # "进阶层机制"信号：不用裸字「层/参数」，要更有信息量的证据——
-    #   复杂度 O(·) / 等式公式 / 明确的进阶层小节标题 / 拉丁术语原词+中文注释。
+    # "核心机制与工程事实"信号：不用裸字「层/参数」，要更有信息量的证据——
+    #   复杂度 O(·) / 等式公式 / 明确的机制小节标题 / 拉丁术语原词+中文注释。
     has_complexity = bool(re.search(r"O\s*\([^)]{1,12}\)", body))
     has_equation = bool(re.search(r"[A-Za-zωασ∂][A-Za-z0-9₀-₉_\-]*\s*[=≈≤≥]\s*[A-Za-z0-9_(（₀-₉]", body))
-    has_layer_heading = bool(re.search(r"(?m)^#{1,6}\s.*(进阶层|原理层|通俗层|机制层|复杂度|公式|状态方程)", body))
+    has_layer_heading = bool(re.search(r"(?m)^#{1,6}\s.*(核心机制|进阶层|原理层|通俗层|机制层|复杂度|公式|状态方程)", body))
     has_term_gloss = bool(re.search(LATIN + r"\s*[（(][^）)]{2,30}[）)]", body))
     has_advanced = has_complexity or has_equation or has_layer_heading or has_term_gloss
     has_takeaway = any(w in body for w in ["搬走", "落地", "适用", "你可以", "明天", "可用于", "拿来", "可以试试"])
     if state == "article":
         if not has_advanced:
-            warns.append("[文体] 未见进阶层机制信号（复杂度 O(·)/等式公式/进阶层小节标题/拉丁术语+中文注释）——确认不是把观点短稿当文章；本项只查字面，路由以边界表为准")
+            warns.append("[文体] 未见核心机制与工程事实信号（复杂度 O(·)/等式公式/机制小节标题/拉丁术语+中文注释）——确认不是把观点短稿当文章；本项只查字面，路由以边界表为准")
             if cn >= 600:
                 warns.append("[文体] 稿子不算薄却全程无机制/公式/术语注释，更像观点判断——确认是否该归 cuihuo")
         if not has_takeaway:

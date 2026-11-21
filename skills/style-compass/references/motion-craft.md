@@ -21,12 +21,12 @@
 
 2. **它解决了什么空间或认知问题？** 能指出“来自哪个触发点 / 去往哪一层级 / 确认哪步操作”，才值得动。
 3. **应该配什么曲线？**
-   - **严禁把 `ease-in` 用作 UI 交互曲线**：起步慢会让按键感觉“卡了半拍”。入场、弹出与状态展开一律用 `ease-out` 族或物理弹簧，把加速度放在第 1 帧响应手指。
-   - **严禁从 `scale(0)` 凭空缩放**：现实世界没有物体从零体积炸出来；弹层、菜单与浮窗须从 `scale(0.94–0.97) + opacity: 0` 起步。
+   - **UI 交互入场默认用 `ease-out` 族或物理弹簧**：起步慢的 `ease-in` 会让按键感觉卡顿，常规入场、弹出与状态展开避开 `ease-in`（仅作特殊物理退场时使用），把加速度放在第 1 帧响应手指。
+   - **弹层与浮窗从近等比（`scale(0.94–0.97) + opacity: 0`）起步**：默认避免从 `scale(0)` 凭空炸出，保持视觉连续性。
    - **同组连续热切换**：首次悬停触发 Tooltip 可留短延迟防误触，一旦组内任一项已激活，相邻项之间切换延迟归零。
-4. **全程是否可打断？** 状态切换优先 CSS `transition` 或 Web Animations API（WAAPI），允许用户中途连点折返并直接沿当前位置平滑归位，绝不用计时器锁死按钮点击。
+4. **全程是否可打断？** 状态切换优先 CSS `transition` 或 Web Animations API（WAAPI），允许用户中途连点折返并直接沿当前位置平滑归位，不用计时器锁死按钮点击。
 
-**性能底线：** 只对 `transform`、`opacity`、`filter`、`clip-path`、`stroke-dashoffset`、`background-color`、`border-color`、`grid-template-rows` 等显式属性写过渡；**禁止 `transition: all`**。
+**性能底线：** 只对 `transform`、`opacity`、`filter`、`clip-path`、`stroke-dashoffset`、`background-color`、`border-color`、`grid-template-rows` 等显式属性写过渡；避免 `transition: all`。
 
 ---
 

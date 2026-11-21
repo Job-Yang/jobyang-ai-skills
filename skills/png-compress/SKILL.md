@@ -44,20 +44,20 @@ description: App 工程 PNG 批量压缩（pngquant 量化 + oxipng 无损收尾
 ## 怎么用
 
 ```bash
-# git 工程内:一键跑(原地覆盖)
-./compress.sh /path/to/iOSProject
+# git 工程内:一键跑(原地覆盖，先将 <SKILL_DIR> 替换为本技能实际目录)
+bash <SKILL_DIR>/compress.sh /path/to/iOSProject
 
 # 只看效果不改文件(先预估收益)
-./compress.sh /path/to/iOSProject --dry-run
+bash <SKILL_DIR>/compress.sh /path/to/iOSProject --dry-run
 
 # 不确定目录是否安全:输出副本,原图不动
-python3 compress_images.py /path/to/proj --output-dir /tmp/compressed
+python3 <SKILL_DIR>/compress_images.py /path/to/proj --output-dir /tmp/compressed
 
 # 非 git 目录、确认已备份:显式放行原地覆盖
-python3 compress_images.py /path/to/proj --allow-non-git
+python3 <SKILL_DIR>/compress_images.py /path/to/proj --allow-non-git
 
 # 指定并行数
-./compress.sh /path/to/iOSProject -j 8
+bash <SKILL_DIR>/compress.sh /path/to/iOSProject -j 8
 ```
 
 `compress.sh` 只是加了依赖自检 + brew 安装入口的一层壳（默认仅提示，设置 `PNG_COMPRESS_YES_BREW=1` 才自动安装），实际引擎是 `compress_images.py`。

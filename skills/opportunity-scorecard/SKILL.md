@@ -5,9 +5,9 @@ description: "为产品想法取证并评分，判断值不值得继续验证。
 
 # Opportunity Scorecard · 机会评估
 
-先读包内 `references/handoff.md`。数值评分需要 Python 3.9+，无第三方依赖。独立调用不要求雷达文件，也不自动启动 PRD。
+进入 OPC 流程或需要跨环境信封打包交接时按需读包内 `references/handoff.md`。数值评分需要 Python 3.9+，无第三方依赖。独立调用不要求雷达文件，也不自动启动 PRD。
 
-版本口径（2026-10-16 起）：信封 schema 版本 0.2.0，由冻结的 `scripts/artifact_io.py` seal 出，代表信封结构；本 kit（技能包）版本 0.3.2，见 CHANGELOG.md。score.py 渲染卡片时信封写 0.2.0，不再用旧的 0.2.2——信封版本和 kit 版本不是一回事。
+信封 schema 版本 0.2.0，由包内 `scripts/artifact_io.py` 与 `score.py` 校验渲染。
 
 ## 这个 kit 是什么
 
@@ -38,7 +38,7 @@ description: "为产品想法取证并评分，判断值不值得继续验证。
 
 **第 1 步 · 地基层硬门（极窄，命中即否）** —— 判据见 `references/scoring-method.md`：只问"这命题本身立不立得住"。三条任一命中 `pass=false`：价值主张自相矛盾 / 依赖做不到的前提 / 目标市场可证明为空。⚠️"一个人扛不动""要牌照""变现绕远"是**程度问题不进这层**，留到潜力层扣分。
 
-**第 2 步 · 潜力层 10 维取证打分** —— 维度/权重/判据/锚点见 `references/scoring-method.md`：对每维**先取证再给分，无证据不给分**。取证复用手头联网能力（去 Reddit、G2/App Store 差评、PH、Trends 现拉），不打包爬虫。每维证据落成"链接+原话/数据"。取不到真证据的维度：继续找，或写清"暂无公开证据，属假设"并压低分——**不许留空/TODO/占位**（脚本会打回）。
+**第 2 步 · 潜力层 10 维取证打分** —— 维度/权重/判据/锚点见 `references/scoring-method.md`：对每维**先取证再给分，无证据不给分**。取证复用手头联网能力（去 Reddit、G2/App Store 差评、PH、Trends 现拉），不打包爬虫；每维**最多 `1–2` 轮补充检索**。每维证据落成"链接+原话/数据"。若公开渠道受限或 `2` 轮仍未查得可靠证据，停搜并写清"未查得公开证据，属假设，按保守暂分处理"——**不许留空/TODO/占位**（脚本会打回）。
 
 **第 3 步 · 非共识逃生舱**：写一句"为什么它看起来平庸/疯狂，但其实踩中了别人没看到的点"。合格申辩 = **一个可被证伪的具体判断(claim) + 别人为什么没看到(blindspot)**，两者都要。空泛的"我觉得会火"不算，留空即可。
 
@@ -112,7 +112,7 @@ python3 scripts/score.py --input _scoring-<topic>.json --out assess-<topic>.md -
 
 ## 诚实边界
 
-- 评估只判"值不值得去验"，**天花板是"值得去验"不是"确定能做"**——分发这种胜负手要真碰市场才知道，最终靠落地页验证拍板。
+- 评估只判"值不值得去验"，**天花板是"值得去验"不是"确定能做"**——分发这种胜负手要真碰市场才知道，最终靠落地页验证拍板；需要把待验假设落成可停损的 `1–2` 周试错时，可按需交 `minimum-experiment` 设计最小实验。
 - 它不做发现（那是雷达）、不做 PRD/设计/编码。
 
 ## 目录结构
@@ -132,7 +132,6 @@ opportunity-scorecard/
     ├── score.py                # 确定性打分内核（本包唯一可执行算法）
     ├── artifact_io.py          # opc-envelope 0.2.0 公共副本：校验、整包交接（冻结）
     ├── scoring-rules.json      # opc-envelope 0.2.0 公共副本（冻结）
-    ├── check_vendored.py       # 公共副本一致性自检
     └── vendor-manifest.json    # 本包携带的公共副本清单
 ```
 > 评分算法只维护 `scripts/score.py` 的 DIMENSIONS 常量。`scoring-rules.json` 是冻结的公共副本，artifact_io 的交接包复算读它；改 DIMENSIONS 后必须由 canonical 统一重新生成并同步全部 5 个包，不能在本包手改第二份数值（本轮它冻结，不生成）。
@@ -140,10 +139,6 @@ opportunity-scorecard/
 `examples/` 都是可运行的合成样例，所有证据均标假设，仅供检查脚本和交接，不能作为市场建议：`scoring.synthetic.json`（中性）、`scoring.foundation-reject.json`（地基门）、`scoring.dark-horse.json`（黑马逃生舱），以及三个对抗样例 `scoring.all-ten.json`（全 10 分不溢出）、`scoring.all-one.json`（全 1 分落 reject）、`scoring.contradictory.json`（维度矛盾+证据复用，验证不崩溃）。打分最小步长 0.5，6.75 这类小数会被脚本打回（见 `references/scoring-method.md`）。
 
 出卡末尾固定带"尺子置信度声明"：权重/档位/地基门/dark_horse 是先验经验判断、非统计显著，composite 只辅助排序——不要把它当数据结论引用。证据被脚本发现"同料复用"或"无链接不可验证措辞"时，卡片会列"证据警告"，需人复核真伪（脚本不判断真伪，只抓结构异常）。
-
-## 维护说明
-
-本包自带 opc-envelope 0.2.0 公共文件副本（`scripts/artifact_io.py`、`scripts/scoring-rules.json`，见 `scripts/vendor-manifest.json`），本轮冻结不改内容。发布前跑 `python3 scripts/check_vendored.py` 和 `python3 -m unittest discover -s tests -v`；与其他流水线包并排时跑 `python3 scripts/check_vendored.py --drift <各技能根>` 确认无漂移。
 
 ## 在不同环境怎么跑
 

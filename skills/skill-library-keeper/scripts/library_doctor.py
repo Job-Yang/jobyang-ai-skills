@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
-"""技能库静态健康体检（可移植、零平台依赖、纯标准库）。
+"""技能库健康与双模适配体检（可移植、零平台依赖、纯标准库）。
 
 用法：
-    python3 library_doctor.py [技能库目录] [--json]
-    python3 library_doctor.py [目录] --save-baseline baseline.json   # 记录现状
-    python3 library_doctor.py [目录] --baseline baseline.json        # 只报基线之外的新问题
+    python3 library_doctor.py [技能库目录] [--json] [--max-desc-total 4500]
+    python3 library_doctor.py [目录] --strict                    # mid 也返回 exit 1
+    python3 library_doctor.py [目录] --external-skills s1,s2     # 补充宿主技能白名单
+    python3 library_doctor.py [目录] --save-baseline baseline.json
+    python3 library_doctor.py [目录] --baseline baseline.json
 
-设计边界（重要）：
-- 本工具只做「静态」检查：frontmatter、命名、description 路由信号、引用完整性、
-  平台绑定、结构体积、占位/密钥等文本可判定的问题。
-- P3 语义类（退出条件、有限重试、可观察触发、选项有默认、规则矛盾）正则不可靠，
-  不写死在脚本里，见 references/health-check.md 的人工清单。
-- 动态类（真实触发率、乱触/漏触、文件实际读取顺序、端到端成功率）归 Harness 层，
-  本工具不做。
-- 规则来源：Anthropic 官方 Skill 规范、agent-skill-linter、ai-skill-lint、
-  宿主 skill-creator 的 quick_validate.py。每条规则 ID 可在 health-check.md 查到依据。
+设计边界：
+- 静态与文本线索检查：frontmatter、description 预算与路由信号、引用完整性、
+  隐形前置必读税、强模型拐杖密度、维护信息泄露、跨技能串联与规范冲突、
+  平台绑定与密钥。
+- P3 语义项（强弱双模消融、真实撞车、退出条件等）见 references/health-check.md。
+- 动态项（真实会话触发率、读取顺序、端到端成功率）归 Harness 层，本工具不做。
 - 只报告，不修改任何文件。
 """
 from __future__ import annotations
@@ -23,6 +22,7 @@ import argparse
 import json
 import re
 import sys
+from collections import defaultdict
 from pathlib import Path
 
 try:
@@ -31,44 +31,57 @@ except Exception:  # pragma: no cover
     yaml = None
 
 # ---------------------------------------------------------------- 规则目录
-
 # 每条规则：(severity, 规则ID, 名称, 修复建议, 来源)
-# severity: high=硬错误(exit 1) / mid=路由与正确性 / low=结构与卫生
-R_NAME_MISSING   = ("high", "F001", "缺 name",            "补 frontmatter name",                    "quick_validate/Anthropic")
-R_NAME_BAD       = ("high", "F002", "name 非法",          "name 仅允许小写字母/数字/连字符，不以连字符开头结尾、无连续连字符，≤64 字符", "Anthropic/quick_validate")
-R_NAME_RESERVED  = ("high", "F003", "name 含保留词",      "不得含 anthropic/claude 等保留词",       "Anthropic")
-R_NAME_DIR       = ("mid",  "F004", "name 与目录不一致",  "统一 frontmatter name 与目录名",         "quick_validate")
-R_NAME_DUP       = ("high", "F005", "name 重名",          "多个技能声明同一 name，改名消歧",        "library")
-R_FM_YAML        = ("high", "F006", "frontmatter 非法",   "修复 YAML 语法",                         "quick_validate")
-R_FM_UNKNOWN_KEY = ("low",  "F007", "frontmatter 非常用字段", "确认该字段是宿主支持的，否则移入 metadata", "quick_validate")
-R_DESC_MISSING   = ("high", "F008", "缺 description",     "补 description（做什么+何时触发+不适用）", "Anthropic/quick_validate")
-R_DESC_LONG      = ("high", "F009", "description 超长",   "description ≤1024 字符，细节移正文",     "Anthropic/quick_validate")
-R_DESC_ANGLE     = ("high", "F010", "description 含尖括号", "去掉 < >（会与标签冲突）",             "Anthropic/quick_validate")
-R_DESC_SHORT     = ("mid",  "D001", "description 过短",   "过短难以承载「做什么+何时触发+边界」，建议 ≥60 字", "Anthropic 双要素")
-R_DESC_NOWHEN    = ("mid",  "D002", "description 缺触发时机", "补「何时用/触发词/当……时」，路由只看这一行", "Anthropic/agent-skill-linter R18")
-R_DESC_NOSAMPLE  = ("low",  "D003", "description 缺用户原话样例", "加 1-3 个用户真实会说的触发短语（引号包裹）", "Anthropic")
-R_BODY_NOBORDER  = ("mid",  "D004", "正文缺不适用边界",   "写明不适用场景及与相邻技能的互斥/交接",   "library")
-R_REF_BROKEN     = ("high", "R001", "引用文件不存在",     "修复路径或补文件（broken reference）",   "ai-skill-lint Structure")
-R_FENCE_OPEN     = ("mid",  "R002", "代码围栏未闭合",     "代码围栏 ``` 数量为奇数，补全闭合",      "ai-skill-lint Content")
-R_HARD_BIND      = ("high", "P001", "平台硬绑定",         "去掉绝对路径/宿主目录，改成参数或自动发现", "library")
-R_SOFT_BIND      = ("low",  "P002", "平台弱引用待确认",   "确认是软依赖：写明「需要时才用，缺失则降级到通用方式」", "library")
-R_COLLISION      = ("mid",  "T001", "疑似触发撞车",       "人工确认真实 query 是否互抢；重划边界或在 description 互指", "library")
-R_BODY_LONG      = ("low",  "S001", "SKILL.md 超长",      "正文 >500 行，把条件性细节下沉到 references/", "Anthropic 渐进披露")
-R_REF_NOTOC      = ("low",  "S002", "长 reference 缺目录", ">200 行的 reference 文件顶部加目录",     "Anthropic")
-R_REF_DEEP       = ("low",  "S003", "reference 嵌套超过一层", "reference 只应被 SKILL.md 直接引用一层，抹平层级", "Anthropic")
-R_REF_ORPHAN     = ("low",  "S004", "资源未被主文件引用", "确认该文件是否需要；需要则在 SKILL.md 标明何时读", "Anthropic")
-R_PLACEHOLDER    = ("low",  "S005", "残留占位/待办",      "删除模板示例文件或补全 TODO/占位内容",    "skill-creator/ai-skill-lint")
-R_SECRET         = ("high", "S006", "疑似硬编码密钥",     "立即移除密钥，改用环境变量/配置",         "ai-skill-lint Security")
+# severity: high=硬错误(exit 1) / mid=路由、预算与冲突(--strict exit 1) / low=结构与减负提示
 
-# ---- C 类：库级覆盖（不是单个技能写错，而是一版图围出了一个谁都不接的任务洞）----
-R_C_DANGLING     = ("mid",  "C001", "悬空技能交接",
-                    "正文/description 把任务指给了一个库中不存在的技能；补该技能或改指现有技能", "library")
-R_C_VACUUM       = ("mid",  "C003", "疑似覆盖真空",
-                    "多个技能都把这类任务排除/推走，却没有任何技能正面认领；核对后补一个承接方或明确边界", "library")
+R_NAME_MISSING   = ("high", "F001", "缺 name",             "补 frontmatter name", "quick_validate/Anthropic")
+R_NAME_BAD       = ("high", "F002", "name 非法",           "name 仅允许小写字母/数字/连字符，不以连字符开头结尾、无连续连字符，≤64 字符", "Anthropic/quick_validate")
+R_NAME_RESERVED  = ("high", "F003", "name 含保留词",       "不得含 anthropic/claude 等保留词", "Anthropic")
+R_NAME_DIR       = ("mid",  "F004", "name 与目录不一致",   "统一 frontmatter name 与目录名", "quick_validate")
+R_NAME_DUP       = ("high", "F005", "name 重名",           "多个技能声明同一 name，改名消歧", "library")
+R_FM_YAML        = ("high", "F006", "frontmatter 非法",    "修复 YAML 语法", "quick_validate")
+R_FM_UNKNOWN_KEY = ("low",  "F007", "frontmatter 非常用字段", "确认该字段是宿主支持的，否则移入 metadata", "quick_validate")
+R_DESC_MISSING   = ("high", "F008", "缺 description",      "补 description（做什么+何时触发+不适用）", "Anthropic/quick_validate")
+R_DESC_LONG      = ("high", "F009", "description 超长",    "description ≤1024 字符，细节移正文", "Anthropic/quick_validate")
+R_DESC_ANGLE     = ("high", "F010", "description 含尖括号",  "去掉 < >（会与标签冲突）", "Anthropic/quick_validate")
+
+R_DESC_SHORT     = ("mid",  "D001", "description 过短",        "过短难以承载「做什么+何时触发+边界」，建议 ≥60 字", "Anthropic 双要素")
+R_DESC_NOWHEN    = ("mid",  "D002", "description 缺触发时机",  "补「何时用/触发词/当……时」，路由只看这一行", "Anthropic/agent-skill-linter")
+R_DESC_NOSAMPLE  = ("low",  "D003", "description 缺用户原话样例", "加 1-3 个用户真实会说的触发短语（引号包裹）", "Anthropic")
+R_BODY_NOBORDER  = ("mid",  "D004", "正文缺不适用边界",    "写明不适用场景及与相邻技能的互斥/交接", "library")
+
+R_DESC_BLOATED   = ("mid",  "B001", "description 过胖",      "将辨析、反例与背景下沉正文或 references/，description 控制在 ≤260 字符以防挤压全库索引", "library/dual-model")
+R_DESC_TOTAL     = ("mid",  "B002", "全库 description 超预算", "压缩过长 description，使全库总字符控制在预算内（默认 ≤4500），避免宿主截断丢技能", "library/dual-model")
+R_STARTUP_HEAVY  = ("mid",  "B003", "隐形前置必读过重",    "改为按阶段或按分支按需读取，删去无条件起手必读要求；单次启动控制在 ≤350 行（必读参考 ≤250 行）", "library/dual-model")
+R_OVER_SCAFFOLD  = ("low",  "B004", "强模型拐杖过重",      "删减机械算术配额、禁止内部思考规定或大量复读式强迫约束，轻任务留直通快路径，示范下沉按需 references/", "library/dual-model")
+R_MAINT_LEAK     = ("low",  "B005", "维护信息混入运行时",  "把维护说明、发版校验命令、仓内内部路径和版本考古移出运行时 SKILL.md（可迁至 README 或 CHANGELOG）", "library/dual-model")
+
+R_REF_BROKEN     = ("high", "R001", "引用文件不存在",      "修复路径或补文件（broken reference）", "ai-skill-lint Structure")
+R_FENCE_OPEN     = ("mid",  "R002", "代码围栏未闭合",      "代码围栏 ``` 数量为奇数，补全闭合", "ai-skill-lint Content")
+
+R_HARD_BIND      = ("high", "P001", "平台硬绑定",          "去掉绝对路径/宿主目录，改成参数或自动发现", "library")
+R_SOFT_BIND      = ("low",  "P002", "平台弱引用待确认",    "确认是软依赖：写明「需要时才用，缺失则降级到通用方式」", "library")
+
+R_BODY_LONG      = ("low",  "S001", "SKILL.md 超长",       "正文 >500 行，把条件性细节下沉到 references/", "Anthropic 渐进披露")
+R_REF_NOTOC      = ("low",  "S002", "长 reference 缺目录", ">200 行的 reference 文件顶部加目录或分节标题", "Anthropic")
+R_REF_ORPHAN     = ("low",  "S004", "资源未被主文件引用",  "确认该文件是否需要；需要则在 SKILL.md 标明何时读", "Anthropic")
+R_PLACEHOLDER    = ("low",  "S005", "残留占位/待办",       "删除模板示例文件或补全 TODO/占位内容", "skill-creator/ai-skill-lint")
+R_SECRET         = ("high", "S006", "疑似硬编码密钥",      "立即移除密钥，改用环境变量/配置", "ai-skill-lint Security")
+
+R_C_DANGLING     = ("mid",  "C001", "悬空技能交接",        "正文/description 把任务指给了一个库中不存在的技能；补该技能、改指现有技能或加入 external 白名单", "library")
+R_C_VACUUM       = ("mid",  "C003", "疑似覆盖真空",        "多个技能都把这类任务排除/指走，却没有任何技能正面认领；核对后补一个承接方或明确边界", "library")
+
+R_CHAIN_COUPLE   = ("mid",  "X001", "跨技能串联过深或单向豁免", "简化上游→下游串联层级（避免 ≥3 跳或环）；上游依赖下游豁免时须确保双方文档对称对齐", "library/dual-model")
+R_CROSS_CLASH    = ("mid",  "X002", "疑似跨技能规则打架",  "按「唯一主责协议」对齐相连或并行技能在小标题体例、翻案句型或机理-比喻顺序上的互斥指令", "library/dual-model")
+R_SELF_CLASH     = ("mid",  "X003", "疑似技能内部规则自相矛盾", "检查技能正文与 references/ 对同一事项是否给出冲突规范，保留唯一生效条款", "library/dual-model")
+R_OMNI_TRIGGER   = ("mid",  "X004", "全域触发撞车风险",    "收窄近全域触发措辞并补齐「不适用/与相邻技能分流/豁免」规则（常驻规范应归宿主层）", "library/dual-model")
 
 ALLOWED_FM_KEYS = {"name", "description", "license", "allowed-tools", "compatibility", "metadata"}
+DEFAULT_EXTERNAL_SKILLS = {
+    "skill-creator", "lark-doc", "lark-drive",
+    "word", "pdf", "sheet", "html", "browser-task", "ppt",
+}
 
-# 强绑定：出现基本就是问题（绝对路径、宿主目录）
 HARD_PATTERNS = [
     r"/Users/[^\s'\")\]]+",
     r"/home/[^\s'\")\]]+",
@@ -77,26 +90,84 @@ HARD_PATTERNS = [
     r"~/\.trae/skills",
     r"~/\.claude/skills",
 ]
-# 弱引用：平台名/专属工具，命中不代表错，但要确认是否「需要时才用、可降级」
 SOFT_PATTERNS = [r"lark-cli", r"lark-doc", r"feishu\.cn", r"飞书文档?"]
 SOFT_DEGRADE_HINT = r"若(具备|有|需要|可用|没有|缺失|无)|可降级|降级|没有.*时|(缺|无).*时|可选"
 
-# 触发时机信号（description 里出现才算写了「何时用」）。中文技能常只写「时使用/…时调用/
-# 当…用」，阈值放宽，避免把明明写了触发时机的描述误判为缺信号。
 WHEN_PAT = re.compile(
     r"适用|用于|用时|时(?:使用|调用|用|触发|启用)|当.{0,14}(?:时|用)|触发|何时|"
     r"不适用|不要用|不走|不做|不负责|use when|when to", re.I)
-# 用户原话样例：引号包裹的短语。兼容中文直角引号「」『』、弯引号“”‘’和英文引号。
 SAMPLE_PAT = re.compile(r"[「『“‘\"'][^」』”’\"']{2,30}[」』”’\"']")
-# 边界信号（正文）。中文技能常写「不用/不负责/只做/范围」，阈值放宽。
 BORDER_PAT = re.compile(
     r"不适用|不启用|不要用|不用|不触发|不负责|边界|何时不用|不做|不走|只做|只用于|适用范围")
-# description 路由行里写的边界（正文没重复时也够，路由只看这一行）
 DESC_BORDER_PAT = re.compile(r"不适用|不要用|不做|不走|不接|不负责|区别|分别走|vs")
 
-# 只统计 markdown 围栏的起始/结束行；围栏内是代码/命令，不算正文引用，
-# 避免把 `cp -R ... ~/.trae/skills`、`scripts/foo.py` 这类命令当成正文引用。
+FENCE_RE = re.compile(r"^\s*```")
+LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
+BARE_RES_RE = re.compile(r"(?<![\w/.\-])((?:references|reference|scripts|assets)/[A-Za-z0-9_./\-]*[A-Za-z0-9_\-])")
+REF_FILE_EXT_RE = re.compile(r"\.(?:md|py|sh|mjs|js|json|ya?ml|txt|toml)$", re.I)
+SECRET_RE = re.compile(
+    r"(?i)(?:api[_-]?key|secret|access[_-]?token|password)\s*[:=]\s*[\"'][A-Za-z0-9_\-]{16,}[\"']"
+)
+PLACEHOLDER_NAME_RE = re.compile(r"example|sample|template|示例|样板", re.I)
+
+# B003 隐形前置必读检测
+MANDATORY_READ_CUES = re.compile(
+    r"先读|先\s*Read|动手前.{0,8}读|必读|必须.{0,4}(?:读|走)|每次.{0,8}读|均须.{0,6}读|"
+    r"起手.{0,6}读|全部加载|写正文前必读|成稿必读|"
+    r"(?:^|\s|[1-9]\.\s*|[-*]\s*)(?:读取|逐条过|过|按)\s*(?:包内\s*)?`?(?:references|templates)/"
+)
+CONDITIONAL_READ_HINTS = re.compile(
+    r"按需|可选|必要时|若需要|不要每次加载|不要全部加载|不必全部加载|仅.{0,12}时读|"
+    r"对应小节|按对象类型|按步|非必读|分支|没有就|缺失时|兜底时读|遇到.{0,10}时读"
+)
+MANDATORY_PATH_RE = re.compile(r"`?((?:references|templates)/[A-Za-z0-9_./\-]+\.md)`?")
+
+# B004 / B005 强模型拐杖与维护泄露
+CRUTCH_REDO_RE = re.compile(r"视为(?:本次)?失败.{0,6}重做|写不出.{0,14}=.{0,8}(?:不许交|没想清楚|没数)|不许心里默念")
+CRUTCH_MATH_RE = re.compile(r"向上取整|ceil\(|平地句在\s*P|全文段落占比\s*[≤<]=?\s*\d+%|(?:总分|评分|得分)\s*[<≤]\s*\d+\s*/\s*\d+.*重写")
+CRUTCH_COSTUME_RE = re.compile(r"不是可选项|必做动作（写死）|任何一篇的骨架都是|按惯例应追加到.{0,16}(?:链接|路径)给我|每[段节]必须配.{0,10}(?:比喻|金句|反问)|一字不差.{0,6}套用")
+CRUTCH_META_CLOSE_RE = re.compile(r"收口自检多答一句|(?:先)?原样发.{0,20}开场话术|开场(?:话术|白).{0,10}一字不差")
+COERCIVE_WORD_RE = re.compile(r"必须|严禁|禁止|不得|强制|一律|绝不|决不|不许")
+MAINT_HEADING_RE = re.compile(r"^#{1,3}\s+.*(?:维护说明|发版说明|开发说明|版本考古|维护状态)", re.M)
+MAINT_TEXT_RE = re.compile(r"check_vendored\.py|docs/SKILL-QUALITY-CARD\.md|不再用旧的\s*0\.|自称[\"「]?版本\s*\d")
+
+# X 系列：反例行过滤、极性与串联模式
+ANTI_LINE_RE = re.compile(r"^\s*(?:[-*]\s*)?(?:❌|反例[:：]|错误示例[:：]|错误写法[:：]|坏样例[:：]|旧病[:：]|错[:：])")
+EDGE_NEG_SENT = re.compile(
+    r"不适用|不走|不接|不要用|不用|排除|不归|不是|不做|不替代|区别|让位|分流|(?<![a-zA-Z])vs(?![a-zA-Z])|"
+    r"只负责.{0,12}不|不在本技能|不反向|不可用|没有.{0,8}时|缺失时|可选|跳过|它不做什么|"
+    r"对比项|何时不用|仅作其他技能|如.{0,20}调用本技能"
+)
+CARVEOUT_RE = re.compile(r"豁免|除外|不清理|保留.{0,14}例外|冲突.{0,8}以.{0,16}为准")
+
+H2_NOUN_RE = re.compile(r"H2(?:/H3)?\s*(?:是|写).{0,12}(?:短关键词|短模块目录|目录项)|标题不写成问句/论点句")
+H2_CLAIM_RE = re.compile(r"小标题(?:自己)?是一句能立住的话|章节小标题直接写本节要点|小标题是\*\*一句论点\*\*")
+B2_USE_RE = re.compile(r"你可能以为是?\s*A.{0,8}其实是?\s*B|新手会误以为\s*X.{0,8}其实是?\s*Y")
+B2_NEG_RE = re.compile(r"删|禁|拆|严禁|反例|清理|禁止|不要|不得")
+B2_BAN_RE = re.compile(r"必须拆掉翻案壳|翻案体一律拆掉")
+METAPHOR_FIRST_RE = re.compile(r"先白话给画面.{0,16}再.{0,12}工程事实|每个硬核转折.{0,10}(?:至少一个)?比喻")
+MECHANICS_FIRST_RE = re.compile(r"机制写前面.{0,16}类比.{0,8}后面|叠在机制后面|门槛型比喻零容忍|先用一两句话写清.{0,12}比喻叠在后面")
+OMNI_TRIGGER_RE = re.compile(r"任何一次|每次.{0,8}都|默认常驻|所有.{0,8}都|一切.{0,12}都过一遍")
+OMNI_EXCLUSION_RE = re.compile(r"不适用|不负责|不接|豁免|例外")
+
+COVERAGE_VACUUMS = [
+    {
+        "name": "(源码/仓库)调研并落成文档/分享",
+        "a": re.compile(r"调研|源码|开源|仓库|github|repo|读码|拆解.{0,4}项目", re.I),
+        "b": re.compile(r"成稿|报告|文档|研判|解读|分享|博客|slides|文章|talk", re.I),
+    },
+]
+CLAIM_CROSS = re.compile(
+    r"先走本技能|走本技能|都先走|都走本技能|承接|负责.{0,6}调研|调研.{0,12}先走|"
+    r"任何.{0,4}调研.{0,16}(先走|走本)|可以.{0,10}(产出|写).{0,8}(报告|文档|成稿|研判|解读)|"
+    r"直接产出.{0,6}(调研|报告|解读)")
+PUSH_CROSS = re.compile(
+    r"走\s*`?[a-z][a-z0-9-]{2,}|调研.{0,14}(不适用|不接|不用|不走|交(给|由))|"
+    r"(不适用|不接|不用|不走).{0,10}调研|对内.{0,6}调研.{0,8}不")
+
+
 def strip_fences(text: str) -> str:
+    """移除 markdown 代码围栏内的行。"""
     out, in_fence = [], False
     for ln in text.splitlines():
         if FENCE_RE.match(ln):
@@ -106,22 +177,22 @@ def strip_fences(text: str) -> str:
             out.append(ln)
     return "\n".join(out)
 
-LINK_RE = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
-BARE_RES_RE = re.compile(r"(?<![\w/.\-])((?:references|reference|scripts|assets)/[A-Za-z0-9_./\-]*[A-Za-z0-9_\-])")
-REF_FILE_EXT_RE = re.compile(r"\.(?:md|py|sh|mjs|js|json|ya?ml|txt|toml)$", re.I)
-FENCE_RE = re.compile(r"^\s*```")
-SECRET_RE = re.compile(
-    r"(?i)(?:api[_-]?key|secret|access[_-]?token|password)\s*[:=]\s*[\"'][A-Za-z0-9_\-]{16,}[\"']"
-)
-PLACEHOLDER_NAME_RE = re.compile(r"example|sample|template|示例|样板", re.I)
-TODO_RE = re.compile(r"TODO|FIXME|XXX|待补充|占位符|placeholder here", re.I)
+
+def strip_active_text(text: str) -> str:
+    """去掉代码围栏、HTML 注释、删除线旧条款(~~...~~)与明显反例行，减少文本对比误报。"""
+    no_fence = re.sub(r"<!--.*?-->", "", strip_fences(text), flags=re.S)
+    cleaned_lines = []
+    for ln in no_fence.splitlines():
+        if ANTI_LINE_RE.match(ln):
+            continue
+        ln_no_strike = re.sub(r"~~[^~\n]+~~", "", ln)
+        cleaned_lines.append(ln_no_strike)
+    return "\n".join(cleaned_lines)
 
 
-def hit_group(desc, group):
-    return sum(1 for pat in group if re.search(pat, desc))
+def split_sentences(text: str) -> list[str]:
+    return [s for s in re.split(r"[。；;\n]", text) if s.strip()]
 
-
-# ---------------------------------------------------------------- 解析
 
 def parse_frontmatter(text: str):
     """返回 (fm_dict, body, error)。优先 PyYAML，失败/缺失时走轻量解析。"""
@@ -139,13 +210,13 @@ def parse_frontmatter(text: str):
             if not isinstance(data, dict):
                 return {}, body, "frontmatter 必须是键值映射"
             return data, body, None
-        except Exception as e:  # YAML 真的非法
+        except Exception as e:
             return {}, body, f"YAML 解析失败：{e}"
     return _tiny_yaml(head), body, None
 
 
 def _tiny_yaml(head: str) -> dict:
-    """无 PyYAML 时的兜底：支持 key: value、引号、>- / | 折叠块、一层嵌套。"""
+    """无 PyYAML 时的兜底解析。"""
     fm, lines = {}, head.splitlines()
     i = 0
     while i < len(lines):
@@ -168,27 +239,22 @@ def _tiny_yaml(head: str) -> dict:
     return fm
 
 
-def extract_local_targets(md: str):
-    """抽出 markdown 中指向技能本地文件的目标（排除 URL/锚点/命令与行内语法示例）。"""
+def extract_local_targets(md: str) -> list[str]:
+    """抽取 SKILL.md 指向技能本地文件的目标。"""
     noinline = re.sub(r"`[^`\n]+`", "", md)
     targets = []
     for raw in LINK_RE.findall(noinline):
-        t = raw.strip().split()[0].strip("\"'")
-        # 去掉 #fragment 与 ?query，否则 references/a.md#节 会因文件名带后缀而误判 broken
-        t = t.split("#", 1)[0].split("?", 1)[0]
-        if not t:
-            continue
-        if re.match(r"^(https?:|mailto:|#|/)", t) or t.startswith("#"):
+        t = raw.strip().split()[0].strip("\"'").split("#", 1)[0].split("?", 1)[0]
+        if not t or re.match(r"^(https?:|mailto:|#|/)", t):
             continue
         targets.append(t)
     for raw in BARE_RES_RE.findall(md):
         targets.append(raw)
-    # 归一：reference/ 与 references/ 两种写法都试
     return targets
 
 
-def extract_ref_local_targets(md: str):
-    """从 reference 文档正文中抽取真实本地文件引用（剥除围栏与行内代码语法占位）。"""
+def extract_ref_local_targets(md: str) -> list[str]:
+    """抽取 reference 文档正文指向的本地文件引用。"""
     nofence = strip_fences(md)
     noinline = re.sub(r"`[^`\n]+`", "", nofence)
     targets = []
@@ -205,7 +271,6 @@ def extract_ref_local_targets(md: str):
 
 
 def has_nav_or_headings(text: str) -> bool:
-    """长 reference 的可读性：顶部有锚点目录，或前 40 行有多个分节标题，都算结构清楚。"""
     head = "\n".join(text.splitlines()[:40])
     if len(re.findall(r"\]\(#[^)]+\)", head)) >= 2:
         return True
@@ -213,15 +278,11 @@ def has_nav_or_headings(text: str) -> bool:
 
 
 def read_text(p: Path) -> str:
-    # 容错：测试夹具里可能有故意指向不存在目标的符号链接（如越界链接负例），
-    # 读不到不算被检内容，返回空串，绝不让体检在这种夹具上崩掉。
     try:
         return p.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return ""
 
-
-# ---------------------------------------------------------------- 发现
 
 def find_library(start: Path):
     cur = start.resolve()
@@ -231,42 +292,306 @@ def find_library(start: Path):
     return cur if (cur / "SKILL.md").exists() else None
 
 
-# ---------------------------------------------------------------- 库级覆盖
+def measure_startup_footprint(skill: dict) -> tuple[int, int, int, list[str]]:
+    """计算单次启动实效行数：body_lines + 去重后的无条件前置必读参考行数。"""
+    sk_dir = skill["path"].parent
+    body_lines = len(skill["body"].splitlines())
+    body_nofence = strip_fences(skill["body"])
+    seen_refs: dict[Path, tuple[str, int]] = {}
 
-# 库级覆盖真空词表。踩过的真洞是「(源码/仓库)调研 × 还要落成(文档/分享)」这个交叉地带：
-# 一圈技能各自排除，谁都不正面接，模型只能退回 lark-doc 等工具人。
-# 静态只能给「线索」：技能级看它同时提到 A/B 两组词后，是正面认领还是推走，>=3 个推走、
-# 0 个认领才报，强制人工核对，避免把「各司其职的正常边界」误报成洞。
-COVERAGE_VACUUMS = [
-    {
-        "name": "(源码/仓库)调研并落成文档/分享",
-        "a": re.compile(r"调研|源码|开源|仓库|github|repo|读码|拆解.{0,4}项目", re.I),
-        "b": re.compile(r"成稿|报告|文档|研判|解读|分享|博客|slides|文章|talk", re.I),
-    },
-]
-# 强认领：明确把这类任务纳进本技能（出现即视为有人接，哪怕它别处又推走某个子类型）。
-CLAIM_CROSS = re.compile(
-    r"先走本技能|走本技能|都先走|都走本技能|承接|负责.{0,6}调研|调研.{0,12}先走|"
-    r"任何.{0,4}调研.{0,16}(先走|走本)|可以.{0,10}(产出|写).{0,8}(报告|文档|成稿|研判|解读)|"
-    r"直接产出.{0,6}(调研|报告|解读)")
-# 推走：把任务排除或指给别的技能。
-PUSH_CROSS = re.compile(
-    r"走\s*`?[a-z][a-z0-9-]{2,}|调研.{0,14}(不适用|不接|不用|不走|交(给|由))|"
-    r"(不适用|不接|不用|不走).{0,10}调研|对内.{0,6}调研.{0,8}不")
-HANDOFF_OUT = re.compile(r"不适用|不要用|不用|不走|不接|不做|交(给|由)|走\s*`?[a-z]", re.I)
+    for raw_ln in body_nofence.splitlines():
+        is_table_row = raw_ln.lstrip().startswith("|")
+        # 表格索引用途通常按步骤/按需查；仅当明确标了默认或必读时才按起手必读计入
+        for sent in re.split(r"[。；;]", raw_ln):
+            s = sent.strip()
+            if not s:
+                continue
+            if CONDITIONAL_READ_HINTS.search(s):
+                continue
+            if is_table_row and not re.search(r"默认|必读|每次", s):
+                continue
+            if not MANDATORY_READ_CUES.search(s):
+                continue
+            for rel in MANDATORY_PATH_RE.findall(s):
+                target = (sk_dir / rel).resolve()
+                if target.is_file() and target not in seen_refs:
+                    seen_refs[target] = (rel, len(read_text(target).splitlines()))
+
+    ref_lines = sum(cnt for _, cnt in seen_refs.values())
+    ref_names = [f"{rel}({cnt}L)" for rel, cnt in seen_refs.values()]
+    return body_lines, ref_lines, body_lines + ref_lines, ref_names
 
 
-def split_sentences(text: str):
-    return [s for s in re.split(r"[。；;\n]", text) if s.strip()]
+def skill_corpus(skill: dict) -> str:
+    """收集技能自身的 active 语料（SKILL.md + references/*.md），排除反例与删除线。"""
+    sk_dir = skill["path"].parent
+    parts = [strip_active_text(skill["raw"])]
+    ref_dir = sk_dir / "references"
+    if ref_dir.exists():
+        for rf in sorted(ref_dir.rglob("*.md")):
+            parts.append(strip_active_text(read_text(rf)))
+    return "\n".join(parts)
 
 
-def coverage_scan(skills, known_names, external_ok=None):
+def collect_skill_polarities(corpus: str) -> dict[str, set[str]]:
+    """提取单个技能在小标题体例、翻案句型与机理-比喻顺序上的立场极性。"""
+    pol: dict[str, set[str]] = defaultdict(set)
+    clauses = split_sentences(corpus)
+
+    for cl in clauses:
+        if H2_NOUN_RE.search(cl):
+            pol["h2"].add("noun")
+        if H2_CLAIM_RE.search(cl):
+            pol["h2"].add("claim")
+        if B2_USE_RE.search(cl) and not B2_NEG_RE.search(cl):
+            pol["b2"].add("use")
+        if B2_BAN_RE.search(cl):
+            pol["b2"].add("ban")
+        if METAPHOR_FIRST_RE.search(cl):
+            pol["order"].add("metaphor_first")
+        if MECHANICS_FIRST_RE.search(cl):
+            pol["order"].add("mechanics_first")
+
+    if "不设全局禁令" in corpus or "不采用全局样式禁令" in corpus or "不是默认规则" in corpus:
+        pol["intra"].add("no_global_ban")
+    if re.search(r"严禁.{0,12}渐变|禁用彩虹|严禁\s*ease-in|禁止使用\s*Emoji", corpus):
+        pol["intra"].add("hard_global_ban")
+    if any("B2" in c and re.search(r"必须拆掉|默认清理", c) for c in clauses) and \
+       any("B2" in c and "绝不自动改" in c for c in clauses):
+        pol["intra"].add("b2_authority_clash")
+    if any("拆分段落" in c and re.search(r"标准档.{0,8}可以动", c) for c in clauses) and \
+       any("拆分段落" in c and "须先由作者决定" in c for c in clauses):
+        pol["intra"].add("para_split_clash")
+    if "不用冒号后挂判断" in corpus and re.search(r"需要时加冒号.{0,16}判断", corpus):
+        pol["intra"].add("colon_h2_clash")
+    if re.search(r"≤\s*1\s*处.{0,10}造词", corpus) and re.search(r"≥\s*1\s*处.{0,10}造词", corpus):
+        pol["intra"].add("coin_quota_clash")
+    if re.search(r"软约束.{0,12}不阻断", corpus) and re.search(r"不许下笔|空着\s*=\s*不许删", corpus):
+        pol["intra"].add("soft_hard_clash")
+
+    return pol
+
+
+def build_positive_edges(skills: list[dict], known_dirs: set[str]) -> tuple[dict[str, set[str]], dict[tuple[str, str], str]]:
+    """提取库内明确正向运行时串联边 A -> B 及并行/豁免线索（排除边界分流介绍）。"""
+    edges: dict[str, set[str]] = defaultdict(set)
+    carveouts: dict[tuple[str, str], str] = {}
+
+    for s in skills:
+        src = s["dir"]
+        desc_pos = re.split(r"不适用[:：]", str(s["fm"].get("description", "")), maxsplit=1)[0]
+        active = strip_active_text(desc_pos + "\n" + s["body"])
+        others = sorted(d for d in known_dirs if d != src)
+        if not others:
+            continue
+        for sent in split_sentences(active):
+            if EDGE_NEG_SENT.search(sent):
+                continue
+            mentioned = [d for d in others if re.search(rf"(?<![a-z0-9-]){re.escape(d)}(?![a-z0-9-])", sent)]
+            if not mentioned:
+                continue
+            for tgt in mentioned:
+                if re.search(r"diagram_kit|Explainer", sent) and re.search(
+                    r"只借图|不走.{0,12}文档流程|可选|用户需要时", sent
+                ):
+                    continue
+                et = re.escape(tgt)
+                pos_pat = re.compile(
+                    rf"(?:(?:读取并执行|先?读取|调用|过一遍|先过|过(?=[^。\n]{{0,12}}(?:标准档|全套|清理|清洗|收尾|润色))|"
+                    rf"交(?:给|由)?(?=\s*`?{et}`?[^。\n]{{0,14}}(?:标准档|重档|轻档|清洗|清理|收尾|去\s*AI\s*味|render))|"
+                    rf"走\s*(?=`?{et}`?\s*(?:标准档|全套))|借用?|吃\s*)\s*`?{et}`?(?![a-z0-9-])|"
+                    rf"并行[^。\n]{{0,24}}{et}|{et}[^。\n]{{0,24}}并行)"
+                )
+                if pos_pat.search(sent):
+                    edges[src].add(tgt)
+                    if CARVEOUT_RE.search(sent):
+                        carveouts[(src, tgt)] = sent.strip()[:80]
+
+    # 补充同文件内跨句写的豁免块（如 feynman §例外与分工、tangshan §豁免）
+    for s in skills:
+        src = s["dir"]
+        active = strip_active_text(s["body"])
+        for tgt in list(edges[src]):
+            if (src, tgt) not in carveouts:
+                for sent in split_sentences(active):
+                    if tgt in sent and CARVEOUT_RE.search(sent):
+                        carveouts[(src, tgt)] = sent.strip()[:80]
+                        break
+    return edges, carveouts
+
+
+def check_budget_and_drag(skills: list[dict], max_desc_total: int, add_fn) -> tuple[list[dict], list[tuple]]:
+    """执行 B 类（预算与强模型阻力）静态检测并收集指标明细。"""
+    findings = []
+    desc_lengths = []
+    startup_stats = []
+
+    for s in skills:
+        d = s["dir"]
+        desc = str(s["fm"].get("description") or "").strip()
+        if desc:
+            desc_lengths.append((d, len(desc)))
+            if 260 < len(desc) <= 1024:
+                add_fn(R_DESC_BLOATED, d, f"description {len(desc)} 字符 > 260，挤压常驻总预算")
+
+        body_l, ref_l, total_l, ref_names = measure_startup_footprint(s)
+        startup_stats.append((d, total_l, body_l, ref_l))
+        if ref_l > 250 or total_l > 350:
+            detail = "、".join(ref_names[:4]) + ("…" if len(ref_names) > 4 else "")
+            add_fn(R_STARTUP_HEAVY, d,
+                   f"SKILL 正文 {body_l} 行 + 必读 {len(ref_names)} 份参考 {ref_l} 行 = 合计 {total_l} 行（{detail}）")
+
+        body_clean = strip_active_text(s["body"])
+        body_lines = len(s["body"].splitlines())
+        crutch_hits = []
+        if CRUTCH_REDO_RE.search(body_clean):
+            crutch_hits.append("强制重做/禁内部思考")
+        if CRUTCH_MATH_RE.search(body_clean):
+            crutch_hits.append("机械算术/占比配额")
+        if CRUTCH_COSTUME_RE.search(body_clean):
+            crutch_hits.append("戏服模板/强迫索要后缀")
+        if CRUTCH_META_CLOSE_RE.search(body_clean):
+            crutch_hits.append("机械元话语收尾/强制背诵开场脚本")
+        coercive_cnt = len(COERCIVE_WORD_RE.findall(body_clean))
+        if (body_lines > 180 and coercive_cnt >= 18) or (body_lines >= 60 and coercive_cnt >= 16):
+            crutch_hits.append(f"正文 {body_lines} 行且强迫词 {coercive_cnt} 次")
+        if crutch_hits:
+            add_fn(R_OVER_SCAFFOLD, d, "；".join(crutch_hits))
+
+        body_nofence = strip_fences(s["body"])
+        maint_hits = []
+        hm = MAINT_HEADING_RE.search(body_nofence)
+        if hm:
+            maint_hits.append(hm.group(0).strip())
+        tm = MAINT_TEXT_RE.search(body_nofence)
+        if tm:
+            maint_hits.append(tm.group(0).strip())
+        if maint_hits:
+            add_fn(R_MAINT_LEAK, d, f"运行时正文含维护信息：{', '.join(sorted(set(maint_hits)))}")
+
+    total_desc = sum(n for _, n in desc_lengths)
+    if len(skills) >= 5 and total_desc > max_desc_total:
+        avg = round(total_desc / len(desc_lengths)) if desc_lengths else 0
+        top5 = ", ".join(f"{n}:{l}" for n, l in sorted(desc_lengths, key=lambda x: -x[1])[:5])
+        add_fn(R_DESC_TOTAL, "【库级】description 总预算",
+               f"{len(skills)} 技能合计 {total_desc} 字符（均值 {avg}，预算上限 {max_desc_total}）；前5：{top5}")
+
+    return desc_lengths, startup_stats
+
+
+def has_upstream_single_finish_guard(corpus: str, target_c: str) -> bool:
+    """判断技能是否声明：被上游作为前置环节调用时不调用下游 target_c。"""
+    sents = split_sentences(corpus)
+    guard_re = re.compile(r"被.{0,120}调用时.{0,60}不.{0,16}调用|仅独立成稿时.{0,24}调用")
+    tc_re = re.compile(rf"(?<![a-z0-9-]){re.escape(target_c)}(?![a-z0-9-])")
+    for idx, sent in enumerate(sents):
+        window = sent if idx + 1 >= len(sents) else f"{sent}。{sents[idx + 1]}"
+        if guard_re.search(sent) and (tc_re.search(window) or "最终成稿技能" in window):
+            return True
+    return False
+
+
+def is_h2_clash_yielded(upstream: str, downstream: str, corpora: dict[str, str]) -> bool:
+    """当上游调用下游时，检查下游的小标题主张是否仅限独立成稿且显式向该上游让位。"""
+    corp = corpora[downstream]
+    claim_sents = [s for s in split_sentences(corp) if H2_CLAIM_RE.search(s)]
+    if not claim_sents:
+        return False
+    if not all(("无上游" in s or "独立成稿" in s) for s in claim_sents):
+        return False
+    up_re = re.compile(rf"(?<![a-z0-9-]){re.escape(upstream)}(?![a-z0-9-])")
+    yield_re = re.compile(r"遵守上游小标题体例|不把上游短目录小标题改写成")
+    return any(yield_re.search(s) and up_re.search(s) for s in re.split(r"[。\n]", corp) if s.strip())
+
+
+def check_cross_skill_conflicts(skills: list[dict], known_dirs: set[str], add_fn) -> None:
+    """执行 X 类（跨技能串联、互斥打架、内部矛盾、全域触发）检测。"""
+    corpora = {s["dir"]: skill_corpus(s) for s in skills}
+    polarities = {d: collect_skill_polarities(c) for d, c in corpora.items()}
+    edges, carveouts = build_positive_edges(skills, known_dirs)
+
+    # X001: 串联过深 / 互调环 / 单向豁免
+    reported_asym = set()
+    deep_chains = []
+    for a, targets in sorted(edges.items()):
+        for b in sorted(targets):
+            if a in edges.get(b, set()) and a < b:
+                add_fn(R_CHAIN_COUPLE, f"【库级】{a} <-> {b}", "存在双向正向引用环，易在复杂任务中反复踢球")
+            for c in sorted(edges.get(b, set())):
+                if c != a and not has_upstream_single_finish_guard(corpora[b], c):
+                    deep_chains.append(f"{a} → {b} → {c}")
+            if (a, b) in carveouts:
+                b_mentions_a = bool(re.search(rf"(?<![a-z0-9-]){re.escape(a)}(?![a-z0-9-])", corpora[b]))
+                if not b_mentions_a and (a, b) not in reported_asym:
+                    reported_asym.add((a, b))
+                    add_fn(R_CHAIN_COUPLE, f"{a} → {b}",
+                           f"{a} 声明局部豁免/优先级，但 {b} 从未提及或放行 {a}：{carveouts[(a, b)]}")
+
+    if deep_chains:
+        sample = "；".join(deep_chains[:5]) + (f" 等 {len(deep_chains)} 条" if len(deep_chains) > 5 else "")
+        add_fn(R_CHAIN_COUPLE, "【库级】串联链 depth ≥ 3", f"存在 3 跳串联链，上下文税叠加：{sample}")
+
+    # X002: 相连或并行技能间的极性直接打架
+    seen_pairs = set()
+    for a, targets in sorted(edges.items()):
+        for b in sorted(targets):
+            pair = tuple(sorted((a, b)))
+            if pair in seen_pairs:
+                continue
+            seen_pairs.add(pair)
+            pa, pb = polarities[a], polarities[b]
+            clashes = []
+            h2_clash = ("noun" in pa["h2"] and "claim" in pb["h2"]) or ("claim" in pa["h2"] and "noun" in pb["h2"])
+            if h2_clash:
+                yielded = ("noun" in pa["h2"] and b in edges.get(a, set()) and is_h2_clash_yielded(a, b, corpora)) or \
+                          ("noun" in pb["h2"] and a in edges.get(b, set()) and is_h2_clash_yielded(b, a, corpora))
+                if not yielded:
+                    clashes.append("小标题体例互斥（短目录词 vs 完整论点句）")
+            if ("use" in pa["b2"] and "ban" in pb["b2"]) or ("ban" in pa["b2"] and "use" in pb["b2"]):
+                clashes.append("B2 句型冲突（正面误区翻转句 vs 一律拆壳）")
+            if ("metaphor_first" in pa["order"] and "mechanics_first" in pb["order"]) or \
+               ("mechanics_first" in pa["order"] and "metaphor_first" in pb["order"]):
+                clashes.append("机理与比喻顺序互斥（先比喻后事实 vs 机理前置/零门槛比喻）")
+            if clashes:
+                add_fn(R_CROSS_CLASH, f"{a} ↔ {b}", "；".join(clashes))
+
+    # X003 & X004: 单技能内部自相矛盾 + 全域触发撞车风险
+    intra_labels = {
+        "b2_authority_clash": "B2 处理权限冲突（默认必拆 vs 绝不自动改）",
+        "para_split_clash": "标准档拆段权限冲突（可以动 vs 须由作者决定）",
+        "colon_h2_clash": "H2 冒号判断冲突（禁止冒号挂判断 vs 允许冒号加判断）",
+        "coin_quota_clash": "造词数量上限矛盾（≤1 处 vs ≥1 处）",
+        "soft_hard_clash": "约束强度自相矛盾（宣称软约束不阻断 vs 无条件禁止下笔）",
+    }
+    for s in skills:
+        d = s["dir"]
+        p = polarities[d]
+        self_hits = []
+        if "no_global_ban" in p["intra"] and "hard_global_ban" in p["intra"]:
+            self_hits.append("全局禁令矛盾（宣称不设全局禁令 vs 条款写死严禁/禁用）")
+        if "metaphor_first" in p["order"] and "mechanics_first" in p["order"]:
+            self_hits.append("同技能内机理-比喻顺序互搏（先比喻后事实 vs 机理前置）")
+        for k, msg in intra_labels.items():
+            if k in p["intra"]:
+                self_hits.append(msg)
+        if self_hits:
+            add_fn(R_SELF_CLASH, d, "；".join(self_hits))
+
+        desc = str(s["fm"].get("description") or "")
+        body_clean = strip_active_text(s["body"])
+        if OMNI_TRIGGER_RE.search(desc):
+            has_desc_ex = bool(OMNI_EXCLUSION_RE.search(desc))
+            has_body_route = bool(re.search(r"不适用|交由|归.{0,8}处理|豁免|分流|不越位", body_clean))
+            if not has_desc_ex or not has_body_route:
+                miss = "description 缺排除边界" if not has_desc_ex else "正文缺邻居分流/豁免说明"
+                add_fn(R_OMNI_TRIGGER, d, f"description 含全域触发词且{miss}")
+
+
+def coverage_scan(skills: list[dict], known_names: set[str], external_ok: set[str] | None = None) -> list[dict]:
     """库级覆盖：C003 覆盖真空 / C001 悬空交接。只给线索，结论由人核对。"""
     out = []
     external_ok = external_ok or set()
 
-    # C003：技能级判定。某技能同时提到 A/B 两组词，就算覆盖到这个交叉地带；
-    # 有强认领算 claimer，否则出现推走算 pusher。>=3 推走、0 认领 → 疑似真空。
     for vac in COVERAGE_VACUUMS:
         pushers, claimers = set(), set()
         for s in skills:
@@ -287,10 +612,6 @@ def coverage_scan(skills, known_names, external_ok=None):
                 "source": "library",
             })
 
-    # C001：被 `走/交给 xxx 技能` 显式指认、但库里不存在的技能。
-    # 刻意极窄（宁可漏报）：文件/脚本/目录/配置引用（backends.md、loop.py、config、templates/…）
-    # 不是技能交接，最容易误报，所以要求——同句明确出现「技能/skill」、target 无扩展名/路径、
-    # 且不是「xx 类方法/方法论」这种泛指。外部/宿主技能走白名单。
     handoff_re = re.compile(r"(?:走|交给|交[给由]|用)\s*`?([a-z][a-z0-9-]{1,40})`?")
     fileish = re.compile(r"[./]|\.(md|py|sh|json|txt|yaml|yml)$")
     dir_words = {"references", "reference", "scripts", "assets", "templates", "config",
@@ -314,13 +635,43 @@ def coverage_scan(skills, known_names, external_ok=None):
                     "sev": "mid", "rule": "C001", "kind": "悬空技能交接",
                     "skill": s["dir"],
                     "evidence": f"把任务指给技能「{t}」，但库里没有该技能：{sent.strip()[:90]}",
-                    "action": "补该技能或改指现有技能；若它是外部/系统技能，加入 external 白名单",
+                    "action": "补该技能或改指现有技能；若它是外部/系统技能，通过 --external-skills 传入白名单",
                     "source": "library",
                 })
     return out
 
 
-def check_library(root: Path):
+def compute_metrics(desc_lengths: list[tuple[str, int]], startup_stats: list[tuple],
+                    findings: list[dict], max_desc_total: int) -> dict:
+    """汇总双模预算看板与按严重度/规则计数指标。"""
+    sev_counts = {"high": 0, "mid": 0, "low": 0}
+    rule_counts: dict[str, int] = {}
+    for f in findings:
+        sev = f["sev"]
+        sev_counts[sev] = sev_counts.get(sev, 0) + 1
+        rule_counts[f["rule"]] = rule_counts.get(f["rule"], 0) + 1
+    total_desc = sum(n for _, n in desc_lengths)
+    return {
+        "desc_total_chars": total_desc,
+        "desc_max_total": max_desc_total,
+        "desc_avg_chars": round(total_desc / len(desc_lengths), 1) if desc_lengths else 0,
+        "top_fat_desc": sorted(desc_lengths, key=lambda x: (-x[1], x[0]))[:5],
+        "top_startup_footprints": [
+            {"skill": n, "effective_lines": tot, "body_lines": b, "mandatory_ref_lines": r}
+            for n, tot, b, r in sorted(startup_stats, key=lambda x: (-x[1], x[0]))[:5]
+        ],
+        "severity_counts": sev_counts,
+        "rule_counts": dict(sorted(rule_counts.items())),
+    }
+
+
+def check_library(root: Path, max_desc_total: int = 4500, extra_external: set[str] | None = None):
+    """扫描技能库根目录，返回 (skills, findings, metrics)？不，兼容旧解包返回 (skills, findings)。"""
+    skills, findings, _ = check_library_with_metrics(root, max_desc_total=max_desc_total, extra_external=extra_external)
+    return skills, findings
+
+
+def check_library_with_metrics(root: Path, max_desc_total: int = 4500, extra_external: set[str] | None = None):
     findings = []
 
     def add(rule, who, evidence):
@@ -340,19 +691,12 @@ def check_library(root: Path):
                        "body": body, "raw": text, "err": err})
 
     names = []
-    declared = {}  # name -> description（用于撞车）
-
     for s in skills:
-        # 关键：循环内必须重新绑定到「当前技能」的路径。
-        # 之前这里沿用了外层收集 skills 时残留的最后一个 sk_md，
-        # 导致引用/围栏/孤儿/绑定/密钥检查全跑到最后一个技能目录上，产生成片误报。
-        sk_md = s["path"]
-        sk_dir = sk_md.parent
+        sk_dir = s["path"].parent
         d, fm, body, raw = s["dir"], s["fm"], s["body"], s["raw"]
 
         if s["err"]:
             add(R_FM_YAML, d, s["err"])
-
         for k in fm:
             if k not in ALLOWED_FM_KEYS:
                 add(R_FM_UNKNOWN_KEY, d, f"非常用 frontmatter 字段：{k}")
@@ -378,7 +722,6 @@ def check_library(root: Path):
             desc = ""
         desc = str(desc)
         if desc:
-            declared[nm or d] = desc
             if len(desc) > 1024:
                 add(R_DESC_LONG, d, f"description {len(desc)} 字符 > 1024")
             if "<" in desc or ">" in desc:
@@ -397,7 +740,6 @@ def check_library(root: Path):
         if len(body_lines) > 500:
             add(R_BODY_LONG, d, f"正文 {len(body_lines)} 行 > 500，建议下沉 references/")
 
-        # 代码围栏闭合：只查 SKILL.md 与 references/，排除 tests/fixtures（负例夹具本就故意坏）。
         scan_mds = [s["path"]]
         ref_dir = sk_dir / "references"
         if ref_dir.exists():
@@ -406,7 +748,6 @@ def check_library(root: Path):
             if sum(1 for ln in read_text(mf).splitlines() if FENCE_RE.match(ln)) % 2 == 1:
                 add(R_FENCE_OPEN, d, f"{mf.relative_to(root)} 代码围栏未成对闭合")
 
-        # broken references：扫描 SKILL.md 与 references/*.md 正文（去掉代码围栏/命令）里指向本地的真实链接。
         for t in extract_local_targets(strip_fences(raw)):
             if not (sk_dir / t).resolve().exists():
                 add(R_REF_BROKEN, d, f"SKILL.md 引用的 {t} 不存在")
@@ -416,78 +757,59 @@ def check_library(root: Path):
                     if not (sk_dir / t).resolve().exists() and not (rf.parent / t).resolve().exists():
                         add(R_REF_BROKEN, d, f"references/{rf.relative_to(ref_dir)} 引用的 {t} 不存在")
 
-        # S002 仅查 references/ 下真正长（>200 行）且顶部没有任何导航/标题结构的文件；
-        # README、示例库、有清晰分节标题的都不算。S003（reference 嵌套层级）规则噪声大、
-        # 违背正常渐进披露，已下线（语义层见 health-check.md）。
-        direct_targets = {Path(t).name for t in extract_local_targets(strip_fences(raw))}
-        if ref_dir.exists():
             for rf in ref_dir.rglob("*.md"):
                 rtxt = read_text(rf)
                 if len(rtxt.splitlines()) > 200 and not has_nav_or_headings(rtxt):
-                    add(R_REF_NOTOC, d,
-                        f"references/{rf.relative_to(ref_dir)} {len(rtxt.splitlines())} 行，顶部缺目录/清晰分节")
+                    add(R_REF_NOTOC, d, f"references/{rf.relative_to(ref_dir)} {len(rtxt.splitlines())} 行，顶部缺目录/清晰分节")
 
-        # S004 孤儿 reference（高精确、宁可漏报）：references/ 下的 md，只要在技能目录
-        # 任意其它 md/py/sh（SKILL 或别的 reference、脚本）里出现过文件名/主干，就算被用
-        #（二级 reference 是正常渐进披露，不算孤儿）。排除文件自身后无其它文件提到才提示。
-        file_texts = {
-            p: read_text(p)
-            for p in list(sk_dir.rglob("*.md")) + list(sk_dir.rglob("*.py")) + list(sk_dir.rglob("*.sh"))
-        }
-        if ref_dir.exists():
+            file_texts = {
+                p: read_text(p)
+                for p in list(sk_dir.rglob("*.md")) + list(sk_dir.rglob("*.py")) + list(sk_dir.rglob("*.sh"))
+            }
             for rf in ref_dir.rglob("*.md"):
                 corpus = "\n".join(txt for p, txt in file_texts.items() if p != rf)
                 if rf.name not in corpus and rf.stem not in corpus:
-                    add(R_REF_ORPHAN, d,
-                        f"references/{rf.relative_to(ref_dir)} 全技能无任何文件点名，确认是否还需要")
+                    add(R_REF_ORPHAN, d, f"references/{rf.relative_to(ref_dir)} 全技能无任何文件点名，确认是否还需要")
 
-        # S005 只查技能根目录散落的空壳占位文件（example/sample/template 命名且体积极小）；
-        # references/templates 里的正常模板库、测试夹具、正文里出现 TODO 字样都不算。
         for p in sk_dir.iterdir():
-            if p.is_file() and PLACEHOLDER_NAME_RE.search(p.name) \
-                    and p.suffix in {".md", ".txt"} and p.stat().st_size < 40:
+            if p.is_file() and PLACEHOLDER_NAME_RE.search(p.name) and p.suffix in {".md", ".txt"} and p.stat().st_size < 40:
                 add(R_PLACEHOLDER, d, f"疑似空壳占位文件：{p.name}")
 
-        # 平台硬绑定：只扫 SKILL.md 正文（不含代码块）。README 安装示例、CHANGELOG 变更记录、
-        # 可移植性文档里教用户怎么拷到 ~/.trae/skills 的命令，都是合法内容，不判绑定。
         body_nofence = strip_fences(raw)
-        hard_hits = sorted({m.group(0)[:40] for pat in HARD_PATTERNS
-                            for m in [re.search(pat, body_nofence)] if m})
+        hard_hits = sorted({m.group(0)[:40] for pat in HARD_PATTERNS for m in [re.search(pat, body_nofence)] if m})
         if hard_hits:
             add(R_HARD_BIND, d, "; ".join(hard_hits))
-        soft_hits = sorted({m.group(0) for pat in SOFT_PATTERNS
-                            for m in [re.search(pat, body_nofence)] if m})
+        soft_hits = sorted({m.group(0) for pat in SOFT_PATTERNS for m in [re.search(pat, body_nofence)] if m})
         if soft_hits and not re.search(SOFT_DEGRADE_HINT, body_nofence):
             add(R_SOFT_BIND, d, "; ".join(soft_hits))
 
-        # 疑似密钥：排除 tests/ 与测试文件（这些地方会故意放假密钥串做负例）。
         for p in sk_dir.rglob("*"):
-            if "tests" in p.parts or "fixtures" in p.parts \
-                    or p.name.startswith("test_") or p.name.endswith("_test.py"):
+            if "tests" in p.parts or "fixtures" in p.parts or p.name.startswith("test_") or p.name.endswith("_test.py"):
                 continue
             if p.is_file() and p.suffix in {".md", ".py", ".sh", ".json", ".yaml", ".yml", ".txt"}:
                 if SECRET_RE.search(read_text(p)):
                     add(R_SECRET, d, f"{p.relative_to(root)} 出现疑似硬编码密钥")
 
-    # 重名
     for nm in sorted({x for x in names if names.count(x) > 1}):
         add(R_NAME_DUP, nm, "多个技能声明同一 name")
 
-    # 库级覆盖：覆盖真空 / 悬空交接。外部/系统技能（宿主提供、不在本库）走白名单，不判悬空。
-    external_ok = {
-        "skill-creator", "skill-creator-for-work", "lark-doc", "lark-drive",
-        "doubao-visualization", "doubao-creative-design", "word", "pdf", "sheet",
-        "html", "browser-task", "ppt",
-    }
-    findings.extend(coverage_scan(skills, set(names) | {s["dir"] for s in skills}, external_ok))
+    known_dirs = {s["dir"] for s in skills}
+    external_ok = set(DEFAULT_EXTERNAL_SKILLS) | set(extra_external or set())
+    findings.extend(coverage_scan(skills, set(names) | known_dirs, external_ok))
 
-    return skills, findings
+    desc_lengths, startup_stats = check_budget_and_drag(skills, max_desc_total, add)
+    check_cross_skill_conflicts(skills, known_dirs, add)
+    metrics = compute_metrics(desc_lengths, startup_stats, findings, max_desc_total)
+    return skills, findings, metrics
 
 
 def main():
-    ap = argparse.ArgumentParser(description="技能库静态健康体检")
+    ap = argparse.ArgumentParser(description="技能库静态健康与双模适配体检")
     ap.add_argument("root", nargs="?", default=".", help="技能库目录（默认自动发现）")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--max-desc-total", type=int, default=4500, help="全库 description 总字符上限（默认 4500）")
+    ap.add_argument("--external-skills", default="", help="逗号分隔的宿主/外部技能白名单")
+    ap.add_argument("--strict", action="store_true", help="将 mid 严重度也视为非零退出（与 high 一同拦截）")
     ap.add_argument("--save-baseline", metavar="FILE", help="把当前问题集写入基线文件")
     ap.add_argument("--baseline", metavar="FILE", help="只报告基线之外的新问题")
     args = ap.parse_args()
@@ -497,7 +819,10 @@ def main():
         print(f"找不到技能库：{Path(args.root).resolve()} 及其上级均无多个 <name>/SKILL.md", file=sys.stderr)
         sys.exit(2)
 
-    _, findings = check_library(root)
+    extra_ext = {x.strip() for x in args.external_skills.split(",") if x.strip()}
+    _, findings, metrics = check_library_with_metrics(
+        root, max_desc_total=args.max_desc_total, extra_external=extra_ext
+    )
 
     if args.save_baseline:
         base = sorted({f"{f['rule']}@{f['skill']}" for f in findings})
@@ -519,7 +844,7 @@ def main():
     for f in findings:
         summary[f["kind"]] = summary.get(f["kind"], 0) + 1
     report = {"root": str(root), "skill_count": skill_count,
-              "summary": summary, "findings": findings}
+              "metrics": metrics, "summary": summary, "findings": findings}
 
     if args.json:
         print(json.dumps(report, ensure_ascii=False, indent=2))
@@ -527,14 +852,22 @@ def main():
         print(f"技能库: {root}\n技能数: {skill_count}\n")
         order = {"high": 0, "mid": 1, "low": 2}
         for f in sorted(findings, key=lambda x: (order[x["sev"]], x["rule"], x["skill"])):
-            print(f"[{f['sev'].upper():4} {f['rule']}] {f['kind']:<12} {f['skill']}")
+            print(f"[{f['sev'].upper():4} {f['rule']}] {f['kind']:<14} {f['skill']}")
             print(f"        证据: {f['evidence']}")
             print(f"        建议: {f['action']}")
-        print(f"\n汇总: {summary if summary else '静态规则全部通过'}")
-        print("注：仅静态检查。语义质量（退出条件/重试上限/可观察触发/规则矛盾）见 health-check.md 人工清单；")
-        print("    真实触发率等动态检查归 Harness 层。规则依据见 references/health-check.md。")
+        top_startup = ", ".join(
+            f"{x['skill']}:{x['effective_lines']}L" for x in metrics["top_startup_footprints"][:3]
+        )
+        print(
+            f"\n双模预算看板: description 合计 {metrics['desc_total_chars']}/{metrics['desc_max_total']} 字符"
+            f"（均值 {metrics['desc_avg_chars']}）；最大起手行数 {top_startup}"
+        )
+        print(f"汇总: {summary if summary else '静态规则全部通过'}")
+        print("注：仅静态与线索检查。强弱模型消融、语义矛盾裁决见 health-check.md 与 dual-model-design.md；")
+        print("    真实触发率等动态检查归 Harness 层。")
 
-    sys.exit(1 if any(f["sev"] == "high" for f in findings) else 0)
+    fail_sevs = {"high", "mid"} if args.strict else {"high"}
+    sys.exit(1 if any(f["sev"] in fail_sevs for f in findings) else 0)
 
 
 if __name__ == "__main__":

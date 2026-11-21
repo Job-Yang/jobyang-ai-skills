@@ -73,7 +73,7 @@ class TestTalkCheck(unittest.TestCase):
         self.assertLess(stats["cn"], 2000)
 
     def test_article_hint_warns_when_no_advanced(self):
-        # article 态但通篇无进阶层机制标记 → 文体 WARN（不判路由，只提示）
+        # article 态但通篇无核心机制与工程事实标记 → 文体 WARN（不判路由，只提示）
         text = (
             "开头有数字 8。\n\n"
             "## 一\n我认为这个观点不对。\n\n"
@@ -81,20 +81,20 @@ class TestTalkCheck(unittest.TestCase):
             "## 三\n结尾明天动手。"
         )
         errors, warns, _ = talk_check.check("article", text)
-        self.assertTrue(any("[文体]" in w and "进阶层" in w for w in warns))
+        self.assertTrue(any("[文体]" in w and "核心机制与工程事实信号" in w for w in warns))
         self.assertEqual(errors, [])
 
     def test_article_no_hint_when_advanced_present(self):
-        # article 态且有进阶层机制 + 可搬走动作 → 不应再报文体提示
+        # article 态且有核心机制信号 + 可搬走动作 → 不应再报文体提示
         text = (
             "开头数字 8。\n\n"
-            "## 一\n复杂度是 O(N)，进阶机制讲清楚。\n\n"
+            "## 一\n复杂度是 O(N)，核心机制讲清楚。\n\n"
             "## 二\n矩阵运算展开。\n\n"
             "## 三\n你可以明天落地试试。"
         )
         errors, warns, _ = talk_check.check("article", text)
         wen = [w for w in warns if w.startswith("[文体]")]
-        self.assertFalse(any("进阶层机制信号" in w for w in wen))
+        self.assertFalse(any("核心机制与工程事实信号" in w for w in wen))
         self.assertFalse(any("可搬走" in w for w in wen))
         self.assertEqual(errors, [])
 
@@ -181,7 +181,7 @@ class TestTalkCheck(unittest.TestCase):
         errors, warns, _ = talk_check.check("article", text)
         wen = [w for w in warns if w.startswith("[文体]")]
         self.assertFalse(any("更像观点判断" in w for w in wen))
-        self.assertFalse(any("进阶层机制信号" in w for w in wen))
+        self.assertFalse(any("核心机制与工程事实信号" in w for w in wen))
         self.assertEqual(errors, [])
 
     # ---------- 0.2.0 新结构项 WARN（只提示不强制，幽默永不 ERROR） ----------

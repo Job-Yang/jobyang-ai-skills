@@ -11,12 +11,13 @@ description: "把已有 PRD 或一句需求做成高质感、带动效的可交�
 - **full 输出**：`prototype/`＋`design-spec-<topic>.md`＋设计档案（`DESIGN.md`、`design/tokens.json`，见 `references/design-archive.md`）。
 - 脚本只依赖 Python 3.9+ 标准库；视觉验收通过 `scripts/capture_preview.mjs` 驱动宿主 Chromium 完成，缺少时明确标注“未视觉验收”。
 - 明确作为 OPC 设计节点（`.design`）运行时一律走 full，契约、门禁和输出目录服从适配器，不重开问诊；交接见 `references/handoff.md`。
+- 与 `engineering-docs` 的分工：工程技术评审方案（RFC/ADR）、严谨工程架构与时序图及技术速读页走 `engineering-docs`；交互式产品 UI 原型、工艺视觉与前端设计系统走本技能。
 
 ## 入场先选路径
 
 | 路径 | 何时选择 | 核心方法 |
 |---|---|---|
-| `quick`（默认） | 基础单页、简单组件、需求已明确，或用户说“直接做一版” | 读取 `references/craft-packs.md` 与 `references/craft-genome.md`（9 套视觉锚点＋五轴自由混搭基因）配合 `references/motion-craft.md`，直出高定可点页并实测截屏挑刺；读 `references/quick-ui.md` |
+| `quick`（默认） | 基础单页、简单组件、需求已明确，或用户说“直接做一版” | 按页面类型按需查阅 `references/craft-packs.md`、`references/craft-genome.md`、`references/motion-craft.md` 与 `references/quick-ui.md`，直出高定可点页并实测截屏挑刺 |
 | `explore`（高定直选） | 用户说不清风格，或新产品重要首屏想看不同气质挑定方向（无需重量级线框评审） | 跳过问卷与灰阶线框，拉开正交轴挑 2–4 套迥异流派或混搭配方（液态玻璃/双态雾面/触感硬件/便当展厅等）并行做可点关键屏，用 `scripts/build_gallery.py` 装进画廊直选；支持选中后一句 Remix 并锁定 tokens 扩全页 |
 | `audit` | 任务只是评审现有页面 | 读 `references/audit-guide.md`；若随后要产出改版，再按复杂度进入 quick 或 full |
 | `full` | 多页面跨角色复杂流程、新设计系统、用户明确要完整评审，或 OPC | 保留四关、固定工作台、阶段契约和正式交付；第 3 关视觉突破直接挂载工艺包＋自由基因轴，不为填线框外壳牺牲表现力 |
@@ -25,15 +26,15 @@ description: "把已有 PRD 或一句需求做成高质感、带动效的可交�
 
 ## quick / explore：高质感直出与画廊直选
 
-1. 读取 `references/craft-packs.md`、`references/craft-genome.md`、`references/motion-craft.md`、`references/design-kernel.md`、`references/interaction-craft.md`、`references/visual-craft.md` 和 `references/cjk-typography.md`；先看对应工艺包视觉锚点图 `assets/craft-packs/<id>.png`。
+1. 按任务按需读取：定视觉锚点与动效先看 `references/craft-packs.md`（及 `assets/craft-packs/<id>.png`）与 `references/motion-craft.md`；需要跨轴混搭、版面构图、交互链路、多候选拉开或中文排版细则时，再按需查阅 `references/craft-genome.md`、`references/design-kernel.md`、`references/interaction-craft.md`、`references/visual-craft.md` 与 `references/cjk-typography.md`。
 2. `quick` 不把 9 套工艺包当死板模板，可按五轴（表面物理、空间隐喻、色温、字形、动效）与三旋钮（`VARIANCE / MOTION / DENSITY`）自由合成适配当前产品的独特表面与交互；`explore` 挑 2–4 套在明暗双态、材质物理、空间构图与动效节奏上真正拉开的流派（独立上下文分别生成，不互相抄表面），用 `python3 scripts/build_gallery.py` 生成交互画廊（`单看 / 并排 / 桌面 / 手机 / 重播动效`，支持方向键与 `1–9` 切案），支持用户直选或一句跨案 Remix 混搭后再锁定 tokens 展开全应用。
-3. 不强制固定“空间画室”工作台、持久评论服务、全量 `DESIGN.md` 建档或导出全部平台 tokens；但 prototype 必须搭载 3 类以上标准微交互、使用成套细线 SVG 图标且真实可点，tokens 必须是页面实际使用值。
-4. 交付前用实际 tokens 跑 final lint，再运行 `node scripts/capture_preview.mjs`（或独立 Playwright）在桌面、移动宽度检查溢出与关键点击态，亲眼对照 `references/craft-packs.md` 六点清单查看 PNG 截图后集中修复一轮；浏览器不可用时标“未视觉验收”，不能以测试通过代替好看。
+3. 不强制固定“空间画室”工作台、持久评论服务、全量 `DESIGN.md` 建档或导出全部平台 tokens；prototype 按页面体量搭载 `1–3` 项清晰交互反馈与动效（小部件 `1` 处到位即可，不为凑数堆动画）、按需配细线 SVG 图标且关键操作真实可点，tokens 必须是页面实际使用值。
+4. 交付独立 HTML 页面时用实际 tokens 跑 final lint；完整页面或高交互原型的桌面与移动宽度优先运行 `node scripts/capture_preview.mjs`（或独立 Playwright）对照 `references/craft-packs.md` 六点清单核查截图后集中修复一轮（简单单部件或无浏览器时按需跳过并标“未视觉验收”）。
 5. 个人口味持久写入、外部发布和危险动作仍按原授权边界执行；quick／explore 稿在明确归档前不得称为正式审批通过。
 
 ## full：四关与正式门禁
 
-| 关卡 | 必读 reference | 必跑脚本 | 产物 |
+| 关卡 | 按阶段查阅 reference | 必跑脚本 | 产物 |
 |---|---|---|---|
 | 入场分流 | `references/design-archive.md` | `design_memory.py scan <产品目录>` | 新做／延续／补档／评审 |
 | 理结构 | `references/structure-guide.md` | —（画完自查每个需求有落点） | 灰阶线框 HTML |
@@ -70,10 +71,7 @@ python3 scripts/review_server.py --root <prototype目录>
 - `SMELL-` 是提示，不是审美结论；接受默认长相时记录规则编号和理由。
 - 口味记录存在本机 `~/.style-compass/taste.md`，第一次写入前必须征得用户同意。
 
-## 边界与维护
+## 边界
 
 - 不做需求发现和需求正确性；不做纯落地页和通用创意出图。
 - 不替代一次性页面工具；这里交付的是可点 prototype、实际 tokens 与可复用规格。
-- `scripts/artifact_io.py` 是 opc-envelope 的 vendored 副本；本技能只产 `design` 类型。
-- 发布前跑 `python3 scripts/check_vendored.py` 和 `python3 -m unittest discover -s tests -v`。
-- 版本见 `CHANGELOG.md`；行为用例见 `evals/evals.json`。

@@ -1,6 +1,6 @@
 ---
 name: content-infographic
-description: 把文章/文档里承载道理的关键内容，做成「图本身就讲清一件事、且和正文咬在一起」的内容信息图（不是装饰配图，不允许图文两张皮）。用于给技术分享、科普、调研、方法论文章补正文信息图或封面：说"这段用图更直观""把这节画出来""配个信息图/插图""图文并茂""给这篇文章做几张图""做封面"时触发。默认用自带零依赖渲染器把多标签/术语/步骤/对比/流程确定性排成高清 SVG/PNG（中文与英文术语永不糊、可改、跨平台）；只有标签很少、要靠具象场景演出来的图才用文生图（原生/MCP/HTTP 三级后端，自动探测）。每张正文图必须锚定原文那段、配一句指图的过渡句并过图文对账。不写正文、不做精确工程架构图（走 engineering-docs），代码/API/公式/精确参数不入图。
+description: "内容信息图：把文章中承载道理的关键段落做成与正文咬合的信息图或封面。多标签/术语/步骤/对比默认走零依赖渲染器出高清 SVG/PNG，少标签场景用文生图，每图过图文对账。触发：「这段配信息图」「做封面」。不适用：写正文、精确工程架构图（engineering-docs）、代码/API/公式入图。"
 ---
 
 # 内容信息图 · 让图承载内容，并和正文是一段
@@ -57,8 +57,7 @@ python3 scripts/doctor.py          # 渲染核心 / PNG 导出 / 文生图三级
 
 1. 读 `references/selection.md` 判定：出不出图、用哪种 layout（pipeline / columns / two_stage /
    compare / radial / metaphor）。
-2. 照 `references/schema.md` 把这一节内容填成 JSON——所有上屏文字**逐字来自锚定原文**，术语原样，
-   比喻优先用作者在正文里已经给的，不另造。`examples/` 有可直接套的样例。
+2. 照 `references/schema.md` 把这一节内容填成 JSON——关键概念术语与硬数字**原样来自锚定原文**，比喻优先用作者在正文里已经给的，不另造；若制作提纲摘要/压缩替代图（`replace`），允许精简节点标签并列进 `allow_new`，不必整句逐字照抄。`examples/` 有可直接套的样例。
 3. 渲染：`python3 scripts/render_infographic.py spec.json -o out.svg --png`（1600×1067，约 3:2）。
 4. 写过渡句，配插图包跑 `python3 scripts/check_linkage.py figure.json`，exit 0 才用。
 
@@ -112,7 +111,7 @@ python3 scripts/doctor.py          # 渲染核心 / PNG 导出 / 文生图三级
 - `references/linkage.md` —— 图文一体：锚定正文、过渡句、图注，插图包格式（必守）。
 - `references/schema.md` —— 渲染器 JSON schema、六类布局字段、配色键、退出码。
 - `references/visual-style.md` —— 去品牌视觉语言、默认无吉祥物、中性向导与自定母版、封面。
-- `references/backends.md` —— 文生图三级后端、可选本地适配器（如 `references/ferry-codex.md`）、3 步自接线口子。
+- `references/backends.md` —— 文生图三级后端、可选本地适配器、3 步自接线口子。
 - `scripts/render_infographic.py` —— 零三方依赖 SVG/PNG 渲染器（确定性后端）。
 - `scripts/check_linkage.py` —— 图文咬合对账器（术语/数字出处、过渡句、另起比喻）。
 - `scripts/gen_image.py` —— 跨平台文生图 HTTP/CLI 薄适配层（OpenAI 兼容 / 方舟 / generic / command）。
