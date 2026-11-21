@@ -1,5 +1,9 @@
 # Job Yang AI Skills
 
+<!-- yarkr:badges:start -->
+[![Indexed on Yarkr](https://api.yarkr.com/functions/v1/api/api/v1/badges/repos/Job-Yang/jobyang-ai-skills/version.svg)](https://yarkr.com/arks/job-yang/jobyang-ai-skills)
+<!-- yarkr:badges:end -->
+
 Job Yang 的 AI Agent Skills 技能表。
 
 我把这里当成一个长期的技能仓库：把真实工作里反复用到的判断、流程、脚本和边界，一点点沉淀成 Agent 能复用的 Skill。
@@ -135,6 +139,40 @@ cp -R jobyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
 ```
 
 每个技能目录都以 `SKILL.md` 为入口，部分带 `references/`、`scripts/` 或 `assets/`。
+
+<!-- yarkr:install:start -->
+## Install with Yarkr
+
+This repo is indexed on [Yarkr](https://yarkr.com/arks/job-yang/jobyang-ai-skills) as the ark [job-yang/jobyang-ai-skills](https://yarkr.com/arks/job-yang/jobyang-ai-skills), so its skills install into Claude Code, Codex, Cursor and other agent harnesses with one command.
+
+### CLI
+
+Install the whole ark, which Yarkr keeps equal to this repo:
+
+```bash
+npx yarkr-cli sync job-yang/jobyang-ai-skills
+```
+
+Or add individual skills:
+
+```bash
+npx yarkr-cli add skill:job-yang/jobyang-ai-skills/ai-briefing
+npx yarkr-cli add skill:job-yang/jobyang-ai-skills/argument-reading
+npx yarkr-cli add skill:job-yang/jobyang-ai-skills/claim-check
+```
+
+No Node.js? `curl -fsSL https://yarkr.com/install.sh | sh` (macOS, Linux) or `irm https://yarkr.com/install.ps1 | iex` (Windows PowerShell) installs `yarkr` as a standalone binary; then type `yarkr` in place of `npx yarkr-cli`.
+
+### MCP
+
+Connect your agent to the ark over MCP:
+
+```bash
+npx yarkr-cli mcp add job-yang/jobyang-ai-skills
+```
+
+Or point any MCP client at `https://api.yarkr.com/functions/v1/api/mcp/o/job-yang/jobyang-ai-skills`.
+<!-- yarkr:install:end -->
 
 ## License
 
