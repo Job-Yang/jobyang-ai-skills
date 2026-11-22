@@ -333,6 +333,44 @@ def skill_corpus(skill: dict) -> str:
     return "\n".join(parts)
 
 
+def skill_runtime_lines_with_fences(skill: dict) -> list[str]:
+    """收集 SKILL.md 与 references/*.md 行（含代码围栏模板），仅去掉注释、删除线与反例行。"""
+    sk_dir = skill["path"].parent
+    files = [skill["path"]]
+    ref_dir = sk_dir / "references"
+    if ref_dir.exists():
+        files.extend(sorted(ref_dir.rglob("*.md")))
+    lines: list[str] = []
+    for f in files:
+        raw = re.sub(r"<!--.*?-->", "", read_text(f), flags=re.S)
+        for ln in raw.splitlines():
+            if ANTI_LINE_RE.match(ln):
+                continue
+            lines.append(re.sub(r"~~[^~\n]+~~", "", ln))
+    return lines
+
+
+def check_runtime_template_clashes(skill: dict, corpus: str, intra_set: set[str]) -> None:
+    """检查正文禁令与代码块模板/静默约定之间的跨文件自相矛盾。"""
+    lines = skill_runtime_lines_with_fences(skill)
+    ban_line_re = re.compile(r"不套|不要套|不印|禁止?|不要|反例|❌|已删|移除|写死")
+
+    # 1) TL;DR 五字段/自指栏目名禁令 vs 正面模板列出
+    tldr_ban = re.search(r"(?:不套|不要套|不印|禁)[^。\n]{0,24}(?:五字段|这篇讲|最后引出)", corpus)
+    if tldr_ban:
+        tldr_pos_re = re.compile(r"五字段逐条列|-\s*(?:这篇讲|最后引出)[：:]")
+        if any(tldr_pos_re.search(ln) and not ban_line_re.search(ln) for ln in lines):
+            intra_set.add("template_tldr_clash")
+
+    # 2) 默认静默 〔思考：…〕 过程横幅 vs 另一处无条件要求开头输出
+    banner_silent = re.search(r"默认不输出.{0,16}〔思考|默认静默.{0,20}过程(?:标签|横幅)|不主动打印.{0,12}过程标签", corpus)
+    if banner_silent:
+        banner_req_re = re.compile(r"(?:必须|一律|开头(?:输出|带|附|加)).{0,24}〔思考[：:]|回答开头.{0,12}〔思考[：:]")
+        cond_re = re.compile(r"仅当|显式要求|明确要求|不(?:带|输出|印)|静默|禁止|❌|反例")
+        if any(banner_req_re.search(ln) and not cond_re.search(ln) for ln in lines):
+            intra_set.add("banner_silent_clash")
+
+
 def collect_skill_polarities(corpus: str) -> dict[str, set[str]]:
     """提取单个技能在小标题体例、翻案句型与机理-比喻顺序上的立场极性。"""
     pol: dict[str, set[str]] = defaultdict(set)
@@ -562,10 +600,13 @@ def check_cross_skill_conflicts(skills: list[dict], known_dirs: set[str], add_fn
         "colon_h2_clash": "H2 冒号判断冲突（禁止冒号挂判断 vs 允许冒号加判断）",
         "coin_quota_clash": "造词数量上限矛盾（≤1 处 vs ≥1 处）",
         "soft_hard_clash": "约束强度自相矛盾（宣称软约束不阻断 vs 无条件禁止下笔）",
+        "template_tldr_clash": "跨文件模板冲突（正文禁用五字段/自指 TL;DR，但模板仍正面列出）",
+        "banner_silent_clash": "过程标签冲突（正文默认静默 〔思考：〕，另一处仍无条件要求开头输出）",
     }
     for s in skills:
         d = s["dir"]
         p = polarities[d]
+        check_runtime_template_clashes(s, corpora[d], p["intra"])
         self_hits = []
         if "no_global_ban" in p["intra"] and "hard_global_ban" in p["intra"]:
             self_hits.append("全局禁令矛盾（宣称不设全局禁令 vs 条款写死严禁/禁用）")

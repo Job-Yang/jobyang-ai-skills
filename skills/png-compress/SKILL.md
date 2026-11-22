@@ -1,6 +1,6 @@
 ---
 name: png-compress
-description: App 工程 PNG 批量压缩（pngquant 量化 + oxipng 无损收尾）。要求包体积优化、批量压 PNG 时使用，用户说「帮我把这个工程的 PNG 批量压一下」「减小图片资源体积」时触发；非 git 目录原地覆盖需显式放行或改 --output-dir 输出副本。不适用：JPG/WebP 等非 PNG 格式、单张图片精修调色、要肉眼控制画质的设计稿导出。
+description: 本地批量压缩工程 PNG（pngquant+oxipng 增量缓存与质量门禁）。用户说「批量压一下工程 PNG」「减小图片体积」时触发；非 git 目录原地覆盖须显式放行或用 --output-dir。不适用：非 PNG 格式或单图精修。
 ---
 
 # PNG 批量压缩

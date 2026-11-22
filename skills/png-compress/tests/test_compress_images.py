@@ -11,13 +11,20 @@ compress_images.py 回归测试。
 import hashlib
 import importlib.util
 import json
+import shutil
+import struct
 import subprocess
 import sys
 import tempfile
 import unittest
+import zlib
 from pathlib import Path
 
-from PIL import Image
+try:
+    from PIL import Image, ImageDraw
+except ImportError:
+    Image = None
+    ImageDraw = None
 
 MODULE_PATH = Path(__file__).resolve().parents[1] / "compress_images.py"
 SPEC = importlib.util.spec_from_file_location("compress_images", MODULE_PATH)
@@ -29,11 +36,39 @@ def md5(p: Path) -> str:
     return hashlib.md5(p.read_bytes()).hexdigest()
 
 
+def _write_rgb_png(path: Path, width: int, height: int, ui_pattern: bool = False) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    header_row = b"\x00" + (bytes((30, 120, 220)) * width)
+    stripe_row = b"\x00" + (bytes((255, 255, 255)) * width)
+    bg_row = b"\x00" + (bytes((245, 245, 248)) * width)
+    if not ui_pattern:
+        raw = bg_row * height
+    else:
+        chunks = []
+        for y in range(height):
+            if y < 56:
+                chunks.append(header_row)
+            elif 80 <= y < 560 and ((y - 80) % 42) < 30:
+                chunks.append(stripe_row)
+            else:
+                chunks.append(bg_row)
+        raw = b"".join(chunks)
+
+    def chunk(tag: bytes, data: bytes) -> bytes:
+        return struct.pack(">I", len(data)) + tag + data + struct.pack(">I", zlib.crc32(tag + data) & 0xFFFFFFFF)
+
+    ihdr = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)
+    idat = zlib.compress(raw, 6)
+    path.write_bytes(b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", ihdr) + chunk(b"IDAT", idat) + chunk(b"IEND", b""))
+
+
 def make_png(path: Path, size=(800, 600)):
     """画一张 UI 截图风格的图: 大色块+卡片文字条。实测这类图 pngquant 量化后
     体积稳定下降(2466B→847B), 避免渐变/纯噪点图导致 pngquant rc=98/99 放弃。"""
-    from PIL import ImageDraw
     path.parent.mkdir(parents=True, exist_ok=True)
+    if Image is None:
+        _write_rgb_png(path, size[0], size[1], ui_pattern=True)
+        return
     w, h = size
     im = Image.new("RGB", size, (245, 245, 248))
     d = ImageDraw.Draw(im)
@@ -48,7 +83,12 @@ def make_png(path: Path, size=(800, 600)):
 
 def run_main(root: Path, *extra: str, expect=None):
     """子进程跑 compress_images.py, 返回 CompletedProcess。"""
-    cmd = [sys.executable, str(MODULE_PATH), str(root), *extra]
+    flags = list(extra)
+    if Image is None and "--no-quality-gate" not in flags:
+        flags.append("--no-quality-gate")
+        if shutil.which("sips") is None and "--no-hard-gate" not in flags:
+            flags.append("--no-hard-gate")
+    cmd = [sys.executable, str(MODULE_PATH), str(root), *flags]
     return subprocess.run(cmd, capture_output=True, text=True, timeout=300)
 
 
@@ -68,8 +108,7 @@ class ExcludeRuleTests(unittest.TestCase):
             nested_build = root / "Resources" / "build" / "y.png"  # 嵌套同名 → 保留
             icons = root / "Resources" / "build_icons" / "z.png"    # 合法资源目录 → 保留
             for p in (top_build, nested_build, icons):
-                p.parent.mkdir(parents=True, exist_ok=True)
-                Image.new("RGB", (8, 8)).save(p)
+                _write_rgb_png(p, 8, 8)
 
             found = {p.resolve() for p in MODULE.find_pngs(root)}
             self.assertNotIn(top_build.resolve(), found)
@@ -81,14 +120,13 @@ class ExcludeRuleTests(unittest.TestCase):
             root = Path(d) / "App"
             keep = root / "a.png"
             junk = root / "tmp_out" / "j.png"
-            keep.parent.mkdir(parents=True, exist_ok=True)
-            junk.parent.mkdir(parents=True, exist_ok=True)
-            Image.new("RGB", (8, 8)).save(keep)
-            Image.new("RGB", (8, 8)).save(junk)
+            _write_rgb_png(keep, 8, 8)
+            _write_rgb_png(junk, 8, 8)
             found = {p.resolve() for p in MODULE.find_pngs(root, extra_exclude=frozenset({"tmp_out"}))}
             self.assertEqual(found, {keep.resolve()})
 
 
+@unittest.skipIf(Image is None, "需要 Pillow 构造多帧 APNG 夹具")
 class ApngTests(unittest.TestCase):
     """旧行为保留: APNG 原样保护。"""
 
@@ -125,6 +163,16 @@ class GuardrailTests(unittest.TestCase):
             self.assertIn("git", r.stderr + r.stdout)
             self.assertIn("--output-dir", r.stderr + r.stdout)
             self.assertEqual(md5(img), before_md5, "被拒绝的运行不得改动任何文件")
+
+    @unittest.skipIf(Image is not None, "仅在无 Pillow 解释器下验证默认质量门禁缺失提示")
+    def test_missing_pillow_quality_gate_exits1(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d) / "proj"
+            _write_rgb_png(root / "a.png", 8, 8)
+            r = subprocess.run([sys.executable, str(MODULE_PATH), str(root)],
+                               capture_output=True, text=True, timeout=60)
+            self.assertEqual(r.returncode, 1)
+            self.assertIn("Pillow", r.stdout + r.stderr)
 
     def test_git_dir_allows_in_place(self):
         with tempfile.TemporaryDirectory() as d:

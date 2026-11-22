@@ -96,8 +96,10 @@ SCENARIOS = [
      "haohao SKILL.md description「去 AI 味、改中文、润色」"),
     ("我们周报就写三行", "haohao", "haohao", "行政短文通用起草，不走全技能",
      "haohao SKILL.md §使用面「不强制走成稿五段全套」"),
-    ("删掉这篇硬文里重复啰嗦的句子就行", "sansi+haohao", "haohao", "强制负例：纯删废话走 sansi 前置+haohao 清洗，不是 cuihuo",
-     "cuihuo SKILL.md description「纯删废话→sansi-erhouxing 共读+haohao-shuohua 收尾」"),
+    ("把这篇硬文按评审意见合并重复小节、精简结构", "sansi+haohao", "haohao", "强制负例：结构精简走 sansi 前置+haohao 清洗，不是 cuihuo",
+     "cuihuo SKILL.md description「精简改结构先走 sansi-erhouxing + haohao-shuohua」"),
+    ("把硬文里这一段删两句啰嗦词就行", "haohao", "haohao", "轻路径：不改结构的局部润色直走 haohao",
+     "sansi-erhouxing SKILL.md §零「≤ 3 句措辞修订、不增删章节的局部润色或去 AI 味——直接交 haohao-shuohua」"),
 
     # —— 组合归属 / 多轮 ——
     ("先调研下某开源项目的限流实现，然后写成一篇对内分享", "feynman+talk", "talk", "调研上游+分享成稿",

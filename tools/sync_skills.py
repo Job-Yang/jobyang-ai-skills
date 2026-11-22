@@ -30,6 +30,7 @@ import filecmp
 import fnmatch
 import json
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -116,8 +117,35 @@ def tree_diff(src: Path, dst: Path) -> tuple[set[str], set[str]]:
     return src_side, dst_only
 
 
-def sync_dir(src: Path, dst: Path, apply: bool) -> tuple[str, set[str]]:
-    """返回 (状态, 目标独有的源外文件)。apply 时统一"删除后按源重建"，不留备份。"""
+def sync_dir(src: Path, dst: Path, apply: bool, managed_peers: set[Path] | None = None) -> tuple[str, set[str]]:
+    """返回 (状态, 目标独有的源外文件)。apply 时统一"删除后按源重建"，不留备份；遇到符号链接若指向受管同源目标则保留软链，否则仅 unlink 后重建。"""
+    if dst.is_symlink():
+        link_target = Path(os.path.abspath(os.path.join(str(dst.parent), os.readlink(dst))))
+        if managed_peers and link_target in managed_peers:
+            if dst.exists() and dst.is_dir():
+                src_side, dst_only = tree_diff(src, dst)
+                if not src_side and not dst_only and not (dst / ".deps").exists():
+                    return "SAME(软链)", set()
+            return "LINK(随源更新)", set()
+        if dst.exists() and dst.is_dir():
+            src_side, dst_only = tree_diff(src, dst)
+            has_residual_deps = (dst / ".deps").exists()
+            if not src_side and not dst_only and not has_residual_deps:
+                return "SAME(软链)", set()
+            flags = ["替换软链"]
+            if dst_only:
+                flags.append(f"ALERT(源外独有 {len(dst_only)})")
+            if has_residual_deps:
+                flags.append("清理.deps")
+            if apply:
+                dst.unlink()
+                shutil.copytree(src, dst, ignore=ignore_func)
+            return "UPDATE " + "+".join(flags), dst_only
+        if apply:
+            dst.unlink()
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copytree(src, dst, ignore=ignore_func)
+        return "UPDATE 清理坏软链", set()
     if not dst.exists():
         if apply:
             dst.parent.mkdir(parents=True, exist_ok=True)
@@ -136,6 +164,62 @@ def sync_dir(src: Path, dst: Path, apply: bool) -> tuple[str, set[str]]:
         shutil.rmtree(dst)
         shutil.copytree(src, dst, ignore=ignore_func)
     return "UPDATE " + ("+".join(flags) if flags else ""), dst_only
+
+
+def read_frontmatter_name(sk_md: Path) -> str | None:
+    if not sk_md.is_file():
+        return None
+    try:
+        text = sk_md.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return None
+    if not text.startswith("---"):
+        return None
+    parts = text.split("---", 2)
+    if len(parts) < 3:
+        return None
+    m = re.search(r"(?m)^name:\s*(.+)$", parts[1])
+    return m.group(1).strip().strip("\"'") if m else None
+
+
+def scan_target_shadows(targets: list[dict], manifest_names: set[str]) -> list[str]:
+    """检查配置了 only 的目标目录中是否存在未纳管的同源旧副本或重名目录。"""
+    managed_skill_dirs: set[tuple[Path, str]] = set()
+    for t in targets:
+        for sname in manifest_names:
+            if t["only"] is None or sname in t["only"]:
+                managed_skill_dirs.add(((t["dir"] / sname).resolve(), sname))
+
+    extra_alerts: list[str] = []
+    for i, t in enumerate(targets):
+        tdir = t["dir"]
+        if not tdir.exists():
+            continue
+        for child in sorted(tdir.iterdir()):
+            if child.name.startswith(".") or not (child.is_dir() or child.is_symlink()):
+                continue
+            fm_name = read_frontmatter_name(child / "SKILL.md")
+            matched_name = fm_name if fm_name in manifest_names else (child.name if child.name in manifest_names else None)
+            if matched_name is None:
+                continue
+            if fm_name in manifest_names and child.name != fm_name:
+                extra_alerts.append(
+                    f"ALIAS_ALERT: 目标{i+1}({tdir}) 存在同源重名目录 `{child.name}`（其 name 为 `{fm_name}`）；请删除重复目录并统一用 `{fm_name}` 纳管"
+                )
+            if t["only"] is not None and child.name not in t["only"]:
+                is_managed_link = (
+                    child.is_symlink()
+                    and child.exists()
+                    and (
+                        child.resolve() == (REPO_SKILLS / matched_name).resolve()
+                        or (child.resolve(), matched_name) in managed_skill_dirs
+                    )
+                )
+                if not is_managed_link:
+                    extra_alerts.append(
+                        f"SHADOW_ALERT: 目标{i+1}({tdir}) 存在未纳入 only 的同源技能 `{child.name}`（可能以旧版遮蔽新版）；请纳入 only 或移除"
+                    )
+    return extra_alerts
 
 
 def zip_files(zip_path: Path, name: str) -> set[str]:
@@ -222,12 +306,17 @@ def main() -> None:
             print(f"{name:<22}权威源缺 SKILL.md，跳过（先在 git 仓补全）")
             alerts.append(f"{name}: git 权威源缺 SKILL.md")
             continue
+        managed_peers = {
+            Path(os.path.abspath(ot["dir"] / name))
+            for ot in cfg["targets"]
+            if (ot["only"] is None or name in ot["only"]) and not (ot["dir"] / name).is_symlink()
+        } | {src.resolve()}
         dir_results = []
         for i, t in enumerate(cfg["targets"]):
             if t["only"] is not None and name not in t["only"]:
                 dir_results.append("SKIP(目标范围外)")
                 continue
-            status, dst_only = sync_dir(src, t["dir"] / name, args.apply)
+            status, dst_only = sync_dir(src, t["dir"] / name, args.apply, managed_peers)
             dir_results.append(status)
             if dst_only:
                 alerts.append(f"{name} → 目标{i+1} 有 {len(dst_only)} 个源外文件"
@@ -236,6 +325,7 @@ def main() -> None:
                               + (" …" if len(dst_only) > 5 else ""))
         r_zip = sync_zip(src, name, cfg["zip_dir"], args.apply)
         print(f"{name:<22}" + "".join(f"{r:<{col}}" for r in dir_results) + r_zip)
+    alerts.extend(scan_target_shadows(cfg["targets"], set(all_names)))
     print()
     if alerts:
         print("⚠️ ALERT（目标里有 git 源没有的内容；同步不留文件备份，需要保留请先回灌 Git 并 commit）：")

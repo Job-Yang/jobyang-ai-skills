@@ -161,6 +161,11 @@ def build_bad(root):
         "不适用：无。\n本技能不设全局禁令，详见 [细则](references/rules.md)。\n"))
     w(root, "self-clash", "references/rules.md",
       "默认要求：严禁使用紫色渐变背景。\n")
+    w(root, "template-clash", "SKILL.md", skill_md(
+        "template-clash", GOOD_DESC,
+        "不适用：无。\n开头不套写死五字段，不印「这篇讲」「最后引出」自指栏；模板见 [幻灯](references/slides.md)。\n"))
+    w(root, "template-clash", "references/slides.md",
+      "# TL;DR 模板\n\n```\n# TL;DR\n- 这篇讲：……\n- 最后引出：……\n```\n")
     w(root, "omni-skill", "SKILL.md", skill_md(
         "omni-skill",
         "任何一次改代码或写总结都要使用本技能校验。适用于所有任务，当给出「帮我检查一下」时触发。",
@@ -260,6 +265,7 @@ def main():
             "costume-skill": "B004",
             "maint-leak": "B005",
             "self-clash": "X003",
+            "template-clash": "X003",
             "omni-skill": "X004",
             "meta-close-skill": "B004",
             "short-coercive-skill": "B004",

@@ -59,6 +59,7 @@ AI 时代最容易被低估的，是那些能反复起作用的工作方式。�
 ▸ 点图打开**可交互版**：悬停节点高亮整条上下游、点击查看每个技能的定位与好坏信号、按产品线/思维线/写作线/工具线筛选，右侧还有逐链路导览。
 
 - [SKILL-MAP.md](./docs/SKILL-MAP.md)：定位、独立收益与配合边界的详表
+- [SKILL-ARCHITECTURE.md](./docs/SKILL-ARCHITECTURE.md)：单一所有权矩阵、L1–L4 分层与双模验收规范
 - [SKILL-QUALITY-CARD.md](./docs/SKILL-QUALITY-CARD.md)：怎么判断每个思维技能触发没有、做得好不好
 - [SKILL-GAP-AUDIT.md](./docs/SKILL-GAP-AUDIT.md)：从全局图反推还缺什么——缺口从图里长出来，不预造技能
 

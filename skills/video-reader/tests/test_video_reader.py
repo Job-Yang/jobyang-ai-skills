@@ -11,14 +11,19 @@ import importlib.util
 import json
 import os
 import shutil
+import struct
 import subprocess
 import sys
 import tempfile
 import unittest
+import zlib
 from pathlib import Path
 from unittest import mock
 
-from PIL import Image
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "video_frames.py"
 SPEC = importlib.util.spec_from_file_location("video_frames", SCRIPT)
@@ -26,6 +31,23 @@ VR = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(VR)
 
 FFMPEG = shutil.which("ffmpeg")
+HAS_CV2_NUMPY = (
+    importlib.util.find_spec("cv2") is not None
+    and importlib.util.find_spec("numpy") is not None
+)
+
+
+def _write_rgb_png(path: Path, width: int, height: int) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    row = b"\x00" + (b"\xdc\x28\x28" * width)
+    raw = row * height
+
+    def chunk(tag: bytes, data: bytes) -> bytes:
+        return struct.pack(">I", len(data)) + tag + data + struct.pack(">I", zlib.crc32(tag + data) & 0xFFFFFFFF)
+
+    ihdr = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)
+    idat = zlib.compress(raw, 6)
+    path.write_bytes(b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", ihdr) + chunk(b"IDAT", idat) + chunk(b"IEND", b""))
 
 
 def make_real_video(path: Path, duration=5, rate=10):
@@ -38,8 +60,12 @@ def make_real_video(path: Path, duration=5, rate=10):
 
 def make_fake_video(path: Path):
     """PNG 改名 mp4: 能被 cv2.VideoCapture 打开, 但不是视频流。"""
-    Image.new("RGB", (800, 600), "red").save(path.with_suffix(".png"))
-    shutil.copyfile(path.with_suffix(".png"), path)
+    png_path = path.with_suffix(".png")
+    if Image is not None:
+        Image.new("RGB", (800, 600), "red").save(png_path)
+    else:
+        _write_rgb_png(png_path, 800, 600)
+    shutil.copyfile(png_path, path)
 
 
 def run_script(*args):
@@ -51,8 +77,8 @@ class FakeVideoTests(unittest.TestCase):
     """P1-2: PNG 改名 mp4 不得再被当成'全静止视频' exit 0。"""
 
     def test_fake_video_exit2(self):
-        if not FFMPEG:
-            self.skipTest("ffmpeg 不可用")
+        if not FFMPEG or not HAS_CV2_NUMPY:
+            self.skipTest("ffmpeg 或 cv2/numpy 不可用")
         with tempfile.TemporaryDirectory() as d:
             fake = Path(d) / "fake.mp4"
             make_fake_video(fake)
@@ -62,8 +88,8 @@ class FakeVideoTests(unittest.TestCase):
             self.assertIn("视频流", r.stderr)
 
     def test_real_video_exit0_and_json(self):
-        if not FFMPEG:
-            self.skipTest("ffmpeg 不可用")
+        if not FFMPEG or not HAS_CV2_NUMPY:
+            self.skipTest("ffmpeg 或 cv2/numpy 不可用")
         with tempfile.TemporaryDirectory() as d:
             v = Path(d) / "motion.mp4"
             make_real_video(v, duration=3)
@@ -79,8 +105,8 @@ class FrameDirGovernanceTests(unittest.TestCase):
     """P1-1: --max-frames 截断; 默认保留+提示; --cleanup 成功退出才删。"""
 
     def setUp(self):
-        if not FFMPEG:
-            self.skipTest("ffmpeg 不可用")
+        if not FFMPEG or not HAS_CV2_NUMPY:
+            self.skipTest("ffmpeg 或 cv2/numpy 不可用")
         self._tmp = tempfile.TemporaryDirectory()
         self.root = Path(self._tmp.name)
         self.video = self.root / "motion.mp4"

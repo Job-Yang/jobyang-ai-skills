@@ -59,6 +59,7 @@ The skills are not isolated tricks; they form reusable chains: task → skill �
 ▸ Click the image for the **interactive version**: hover a node to highlight its upstream/downstream path, click for positioning and good/bad signals, filter by product/thinking/writing/tool line, with a per-line walkthrough in the side panel.
 
 - [SKILL-MAP.en.md](./docs/SKILL-MAP.en.md): positioning, standalone value, and boundaries
+- [SKILL-ARCHITECTURE.md](./docs/SKILL-ARCHITECTURE.md): single-ownership matrix, L1–L4 layering, and dual-model acceptance gates
 - [SKILL-QUALITY-CARD.md](./docs/SKILL-QUALITY-CARD.md): how to tell whether a thinking skill fired and worked well
 - [SKILL-GAP-AUDIT.md](./docs/SKILL-GAP-AUDIT.md): what is actually missing, derived from the map rather than impulse
 

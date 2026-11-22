@@ -1,6 +1,6 @@
 ---
 name: minimum-experiment
-description: "最小实验：关键假设停在纸面讨论时，挑出最致命不确定项，设计低成本可逆短周期试错，预先定好指标、继续/停止阈值与时间盒。触发：「先小规模试试」「设计最小实验」「设停损线再动手」。不适用：线上 bug/测试、想法打分（opportunity-scorecard）、方案抉择（steelman-choice）、写 PRD（product-brief）。"
+description: "针对关键待验假设设计低成本可逆试错，预设指标、时间盒与停损阈值。触发：「先小规模试试」「设计最小实验」「设停损线再动手」。不适用：线上代码测试、想法打分（opportunity-scorecard）、方案抉择与写 PRD。"
 ---
 
 # 最小实验 · 用一次低成本可逆试错，替代反复空想

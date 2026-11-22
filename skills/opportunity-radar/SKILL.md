@@ -76,12 +76,14 @@ human_review: pending
 ```markdown
 ## 候选：<一句话机会>
 - 领域：<健康/效率/女性健康/...>
-- 来源：<GitHub / PH / HN / App Store / 社区公开讨论 / 全网搜（不可达源按 sources.md 标注代理或二手）>
+- 来源：<GitHub / PH / HN / App Store / 社区公开讨论 / 全网搜>
 - 证据：<链接> — "<原话/数据引用>"
-- 信号强度：<强/中/弱> + 理由（按 `references/golden-signals.md` 定档：强=付费流向+差评痛点+需求上升证据[可用 Trends 斜率或多源同期热度代理，代理需注明]三证齐，中=两证，弱=一证）
+- 信号强度：<强/中/弱> + 理由（三证：付费流向 + 差评痛点 + 需求上升；代理来源须注明）
 - evidence: real | assumption
 - 建议 topic slug：<如 perimenopause-navigator>（供下游打分沿用）
 ```
+
+> 定档标准（强三证 / 中两证 / 弱一证）与不可达源代理写法参照包内 `references/golden-signals.md` 与 `references/sources.md`。**对用户交付的正文与候选块中不得输出 `references/*.md` 或内部脚本文件名；若附汇总对比表，每格只放短词结论，长段证据、渠道映射与交接细则一律用列表或短段承载。**
 
 ## 何时停手升级用户
 

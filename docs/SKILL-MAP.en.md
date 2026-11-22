@@ -12,7 +12,7 @@
 
 ## 1. How to use this map
 
-Run the Section 4 checklist every time a skill is added or changed; keep the table, this map, and both READMEs in sync.
+Run the Section 4 checklist every time a skill is added or changed; keep the table, this map, and both READMEs in sync. See [SKILL-ARCHITECTURE.md](./SKILL-ARCHITECTURE.md) for the single-ownership matrix, L1–L4 layering, and dual-model acceptance gates.
 
 ## 2. Skill registry (by thinking/work chain)
 
@@ -46,7 +46,7 @@ Status: ✅ available　⏸ deferred　❌ rejected
 
 ### Cluster C · Chinese writing (input-type vs output-type boundaries)
 
-✅ feynman-explainer (understand a concept), haohao-shuohua (de-AI lint), cuihuo (opinion essay or short note), tangshan-style (speculative essay), sansi-erhouxing (read full skeleton before editing), haohao-eval (blind evaluation/recall).
+✅ feynman-explainer (deep concept explanation and standalone internal/external tech research write-ups), haohao-shuohua (de-AI lint), cuihuo (opinion essay or short note), tangshan-style (speculative essay), sansi-erhouxing (read full skeleton before structural edits; light edits bypass), haohao-eval (blind evaluation/recall).
 
 ### Cluster D · Data & engineering execution
 
@@ -76,9 +76,9 @@ Decision cross-chain (enter when stuck, return to the main chain after):
   experiment results flow back to product-brief or scorecard.
 
 Writing cross-cut: haohao-shuohua (lint); cuihuo / tangshan-style / talk-smith (output);
-  sansi-erhouxing before editing; feynman-explainer for understanding (called one-way by output skills).
+  sansi-erhouxing before structural edits (light edits ≤ 3 sentences bypass); feynman-explainer for tech research & deep explanation (standalone research reports and one-way upstream for output skills).
 
-Verification: vdd before claiming done; runtimes with a completion gate may carry it automatically.
+Verification: vdd for final code verification, engineering review, and multi-turn drift control; runtimes with a completion gate may carry it automatically.
   Compilable engineering hypotheses use the environment's own test/verification flow;
   minimum-experiment handles product/real-world hypotheses only.
 ```
@@ -93,7 +93,7 @@ Key non-overlap contracts:
 - **claim-check vs argument-reading**: one discrete claim vs a whole article rebuilt as a reading map.
 - **reverse-teardown vs style-compass**: learn from external artifacts vs review/design your own pages.
 - **root-rethink vs host root-cause flow**: general solution/process rethinking belongs to the skill; code-patch root-causing belongs to the engineering environment's own flow.
-- **feynman vs output writing skills**: one-way handshake only.
+- **feynman vs output writing skills**: one-way handshake when output skills need upstream research; feynman also delivers standalone internal/external research reports.
 
 ## 4. Add / change checklist
 

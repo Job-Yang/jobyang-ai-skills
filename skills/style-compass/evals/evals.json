@@ -5,20 +5,21 @@
   "evals": [
     {
       "id": 1,
-      "name": "模糊需求不连环发问",
-      "route": "新产品",
+      "name": "模糊需求走 explore 高定直选",
+      "route": "explore",
       "prompt": "帮我做个记账 App 的界面，要好看点。",
       "files": [],
-      "expected_output": "技能先跑入场分流，判断为新产品；用点选问产品问题和产品性格滑杆，不在文字里问风格；写出方向简报后再提出候选方向。",
+      "expected_output": "技能跳过枯燥问卷与灰阶线框，直接进入 explore 路径：拉开正交轴挑选 2–4 套迥异风格，用独立候选做可点关键屏并生成交互画廊供用户直选或一句 Remix，选中后再锁 tokens 扩全页。",
       "expectations": [
-        "运行了 design_memory.py scan，并说明走“新产品”路线",
-        "一轮最多问 4 个问题，全部是点选，没有让用户用文字描述想要的风格",
-        "没有问颜色、字体、圆角这类视觉问题",
-        "design/direction.md 里有 3～5 个目标感受词、至少一条“X 但不 Y”、一条参考“像什么、不像什么”",
-        "简报里没有写色值、字体名或字号",
-        "提出 3～4 个风格坐标，其中一个标为反向候选；它推翻的是常规做法，没有把滑杆反过来"
+        "先判断为 explore 路径，没有连续抛风格问卷或先画灰阶线框",
+        "在明暗、材质物理、空间构图与动效节奏上真正拉开 2–4 套高定候选（不做同构换色卡）",
+        "运行 scripts/build_gallery.py 生成支持单看/并排/桌面/手机/重播动效的交互画廊供直选或 Remix",
+        "每个候选搭载清晰细线 SVG 图标、真实可点主操作与页面实际使用 tokens",
+        "用户确认方向前不将其标注为正式审批通过"
       ],
-      "checks": []
+      "checks": [
+        "python3 scripts/build_gallery.py --help"
+      ]
     },
     {
       "id": 2,
@@ -283,6 +284,41 @@
         "python3 scripts/lint_design.py check prototype/<定稿页>.html --phase final --tokens design/tokens.json",
         "python3 scripts/design_memory.py check <产品目录>",
         "python3 scripts/artifact_io.py pack --input <spec.md> --attach prototype --out /tmp/handoff.zip"
+      ]
+    },
+    {
+      "id": 19,
+      "name": "明确单页需求走 quick 高定直出",
+      "route": "quick",
+      "prompt": "直接帮我做一个暗色工业触感风的音频采样器控制面板原型，单页可点，不需要多余流程。",
+      "files": [],
+      "expected_output": "技能直接进入 quick 路径，跳过四关线框和画廊对比，按触感硬件/五轴基因直出带物理动效和真实可点控件的高定 HTML prototype，并用页面实际 tokens 跑 final lint 与截屏验收。",
+      "expectations": [
+        "走 quick 路径直出单个可交互 HTML prototype，没有强开固定评论工作台或生成冗余 DESIGN.md",
+        "按页面体量搭载 1–3 处微动效与细线 SVG 图标，关键操作真实可点",
+        "输出的 tokens 是页面实际使用值，且按需跑了 final lint 与截屏核查（无浏览器时明确标未视觉验收）",
+        "未在归档前自称正式审批通过"
+      ],
+      "checks": [
+        "python3 scripts/lint_design.py check <页面>.html --phase final"
+      ]
+    },
+    {
+      "id": 20,
+      "name": "高风险跨角色流程显式升档 full",
+      "route": "full",
+      "prompt": "这是一个涉及退款审批流、多角色权限切换与不可逆账户注销的合规控制台，请按完整设计流程出方案和原型。",
+      "files": [],
+      "expected_output": "技能识别出涉及权限模型变更、跨角色交接与不可逆写入，按复杂度走 full 四关正式流程（入场扫描、结构、交互、视觉定稿与档案），并在第 3 关用工艺基因实现高保真视觉突破。",
+      "expectations": [
+        "正确路由至 full 四关流程，而不是用 quick 直接跳过契约检查",
+        "覆盖 design_memory.py scan、diverge、validate_stage_contract.py --phase direction/final 等关键门禁",
+        "涉及的删除/注销操作按阶段契约写明 destructive 与可逆性/确认按钮",
+        "最终视觉定稿借助工艺包或五轴基因重构质感，不被早期线框限制上限"
+      ],
+      "checks": [
+        "python3 scripts/design_memory.py scan <产品目录>",
+        "python3 scripts/validate_stage_contract.py --contract prototype/index.design.json --html prototype/index.html --phase final"
       ]
     }
   ]

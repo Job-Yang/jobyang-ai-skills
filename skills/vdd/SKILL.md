@@ -1,6 +1,6 @@
 ---
 name: vdd
-description: "面向验证的开发（VDD）：用于代码改动终审、工程诊断复核与多轮大重构防漂移。触发：「代码终审」「验一下改动」「确认有没有过度修改」「多轮重构守住边界」。不适用：外部事实与数据核查（走 claim-check）、多源行业取证（走 outside-view）、假设试错设计（走 minimum-experiment）、RFC/方案评审（走 engineering-docs）、日常简单问答与纯错字微调。"
+description: "面向验证的开发（VDD）：代码改动终审、工程诊断复核与多轮大重构防漂移。触发：「代码终审」「验一下改动」「确认有没有过度修改」。不适用：外部事实核查（claim-check）、行业调研（outside-view）、方案评审（engineering-docs）及纯错字微调。"
 ---
 
 # VDD · 代码终审与大改动防漂移
