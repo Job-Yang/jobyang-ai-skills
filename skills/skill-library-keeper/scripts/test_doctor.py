@@ -75,7 +75,7 @@ def skill_md(name, desc, body, extra_fm=""):
 
 
 def build_good(root):
-    w(root, "good-skill", "SKILL.md", skill_md("good-skill", GOOD_DESC, GOOD_BODY))
+    w(root, "good-skill", "SKILL.md", skill_md("good-skill", GOOD_DESC, GOOD_BODY, "disable-model-invocation: true\n"))
     w(root, "good-skill", "references/good-guide.md", GOOD_GUIDE)
     w(root, "good-skill", "references/long-guide.md", LONG_GUIDE)
     w(root, "good-skill", "scripts/do_thing.py", DO_THING)

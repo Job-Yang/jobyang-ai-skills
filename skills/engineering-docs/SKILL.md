@@ -135,4 +135,6 @@ license: MIT
 
 与 `style-compass` 分工：交互式产品界面原型与视觉系统走 `style-compass`；本技能专注工程评审方案、严谨工程图与速读页。
 
+下游编码交接：方案 RFC/ADR 评审拍板后，如需进一步编译为编码阶段逐提交落地的深模块接口与步骤，可由 `implement-spec` 承接；若要在动工前做跨上下文独立盲审挑刺，可交 `spec-battle`。
+
 OPC 独立交接：复用用户材料和指定输出位置，不依赖 iLoop；需要信封封装或打包时读 `references/handoff.md`。

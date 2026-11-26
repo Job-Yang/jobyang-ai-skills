@@ -96,17 +96,27 @@ def main() -> int:
         ("haohao:quick_scan --checks half", [sys.executable, str(SKILLS_ROOT / "haohao-shuohua/scripts/quick_scan.py"), *all_md, "--checks", "half", "--fail-on", "half"], REPO_ROOT),
         ("opc:check_vendored --drift", [sys.executable, str(SKILLS_ROOT / "opportunity-radar/scripts/check_vendored.py"), "--drift", *opc_dirs], REPO_ROOT),
         ("opc:check_handoff", [sys.executable, str(SKILLS_ROOT / "opportunity-radar/scripts/check_handoff.py"), *opc_dirs], REPO_ROOT),
+        ("shared:check_shared", [sys.executable, str(REPO_ROOT / "tools/sync_skills.py"), "--check-shared"], REPO_ROOT),
+        ("plugins:engineering-flow", [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-t", "tests"], REPO_ROOT / "plugins/engineering-flow"),
+        ("tools:test_sync_only", [sys.executable, str(REPO_ROOT / "tools/test_sync_only.py")], REPO_ROOT),
+        ("tools:tests", [sys.executable, "-m", "unittest", "discover", "-s", "tools/tests", "-t", "tools/tests"], REPO_ROOT),
     ]
 
     unittest_skills = [
         "ai-briefing",
+        "code-bugfix",
+        "diff-review",
         "engineering-docs",
+        "go-work",
         "haohao-shuohua",
+        "implement-spec",
         "me-context",
         "opportunity-radar",
         "opportunity-scorecard",
+        "pr-prep",
         "product-brief",
         "skill-library-keeper",
+        "spec-battle",
         "style-compass",
         "writing-craft",
     ]

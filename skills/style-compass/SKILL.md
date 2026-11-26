@@ -75,3 +75,4 @@ python3 scripts/review_server.py --root <prototype目录>
 
 - 不做需求发现和需求正确性；不做纯落地页和通用创意出图。
 - 不替代一次性页面工具；这里交付的是可点 prototype、实际 tokens 与可复用规格。
+- 既定 `DESIGN.md` 与 `tokens.json` 向存量代码仓分批迁移时，按页面或组件切片后交由 `implement-spec` 与 `go-work` 分步落地并逐批截屏回归。

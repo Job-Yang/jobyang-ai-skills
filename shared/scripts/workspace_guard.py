@@ -1,0 +1,447 @@
+#!/usr/bin/env python3
+"""工程工作区与 Spec 状态机守卫（纯 Python 3.9+ 标准库，零外部依赖）。
+
+支持个人仓（docs/ + Git trailer）与多人公司大仓（.agent-work/ + .git/info/exclude 零污染）
+以及非 Git 仓降级（ephemeral）。
+
+子命令：
+  detect       自动识别工作区模式（repo / local / ephemeral）并输出路径映射 JSON
+  init-local   初始化 .agent-work/ 并幂等写入本机私有 .git/info/exclude
+  hash         计算文件 Git blob SHA-1（与 git hash-object 完全一致）
+  verify-hash  校验 Spec 头部的 Source/Feature 摘要是否与当前上游文件一致
+  progress     汇总 Spec 步骤的 Git Spec-Step trailer 与 state JSON，计算 ready 步骤
+  record-step  在 .agent-work/state/<slug>.json 记录已完成步骤与提交 SHA
+  archive      归档已完成 Spec 至 archived/<YYYY-MM-DD>-<slug>.md 并确保 .ignore
+"""
+from __future__ import annotations
+
+import argparse
+import datetime as dt
+import hashlib
+import json
+import os
+import re
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+SOURCE_RE = re.compile(r"^(?:Source|Feature):\s*`?([^`\s@]+)`?\s*@\s*`?([0-9a-fA-F]{7,40})`?")
+SOURCE_NONE_RE = re.compile(r"^(?:Source|Feature):\s*none\b", re.I)
+STEP_RE = re.compile(r"^(\d+)\.\s+(.*)$")
+AFTER_RE = re.compile(r"\bAfter:\s*([^\n.;。；]+)", re.I)
+
+
+def run_git(args: list[str], cwd: Path) -> tuple[int, str, str]:
+    r = subprocess.run(["git", *args], cwd=str(cwd), capture_output=True, text=True)
+    return r.returncode, r.stdout.strip(), r.stderr.strip()
+
+
+def git_root(start: Path) -> Path | None:
+    rc, out, _ = run_git(["rev-parse", "--show-toplevel"], start)
+    return Path(out).resolve() if rc == 0 and out else None
+
+
+def git_blob_sha1(path: Path) -> str:
+    data = path.read_bytes()
+    header = f"blob {len(data)}\0".encode("utf-8")
+    return hashlib.sha1(header + data).hexdigest()
+
+
+def detect_mode(start: Path, force_mode: str = "auto") -> dict:
+    start = start.resolve()
+    root = git_root(start)
+    if force_mode == "ephemeral" or (force_mode == "auto" and root is None):
+        return {
+            "mode": "ephemeral",
+            "root": str(start),
+            "work_dir": None,
+            "feature_dir": None,
+            "spec_dir": None,
+            "archived_dir": None,
+            "state_dir": None,
+            "glossary": None,
+        }
+    if root is None:
+        sys.exit(f"错误：目录 {start} 不在 Git 仓库内，无法使用 {force_mode} 模式")
+
+    if force_mode == "auto":
+        if (root / "docs" / "spec").is_dir() or (root / "docs" / "feature").is_dir():
+            mode = "repo"
+        else:
+            mode = "local"
+    else:
+        mode = force_mode
+
+    if mode == "repo":
+        work_dir = root / "docs"
+        return {
+            "mode": "repo",
+            "root": str(root),
+            "work_dir": str(work_dir),
+            "feature_dir": str(work_dir / "feature"),
+            "spec_dir": str(work_dir / "spec"),
+            "archived_dir": str(work_dir / "spec" / "archived"),
+            "state_dir": str(work_dir / "spec" / ".state"),
+            "glossary": str(work_dir / "GLOSSARY.md"),
+        }
+
+    work_dir = root / ".agent-work"
+    return {
+        "mode": "local",
+        "root": str(root),
+        "work_dir": str(work_dir),
+        "feature_dir": str(work_dir / "feature"),
+        "spec_dir": str(work_dir / "spec"),
+        "archived_dir": str(work_dir / "spec" / "archived"),
+        "state_dir": str(work_dir / "state"),
+        "glossary": str(work_dir / "GLOSSARY.md"),
+    }
+
+
+def ensure_ignore_file(archived_dir: Path) -> Path:
+    archived_dir.mkdir(parents=True, exist_ok=True)
+    ignore_path = archived_dir / ".ignore"
+    existing = ignore_path.read_text(encoding="utf-8") if ignore_path.is_file() else ""
+    lines = [ln.strip() for ln in existing.splitlines() if ln.strip()]
+    if "*" not in lines:
+        new_content = (existing.rstrip("\n") + "\n*\n").lstrip("\n") if existing else "*\n"
+        ignore_path.write_text(new_content, encoding="utf-8")
+    return ignore_path
+
+
+def cmd_detect(args: argparse.Namespace) -> int:
+    info = detect_mode(Path(args.root), args.mode)
+    print(json.dumps(info, ensure_ascii=False, indent=2))
+    return 0
+
+
+def cmd_init_local(args: argparse.Namespace) -> int:
+    root = git_root(Path(args.root).resolve())
+    if root is None:
+        print("错误：当前目录不是 Git 仓库，跳过 .agent-work 初始化（请改用 ephemeral 模式）", file=sys.stderr)
+        return 1
+    work = root / ".agent-work"
+    for sub in ("feature", "spec", "state"):
+        (work / sub).mkdir(parents=True, exist_ok=True)
+    ignore_file = ensure_ignore_file(work / "spec" / "archived")
+
+    rc, exclude_rel, err = run_git(["rev-parse", "--git-path", "info/exclude"], root)
+    if rc != 0 or not exclude_rel:
+        print(f"错误：无法定位 git info/exclude：{err}", file=sys.stderr)
+        return 1
+    exclude_path = Path(exclude_rel) if os.path.isabs(exclude_rel) else (root / exclude_rel)
+    exclude_path.parent.mkdir(parents=True, exist_ok=True)
+    current = exclude_path.read_text(encoding="utf-8") if exclude_path.is_file() else ""
+    entries = {ln.strip() for ln in current.splitlines() if ln.strip() and not ln.strip().startswith("#")}
+    added_exclude = False
+    if ".agent-work/" not in entries and ".agent-work" not in entries:
+        prefix = "" if (not current or current.endswith("\n")) else "\n"
+        exclude_path.write_text(current + prefix + ".agent-work/\n", encoding="utf-8")
+        added_exclude = True
+
+    print(json.dumps({
+        "root": str(root),
+        "work_dir": str(work),
+        "archived_ignore": str(ignore_file),
+        "exclude_file": str(exclude_path),
+        "exclude_updated": added_exclude,
+    }, ensure_ascii=False, indent=2))
+    return 0
+
+
+def cmd_hash(args: argparse.Namespace) -> int:
+    p = Path(args.file)
+    if not p.is_file():
+        print(f"错误：文件不存在：{p}", file=sys.stderr)
+        return 1
+    print(git_blob_sha1(p))
+    return 0
+
+
+def resolve_source_ref(spec_path: Path, root: Path | None) -> tuple[str | None, str | None]:
+    lines = spec_path.read_text(encoding="utf-8").splitlines()[:25]
+    for ln in lines:
+        s = ln.strip()
+        if SOURCE_NONE_RE.match(s):
+            return None, None
+        m = SOURCE_RE.match(s)
+        if m:
+            return m.group(1), m.group(2).lower()
+    return "", None
+
+
+def cmd_verify_hash(args: argparse.Namespace) -> int:
+    spec_path = Path(args.spec).resolve()
+    if not spec_path.is_file():
+        print(f"错误：Spec 不存在：{spec_path}", file=sys.stderr)
+        return 1
+    root = git_root(Path(args.root).resolve()) or git_root(spec_path.parent) or Path(args.root).resolve()
+    rel_src, want_sha = resolve_source_ref(spec_path, root)
+    if rel_src is None and want_sha is None:
+        print(json.dumps({"status": "skipped", "reason": "Source: none"}, ensure_ascii=False))
+        return 0
+    if rel_src == "" or want_sha is None:
+        print(json.dumps({"status": "missing_anchor", "spec": str(spec_path)}, ensure_ascii=False), file=sys.stderr)
+        return 1
+
+    src_path = Path(rel_src)
+    if not src_path.is_absolute():
+        candidate_root = (root / rel_src).resolve()
+        candidate_spec = (spec_path.parent / rel_src).resolve()
+        src_path = candidate_root if candidate_root.is_file() else candidate_spec
+    if not src_path.is_file():
+        print(json.dumps({"status": "source_missing", "source": rel_src}, ensure_ascii=False), file=sys.stderr)
+        return 2
+
+    got_sha = git_blob_sha1(src_path)
+    matched = got_sha.startswith(want_sha) or want_sha.startswith(got_sha)
+    out = {
+        "status": "ok" if matched else "drifted",
+        "source": rel_src,
+        "expected": want_sha,
+        "actual": got_sha,
+    }
+    print(json.dumps(out, ensure_ascii=False))
+    return 0 if matched else 2
+
+
+def parse_steps(spec_path: Path) -> list[dict]:
+    lines = spec_path.read_text(encoding="utf-8").splitlines()
+    in_steps = False
+    steps: dict[int, dict] = {}
+    cur_step: int | None = None
+    for ln in lines:
+        stripped = ln.strip()
+        if re.match(r"^##\s+Steps\b", stripped, re.I):
+            in_steps = True
+            cur_step = None
+            continue
+        if in_steps and re.match(r"^##\s+", stripped):
+            break
+        if not in_steps:
+            continue
+        m = STEP_RE.match(stripped)
+        if m:
+            num = int(m.group(1))
+            cur_step = num
+            steps[num] = {"step": num, "title": m.group(2).strip(), "after": []}
+            am = AFTER_RE.search(stripped)
+            if am:
+                steps[num]["after"] = parse_after_nums(am.group(1))
+        elif cur_step is not None and not steps[cur_step]["after"]:
+            am = AFTER_RE.search(stripped)
+            if am:
+                steps[cur_step]["after"] = parse_after_nums(am.group(1))
+    return [steps[k] for k in sorted(steps)]
+
+
+def parse_after_nums(raw: str) -> list[int]:
+    if re.search(r"\bnone\b|无", raw, re.I):
+        return []
+    return sorted({int(x) for x in re.findall(r"\d+", raw)})
+
+
+def infer_slug(spec_path: Path, explicit_slug: str | None) -> str:
+    if explicit_slug:
+        return explicit_slug
+    stem = spec_path.stem
+    return re.sub(r"^\d{4}-\d{2}-\d{2}-", "", stem)
+
+
+def state_file_for(root: Path, spec_path: Path, slug: str) -> Path:
+    info = detect_mode(root, "repo" if (root / "docs" / "spec") in spec_path.parents else "auto")
+    if ".agent-work" in spec_path.parts:
+        return root / ".agent-work" / "state" / f"{slug}.json"
+    state_dir = Path(info["state_dir"]) if info["state_dir"] else (root / ".agent-work" / "state")
+    return state_dir / f"{slug}.json"
+
+
+def read_state_steps(state_path: Path) -> dict[int, str]:
+    if not state_path.is_file():
+        return {}
+    try:
+        data = json.loads(state_path.read_text(encoding="utf-8"))
+        out = {}
+        for k, v in (data.get("landed") or {}).items():
+            out[int(k)] = str(v)
+        return out
+    except (OSError, ValueError):
+        return {}
+
+
+def read_git_trailer_steps(root: Path, spec_path: Path, slug: str) -> set[int]:
+    try:
+        rel_spec = str(spec_path.resolve().relative_to(root.resolve()))
+    except ValueError:
+        rel_spec = str(spec_path)
+    rc, base, _ = run_git(["log", "-1", "--diff-filter=A", "--format=%H", "--", rel_spec], root)
+    rev_range = f"{base}..HEAD" if rc == 0 and base else "HEAD"
+    rc, out, _ = run_git(["log", "--format=%(trailers:key=Spec-Step,valueonly)", rev_range], root)
+    if rc != 0 or not out:
+        return set()
+    landed = set()
+    prefix = f"{slug}#"
+    for ln in out.splitlines():
+        s = ln.strip()
+        if s.startswith(prefix):
+            tail = s[len(prefix):]
+            if tail.isdigit():
+                landed.add(int(tail))
+    return landed
+
+
+def cmd_progress(args: argparse.Namespace) -> int:
+    spec_path = Path(args.spec).resolve()
+    if not spec_path.is_file():
+        print(f"错误：Spec 不存在：{spec_path}", file=sys.stderr)
+        return 1
+    root = git_root(Path(args.root).resolve()) or git_root(spec_path.parent)
+    slug = infer_slug(spec_path, args.slug)
+    steps = parse_steps(spec_path)
+
+    landed_map: dict[int, str] = {}
+    if root is not None:
+        for num in read_git_trailer_steps(root, spec_path, slug):
+            landed_map[num] = "git-trailer"
+        for num, sha in read_state_steps(state_file_for(root, spec_path, slug)).items():
+            landed_map.setdefault(num, sha)
+
+    landed = sorted(landed_map)
+    landed_set = set(landed)
+    ready, blocked = [], []
+    for st in steps:
+        n = st["step"]
+        if n in landed_set:
+            continue
+        missing_deps = [d for d in st["after"] if d not in landed_set]
+        if missing_deps:
+            blocked.append({"step": n, "waiting_for": missing_deps})
+        else:
+            ready.append(n)
+
+    print(json.dumps({
+        "slug": slug,
+        "total": len(steps),
+        "landed": landed,
+        "ready": ready,
+        "blocked_by_deps": blocked,
+    }, ensure_ascii=False, indent=2))
+    return 0
+
+
+def cmd_record_step(args: argparse.Namespace) -> int:
+    root = git_root(Path(args.root).resolve()) or Path(args.root).resolve()
+    info = detect_mode(root, args.mode)
+    state_dir = Path(info["state_dir"]) if info["state_dir"] else (root / ".agent-work" / "state")
+    state_dir.mkdir(parents=True, exist_ok=True)
+    sf = state_dir / f"{args.slug}.json"
+    data = {"slug": args.slug, "landed": {}}
+    if sf.is_file():
+        try:
+            data = json.loads(sf.read_text(encoding="utf-8"))
+        except ValueError:
+            pass
+    landed = data.setdefault("landed", {})
+    landed[str(args.step)] = args.sha
+    sf.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps({"state_file": str(sf), "slug": args.slug, "landed": landed}, ensure_ascii=False))
+    return 0
+
+
+def cmd_archive(args: argparse.Namespace) -> int:
+    spec_path = Path(args.spec).resolve()
+    if not spec_path.is_file():
+        print(f"错误：Spec 不存在：{spec_path}", file=sys.stderr)
+        return 1
+    root = git_root(Path(args.root).resolve()) or git_root(spec_path.parent) or spec_path.parent
+    mode = args.mode
+    if mode == "auto":
+        mode = "local" if ".agent-work" in spec_path.parts else detect_mode(root, "auto")["mode"]
+    slug = infer_slug(spec_path, args.slug)
+    date_str = args.date or dt.date.today().isoformat()
+    archived_dir = (root / ".agent-work" / "spec" / "archived") if mode == "local" else (root / "docs" / "spec" / "archived")
+    ignore_file = ensure_ignore_file(archived_dir)
+    dest = archived_dir / f"{date_str}-{slug}.md"
+
+    used_git_mv = False
+    if mode == "repo":
+        try:
+            rel_src = str(spec_path.relative_to(root.resolve()))
+            rel_dst = str(dest.relative_to(root.resolve()))
+            rc_ls, _, _ = run_git(["ls-files", "--error-unmatch", rel_src], root)
+            if rc_ls == 0:
+                rc_mv, _, err = run_git(["mv", rel_src, rel_dst], root)
+                if rc_mv != 0:
+                    print(f"错误：git mv 失败：{err}", file=sys.stderr)
+                    return 1
+                used_git_mv = True
+        except ValueError:
+            pass
+
+    if not used_git_mv:
+        shutil.move(str(spec_path), str(dest))
+
+    print(json.dumps({
+        "mode": mode,
+        "archived_to": str(dest),
+        "archived_ignore": str(ignore_file),
+        "git_mv": used_git_mv,
+    }, ensure_ascii=False, indent=2))
+    return 0
+
+
+def build_parser() -> argparse.ArgumentParser:
+    ap = argparse.ArgumentParser(description="工程工作区与 Spec 状态机守卫")
+    sub = ap.add_subparsers(dest="cmd", required=True)
+
+    p_det = sub.add_parser("detect")
+    p_det.add_argument("--root", default=".")
+    p_det.add_argument("--mode", choices=["auto", "repo", "local", "ephemeral"], default="auto")
+    p_det.set_defaults(func=cmd_detect)
+
+    p_init = sub.add_parser("init-local")
+    p_init.add_argument("--root", default=".")
+    p_init.set_defaults(func=cmd_init_local)
+
+    p_hash = sub.add_parser("hash")
+    p_hash.add_argument("file")
+    p_hash.set_defaults(func=cmd_hash)
+
+    p_vh = sub.add_parser("verify-hash")
+    p_vh.add_argument("--spec", required=True)
+    p_vh.add_argument("--root", default=".")
+    p_vh.set_defaults(func=cmd_verify_hash)
+
+    p_prog = sub.add_parser("progress")
+    p_prog.add_argument("--spec", required=True)
+    p_prog.add_argument("--root", default=".")
+    p_prog.add_argument("--slug", default=None)
+    p_prog.set_defaults(func=cmd_progress)
+
+    p_rec = sub.add_parser("record-step")
+    p_rec.add_argument("--slug", required=True)
+    p_rec.add_argument("--step", type=int, required=True)
+    p_rec.add_argument("--sha", required=True)
+    p_rec.add_argument("--root", default=".")
+    p_rec.add_argument("--mode", choices=["auto", "repo", "local"], default="local")
+    p_rec.set_defaults(func=cmd_record_step)
+
+    p_arc = sub.add_parser("archive")
+    p_arc.add_argument("--spec", required=True)
+    p_arc.add_argument("--mode", choices=["auto", "repo", "local"], default="auto")
+    p_arc.add_argument("--root", default=".")
+    p_arc.add_argument("--slug", default=None)
+    p_arc.add_argument("--date", default=None)
+    p_arc.set_defaults(func=cmd_archive)
+
+    return ap
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
+    return args.func(args)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

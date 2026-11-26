@@ -3,25 +3,19 @@
 
 路径配置来自 tools/sync.local.json（git 忽略，不同机器各自填写），模板见
 tools/sync.example.json。配置字段：
-  targets : [{ "dir": "<某技能宿主的技能目录>", "only": ["skill-name"] }]
-            only 可省略；设置后该目标只接收列出的技能。
+  targets : [{ "dir": "<某技能宿主的技能目录>", "only": ["skill-name"], "groups": ["engineering"] }]
+            only / groups 均可省略；省略表示同步全部；同时给出时取并集。
   zip_dir : "<发布 zip 目录>"
 
-为什么以 Git 仓为唯一权威源：
-  - 方向单向，杜绝旧副本反向覆盖新版本；
-  - .deps/.git/__pycache__ 等运行时产物不入库，同步时也永远不会被推出去；
-  - 目标目录采用"删除后按源重建"，残留的运行时目录会被一并清掉。
-
-版本找回：
-  - 不在目标/发布目录留任何同步备份；旧版本一律通过 Git 历史找回（git log / git checkout）。
-  - 发布 zip 目录只保留"当前最新"一版，方便直接打包上传，不做归档。
+公共文件单源分发（shared/）：
+  skills-manifest.json 的 shared 字段声明 shared/<path> 需要分发到哪些技能目录；
+  运行 --sync-shared 从 shared/ 复制到对应技能目录；--check-shared 校验无漂移。
 
 安全：
   - 默认 dry-run 只报差异；加 --apply 才写入。
-  - 只处理 manifest 白名单；目标目录里的其他技能/公司内部技能一律不碰。
-  - 若某目标存在"源里没有、且不属于忽略项"的文件（可能在该目标直接改过没回灌），
-    标 ALERT 并在 dry-run/apply 输出里列出这些将被清除的源外文件；apply 不做文件备份，
-    需要保留请先把它回灌 Git 并 commit——Git 是唯一备份。
+  - 若宿主的根目录（target.dir）本身不存在，默认跳过不创建（防止误建缺失宿主目录）；
+    需要显式初始化新宿主根目录时加 --create-missing-targets。
+  - 正常同步前自动校验 shared/ 一致性，若发现漂移或缺失则拒绝同步。
 """
 from __future__ import annotations
 
@@ -44,6 +38,9 @@ LOCAL_CONFIG = TOOLS_DIR / "sync.local.json"
 EXAMPLE_CONFIG = TOOLS_DIR / "sync.example.json"
 
 REPO_SKILLS = REPO_ROOT / "skills"
+REPO_PLUGINS = REPO_ROOT / "plugins"
+SHARED_DIR = REPO_ROOT / "shared"
+AGY_PLUGINS_CONFIG = Path("~/.gemini/config/plugins.json")
 
 IGNORE = [".DS_Store", "__pycache__", ".pytest_cache", ".ruff_cache", "*.pyc", ".git", ".deps"]
 
@@ -52,18 +49,58 @@ def expand(p: str) -> Path:
     return Path(os.path.expandvars(os.path.expanduser(p)))
 
 
+def read_manifest() -> dict:
+    return json.loads(MANIFEST.read_text(encoding="utf-8"))
+
+
+def build_groups_map(manifest_data: dict) -> dict[str, list[str]]:
+    groups_map: dict[str, list[str]] = {}
+    for g in manifest_data.get("groups", []):
+        name = g.get("name")
+        skills = g.get("skills", [])
+        if name:
+            groups_map[name] = list(skills)
+    return groups_map
+
+
+def expand_groups(manifest_names: list[str], groups_map: dict[str, list[str]], groups: list[str]) -> list[str]:
+    if not isinstance(groups, list) or not groups or any(not isinstance(g, str) or not g for g in groups):
+        sys.exit("groups 必须是非空分组名列表")
+    unknown = [g for g in groups if g not in groups_map]
+    if unknown:
+        sys.exit(f"包含未在 manifest 定义的分组：{', '.join(unknown)}（拒绝执行）")
+    selected_set = {s for g in groups for s in groups_map[g]}
+    unknown_skills = [s for s in selected_set if s not in set(manifest_names)]
+    if unknown_skills:
+        sys.exit(f"分组包含未在 manifest 登记的技能：{', '.join(sorted(unknown_skills))}")
+    return [n for n in manifest_names if n in selected_set]
+
+
 def load_config() -> dict:
     cfg_path = LOCAL_CONFIG if LOCAL_CONFIG.is_file() else EXAMPLE_CONFIG
     if cfg_path == EXAMPLE_CONFIG:
         sys.exit("未找到 tools/sync.local.json：复制 tools/sync.example.json 为 sync.local.json，填入本机路径后再运行。")
     cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
-    manifest_names = [s["name"] for s in json.loads(MANIFEST.read_text(encoding="utf-8"))["skills"]]
+    manifest_data = read_manifest()
+    manifest_names = [s["name"] for s in manifest_data["skills"]]
+    groups_map = build_groups_map(manifest_data)
     targets = []
     for t in cfg.get("targets", []):
         scope = t.get("only")
-        if scope is not None and (not isinstance(scope, list) or not scope or any(not isinstance(n, str) for n in scope)):
-            sys.exit("target.only 必须是非空技能名列表；省略表示同步全部")
-        targets.append({"dir": expand(t["dir"]), "only": select_names(manifest_names, scope) if scope is not None else None})
+        t_groups = t.get("groups")
+        resolved: list[str] | None = None
+        if scope is not None:
+            if not isinstance(scope, list) or not scope or any(not isinstance(n, str) for n in scope):
+                sys.exit("target.only 必须是非空技能名列表；省略表示同步全部")
+            resolved = select_names(manifest_names, scope)
+        if t_groups is not None:
+            expanded = expand_groups(manifest_names, groups_map, t_groups)
+            if resolved is None:
+                resolved = expanded
+            else:
+                merged = set(resolved) | set(expanded)
+                resolved = [n for n in manifest_names if n in merged]
+        targets.append({"dir": expand(t["dir"]), "only": resolved})
     if not targets:
         sys.exit("sync.local.json 里 targets 为空，至少配置一个技能运行目录。")
     zip_dir = expand(cfg["zip_dir"])
@@ -108,6 +145,52 @@ def files_differ(a: Path, b: Path) -> bool:
         return not filecmp.cmp(a, b, shallow=False)
     except OSError:
         return True
+
+
+def check_shared(manifest_data: dict | None = None) -> list[str]:
+    """检查 manifest.shared 中声明的公共文件是否与 shared/ 权威源一致。"""
+    data = manifest_data if manifest_data is not None else read_manifest()
+    issues: list[str] = []
+    for entry in data.get("shared", []):
+        rel = entry["path"]
+        src = SHARED_DIR / rel
+        if not src.is_file():
+            issues.append(f"MISSING_SOURCE: shared/{rel} 不存在")
+            continue
+        for skill in entry.get("skills", []):
+            dst = REPO_SKILLS / skill / rel
+            if not dst.is_file():
+                issues.append(f"MISSING: skills/{skill}/{rel}")
+            elif files_differ(src, dst):
+                issues.append(f"DRIFT: skills/{skill}/{rel} 与 shared/{rel} 不一致")
+    return issues
+
+
+def sync_shared(manifest_data: dict | None = None) -> tuple[int, int, list[str]]:
+    """将 shared/ 权威源单向复制到 manifest.shared 声明的各技能目录。"""
+    data = manifest_data if manifest_data is not None else read_manifest()
+    copied = 0
+    unchanged = 0
+    errors: list[str] = []
+    for entry in data.get("shared", []):
+        rel = entry["path"]
+        src = SHARED_DIR / rel
+        if not src.is_file():
+            errors.append(f"缺少公共源文件：shared/{rel}")
+            continue
+        for skill in entry.get("skills", []):
+            skill_dir = REPO_SKILLS / skill
+            if not skill_dir.is_dir():
+                errors.append(f"目标技能目录不存在：skills/{skill}")
+                continue
+            dst = skill_dir / rel
+            if dst.is_file() and not files_differ(src, dst):
+                unchanged += 1
+                continue
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+            copied += 1
+    return copied, unchanged, errors
 
 
 def tree_diff(src: Path, dst: Path) -> tuple[set[str], set[str]]:
@@ -273,6 +356,55 @@ def sync_zip(src: Path, name: str, zip_dir: Path, apply: bool) -> str:
     return "SAME"
 
 
+def sync_agy_plugin(
+    apply: bool,
+    config_path: Path | None = None,
+    plugins_dir: Path | None = None,
+) -> tuple[str, Path, Path]:
+    """幂等注册本仓 plugins/ 目录到 Antigravity 的 plugins.json，保留用户既有配置。"""
+    cfg_path = config_path if config_path is not None else expand(str(AGY_PLUGINS_CONFIG))
+    p_dir = (plugins_dir if plugins_dir is not None else REPO_PLUGINS).resolve()
+
+    existed = cfg_path.is_file()
+    if existed:
+        try:
+            data = json.loads(cfg_path.read_text(encoding="utf-8"))
+        except ValueError as exc:
+            sys.exit(f"解析 {cfg_path} 失败：{exc}")
+        if not isinstance(data, dict):
+            sys.exit(f"格式错误：{cfg_path} 顶层必须是 JSON 对象")
+    else:
+        data = {}
+
+    entries = data.get("entries")
+    if entries is None:
+        entries = []
+    if not isinstance(entries, list):
+        sys.exit(f"格式错误：{cfg_path} 中 entries 必须是数组")
+
+    already = False
+    for entry in entries:
+        if not isinstance(entry, dict) or not isinstance(entry.get("path"), str):
+            continue
+        try:
+            if expand(entry["path"]).resolve() == p_dir:
+                already = True
+                break
+        except OSError:
+            continue
+
+    if already:
+        return "SAME", cfg_path, p_dir
+
+    entries.append({"path": str(p_dir)})
+    data["entries"] = entries
+    status = "UPDATE" if existed else "CREATE"
+    if apply:
+        cfg_path.parent.mkdir(parents=True, exist_ok=True)
+        cfg_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return status, cfg_path, p_dir
+
+
 def select_names(manifest_names: list[str], only: list[str] | None) -> list[str]:
     """按 --only 白名单过滤；未知名直接拒绝。不传则保持全量既有行为。"""
     if not only:
@@ -289,12 +421,63 @@ def main() -> None:
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--only", nargs="+", default=None, metavar="SKILL",
                     help="只处理白名单内指定技能；拒绝未知名。不传=全部（既有行为）")
+    ap.add_argument("--group", nargs="+", default=None, metavar="GROUP",
+                    help="按逻辑分组过滤白名单技能（不可与 --only 同时使用）")
+    ap.add_argument("--sync-shared", action="store_true",
+                    help="将 shared/ 公共文件单向同步到各目标技能目录")
+    ap.add_argument("--check-shared", action="store_true",
+                    help="只读校验 shared/ 公共文件与各技能副本无漂移")
+    ap.add_argument("--create-missing-targets", action="store_true",
+                    help="允许创建本地尚不存在的宿主根目录（默认跳过不建）")
+    ap.add_argument("--sync-agy-plugin", action="store_true",
+                    help="将本仓 plugins/ 注册到 ~/.gemini/config/plugins.json（保留既有配置，不改 hooks.json）")
     args = ap.parse_args()
+
+    if args.only and args.group:
+        sys.exit("--only 与 --group 不能同时指定，请二选一。")
+
+    manifest_data = read_manifest()
+
+    if args.check_shared:
+        issues = check_shared(manifest_data)
+        if issues:
+            for item in issues:
+                print(item)
+            sys.exit(1)
+        print("shared/ 公共文件一致性检查通过。")
+        return
+
+    if args.sync_shared:
+        copied, unchanged, errors = sync_shared(manifest_data)
+        print(f"shared/ 同步完成：更新 {copied} 份，已一致 {unchanged} 份。")
+        if errors:
+            for e in errors:
+                print(f"ERROR: {e}", file=sys.stderr)
+            sys.exit(1)
+        if not args.apply and not args.only and not args.group:
+            return
+
+    shared_issues = check_shared(manifest_data)
+    if shared_issues:
+        for item in shared_issues:
+            print(item, file=sys.stderr)
+        sys.exit("检测到 shared/ 副本缺失或漂移，请先运行 `python3 tools/sync_skills.py --sync-shared`。")
+
     cfg = load_config()
-    all_names = [s["name"] for s in json.loads(MANIFEST.read_text(encoding="utf-8"))["skills"]]
-    names = select_names(all_names, args.only)
+    all_names = [s["name"] for s in manifest_data["skills"]]
+    groups_map = build_groups_map(manifest_data)
+    if args.group:
+        names = expand_groups(all_names, groups_map, args.group)
+    else:
+        names = select_names(all_names, args.only)
+
     n = len(cfg["targets"])
-    scope = "全部" if not args.only else f"仅 {' '.join(names)}"
+    if args.group:
+        scope = f"分组 {' '.join(args.group)}（{len(names)} 个）"
+    elif args.only:
+        scope = f"仅 {' '.join(names)}"
+    else:
+        scope = "全部"
     print(f"模式: {'APPLY' if args.apply else 'DRY-RUN'} | 权威源=git仓 skills/ | 白名单 {len(all_names)} 个 | 本轮 {scope} | 目标 {n} 个运行目录 + zip\n")
     col = 24
     print(f"{'技能':<22}" + "".join(f"{f'目标{i+1}':<{col}}" for i in range(n)) + "zip")
@@ -309,10 +492,13 @@ def main() -> None:
         managed_peers = {
             Path(os.path.abspath(ot["dir"] / name))
             for ot in cfg["targets"]
-            if (ot["only"] is None or name in ot["only"]) and not (ot["dir"] / name).is_symlink()
+            if (ot["only"] is None or name in ot["only"]) and ot["dir"].exists() and not (ot["dir"] / name).is_symlink()
         } | {src.resolve()}
         dir_results = []
         for i, t in enumerate(cfg["targets"]):
+            if not t["dir"].exists() and not args.create_missing_targets:
+                dir_results.append("SKIP(宿主目录不存在)")
+                continue
             if t["only"] is not None and name not in t["only"]:
                 dir_results.append("SKIP(目标范围外)")
                 continue
@@ -327,6 +513,9 @@ def main() -> None:
         print(f"{name:<22}" + "".join(f"{r:<{col}}" for r in dir_results) + r_zip)
     alerts.extend(scan_target_shadows(cfg["targets"], set(all_names)))
     print()
+    if args.sync_agy_plugin:
+        p_status, p_cfg, p_dir = sync_agy_plugin(args.apply)
+        print(f"[AGY-PLUGIN] status={p_status} | config={p_cfg} | entry={p_dir}\n")
     if alerts:
         print("⚠️ ALERT（目标里有 git 源没有的内容；同步不留文件备份，需要保留请先回灌 Git 并 commit）：")
         for a in alerts:

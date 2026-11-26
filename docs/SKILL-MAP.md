@@ -14,82 +14,94 @@
 
 每次新增或改技能，对照第 4 节清单检查；技能表与关系图必须同步更新（中英文 README 一致）。单一所有权与双模分层规范见 [架构规范](./SKILL-ARCHITECTURE.md)；七个思维型技能的触发特征与好坏判别统一见 [思维技能质量判别卡](./SKILL-QUALITY-CARD.md)。"还缺什么、能不能补"不凭感觉，走 [缺口体检](./SKILL-GAP-AUDIT.md)。
 
-## 2. 技能总表（按思考/工作链分簇）
+## 2. 技能总表（按 6 大逻辑分组）
+
+> 说明：物理目录仍保持 `skills/<name>/` 平铺以兼容所有宿主与单包分发；逻辑分组维护在 `tools/skills-manifest.json`（`engineering`、`product-opc`、`thinking`、`writing`、`personal-tools`、`governance`），支持按组同步。
 
 状态：✅ 已有　⏸ 缓建　❌ 裁定不建
 
-### 簇 A · 产品形成链（发现 → 评估 → 定义 → 设计 → 文档 → 学习成品）
+### 组 1 · 研发全周期 (`engineering`：方案 → 规格 → 盲审 → 执行 → CR → 排障 → PR → 终审)
+
+| 技能 | 唯一解决的问题 | 输入 → 输出 | 独立收益（任意宿主） | 可选增强场景 |
+| --- | --- | --- | --- | --- |
+| ✅ engineering-docs | 写研发技术评审文档（RFC/ADR）与工程图 | 上下文 → 文档+图示 | 独立成文 | 下游交 `implement-spec` / `spec-battle` |
+| ✅ implement-spec | 把已拍板方案或重构编译为可执行编码 Spec | PRD/RFC/目标 → 深模块接口+1-commit 步骤 | 独立拆出可执行 Spec | 按 `repo` / `local` / `ephemeral` 自动落位 |
+| ✅ spec-battle | 开工前跨上下文独立检察对抗盲审 PRD/RFC/Spec | 文档+源码 → 四件套异议+人裁修改清单 | 独立防作者盲区 | 可路由全新只读跨模型子代理 |
+| ✅ go-work | 低上下文按 Spec 分步落地、断点续跑并归档 | 开放 Spec → 分步提交+归档配 `.ignore` | 单会话或子代理续跑 | 支持最多 3 路临时 detached worktree |
+| ✅ diff-review | 只读深度 CR：分层审查 + Skeptic 证伪去误报 | Diff/PR → Sign-off 报告或审人评论草稿 | 隔离 worktree 验测 | 含多人大仓兼容/并发/回滚检查 |
+| ✅ code-bugfix | 红灯驱动根因排障、3 假设停损与回归锁死 | 报错/症状 → 唯一根因+红转绿回归测试 | 10 级复现梯队+脱敏 | 临时 worktree 安全二分与同类清扫 |
+| ✅ pr-prep | PR 拆分建议、说明骨架、大改动离线视觉导览与前检 | 本地分支 → PR 说明+`$TMPDIR` 离线 HTML | 拦截泄漏与过大单 PR | 检查兼容混跑与回滚开关预案 |
+| ✅ vdd | 宣称完成前的实证门禁与跨轮大重构防漂移 | 完成声明 → 实测证据核验与边界裁决 | 独立防虚报与过度改 | 与 `diff-review`/`code-bugfix` 清晰分流 |
+
+### 组 2 · 产品孵化与原型 (`product-opc`：发现 → 评估 → 定义 → 设计 → 实验 → 拆解)
 
 | 技能 | 唯一解决的问题 | 输入 → 输出 | 独立收益（任意宿主） | 可选增强场景 |
 | --- | --- | --- | --- | --- |
 | ✅ opportunity-radar | 找「有哪些机会」并带来源证据 | 领域/材料 → 机会候选+证据 | 一次性机会扫描 | 作为产品工作流起点 |
 | ✅ opportunity-scorecard | 评「单个想法值不值得做」，脚本打分 | 想法+证据 → 十维评分+结论 | 可独立运行评分 | 作为产品工作流评估节点 |
-| ✅ product-brief | 把想法变成可验收的 PRD 与计划 | 需求/评分卡 → PRD+里程碑 | 独立产出 PRD | 作为产品工作流定义节点 |
-| ✅ style-compass | 把需求变成 UI 设计与原型 | 需求 → 线框/原型/规格 | 独立完成设计评审 | 作为产品工作流设计节点 |
-| ✅ engineering-docs | 写研发技术文档与技术决定 | 上下文 → 文档+图示 | 独立成文 | 与具备工程验证的环境衔接 |
-| ✅ reverse-teardown | 从一个**外部成品**学可迁移规律 | 成品+想学什么 → 规律/仅本案/清单/最小练习 | 任意环境拆解学习 | 可挂在「方案评估 / 设计参考」类流程插点 |
+| ✅ product-brief | 把想法变成 PRD、计划或存量单特性轻卡片 | 需求/评分卡 → PRD/轻卡片+`GLOSSARY.md` | 独立产出需求文档 | 进编码交 `implement-spec` |
+| ✅ style-compass | 把需求变成 UI 设计、交互原型与 `DESIGN.md` | 需求 → 线框/原型/规格 | 独立完成设计评审 | 存量迁移切片交 `implement-spec`/`go-work` |
+| ✅ minimum-experiment | 用最低成本拿到真实反馈与继续/停止信号 | 待验假设 → 可逆实验+停损阈值 | 独立把空想变试错 | 结论回流 `product-brief` / `scorecard` |
+| ✅ reverse-teardown | 从外部优秀成品提炼可迁移规律与练习 | 成品+目标 → 规律/本案/清单/练习 | 任意环境拆解学习 | 喂给链上产品/设计环节 |
 
-### 簇 B · 判断与思维（决策前把问题、选项、证据想清楚）
+### 组 3 · 决策与批判思考 (`thinking`：把问题、选项与证据想清楚)
 
 | 技能 | 唯一解决的问题 | 输入 → 输出 | 独立收益 | 可选增强场景 |
 | --- | --- | --- | --- | --- |
-| ✅ vdd | 「说完成前必须有验证」 | 完成声明 → 验证证据 | 独立防虚报 | 可被具备完成门禁的运行时承接 |
 | ✅ outside-view | 「决策缺不缺外部证据、信多少、何时停」 | 决定+证据 → 取证与冲突裁决 | 独立做有纪律的检索 | 作为其他技能的取证底座 |
-| ✅ steelman-choice 钢人抉择 | **两个方案都讲得通，到底怎么选** | 两选项+目标约束 → 最强对立+关键变量+翻盘一问 | 任意对话里防草率拍板 | 可挂在「多方案需要拍板」的任何流程 |
-| ✅ claim-check 说法核查 | **这条说法/数据可不可信** | 一条说法 → 五级可信度+推理漏洞 | 任意环境验真 | 需联网时复用 outside-view 取证纪律 |
-| ✅ root-rethink 归本重推 | **是不是在打补丁，有没有根本解法** | 卡点 → 事实/假设/目标/约束 → 新路（含跨域借解模式） | 独立重推方案 | 代码补丁场景让位宿主自带的根因判据 |
-| ✅ minimum-experiment 最小实验 | **怎么用最低成本拿到真实反馈** | 待验假设 → 可逆实验+指标+继续/停止信号 | 独立把空想变试错（产品实验/技术探针） | 与工程环境自带的可复现验证分工 |
-| ✅ argument-reading 论证精读 | **整篇文章的论证可不可信、隐藏前提是什么** | 全文 → 论证链+证据分级+谬误定位 | 任意环境做批判性阅读 | 离散事实核查交给 claim-check |
-| ⏸ socratic-clarify 问题澄清 (P2) | **我连真正想问什么都说不清** | 困惑 → 多轮一问 → 真问题 | 深度澄清入口 | 与流程自带的澄清 gate 互补不重叠 |
+| ✅ steelman-choice 钢人抉择 | 两个方案都讲得通时，先把两边立到最强再抉择 | 两选项+约束 → 最强对立+翻盘一问 | 任意对话里防草率拍板 | 可挂在多方案拍板节点 |
+| ✅ claim-check 说法核查 | 判断离散说法/数据可不可信 | 一条说法 → 五级可信度+推理漏洞 | 任意环境验真 | 需联网时复用 outside-view |
+| ✅ argument-reading 论证精读 | 重建整篇文章论证链、隐藏前提与失效条件 | 全文 → 论证链+证据分级+谬误定位 | 任意环境做批判阅读 | 离散事实核查交 claim-check |
+| ✅ root-rethink 归本重推 | 跳出补丁循环，回到事实与约束重推（含跨域借解） | 卡点 → 事实/假设/约束 → 新路 | 独立重推方案 | 代码缺陷排查让位 `code-bugfix` |
+| ⏸ socratic-clarify 问题澄清 (P2) | 我连真正想问什么都说不清 | 困惑 → 多轮一问 → 真问题 | 深度澄清入口 | 与流程自带澄清 gate 互补 |
 
-> 规划技能的理论出处与白话解释：
-> - **steelman-choice（钢人抉择）**：出自论证伦理里的 **Principle of Charity（善意原则）**与 **Steelman Argument（钢人论证）**——批评对方前，先把对方观点重建到它最强的样子（对应「稻草人」的反面）。白话：A/B 都有理时，不允许各夸一句就选，必须先把两边各自最难反驳的理由摆出来，逼出真正的分歧和那个「拿到答案就能翻盘」的事实，再让你拍板。
-> - **root-rethink（归本重推）**：出自亚里士多德的 **First Principles（第一性原理，现代常以马斯克的用法知名）**——把结论拆回不能再拆的基本事实，与习惯继承但未验证的假设分开，再从事实重新推导；跨域借解是它失效后的第二招。白话：停止在旧方案上打补丁，问「如果从零开始，只按已知事实和约束，该怎么做」。
-> - **claim-check（说法核查）**：脱胎于事实核查（Fact-checking）与笛卡尔式系统怀疑。白话：先分清一句话里哪些是事实、哪些是推论、哪些是立场，只去验事实，再查推论跳没跳步。
-> - **argument-reading（论证精读）**：已从批判性阅读方法炼化（去平台绑定与默认特定文档交付），是 claim-check 的「整篇文章」版本。
-
-### 簇 C · 中文写作与表达（输入型与输出型边界清晰）
+### 组 4 · 中文写作、调研与信息图 (`writing`)
 
 | 技能 | 唯一解决的问题 | 独立收益 |
 | --- | --- | --- |
 | ✅ feynman-explainer | 负责对内对外技术调研、机制解读与讲透成稿（逻辑链非清单） | 任意环境完成调研取证并输出报告 |
 | ✅ haohao-shuohua | 清洗 AI 中文文本（保事实去 AI 味） | 任意成稿 lint |
-| ✅ writing-craft | 表达层三合一写作入口：按分支单读产出分享/复盘/talk/slides（`sharing`）、口语直球观点硬文与 ≤120 字手记（`opinion`）或汤山专栏长评（`tangshan`），落实「一稿一主帅」防打架 | 任意环境写表达型文章与演讲分镜 |
-| ✅ sansi-erhouxing | 中大型文档结构级改稿前先读全文骨架（前置动作，局部微改直通） | 防止补丁式改稿且不卡轻任务 |
+| ✅ writing-craft | 表达层三合一写作入口：按分支单读产出分享/复盘/talk/slides（`sharing`）、口语直球观点与 ≤120 字手记（`opinion`）或汤山长评（`tangshan`） | 任意环境写表达型文章与演讲分镜 |
+| ✅ sansi-erhouxing | 中大型文档结构级改稿前先读全文骨架（局部微改直通） | 防止补丁式改稿且不卡轻任务 |
 | ✅ haohao-eval | 用盲评/召回评测中文改稿质量 | 独立评测台，支撑 haohao 迭代 |
+| ✅ content-infographic | 把文章关键道理做成「图自己讲清一件事」的信息图与封面 | 零依赖渲染器出高清 SVG/PNG |
 
-### 簇 D · 数据与工程执行
+### 组 5 · 个人情报、档案与媒体工具 (`personal-tools`)
 
 | 技能 | 唯一解决的问题 | 独立收益 |
 | --- | --- | --- |
+| ✅ ai-briefing | 5 分钟读完的 AI/前沿科技日报（事实+判断+机会分卡片） | 任意环境生成情报简报，渠道走 config 适配 |
+| ✅ me-context | 「我是谁/要什么/红线」的可移植档案，读写带敏感门禁 | 数据与技能分离，跨宿主携带 |
 | ✅ png-compress | 批量压缩工程 PNG（缓存/门禁/回退） | 任意本地工程直接用 |
 | ✅ video-reader | 把视频转关键帧+时间线给只读图模型 | 任意环境看懂视频 |
 
-### 簇 E · 个人上下文
+### 组 6 · 库级治理 (`governance`)
 
 | 技能 | 唯一解决的问题 | 独立收益 |
 | --- | --- | --- |
-| ✅ me-context | 「我是谁/要什么/红线」的可移植档案，读写带敏感门禁 | 数据与技能分离，跨宿主携带 |
+| ✅ skill-library-keeper | 在技能库视角决定要不要建新技能、查撞车/孤儿/硬绑定、评估外部技能 | 自动发现技能库位置，零平台绑定直接体检与把关 |
 
-### 簇 F · 信息与内容生产
-
-| 技能 | 唯一解决的问题 | 独立收益 |
-| --- | --- | --- |
-| ✅ ai-briefing | 5 分钟读完的 AI/前沿科技日报（事实+判断+机会分卡片） | 任意环境生成情报简报，渠道与交付走 config 适配，技能本体无内部端点 |
-| ✅ content-infographic | 把文章关键道理做成「图自己讲清一件事」的信息图，不做装饰配图 | 零依赖渲染器出高清 SVG/PNG，图文必须对账 |
-
-### 簇 G · 库级治理（准入、体检与外部技能收录）
-
-| 技能 | 唯一解决的问题 | 独立收益 |
-| --- | --- | --- |
-| ✅ skill-library-keeper | 在技能库视角决定要不要建新技能、查撞车/孤儿/硬绑定、评估外部技能直接用/炼化/重造 | 自动发现技能库位置，零平台绑定直接体检与把关 |
+> 规划技能理论出处：`steelman-choice` 出自善意原则与钢人论证；`root-rethink` 出自第一性原理与跨域借解；`claim-check` 脱胎于事实核查与系统怀疑；`argument-reading` 为整篇版批判阅读；`implement-spec` 吸收深模块与表征测试纪律；`spec-battle` 吸收盲审对质与四分法裁决。
 
 ## 3. 配合关系（谁在什么时候调谁）
 
 ```text
-产品主链（顺序，可从任意环进入）：
-  radar → scorecard → product-brief → style-compass → engineering-docs → 实现
+立项前 OPC 孵化（无代码仓）：
+  radar → scorecard → product-brief (PRD) → style-compass → engineering-docs
     ↑ 学习外部成品用 reverse-teardown，产出可喂给链上任一环
+
+进代码仓后全周期研发闭环（个人仓 `docs/` | 多人大仓 `.agent-work/` 零污染）：
+  1→N 增量需求：product-brief（单特性轻路径）或 engineering-docs（高风险 RFC）
+    ↓
+  implement-spec（深模块接口 + Source hash 锚点 + 1-commit 步骤）
+    ↓（高风险/关键方案可选盲审）
+  spec-battle（独立全新子代理四镜起诉 → 辩方四分 → 1 轮追问 → 人裁）
+    ↓
+  go-work（轻量协调器 + 独立子代理 + worktree 并行 + Git/本地断点续跑 + 完工归档）
+    ↓
+  diff-review（只读分层 CR + Skeptic 证伪 + 审人评论） / code-bugfix（秒级红灯 + 3 假设停损）
+    ↓
+  pr-prep（卫生拦截 + 拆分建议 + PR 说明 + 离线视觉导览 HTML + 回滚前检）→ vdd（完成终审门禁）
 
 决策横链（任意一环卡住时进入，用完回到主链）：
   socratic-clarify（问题不清）→ root-rethink（路径失效/在打补丁）
@@ -102,11 +114,6 @@
   文章表达统一从 writing-craft 进入，按分支单读唯一主帅（sharing 分享复盘与 talk/slides / opinion 口语直球观点与手记 / tangshan 专栏长评）；
   任何要对外成文 → haohao-shuohua（lint 底座）；结构级改稿前先 sansi-erhouxing（≤3 句局部微改直通）；
   要讲透与做技术调研用 feynman-explainer（直接产研究报告，也被 writing-craft 与 engineering-docs 单向前置调研调用）。
-
-执行与验证：
-  代码改动终审、工程诊断复核与多轮防漂移 → vdd；具备工具化验收/完成门禁的宿主可自动承接。
-  工程内的可编译复现假设走宿主自带的测试/验证流程；
-  minimum-experiment 只做产品/方案/现实世界级假设，不重复工程测试。
 ```
 
 关键不重叠约定：
@@ -116,7 +123,9 @@
 - **claim-check vs outside-view**：一条说法验真 vs 为决策补证据；触发词与产物不同。
 - **claim-check vs argument-reading**：离散说法验真 vs 整篇文章论证重建；前者几分钟验一条，后者输出完整阅读地图。
 - **reverse-teardown vs style-compass**：学外部成品 vs 评审/设计自己的页面。
-- **root-rethink vs 宿主根因判据**：通用方案/流程重推归技能；代码补丁根因归工程环境自带流程。
+- **root-rethink vs code-bugfix**：通用方案/设计跳出补丁循环用 `root-rethink`；报错、崩溃与性能回归用 `code-bugfix` 先建红灯回路。
+- **engineering-docs vs implement-spec**：前者产面向评审人拍板的 RFC/ADR 与工程图；后者产面向编码 Agent 执行的模块签名、接缝替身与 1-commit 步骤。
+- **spec-battle vs diff-review vs vdd vs pr-prep**：`spec-battle` 开工前盲审需求或 Spec 文档；`diff-review` 只读逐行审查代码改动并证伪去误报；`vdd` 守宣称完成前的实证门禁与跨轮防漂移；`pr-prep` 做 PR 说明、拆分与离线视觉导览备料。
 - **feynman vs writing-craft vs engineering-docs**：三层拆开、单向握手——`feynman-explainer` 管源码/论文调研与客观机制报告（也为上游提供核实原料）；`engineering-docs` 管要评审拍板的研发方案与严谨工程图；`writing-craft` 管写给人看的表达型文章，并靠「一稿一主帅」隔离内部分支。
 - **writing-craft 内部分支边界**：不按字数或时间线硬切——经验分享/复盘/实录/安利/talk/slides 选 `sharing`；无花架子、自然口语化的同行直白判断与 `≤120` 字手记选 `opinion`；需要汤山专栏风味剖析激励博弈与历史周期选 `tangshan`。
 
@@ -136,6 +145,7 @@
 - **唯一权威源**：本仓库 `skills/`。
 - **白名单**：`tools/skills-manifest.json`，只含用户自有、可迁移、可公开的技能；排除公司内部技能、第三方安装技能、强个人化项目技能。
 - **同步命令**：本机路径写在 git 忽略的 `tools/sync.local.json`；`python3 tools/sync_skills.py` 预览，`--apply` 写入。可移植说明见 [SKILL-SYNC](./SKILL-SYNC.md)。
+- **可迁移 `agy` 插件护栏**：仓库 `plugins/engineering-flow/` 提供 Antigravity 生命周期钩子（`PreInvocation` 自动挂接、`PreToolUse` 三条红线、`Stop` 有界收口）与大白话分档规则，与宿主演进零耦合；通过 `python3 tools/sync_skills.py --apply --sync-agy-plugin` 幂等注册到 `~/.gemini/config/plugins.json`，不修改用户 `hooks.json`。
 - 同步目标：本机配置的各技能运行目录与发布 zip 目录。目标有源外独有改动时标 ALERT；脚本不做自动备份（唯一备份是 Git），请先回灌 Git 或手动备份后再用 `--apply` 覆盖。
 - 规则：在权威源改技能后默认跑一次同步，不需要再次提醒。
 

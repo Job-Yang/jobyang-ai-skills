@@ -76,7 +76,7 @@ R_CROSS_CLASH    = ("mid",  "X002", "疑似跨技能规则打架",  "按「唯�
 R_SELF_CLASH     = ("mid",  "X003", "疑似技能内部规则自相矛盾", "检查技能正文与 references/ 对同一事项是否给出冲突规范，保留唯一生效条款", "library/dual-model")
 R_OMNI_TRIGGER   = ("mid",  "X004", "全域触发撞车风险",    "收窄近全域触发措辞并补齐「不适用/与相邻技能分流/豁免」规则（常驻规范应归宿主层）", "library/dual-model")
 
-ALLOWED_FM_KEYS = {"name", "description", "license", "allowed-tools", "compatibility", "metadata"}
+ALLOWED_FM_KEYS = {"name", "description", "license", "allowed-tools", "compatibility", "metadata", "disable-model-invocation"}
 DEFAULT_EXTERNAL_SKILLS = {
     "skill-creator", "lark-doc", "lark-drive",
     "word", "pdf", "sheet", "html", "browser-task", "ppt",

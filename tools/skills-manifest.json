@@ -1,78 +1,229 @@
 {
-  "_comment": "个人技能四处双写白名单，与 SKILLS_SYNC_RULE.md 的在册清单保持一致。编辑地＝豆包 .user_skills；版本地＝git 仓 skills/（回灌并 commit）；分发地＝~/.trae/skills 与 ~/Downloads/个人技能/<name>.zip。仅放用户自有、可迁移、可公开的技能；公司内部、第三方、强个人化技能不入此单。",
-  "_version": "2",
+  "_comment": "个人技能白名单与逻辑分组。权威源＝git 仓 skills/，公共源文件＝shared/；仅放用户自有、可迁移、可公开的技能。",
+  "_version": "3",
+  "groups": [
+    {
+      "name": "engineering",
+      "title": "研发全周期",
+      "description": "技术方案、实现规格、盲审对抗、分步编码、代码审查、红灯排障、PR 准备与完成门禁。",
+      "skills": [
+        "engineering-docs",
+        "implement-spec",
+        "spec-battle",
+        "go-work",
+        "diff-review",
+        "code-bugfix",
+        "pr-prep",
+        "vdd"
+      ]
+    },
+    {
+      "name": "product-opc",
+      "title": "产品孵化与原型",
+      "description": "机会发现、潜力评估、需求定义、界面原型、最小实验与成品拆解。",
+      "skills": [
+        "opportunity-radar",
+        "opportunity-scorecard",
+        "product-brief",
+        "style-compass",
+        "minimum-experiment",
+        "reverse-teardown"
+      ]
+    },
+    {
+      "name": "thinking",
+      "title": "决策与批判思考",
+      "description": "方案对抗抉择、说法核查、论证精读、第一性原理重推与外部取证。",
+      "skills": [
+        "steelman-choice",
+        "claim-check",
+        "argument-reading",
+        "root-rethink",
+        "outside-view"
+      ]
+    },
+    {
+      "name": "writing",
+      "title": "写作、调研与信息图",
+      "description": "中文文章表达、去 AI 味清洗、评测召回、机制调研讲透、文档骨架重审与信息图。",
+      "skills": [
+        "writing-craft",
+        "haohao-shuohua",
+        "haohao-eval",
+        "feynman-explainer",
+        "sansi-erhouxing",
+        "content-infographic"
+      ]
+    },
+    {
+      "name": "personal-tools",
+      "title": "个人情报、档案与媒体工具",
+      "description": "AI 每日简报、可移植个人档案、PNG 批量压缩与视频关键帧读取。",
+      "skills": [
+        "ai-briefing",
+        "me-context",
+        "png-compress",
+        "video-reader"
+      ]
+    },
+    {
+      "name": "governance",
+      "title": "技能库治理",
+      "description": "技能准入把关、静态体检、双模减负与外部技能炼化评估。",
+      "skills": [
+        "skill-library-keeper"
+      ]
+    }
+  ],
+  "shared": [
+    {
+      "path": "references/engineering-workspace.md",
+      "skills": [
+        "implement-spec",
+        "spec-battle",
+        "go-work",
+        "diff-review",
+        "code-bugfix",
+        "pr-prep"
+      ]
+    },
+    {
+      "path": "references/big-repo-safety.md",
+      "skills": [
+        "implement-spec",
+        "diff-review",
+        "pr-prep"
+      ]
+    },
+    {
+      "path": "scripts/workspace_guard.py",
+      "skills": [
+        "implement-spec",
+        "spec-battle",
+        "go-work"
+      ]
+    }
+  ],
   "skills": [
     {
-      "name": "ai-briefing"
+      "name": "ai-briefing",
+      "group": "personal-tools"
     },
     {
-      "name": "content-infographic"
+      "name": "content-infographic",
+      "group": "writing"
     },
     {
-      "name": "engineering-docs"
+      "name": "engineering-docs",
+      "group": "engineering"
     },
     {
-      "name": "feynman-explainer"
+      "name": "feynman-explainer",
+      "group": "writing"
     },
     {
-      "name": "haohao-eval"
+      "name": "haohao-eval",
+      "group": "writing"
     },
     {
-      "name": "haohao-shuohua"
+      "name": "haohao-shuohua",
+      "group": "writing"
     },
     {
-      "name": "me-context"
+      "name": "me-context",
+      "group": "personal-tools"
     },
     {
-      "name": "opportunity-radar"
+      "name": "opportunity-radar",
+      "group": "product-opc"
     },
     {
-      "name": "opportunity-scorecard"
+      "name": "opportunity-scorecard",
+      "group": "product-opc"
     },
     {
-      "name": "outside-view"
+      "name": "outside-view",
+      "group": "thinking"
     },
     {
-      "name": "png-compress"
+      "name": "png-compress",
+      "group": "personal-tools"
     },
     {
-      "name": "product-brief"
+      "name": "product-brief",
+      "group": "product-opc"
     },
     {
-      "name": "reverse-teardown"
+      "name": "reverse-teardown",
+      "group": "product-opc"
     },
     {
-      "name": "sansi-erhouxing"
+      "name": "sansi-erhouxing",
+      "group": "writing"
     },
     {
-      "name": "style-compass"
+      "name": "style-compass",
+      "group": "product-opc"
     },
     {
-      "name": "vdd"
+      "name": "vdd",
+      "group": "engineering"
     },
     {
-      "name": "writing-craft"
+      "name": "writing-craft",
+      "group": "writing"
     },
     {
-      "name": "video-reader"
+      "name": "video-reader",
+      "group": "personal-tools"
     },
     {
-      "name": "steelman-choice"
+      "name": "steelman-choice",
+      "group": "thinking"
     },
     {
-      "name": "claim-check"
+      "name": "claim-check",
+      "group": "thinking"
     },
     {
-      "name": "argument-reading"
+      "name": "argument-reading",
+      "group": "thinking"
     },
     {
-      "name": "root-rethink"
+      "name": "root-rethink",
+      "group": "thinking"
     },
     {
-      "name": "minimum-experiment"
+      "name": "minimum-experiment",
+      "group": "product-opc"
     },
     {
-      "name": "skill-library-keeper"
+      "name": "skill-library-keeper",
+      "group": "governance"
+    },
+    {
+      "name": "implement-spec",
+      "group": "engineering"
+    },
+    {
+      "name": "spec-battle",
+      "group": "engineering"
+    },
+    {
+      "name": "go-work",
+      "group": "engineering"
+    },
+    {
+      "name": "diff-review",
+      "group": "engineering"
+    },
+    {
+      "name": "code-bugfix",
+      "group": "engineering"
+    },
+    {
+      "name": "pr-prep",
+      "group": "engineering"
     }
   ]
 }

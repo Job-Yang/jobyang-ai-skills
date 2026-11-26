@@ -12,7 +12,8 @@
 | **比喻与反常识句型** | 机理清晰优先；各文体按读者决定合法类比尺度（`feynman-explainer` 合法机理类比、`writing-craft` 内 `sharing` 机理先于类比 / `opinion` 零门槛比喻 / `tangshan` 克制降维借例） | 上游不套 B2 翻案壳模板；`haohao-shuohua` 只清理坏动词、混搭/空心比喻与真翻案壳，绝不误杀上游合法类比，也不覆盖上游专有机制 |
 | **段落版式与排版** | `haohao-shuohua/references/reader-layout.md` 分档底线（`120 / 150 / 200` 字及连排上限） | 统一遵循其版式分级；标准档可拆分超长段落墙，但不得重构上游章节骨架 |
 | **外部取证与不确定状态** | `outside-view`（检索预算与降级纪律）与 `claim-check` / `argument-reading` 统一五级可信度 + 二过程态 | 未执行检索只能标「待外部核查」或「未执行外部核查」，严禁离线给出「已证实」或「证据不足」 |
-| **改稿前置与终审验收** | `sansi-erhouxing` 仅管中大型文档结构变更前检查；`vdd` 专做代码或方案终审与多轮防漂移 | 局部微改（≤ 3 句或纯去 AI 味）不拦截、不出表、不叠双报告；外部事实验证不归 `vdd` |
+| **改稿前置与终审验收** | `sansi-erhouxing` 仅管中大型文档结构变更前检查；`vdd` 专做宣称完成前的实证门禁与跨轮防漂移 | 局部微改（≤ 3 句或纯去 AI 味）不拦截、不出表、不叠双报告；只读 PR/Diff 审查找 `diff-review`，红灯排障找 `code-bugfix` |
+| **编码规格、盲审、执行与 PR 备料** | `implement-spec`（编码规格与兼容拆分）、`spec-battle`（盲审对抗，绝不越权改 Spec）、`go-work`（只读 Spec 分步执行与归档）、`diff-review`（只读 CR 与 Skeptic 证伪）、`code-bugfix`（先红灯后修 Bug）、`pr-prep`（拆包说明、离线视觉导览 HTML 与回滚前检） | 共享 `shared/references/engineering-workspace.md` 单源契约：个人仓落 `docs/` + `Spec-Step` trailer，多人大仓默认 `.agent-work/` + `.git/info/exclude` 零污染；绝不擅自 `push` 或更改共享 `.gitignore` |
 
 **图页与视觉交付归属：**
 
