@@ -9,7 +9,7 @@ description: "新功能开发、跨文件改造或代码重构动工前的设计
 
 ## 1. 先定工作区与范围门槛
 
-1. **自动判定落位**：运行 `python3 scripts/workspace_guard.py detect`（多仓细则与个人仓 `docs/` 规范按需查阅 [工程工作区契约](references/engineering-workspace.md)）：
+1. **自动判定落位**：运行 `python3 scripts/workspace_guard.py detect`（不在目标仓根目录时加 `--root <仓库路径>`；多仓细则与个人仓 `docs/` 规范按需查阅 [工程工作区契约](references/engineering-workspace.md)）：
    - 已有 `docs/spec` 或 `docs/feature` 的个人仓用 `repo`（`docs/spec/<slug>.md`）；
    - 多人协作大仓默认用 `local`（执行 `python3 scripts/workspace_guard.py init-local` 初始化 `.agent-work/` 并仅写入 `.git/info/exclude`，零污染共享仓）；
    - 单文件几十行极小改动或非 Git 目录走 `ephemeral`，对话内给接口与步骤即可，不强行建重文档。

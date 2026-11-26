@@ -13,7 +13,7 @@ description: "写代码前对方案、需求或实现计划做干净上下文盲
 
 1. **选定对象与工作区**：按 [工程工作区契约](references/engineering-workspace.md) 定位开放文档（归档 Spec 只做记录不再对抗）。
 2. **版本钉死与漂移熔断**：
-   - 运行 `python3 scripts/workspace_guard.py hash <doc>` 记录本次对抗基线短摘要；
+   - 运行 `python3 scripts/workspace_guard.py hash <doc>` 记录本次对抗基线短摘要（不在目标仓根目录时加 `--root <仓库路径>`）；
    - 若审阅对象是实现 Spec，先运行 `python3 scripts/workspace_guard.py verify-hash --spec <spec.md>`；**上游需求已漂移直接报 1 条 `blocker` 停下，提示先回 `implement-spec` 同步**；
    - 运行 `python3 scripts/workspace_guard.py progress --spec <spec.md>`：已落盘步骤属既有代码（若要审改交给 `diff-review`），本轮只审尚未落地步骤及其接口契约。
 

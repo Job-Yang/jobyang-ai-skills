@@ -12,7 +12,7 @@
 | `local` | **多人公司大仓默认**（常规 Git 仓且无 `docs/spec`） | `.agent-work/feature/<slug>.md`、`.agent-work/spec/<slug>.md`、`.agent-work/GLOSSARY.md` | 把 `.agent-work/` 仅追加进本机私有 `.git/info/exclude`（用 `git rev-parse --git-path info/exclude` 兼容 worktree）；进度记于 `.agent-work/state/<slug>.json` 或按步提交；完工归档至 `.agent-work/spec/archived/<YYYY-MM-DD>-<slug>.md` 配 `.ignore` | **零污染**：不改共享 `.gitignore`，不混入 PR diff |
 | `ephemeral` | 非 Git 目录、一次性提问或极小单文件修改 | 对话内直接交付，不建持久化工作目录 | 对话内完成即止 | 无磁盘残留 |
 
-可用内置的 `workspace_guard.py detect` 自动识别模式，用 `init-local` 初始化零污染隐藏工作区（携带该脚本的技能位于其 `scripts/` 目录）。
+可用内置的 `workspace_guard.py detect` 自动识别模式，用 `init-local` 初始化零污染隐藏工作区（携带该脚本的技能位于其 `scripts/` 目录；跨目录执行时显式传 `--root <仓库路径>`）。
 
 ## 二、当前态原则与防污染纪律
 
@@ -35,8 +35,11 @@ python3 scripts/workspace_guard.py verify-hash --spec <spec.md>
 
 - **提交规范自适应**：个人仓推荐 1 步 1 提交并在提交说明末段附加 `Spec-Step: <slug>#<n>` trailer；团队大仓若有严格 Commit 模板或要求 Squash 合并，改用 `workspace_guard.py record-step` 将已完成步号与 SHA 写入 `.agent-work/state/<slug>.json`，遵循团队提交规范而不强行篡改 Commit Message。
 - **统一进度计算**：`workspace_guard.py progress --spec <spec.md>` 会同时合并 Git trailer 与 `state/<slug>.json`，依据 `After:` 依赖图算出当前可并行/可执行的 `ready` 步骤；任意时刻上下文中断，新会话都能无损接续。
+- **自定义验证命令白名单**：仓库使用非主流构建或测试命令时，可在 `.agent-work/verify-patterns.txt` 每行写一条命令前缀或正则，供收口门禁识别。
 
 ## 五、项目阶段、术语表与上游桥接
+
+- **特性卡片状态**（个人仓 `docs/feature/<slug>.md`）：需求拍板后标 `Status: decided`，全部步骤落地并通过验证后在收口阶段更新为 `Status: shipped`。
 
 - **Project status 三档约束**（可写于 `AGENTS.md` 或 `.agent-work/PROJECT.md`）：
   - `startup`：允许破兼容以换取长期更好设计，持久化数据可重置。

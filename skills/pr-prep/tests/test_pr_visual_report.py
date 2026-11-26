@@ -71,6 +71,53 @@ class PrVisualReportTests(unittest.TestCase):
             # 代码仓工作树保持零污染
             self.assertEqual("", self._git(root, "status", "--short"))
 
+    def test_secret_before_debug_redaction_rename_and_local_main_fallback(self):
+        with tempfile.TemporaryDirectory(prefix="pr-sec-") as td, \
+             tempfile.TemporaryDirectory(prefix="pr-sec-out-") as out_td:
+            root = Path(td)
+            self._git(root, "init", "-b", "main")
+            self._git(root, "config", "user.email", "local-test")
+            self._git(root, "config", "user.name", "T")
+            (root / "src").mkdir()
+            (root / "src" / "a.py").write_text("x = 1\n", encoding="utf-8")
+            self._git(root, "add", "src/a.py")
+            self._git(root, "commit", "-m", "init main")
+
+            secret_val = "sk_live_TESTONLY9876543210"
+            jwt_val = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3OCJ9.abcDEF123456_7890"
+            (root / "src" / "leak.js").write_text(
+                f"console.log(\"api_key='{secret_val}'\");\n"
+                f"const tok = '{jwt_val}';\n"
+                "console.log('my_debug_value_12345');\n",
+                encoding="utf-8",
+            )
+            (root / "auth").mkdir()
+            self._git(root, "mv", "src/a.py", "auth/a.py")
+            self._git(root, "add", "src/leak.js", "auth/a.py")
+            self._git(root, "commit", "-m", "add commit on local main")
+
+            # 无 origin/main 时，在 main 分支回退至 HEAD~1 而不输出 0 diff
+            data = pvr.collect_pr_data(root)
+            self.assertEqual("HEAD~1", data["base"])
+            self.assertIn("auth", data["risk_tags"])
+
+            html_path, md_path = pvr.write_reports(data, Path(out_td))
+            md_txt = md_path.read_text(encoding="utf-8")
+            html_txt = html_path.read_text(encoding="utf-8")
+            self.assertIn("<已脱敏>", md_txt)
+            self.assertIn("&lt;已脱敏&gt;", html_txt)
+            for text in (md_txt, html_txt):
+                self.assertIn("已脱敏", text)
+                self.assertNotIn(secret_val, text)
+                self.assertNotIn(jwt_val, text)
+                self.assertNotIn("my_debug_value_12345", text)
+
+            # 拒绝非法 --base 选项注入
+            victim = root / "evil.txt"
+            with self.assertRaises(RuntimeError):
+                pvr.collect_pr_data(root, f"--output={victim}")
+            self.assertFalse(victim.exists())
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

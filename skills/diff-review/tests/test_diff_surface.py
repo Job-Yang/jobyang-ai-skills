@@ -71,6 +71,52 @@ class DiffSurfaceTests(unittest.TestCase):
             self.assertEqual(1, res["file_count"])
             self.assertEqual(0, res["untracked_count"])
 
+    def test_range_option_injection_rejected(self):
+        with tempfile.TemporaryDirectory(prefix="diff-inj-") as td:
+            root = Path(td)
+            self._init_repo(root)
+            victim = root / "pwned.txt"
+            with self.assertRaises(RuntimeError):
+                ds.analyze_surface(root, f"--output={victim}")
+            self.assertFalse(victim.exists())
+            with self.assertRaises(RuntimeError):
+                ds.analyze_surface(root, f"--ext-diff..HEAD")
+
+    def test_rename_detection_tests_exclusion_and_extended_delete_suffixes(self):
+        with tempfile.TemporaryDirectory(prefix="diff-ren-") as td:
+            root = Path(td)
+            self._init_repo(root)
+            (root / "schema.sql").write_text("CREATE TABLE t(id INT);\n", encoding="utf-8")
+            (root / "src").mkdir()
+            (root / "src" / "helper.py").write_text("def x():\n    return 1\n", encoding="utf-8")
+            (root / "tests").mkdir()
+            (root / "tests" / "auth").mkdir()
+            (root / "tests" / "auth" / "test_login.py").write_text("def test_a():\n    pass\n", encoding="utf-8")
+            self._git(root, "add", "schema.sql", "src/helper.py", "tests/auth/test_login.py")
+            self._git(root, "commit", "-m", "add files")
+
+            base_branch = self._git(root, "rev-parse", "--abbrev-ref", "HEAD")
+            self._git(root, "checkout", "-b", "feat/refactor")
+            # 1) 测试目录高危关键词不触发生产风险
+            (root / "tests" / "auth" / "test_login.py").write_text("def test_a():\n    assert True\n", encoding="utf-8")
+            res_test_only = ds.analyze_surface(root)
+            self.assertEqual({}, res_test_only["risk_tags"])
+            self.assertFalse(res_test_only["human_review_needed"])
+
+            # 2) 重命名迁入 auth/ 与删除 .sql 均需准确识别
+            (root / "auth").mkdir()
+            self._git(root, "mv", "src/helper.py", "auth/helper.py")
+            self._git(root, "rm", "schema.sql")
+            self._git(root, "add", "tests/auth/test_login.py")
+            self._git(root, "commit", "-m", "move to auth and drop sql")
+
+            res = ds.analyze_surface(root, f"{base_branch}...HEAD")
+            self.assertEqual("Deep", res["depth"])
+            self.assertIn("auth", res["risk_tags"])
+            self.assertIn("auth/helper.py", res["risk_tags"]["auth"])
+            self.assertIn("delete", res["risk_tags"])
+            self.assertIn("schema.sql", res["risk_tags"]["delete"])
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

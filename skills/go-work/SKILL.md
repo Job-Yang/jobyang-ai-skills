@@ -11,7 +11,7 @@ description: "按已确认方案分步写代码并落地：轻量协调、独立
 
 1. **定位 Spec 与工作区**：按 [工程工作区契约](references/engineering-workspace.md) 锁定唯一开放 Spec（个人仓 `docs/spec/<slug>.md`；大仓 `.agent-work/spec/<slug>.md`）；若无开放 Spec，停下来指引先用 `implement-spec`。
 2. **上游漂移与进度核验**：
-   - 运行 `python3 scripts/workspace_guard.py verify-hash --spec <spec.md>`，返回 `2` 说明上游需求已改动，立即停止并指回 `implement-spec` 重算；
+   - 运行 `python3 scripts/workspace_guard.py verify-hash --spec <spec.md>`（不在目标仓根目录时加 `--root <仓库路径>`），返回 `2` 说明上游需求已改动，立即停止并指回 `implement-spec` 重算；
    - 运行 `python3 scripts/workspace_guard.py progress --spec <spec.md>` 算出 `landed` 与 `ready` 步骤；若发现其他分支存在同 slug 未合入提交，先汇报给用户裁决，不覆盖并行工作。
 3. **只读 Spec 铁律**：整轮执行**读完一次 Spec 后不再修改它**；遇到某一步因接口/依赖不符无法按 Spec 落地时，立刻停止并阻塞汇报，绝不私自改 Spec 硬凑。
 

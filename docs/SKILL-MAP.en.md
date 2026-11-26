@@ -1,7 +1,7 @@
 # Skill Library — Positioning & Collaboration Map
 
 > Three questions this map answers: **what problem each skill solves alone, what you get by installing it into any AI environment, and how skills work together.**
-> Interactive companion: `skill-map.html` (Chinese-labeled; English version can be added on request).
+> Interactive companion: [skill-map.html](./skill-map.html).
 
 ## 0. First principle: skills are not bound to any runtime
 
@@ -12,107 +12,120 @@
 
 ## 1. How to use this map
 
-Run the Section 4 checklist every time a skill is added or changed; keep the table, this map, and both READMEs in sync. See [SKILL-ARCHITECTURE.md](./SKILL-ARCHITECTURE.md) for the single-ownership matrix, L1–L4 layering, and dual-model acceptance gates.
+Run the Section 4 checklist every time a skill is added or changed; keep the table, this map, and both READMEs in sync. See [SKILL-ARCHITECTURE.md](./SKILL-ARCHITECTURE.md) for the single-ownership matrix, L1–L4 layering, and dual-model acceptance gates, and [SKILL-GAP-AUDIT.md](./SKILL-GAP-AUDIT.md) for structural gap audits.
 
-## 2. Skill registry (by thinking/work chain)
+## 2. Skill registry (6 logical groups · 30 skills)
+
+> Note: Physical directories remain flat under `skills/<name>/` for host compatibility; logical groups live in `tools/skills-manifest.json` (`engineering`, `product-opc`, `thinking`, `writing`, `personal-tools`, `governance`) and support `--group` sync.
 
 Status: ✅ available　⏸ deferred　❌ rejected
 
-### Cluster A · Product formation (discover → evaluate → define → design → document → learn)
+### Group 1 · Full Engineering Lifecycle (`engineering`: design → spec → battle → execute → CR → bugfix → PR → final gate)
+
+| Skill | Unique problem | Input → Output | Standalone value (any host) | Optional enhancement |
+| --- | --- | --- | --- | --- |
+| ✅ engineering-docs | Engineering RFC/ADR docs and diagrams | context → doc+diagrams | Writes reviewable tech specs alone | Hands off to `implement-spec` / `spec-battle` |
+| ✅ implement-spec | Compile approved proposal/refactor into coding Spec | PRD/RFC/goal → deep modules+1-commit steps | Actionable coding plan anywhere | Auto-routes `repo` / `local` / `ephemeral` |
+| ✅ spec-battle | Clean-context adversarial Spec/PRD blind review | doc+code → 4-part objections+hand-off list | Prevents author blind spots | Runs isolated read-only cross-model subagent |
+| ✅ go-work | Low-context step-by-step execution, resume & archive | open Spec → commits+archive with `.ignore` | Resumes cleanly across sessions | Up to 3 temporary detached worktrees |
+| ✅ diff-review | Read-only deep Code Review + Skeptic false-positive filter | diff/PR → sign-off or paste-ready comments | Worktree test check & severity filter | Multi-team monorepo rollout/concurrency audit |
+| ✅ code-bugfix | Red-loop root-cause debugging & Sibling Sweep | bug/error → red repro+3 ranked hypotheses+tests | 10-rung repro ladder + secret redaction | Safe git bisect worktree + Sibling Sweep |
+| ✅ pr-prep | PR hygiene check, split advice, description & offline HTML tour | branch → PR summary+`$TMPDIR` HTML report | Catches leaked state & oversized PRs | Rollout toggle & rollback readiness check |
+| ✅ vdd | Evidence-based completion gate & multi-turn drift control | done claim → verified proof & clear sign-off | Independent anti-fabrication gate | Clean split from `diff-review` / `code-bugfix`; supports adversarial panel |
+
+### Group 2 · Product Incubation & Prototyping (`product-opc`)
 
 | Skill | Unique problem | Input → Output | Standalone value (any host) | Optional enhancement |
 | --- | --- | --- | --- | --- |
 | ✅ opportunity-radar | Find opportunities with sourced evidence | domain/material → candidates+evidence | One-off opportunity scan | Start of a product workflow |
 | ✅ opportunity-scorecard | Score one idea, script-generated | idea+evidence → 10-dim score | Runs independently | Evaluation node of a product workflow |
-| ✅ product-brief | Turn idea into verifiable PRD/plan | need/scorecard → PRD+milestones | Writes PRDs alone | Definition node of a product workflow |
-| ✅ style-compass | UI design, motion packs and prototypes | need → aesthetic direction/prototype/spec | Independent design & motion review | Design node of a product workflow |
-| ✅ engineering-docs | Engineering docs and decisions | context → doc+diagrams | Writes docs alone | Connects to environments with engineering verification |
-| ✅ reverse-teardown | Learn transferable rules from one external artifact | artifact+goal → rules/context-only/checklist/minimum experiment | Learn from any artifact anywhere | Can mount on any "solution review / design reference" flow point |
+| ✅ product-brief | Turn idea into verifiable PRD, plan, or incremental feature card | need/scorecard → PRD/card+`GLOSSARY.md` | Defines scope & acceptance | Hands off to `implement-spec` |
+| ✅ style-compass | UI design, 9 craft packs, motion physics & `DESIGN.md` | need → aesthetic prototype/spec | Independent design & motion review | Batched migration via `implement-spec`/`go-work` |
+| ✅ minimum-experiment | Get real feedback at lowest cost | hypothesis → reversible test+stop threshold | Turns speculation into trials | Flows back to `product-brief` / `scorecard` |
+| ✅ reverse-teardown | Learn transferable rules from one external artifact | artifact+goal → rules/local/checklist/drill | Learn from any artifact anywhere | Feeds product or design nodes |
 
-### Cluster B · Judgment and thinking
+### Group 3 · Decision & Critical Thinking (`thinking`)
 
 | Skill | Unique problem | Standalone value | Optional enhancement |
 | --- | --- | --- | --- |
-| ✅ vdd | No "done" without verification | Anti-false-claims anywhere | A completion-gate runtime may carry it |
 | ✅ outside-view | Whether a decision needs external evidence, how much, when to stop | Disciplined retrieval standalone | Evidence base for other skills |
-| ✅ steelman-choice | Two plausible options: which one | Strongest-case confrontation, key variable, one flip question | Prevents rash choices in any conversation | Any "user must decide between options" flow point |
-| ✅ claim-check | Is this claim/data trustworthy | Five-level credibility + reasoning-hole audit | Verify claims anywhere | Reuses outside-view discipline when online |
-| ✅ root-rethink | Are we just patching; find the root path | Split fact/assumption/goal/constraint, incl. cross-domain mode | Rederive solutions standalone | Code patches defer to the host's own root-cause flow |
-| ✅ minimum-experiment | Get real feedback at lowest cost | Reversible experiment + metrics + continue/stop signals | Turns speculation into trials | Splits work from the environment's reproducible tests |
-| ✅ argument-reading | Is a whole article's argument sound; what are its hidden premises | Full text → argument chain + evidence grades + fallacy locations | Critical reading in any environment | Discrete fact checks hand off to claim-check |
-| ⏸ socratic-clarify (P2) | I can't even state my real question | Multi-turn one-question clarification | Deep clarification entry | Complements any built-in clarify gate |
+| ✅ steelman-choice | Two plausible options: build both strongest cases before deciding | Prevents rash choices in any conversation | Any "user must decide between options" point |
+| ✅ claim-check | Verify discrete claims/data with 5-level credibility & fallacy audit | Verifies claims standalone | Reuses outside-view discipline when online |
+| ✅ argument-reading | Rebuild an entire article into argument map, premises & failure bounds | Critical reading in any environment | Discrete fact checks hand off to `claim-check` |
+| ✅ root-rethink | Break patch loops via First Principles + cross-domain borrowing | Rederives solutions standalone | Code failures defer to `code-bugfix` |
+| ⏸ socratic-clarify (P2) | When the real question itself is unclear | Multi-turn one-question clarification | Complements built-in clarify gates |
 
-> Theoretical roots: **steelman-choice** = Principle of Charity + steelman argument (the opposite of a straw man) — restate each side at its strongest before choosing. **root-rethink** = First Principles — reduce to irreducible facts, separate unverified inherited assumptions, rederive. **claim-check** = fact-checking + systematic doubt — split fact/inference/value, verify only the facts, then audit the inference. **argument-reading** = argument analysis, rebuilt without platform bindings.
+### Group 4 · Chinese Writing, Research & Infographics (`writing`)
 
-### Cluster C · Chinese writing (input-type vs output-type boundaries)
+| Skill | Unique problem | Standalone value |
+| --- | --- | --- |
+| ✅ feynman-explainer | Deep tech/repo/paper research & objective mechanism explanations | Standalone research reports and upstream feed |
+| ✅ haohao-shuohua | De-AI Chinese lint preserving facts & natural cadence | Lints any Chinese draft |
+| ✅ writing-craft | Single-branch writer across `sharing` (talks/retros/slides), `opinion` (plain essays/notes ≤120 chars), `tangshan` (column essays) | Prevents conflicting hybrid style rules |
+| ✅ sansi-erhouxing | Reads full skeleton before structural edits (light edits bypass) | Prevents patchy edits without blocking typos |
+| ✅ haohao-eval | Blind evaluation, daily recall & regression gating for rewrites | Independent eval bench |
+| ✅ content-infographic | Zero-dependency SVG/PNG infographics & covers tightly locked to text | Standalone explanatory diagrams |
 
-✅ feynman-explainer (deep concept explanation and standalone internal/external tech research write-ups), writing-craft (unified article & presentation entry routing across three mutually isolated branches: `sharing` tech shares/retrospectives/talks/slides, `opinion` plain conversational hard-opinion essays & ≤120-char notes, and `tangshan` analytical essays on incentives and cycles), haohao-shuohua (de-AI lint), sansi-erhouxing (read full skeleton before structural edits; light edits bypass), haohao-eval (blind evaluation/recall).
+### Group 5 · Personal Intelligence, Context & Media (`personal-tools`)
 
-### Cluster D · Data & engineering execution
+| Skill | Unique problem | Standalone value |
+| --- | --- | --- |
+| ✅ ai-briefing | 5-minute daily AI/tech brief with facts, judgments, opportunity scores | Channels via config, zero internal endpoints |
+| ✅ me-context | Portable personal profile with L0–L4 sensitivity gates | Data separated from skill, human-confirmed |
+| ✅ png-compress | Local batch PNG compression with cache & quality gates | Works in any local project |
+| ✅ video-reader | Converts video to timestamped keyframes + motion timeline | Understands timing on image-only models |
 
-✅ png-compress (batch PNG compression), video-reader (video → keyframes + timeline).
+### Group 6 · Library Governance (`governance`)
 
-### Cluster E · Personal context
+| Skill | Unique problem | Standalone value |
+| --- | --- | --- |
+| ✅ skill-library-keeper | Five-question admission gate, static health audit & external skill distillation | Auto-discovers library root, zero host lock-in |
 
-✅ me-context (portable personal profile with L0–L4 sensitivity gates; data separated from the skill).
-
-### Cluster F · Information & content production
-
-✅ ai-briefing (5-minute AI/tech daily brief, fact/judgment/opportunity cards; channels via config, no internal endpoints in the skill body); content-infographic (deterministic infographics where the image itself makes one point; zero-dependency SVG/PNG renderer).
-
-### Cluster G · Library governance
-
-✅ skill-library-keeper (five-question admission gate for new skills, static health audit across collisions/orphans/hard bindings, use/distill/rebuild intake decisions; auto-discovers the library path with zero platform lock-in).
-
-## 3. Collaboration
+## 3. Collaboration Chains
 
 ```text
-Product main chain: radar → scorecard → product-brief → style-compass → engineering-docs → build
-  reverse-teardown feeds any stage from external artifacts.
+Pre-code OPC incubation:
+  opportunity-radar → opportunity-scorecard → product-brief → style-compass → engineering-docs
+    ↑ reverse-teardown feeds transferable lessons into any stage
 
-Decision cross-chain (enter when stuck, return to the main chain after):
+In-repo full engineering lifecycle (personal `docs/` | monorepo `.agent-work/` zero-pollution):
+  1→N feature card (product-brief) / RFC (engineering-docs)
+    → implement-spec (deep modules + Source hash + 1-commit steps)
+    → spec-battle (clean-context prosecution → 4-way defense → 1 press → human ruling)
+    → go-work (light coordinator + subagents/worktrees + resume + archive)
+    → diff-review (layered CR + Skeptic filter) / code-bugfix (red loop + 3 hypotheses)
+    → pr-prep (hygiene + split + PR summary + $TMPDIR HTML tour) → vdd (final evidence gate)
+
+Decision cross-chain:
   socratic-clarify → root-rethink → steelman-choice → claim-check / argument-reading → minimum-experiment
-  claim-check / steelman-choice call outside-view only when external facts are needed;
-  experiment results flow back to product-brief or scorecard.
+  (external facts via outside-view; experiment outcomes flow back to product-brief / scorecard)
 
-Writing cross-cut: haohao-shuohua (de-AI base lint); writing-craft (single-branch output for sharing / opinion / tangshan);
-  sansi-erhouxing before structural edits (light edits ≤ 3 sentences bypass); feynman-explainer for tech research & deep explanation (standalone research reports and one-way upstream for writing-craft and engineering-docs).
-
-Verification: vdd for final code verification, engineering review, and multi-turn drift control; runtimes with a completion gate may carry it automatically.
-  Compilable engineering hypotheses use the environment's own test/verification flow;
-  minimum-experiment handles product/real-world hypotheses only.
+Writing cross-cut:
+  writing-craft (single-branch sharing / opinion / tangshan) → haohao-shuohua (de-AI base)
+  structural edits → sansi-erhouxing first; tech research → feynman-explainer
 ```
 
-Theoretical roots (planned skills): steelman-choice = Principle of Charity + steelman argument (opposite of straw man); root-rethink = First Principles thinking (reduce to basic facts, separate unverified assumptions, rederive); claim-check = fact-checking + Cartesian systematic doubt; argument-reading = argument analysis (rebuild reason → evidence → hidden premise).
+Key non-overlap boundaries:
 
-Key non-overlap contracts:
+- **steelman-choice vs outside-view**: decision structuring vs evidence retrieval only.
+- **claim-check vs argument-reading**: single discrete claim verification vs full-article argument reconstruction.
+- **root-rethink vs code-bugfix**: design/process rethinking vs reproducible red-loop debugging.
+- **engineering-docs vs implement-spec**: reviewable RFC/ADR for humans vs module signatures, seams & 1-commit steps for coding agents.
+- **spec-battle vs diff-review vs vdd vs pr-prep**: `spec-battle` challenges pre-code docs; `diff-review` performs read-only line-level CR with Skeptic filtering; `vdd` enforces completion proof & anti-drift (plus optional multi-role adversarial panels); `pr-prep` packages PR descriptions, splits & offline HTML tours.
 
-- **steelman-choice vs outside-view**: decision structuring (mostly pure reasoning) vs evidence retrieval only.
-- **steelman-choice vs scorecard**: confrontation of two given options vs scoring one idea.
-- **claim-check vs outside-view**: discrete claim verification vs evidence for a decision.
-- **claim-check vs argument-reading**: one discrete claim vs a whole article rebuilt as a reading map.
-- **reverse-teardown vs style-compass**: learn from external artifacts vs review/design your own pages.
-- **root-rethink vs host root-cause flow**: general solution/process rethinking belongs to the skill; code-patch root-causing belongs to the engineering environment's own flow.
-- **feynman-explainer vs writing-craft vs engineering-docs**: clean three-layer split with one-way handoff — `feynman-explainer` owns repo/paper research and objective mechanism write-ups; `engineering-docs` owns reviewable technical specs and engineering diagrams; `writing-craft` owns expressive articles/talks via single-branch loading (`sharing` vs `opinion` vs `tangshan`) to prevent hybrid rule collisions.
+## 4. Add / Change Checklist
 
-## 4. Add / change checklist
+1. **One-sentence uniqueness** — solves one clear problem no existing skill owns.
+2. **Non-overlapping triggers** — 8–10 real queries without cross-skill collisions.
+3. **Same-thing test** — merge procedures solving the same problem.
+4. **Zero environment coupling** — optional host enhancements degrade cleanly.
+5. **Upstream/downstream consumers** — clear inputs and outputs on the map.
+6. **Always-on vs on-demand** — keep domain methods as on-demand skills; promote cross-task guardrails to plugins/hooks (`plugins/engineering-flow/`) when deterministic enforcement is needed.
+7. **No reverse pollution** — one-way references only.
+8. **Portable multi-target sync** — `skills/` is the sole authority; `shared/` distributes common files via `--sync-shared`; run `tools/sync_skills.py --apply` (and `--sync-agy-plugin` when using Antigravity guardrails).
 
-1. **One-sentence uniqueness** — one problem it solves that no existing skill does.
-2. **Non-overlapping triggers** — 8–10 real queries, no two skills fire on the same one.
-3. **Same-thing test** — merge when it is the same problem with a different procedure.
-4. **Zero environment coupling** — still valid after removing any runtime/platform name; otherwise write "if available, else degrade."
-5. **Upstream/downstream exist** — outputs have consumers; inputs have providers.
-6. **Always-on vs on-demand** — only make something always-on if every interaction benefits and no tool-based carrier exists; otherwise keep it an on-demand skill.
-7. **No reverse pollution** — referenced skills must not change their positioning or gates; one-way references only.
-8. **Four-way delivery** — the Git repo `skills/` is the only source of truth; run `python3 tools/sync_skills.py --apply` to sync both skill runtime directories and the distribution zips. Company-only, third-party, and strongly personal skills are excluded by the manifest.
+## 5. Sync & Portable Guardrails
 
-## 5. Four-way sync
-
-Source of truth: this repository's `skills/`. Whitelist: `tools/skills-manifest.json` (only user-owned, portable, publishable skills). Command: `python3 tools/sync_skills.py` for a dry run, add `--apply` to write. Targets: the two skill runtime directories (folder name from `install_name`) and `~/Downloads/个人技能/<name>.zip`. Any skill added or changed is synced by default.
-
-## 6. This round's decisions (from 12 external prompts + 1 collaboration instruction)
-
-- Built and released after three-gate blind evaluation: steelman-choice, claim-check, argument-reading, root-rethink, minimum-experiment, reverse-teardown. (argument-reading distilled from a platform critical-reading skill with all platform bindings removed; root-rethink merges first-principles + cross-domain borrowing.)
-- Deferred: socratic-clarify (P2), landscape/vertical-horizontal study (framework kept, no skill).
-- Rejected: expert panel (general part merges into steelman-choice); Johari Window instruction (always-on posture → host preference layer); talent discovery / life design (owner decision: too grand, little value); dual-layer explanation (conflicts with feynman's "scaffolding not printed" rule).
-- Three-gate blind evaluation passed: neutral trigger routing achieved 24/24 positive recall, 12/12 negative/boundary exact match, and 0 collisions on both `Pro` and `Flash`; two independent `Pro` judges scored real-sample E2E and adversarial cases across 5 dimensions (30 scores total: all >=8, min 8, mean 9.23), promoting all six skills to released status.
+- **Authority**: `skills/` (skills) and `shared/` (common contracts/scripts).
+- **Manifest**: `tools/skills-manifest.json` defines the 30-skill whitelist and 6 logical groups (`--group engineering --apply`).
+- **Antigravity plugin**: `plugins/engineering-flow/` packages lifecycle hooks (`PreInvocation`, `PreToolUse`, `PostToolUse`, `Stop`) and plain-language routing rules using relative paths only, registered via `tools/sync_skills.py --apply --sync-agy-plugin` without altering `hooks.json`.

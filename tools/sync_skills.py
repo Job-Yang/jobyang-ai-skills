@@ -122,7 +122,7 @@ def ignore_func(_dir: str, names: list[str]) -> set[str]:
             out.add(n)
             continue
         p = Path(_dir) / n
-        if p.is_symlink() and not p.exists():
+        if p.is_symlink():
             out.add(n)
     return out
 
@@ -203,14 +203,20 @@ def tree_diff(src: Path, dst: Path) -> tuple[set[str], set[str]]:
 def sync_dir(src: Path, dst: Path, apply: bool, managed_peers: set[Path] | None = None) -> tuple[str, set[str]]:
     """返回 (状态, 目标独有的源外文件)。apply 时统一"删除后按源重建"，不留备份；遇到符号链接若指向受管同源目标则保留软链，否则仅 unlink 后重建。"""
     if dst.is_symlink():
-        link_target = Path(os.path.abspath(os.path.join(str(dst.parent), os.readlink(dst))))
+        if not dst.exists():
+            if apply:
+                dst.unlink()
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copytree(src, dst, ignore=ignore_func)
+            return "UPDATE 清理坏软链", set()
+        link_target = dst.resolve()
         if managed_peers and link_target in managed_peers:
-            if dst.exists() and dst.is_dir():
+            if dst.is_dir():
                 src_side, dst_only = tree_diff(src, dst)
                 if not src_side and not dst_only and not (dst / ".deps").exists():
                     return "SAME(软链)", set()
             return "LINK(随源更新)", set()
-        if dst.exists() and dst.is_dir():
+        if dst.is_dir():
             src_side, dst_only = tree_diff(src, dst)
             has_residual_deps = (dst / ".deps").exists()
             if not src_side and not dst_only and not has_residual_deps:
@@ -228,12 +234,17 @@ def sync_dir(src: Path, dst: Path, apply: bool, managed_peers: set[Path] | None 
             dst.unlink()
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copytree(src, dst, ignore=ignore_func)
-        return "UPDATE 清理坏软链", set()
+        return "UPDATE 清理非目录软链", set()
     if not dst.exists():
         if apply:
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copytree(src, dst, ignore=ignore_func)
         return "CREATE", set()
+    if not dst.is_dir():
+        if apply:
+            dst.unlink()
+            shutil.copytree(src, dst, ignore=ignore_func)
+        return "UPDATE 替换非目录文件", set()
     src_side, dst_only = tree_diff(src, dst)
     has_residual_deps = (dst / ".deps").exists()
     if not src_side and not dst_only and not has_residual_deps:
@@ -356,12 +367,30 @@ def sync_zip(src: Path, name: str, zip_dir: Path, apply: bool) -> str:
     return "SAME"
 
 
+AGY_PLUGIN_NAME = "engineering-flow"
+
+
+def _atomic_write_text(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp_name = tempfile.mkstemp(prefix=f".{path.stem}-", suffix=".tmp", dir=str(path.parent))
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            fh.write(content)
+        os.replace(tmp_name, path)
+    except Exception:
+        try:
+            os.unlink(tmp_name)
+        except OSError:
+            pass
+        raise
+
+
 def sync_agy_plugin(
     apply: bool,
     config_path: Path | None = None,
     plugins_dir: Path | None = None,
 ) -> tuple[str, Path, Path]:
-    """幂等注册本仓 plugins/ 目录到 Antigravity 的 plugins.json，保留用户既有配置。"""
+    """幂等注册本仓 plugins/ 目录到 Antigravity 的 plugins.json，保留用户既有配置并限定 include_only。"""
     cfg_path = config_path if config_path is not None else expand(str(AGY_PLUGINS_CONFIG))
     p_dir = (plugins_dir if plugins_dir is not None else REPO_PLUGINS).resolve()
 
@@ -382,26 +411,45 @@ def sync_agy_plugin(
     if not isinstance(entries, list):
         sys.exit(f"格式错误：{cfg_path} 中 entries 必须是数组")
 
-    already = False
+    matched_entry: dict | None = None
     for entry in entries:
         if not isinstance(entry, dict) or not isinstance(entry.get("path"), str):
             continue
         try:
             if expand(entry["path"]).resolve() == p_dir:
-                already = True
+                matched_entry = entry
                 break
         except OSError:
             continue
 
-    if already:
-        return "SAME", cfg_path, p_dir
+    if matched_entry is not None:
+        changed = False
+        excl = matched_entry.get("exclude")
+        if isinstance(excl, list) and AGY_PLUGIN_NAME in excl:
+            new_excl = [x for x in excl if x != AGY_PLUGIN_NAME]
+            if new_excl:
+                matched_entry["exclude"] = new_excl
+            else:
+                matched_entry.pop("exclude", None)
+            changed = True
+        incl = matched_entry.get("include_only")
+        if isinstance(incl, list):
+            if AGY_PLUGIN_NAME not in incl:
+                matched_entry["include_only"] = [*incl, AGY_PLUGIN_NAME]
+                changed = True
+        else:
+            matched_entry["include_only"] = [AGY_PLUGIN_NAME]
+            changed = True
+        if not changed:
+            return "SAME", cfg_path, p_dir
+        status = "UPDATE"
+    else:
+        entries.append({"path": str(p_dir), "include_only": [AGY_PLUGIN_NAME]})
+        data["entries"] = entries
+        status = "UPDATE" if existed else "CREATE"
 
-    entries.append({"path": str(p_dir)})
-    data["entries"] = entries
-    status = "UPDATE" if existed else "CREATE"
     if apply:
-        cfg_path.parent.mkdir(parents=True, exist_ok=True)
-        cfg_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        _atomic_write_text(cfg_path, json.dumps(data, ensure_ascii=False, indent=2) + "\n")
     return status, cfg_path, p_dir
 
 
@@ -490,7 +538,7 @@ def main() -> None:
             alerts.append(f"{name}: git 权威源缺 SKILL.md")
             continue
         managed_peers = {
-            Path(os.path.abspath(ot["dir"] / name))
+            (ot["dir"] / name).resolve()
             for ot in cfg["targets"]
             if (ot["only"] is None or name in ot["only"]) and ot["dir"].exists() and not (ot["dir"] / name).is_symlink()
         } | {src.resolve()}

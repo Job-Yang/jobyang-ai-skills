@@ -25,11 +25,56 @@ RISK_PATTERNS = {
     "ci": re.compile(r"(?:^\.github/workflows/|^\.gitlab-ci\.yml$|Makefile$|Dockerfile$|scripts/(?:deploy|release|build|publish))", re.I),
     "lockfile": re.compile(r"(?:package-lock\.json|pnpm-lock\.yaml|yarn\.lock|Cargo\.lock|poetry\.lock|uv\.lock|go\.sum)$"),
 }
-DEBUG_LINE_RE = re.compile(r"^\+.*(?:pdb\.set_trace\(|breakpoint\(|dbg!\(|console\.log\()")
-SECRET_LINE_RE = re.compile(
-    r"^\+.*(?:api[_-]?key|secret|access[_-]?token|password)\s*[:=]\s*[\"'][A-Za-z0-9_\-]{16,}[\"']",
+TEST_PATH_RE = re.compile(
+    r"(?:^|/)(?:tests?|__tests__|spec|specs|fixtures?)(?:/|$)|(?:^|/)test_[^/]+$|(?:_test|\.test|\.spec)\.[^/]+$",
     re.I,
 )
+CODE_SUFFIXES = (
+    ".py", ".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs",
+    ".go", ".rs", ".java", ".kt", ".swift", ".m", ".mm",
+    ".c", ".cc", ".cpp", ".h", ".hpp", ".cs", ".rb", ".php",
+    ".sql", ".sh", ".bash", ".zsh",
+)
+RENAME_BRACE_RE = re.compile(r"^(.*)\{([^{}]*)\s+=>\s+([^{}]*)\}(.*)$")
+MAX_DIFF_BYTES = 2 * 1024 * 1024
+MAX_HYGIENE_WARNINGS = 50
+MAX_HTML_FILES = 200
+MAX_COMMITS = 100
+
+DEBUG_LINE_RE = re.compile(r"^\+.*(?:pdb\.set_trace\(|breakpoint\(|dbg!\(|console\.log\()")
+SECRET_LINE_RE = re.compile(
+    r"(?:"
+    r"(?:api[_-]?key|secret|access[_-]?token|auth[_-]?token|private[_-]?key|password|passwd|client[_-]?secret|bearer)\s*[:=]\s*[\"'][A-Za-z0-9_\-./+=]{12,}[\"']"
+    r"|eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"
+    r"|-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----"
+    r"|(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}|sk_(?:live|test)_[A-Za-z0-9]{16,}|sk-[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16}"
+    r")",
+    re.I,
+)
+QUOTED_LITERAL_RE = re.compile(r"(['\"])[^'\"]{8,}\1")
+
+
+def _clean_rel_path(p: str) -> str:
+    return re.sub(r"/+", "/", p.strip()).strip("/")
+
+
+def expand_numstat_path(raw_path: str) -> tuple[str, list[str]]:
+    """展开 git diff --numstat 中的重命名语法 `{old => new}` / `old => new`。"""
+    m = RENAME_BRACE_RE.match(raw_path)
+    if m:
+        prefix, old_seg, new_seg, suffix = m.groups()
+        old_p = _clean_rel_path(prefix + old_seg + suffix)
+        new_p = _clean_rel_path(prefix + new_seg + suffix)
+        paths = [p for p in dict.fromkeys((old_p, new_p)) if p]
+        return new_p or old_p, paths
+    if " => " in raw_path:
+        old_seg, new_seg = raw_path.split(" => ", 1)
+        old_p = _clean_rel_path(old_seg)
+        new_p = _clean_rel_path(new_seg)
+        paths = [p for p in dict.fromkeys((old_p, new_p)) if p]
+        return new_p or old_p, paths
+    p = _clean_rel_path(raw_path)
+    return p, [p] if p else []
 
 
 def run_git(args: list[str], cwd: Path) -> tuple[int, str, str]:
@@ -37,13 +82,17 @@ def run_git(args: list[str], cwd: Path) -> tuple[int, str, str]:
     return r.returncode, r.stdout, r.stderr.strip()
 
 
-def resolve_base(repo: Path, explicit_base: str | None) -> str:
+def resolve_base(repo: Path, explicit_base: str | None, current_branch: str | None = None) -> str:
     if explicit_base:
+        if explicit_base.startswith("-"):
+            raise RuntimeError(f"非法的基线参数：{explicit_base!r}")
         rc, _, err = run_git(["rev-parse", "--verify", explicit_base], repo)
         if rc != 0:
             raise RuntimeError(f"基线 {explicit_base} 无效：{err}")
         return explicit_base
     for cand in ("origin/main", "origin/master", "main", "master"):
+        if current_branch and cand == current_branch:
+            continue
         rc, _, _ = run_git(["rev-parse", "--verify", cand], repo)
         if rc == 0:
             return cand
@@ -60,10 +109,10 @@ def collect_pr_data(root: Path, explicit_base: str | None = None) -> dict:
     repo = Path(top.strip()).resolve()
     branch = run_git(["rev-parse", "--abbrev-ref", "HEAD"], repo)[1].strip() or "HEAD"
     head_sha = run_git(["rev-parse", "--short", "HEAD"], repo)[1].strip() or "HEAD"
-    base = resolve_base(repo, explicit_base)
+    base = resolve_base(repo, explicit_base, branch)
 
     diff_spec = f"{base}...HEAD" if base != "HEAD" else "HEAD"
-    rc_n, numstat, err_n = run_git(["diff", "--numstat", diff_spec], repo)
+    rc_n, numstat, err_n = run_git(["diff", "--numstat", diff_spec, "--"], repo)
     if rc_n != 0:
         raise RuntimeError(f"git diff 失败：{err_n}")
 
@@ -77,7 +126,8 @@ def collect_pr_data(root: Path, explicit_base: str | None = None) -> dict:
         parts = ln.split("\t")
         if len(parts) < 3:
             continue
-        add_s, del_s, path = parts[0], parts[1], parts[2]
+        add_s, del_s, raw_path = parts[0], parts[1], parts[2]
+        path, all_paths = expand_numstat_path(raw_path)
         add_n = int(add_s) if add_s.isdigit() else 0
         del_n = int(del_s) if del_s.isdigit() else 0
         added_total += add_n
@@ -86,29 +136,79 @@ def collect_pr_data(root: Path, explicit_base: str | None = None) -> dict:
         modules[top_mod]["files"] += 1
         modules[top_mod]["added"] += add_n
         modules[top_mod]["deleted"] += del_n
-        file_tags = [tag for tag, pat in RISK_PATTERNS.items() if pat.search(path)]
-        if del_n > 0 and add_n == 0 and path.endswith((".py", ".ts", ".js", ".go", ".rs", ".java", ".swift")):
+
+        prod_paths = [cp for cp in all_paths if not TEST_PATH_RE.search(cp)]
+        file_tags: list[str] = []
+        for cp in prod_paths:
+            for tag, pat in RISK_PATTERNS.items():
+                if pat.search(cp):
+                    file_tags.append(tag)
+        if del_n > 0 and add_n == 0 and any(cp.lower().endswith(CODE_SUFFIXES) for cp in prod_paths):
             file_tags.append("delete")
+        file_tags = sorted(set(file_tags))
         for t in file_tags:
             risk_hits[t].append(path)
-        if ".agent-work/" in path:
-            hygiene_warnings.append(f"禁止入库路径进入 diff：{path}")
-        files.append({"path": path, "module": top_mod, "added": add_n, "deleted": del_n, "tags": sorted(set(file_tags))})
+        for cp in all_paths:
+            if ".agent-work/" in cp or ".agent-work" in Path(cp).parts:
+                hygiene_warnings.append(f"禁止入库路径进入 diff：{cp}")
+        files.append({"path": path, "module": top_mod, "added": add_n, "deleted": del_n, "tags": file_tags})
 
-    rc_p, patch_text, _ = run_git(["diff", diff_spec], repo)
-    if rc_p == 0:
+    patch_chunks: list[bytes] = []
+    total_bytes = 0
+    patch_truncated = False
+    proc = subprocess.Popen(
+        ["git", "diff", diff_spec, "--"],
+        cwd=str(repo),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+    )
+    try:
+        assert proc.stdout is not None
+        while True:
+            chunk = proc.stdout.read(65536)
+            if not chunk:
+                break
+            remain = MAX_DIFF_BYTES - total_bytes
+            if remain <= 0:
+                patch_truncated = True
+                proc.terminate()
+                break
+            if len(chunk) > remain:
+                patch_chunks.append(chunk[:remain])
+                total_bytes += remain
+                patch_truncated = True
+                proc.terminate()
+                break
+            patch_chunks.append(chunk)
+            total_bytes += len(chunk)
+    finally:
+        if proc.stdout is not None:
+            proc.stdout.close()
+        try:
+            rc_p = proc.wait(timeout=3)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            rc_p = proc.wait()
+
+    if patch_truncated:
+        hygiene_warnings.append("diff 体积超过 2MB 上限，内容扫描已截断")
+    if rc_p == 0 or patch_truncated:
+        patch_text = b"".join(patch_chunks).decode("utf-8", errors="replace")
         cur_file = ""
         for ln in patch_text.splitlines():
             if ln.startswith("+++ b/"):
                 cur_file = ln[6:]
-            elif DEBUG_LINE_RE.match(ln):
-                hygiene_warnings.append(f"疑似调试残留 ({cur_file}): {ln[1:].strip()[:80]}")
-            elif SECRET_LINE_RE.match(ln):
-                hygiene_warnings.append(f"疑似硬编码凭证 ({cur_file}): <已脱敏>")
+            elif ln.startswith("+") and not ln.startswith("+++"):
+                body = ln[1:]
+                if SECRET_LINE_RE.search(body):
+                    hygiene_warnings.append(f"疑似硬编码凭证 ({cur_file}): <已脱敏>")
+                elif DEBUG_LINE_RE.match(ln):
+                    safe_snippet = QUOTED_LITERAL_RE.sub(r"\1<REDACTED>\1", body.strip())[:80]
+                    hygiene_warnings.append(f"疑似调试残留 ({cur_file}): {safe_snippet}")
 
     commits: list[dict] = []
     if base != "HEAD":
-        rc_c, c_out, _ = run_git(["log", "--format=%h\t%ad\t%s", "--date=short", f"{base}..HEAD"], repo)
+        rc_c, c_out, _ = run_git(["log", "-n", str(MAX_COMMITS), "--format=%h\t%ad\t%s", "--date=short", f"{base}..HEAD"], repo)
         if rc_c == 0:
             for ln in c_out.splitlines():
                 ps = ln.split("\t", 2)
@@ -167,8 +267,10 @@ def render_markdown(data: dict) -> str:
 
     if data["hygiene_warnings"]:
         lines.extend(["", "### 合入前拦截提醒"])
-        for w in data["hygiene_warnings"]:
+        for w in data["hygiene_warnings"][:MAX_HYGIENE_WARNINGS]:
             lines.append(f"- ⚠️ {w}")
+        if len(data["hygiene_warnings"]) > MAX_HYGIENE_WARNINGS:
+            lines.append(f"- ……其余 {len(data['hygiene_warnings']) - MAX_HYGIENE_WARNINGS} 条告警已截断")
 
     lines.extend([
         "",
@@ -206,8 +308,12 @@ def render_html(data: dict) -> str:
             f"{', '.join(f'<code>{esc(p)}</code>' for p in paths[:6])}</div>"
         )
     if data["hygiene_warnings"]:
-        for w in data["hygiene_warnings"]:
+        for w in data["hygiene_warnings"][:MAX_HYGIENE_WARNINGS]:
             risk_badges.append(f"<div class='risk-card'><span class='badge danger'>卫生警告</span> {esc(w)}</div>")
+        if len(data["hygiene_warnings"]) > MAX_HYGIENE_WARNINGS:
+            risk_badges.append(
+                f"<div class='risk-card muted'>其余 {len(data['hygiene_warnings']) - MAX_HYGIENE_WARNINGS} 条告警已截断</div>"
+            )
     risk_html = "\n".join(risk_badges) or "<p class='ok'>未检测到高危路径标记或卫生泄露项。</p>"
 
     commit_rows = "\n".join(
@@ -216,12 +322,16 @@ def render_html(data: dict) -> str:
     ) or "<li class='muted'>当前基线区间无新提交。</li>"
 
     file_rows = []
-    for f in data["files"]:
+    for f in data["files"][:MAX_HTML_FILES]:
         tags_html = " ".join(f"<span class='badge warn'>{esc(t)}</span>" for t in f["tags"])
         file_rows.append(
             f"<tr><td><input type='checkbox'/></td>"
             f"<td><code>{esc(f['path'])}</code> {tags_html}</td>"
             f"<td class='num'>+{f['added']} / -{f['deleted']}</td></tr>"
+        )
+    if len(data["files"]) > MAX_HTML_FILES:
+        file_rows.append(
+            f"<tr><td colspan='3' class='muted'>其余 {len(data['files']) - MAX_HTML_FILES} 个文件已截断，完整列表请查看 JSON/Git</td></tr>"
         )
     files_html = "\n".join(file_rows) or "<tr><td colspan='3' class='muted'>无改动文件</td></tr>"
 

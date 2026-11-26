@@ -16,7 +16,9 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import datetime as dt
+import fcntl
 import hashlib
 import json
 import os
@@ -24,12 +26,30 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
-SOURCE_RE = re.compile(r"^(?:Source|Feature):\s*`?([^`\s@]+)`?\s*@\s*`?([0-9a-fA-F]{7,40})`?")
+SOURCE_RE = re.compile(r"^(?:Source|Feature):\s*`?([^`\n@]+?)`?\s*@\s*`?([0-9a-fA-F]{7,40})`?\s*$")
 SOURCE_NONE_RE = re.compile(r"^(?:Source|Feature):\s*none\b", re.I)
 STEP_RE = re.compile(r"^(\d+)\.\s+(.*)$")
 AFTER_RE = re.compile(r"\bAfter:\s*([^\n.;。；]+)", re.I)
+SLUG_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
+DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def validate_slug(slug: str) -> str:
+    s = (slug or "").strip()
+    if not s or ".." in s or "/" in s or "\\" in s or not SLUG_RE.match(s):
+        raise ValueError(f"非法 slug：{slug!r}（仅允许 [A-Za-z0-9._-]+ 且不含路径片段）")
+    return s
+
+
+def validate_date(date_str: str) -> str:
+    d = (date_str or "").strip()
+    if not DATE_RE.match(d):
+        raise ValueError(f"非法日期格式：{date_str!r}（需要 YYYY-MM-DD）")
+    dt.date.fromisoformat(d)
+    return d
 
 
 def run_git(args: list[str], cwd: Path) -> tuple[int, str, str]:
@@ -160,14 +180,17 @@ def cmd_hash(args: argparse.Namespace) -> int:
 
 
 def resolve_source_ref(spec_path: Path, root: Path | None) -> tuple[str | None, str | None]:
-    lines = spec_path.read_text(encoding="utf-8").splitlines()[:25]
+    lines = spec_path.read_text(encoding="utf-8", errors="replace").splitlines()[:25]
+    saw_none = False
     for ln in lines:
         s = ln.strip()
-        if SOURCE_NONE_RE.match(s):
-            return None, None
         m = SOURCE_RE.match(s)
         if m:
-            return m.group(1), m.group(2).lower()
+            return m.group(1).strip(), m.group(2).lower()
+        if SOURCE_NONE_RE.match(s):
+            saw_none = True
+    if saw_none:
+        return None, None
     return "", None
 
 
@@ -190,6 +213,13 @@ def cmd_verify_hash(args: argparse.Namespace) -> int:
         candidate_root = (root / rel_src).resolve()
         candidate_spec = (spec_path.parent / rel_src).resolve()
         src_path = candidate_root if candidate_root.is_file() else candidate_spec
+    else:
+        src_path = src_path.resolve()
+    try:
+        src_path.relative_to(root.resolve())
+    except ValueError:
+        print(json.dumps({"status": "source_outside_repo", "source": rel_src}, ensure_ascii=False), file=sys.stderr)
+        return 2
     if not src_path.is_file():
         print(json.dumps({"status": "source_missing", "source": rel_src}, ensure_ascii=False), file=sys.stderr)
         return 2
@@ -207,12 +237,26 @@ def cmd_verify_hash(args: argparse.Namespace) -> int:
 
 
 def parse_steps(spec_path: Path) -> list[dict]:
-    lines = spec_path.read_text(encoding="utf-8").splitlines()
+    lines = spec_path.read_text(encoding="utf-8", errors="replace").splitlines()
     in_steps = False
+    in_fence = False
+    fence_delim = ""
     steps: dict[int, dict] = {}
     cur_step: int | None = None
     for ln in lines:
         stripped = ln.strip()
+        if stripped.startswith("```") or stripped.startswith("~~~"):
+            delim = "```" if stripped.startswith("```") else "~~~"
+            if not in_fence:
+                in_fence = True
+                fence_delim = delim
+                continue
+            if stripped.startswith(fence_delim):
+                in_fence = False
+                fence_delim = ""
+                continue
+        if in_fence:
+            continue
         if re.match(r"^##\s+Steps\b", stripped, re.I):
             in_steps = True
             cur_step = None
@@ -221,7 +265,7 @@ def parse_steps(spec_path: Path) -> list[dict]:
             break
         if not in_steps:
             continue
-        m = STEP_RE.match(stripped)
+        m = STEP_RE.match(ln) if not ln[:1].isspace() else None
         if m:
             num = int(m.group(1))
             cur_step = num
@@ -272,11 +316,16 @@ def read_state_steps(state_path: Path) -> dict[int, str]:
 
 def read_git_trailer_steps(root: Path, spec_path: Path, slug: str) -> set[int]:
     try:
-        rel_spec = str(spec_path.resolve().relative_to(root.resolve()))
+        rel_spec_path = spec_path.resolve().relative_to(root.resolve())
     except ValueError:
-        rel_spec = str(spec_path)
+        return set()
+    if ".agent-work" in rel_spec_path.parts:
+        return set()
+    rel_spec = str(rel_spec_path)
     rc, base, _ = run_git(["log", "-1", "--diff-filter=A", "--format=%H", "--", rel_spec], root)
-    rev_range = f"{base}..HEAD" if rc == 0 and base else "HEAD"
+    if rc != 0 or not base:
+        return set()
+    rev_range = f"{base}..HEAD"
     rc, out, _ = run_git(["log", "--format=%(trailers:key=Spec-Step,valueonly)", rev_range], root)
     if rc != 0 or not out:
         return set()
@@ -297,7 +346,11 @@ def cmd_progress(args: argparse.Namespace) -> int:
         print(f"错误：Spec 不存在：{spec_path}", file=sys.stderr)
         return 1
     root = git_root(Path(args.root).resolve()) or git_root(spec_path.parent)
-    slug = infer_slug(spec_path, args.slug)
+    try:
+        slug = validate_slug(infer_slug(spec_path, args.slug))
+    except ValueError as e:
+        print(f"错误：{e}", file=sys.stderr)
+        return 1
     steps = parse_steps(spec_path)
 
     landed_map: dict[int, str] = {}
@@ -330,22 +383,58 @@ def cmd_progress(args: argparse.Namespace) -> int:
     return 0
 
 
+def _atomic_write_json(target: Path, data: dict) -> None:
+    fd, tmp_name = tempfile.mkstemp(prefix=f".{target.stem}-", suffix=".tmp", dir=str(target.parent))
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            fh.write(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
+        os.replace(tmp_name, target)
+    except Exception:
+        with contextlib.suppress(OSError):
+            os.unlink(tmp_name)
+        raise
+
+
 def cmd_record_step(args: argparse.Namespace) -> int:
+    try:
+        slug = validate_slug(args.slug)
+    except ValueError as e:
+        print(f"错误：{e}", file=sys.stderr)
+        return 1
     root = git_root(Path(args.root).resolve()) or Path(args.root).resolve()
-    info = detect_mode(root, args.mode)
-    state_dir = Path(info["state_dir"]) if info["state_dir"] else (root / ".agent-work" / "state")
+    spec_arg = getattr(args, "spec", None)
+    if spec_arg and args.mode == "auto":
+        sf = state_file_for(root, Path(spec_arg).resolve(), slug)
+        state_dir = sf.parent
+    else:
+        info = detect_mode(root, args.mode)
+        state_dir = Path(info["state_dir"]) if info["state_dir"] else (root / ".agent-work" / "state")
+        sf = state_dir / f"{slug}.json"
     state_dir.mkdir(parents=True, exist_ok=True)
-    sf = state_dir / f"{args.slug}.json"
-    data = {"slug": args.slug, "landed": {}}
-    if sf.is_file():
+    try:
+        sf.resolve().relative_to(state_dir.resolve())
+    except ValueError:
+        print(f"错误：状态文件路径越界：{sf}", file=sys.stderr)
+        return 1
+
+    lock_path = state_dir / f".{slug}.lock"
+    with lock_path.open("a+", encoding="utf-8") as lfh:
+        fcntl.flock(lfh.fileno(), fcntl.LOCK_EX)
         try:
-            data = json.loads(sf.read_text(encoding="utf-8"))
-        except ValueError:
-            pass
-    landed = data.setdefault("landed", {})
-    landed[str(args.step)] = args.sha
-    sf.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"state_file": str(sf), "slug": args.slug, "landed": landed}, ensure_ascii=False))
+            data = {"slug": slug, "landed": {}}
+            if sf.is_file():
+                try:
+                    loaded = json.loads(sf.read_text(encoding="utf-8"))
+                    if isinstance(loaded, dict):
+                        data = loaded
+                except ValueError:
+                    pass
+            landed = data.setdefault("landed", {})
+            landed[str(args.step)] = args.sha
+            _atomic_write_json(sf, data)
+        finally:
+            fcntl.flock(lfh.fileno(), fcntl.LOCK_UN)
+    print(json.dumps({"state_file": str(sf), "slug": slug, "landed": landed}, ensure_ascii=False))
     return 0
 
 
@@ -358,11 +447,24 @@ def cmd_archive(args: argparse.Namespace) -> int:
     mode = args.mode
     if mode == "auto":
         mode = "local" if ".agent-work" in spec_path.parts else detect_mode(root, "auto")["mode"]
-    slug = infer_slug(spec_path, args.slug)
-    date_str = args.date or dt.date.today().isoformat()
+    try:
+        slug = validate_slug(infer_slug(spec_path, args.slug))
+        date_str = validate_date(args.date or dt.date.today().isoformat())
+    except ValueError as e:
+        print(f"错误：{e}", file=sys.stderr)
+        return 1
     archived_dir = (root / ".agent-work" / "spec" / "archived") if mode == "local" else (root / "docs" / "spec" / "archived")
     ignore_file = ensure_ignore_file(archived_dir)
     dest = archived_dir / f"{date_str}-{slug}.md"
+    suffix = 2
+    while dest.exists():
+        dest = archived_dir / f"{date_str}-{slug}-{suffix}.md"
+        suffix += 1
+    try:
+        dest.resolve().relative_to(archived_dir.resolve())
+    except ValueError:
+        print(f"错误：归档路径越界：{dest}", file=sys.stderr)
+        return 1
 
     used_git_mv = False
     if mode == "repo":
@@ -424,7 +526,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_rec.add_argument("--step", type=int, required=True)
     p_rec.add_argument("--sha", required=True)
     p_rec.add_argument("--root", default=".")
-    p_rec.add_argument("--mode", choices=["auto", "repo", "local"], default="local")
+    p_rec.add_argument("--mode", choices=["auto", "repo", "local"], default="auto")
+    p_rec.add_argument("--spec", default=None)
     p_rec.set_defaults(func=cmd_record_step)
 
     p_arc = sub.add_parser("archive")

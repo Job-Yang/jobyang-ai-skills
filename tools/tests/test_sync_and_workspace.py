@@ -128,6 +128,60 @@ class SyncExtensionsTests(unittest.TestCase):
             self.assertEqual([{"path": "/other/plugins.json"}], saved["inherits"])
             self.assertEqual(2, len(saved["entries"]))
             self.assertEqual(str(plugins_dir.resolve()), saved["entries"][1]["path"])
+            self.assertEqual(["engineering-flow"], saved["entries"][1]["include_only"])
+
+            # 5) 遗留无 include_only 条目自动补全；若 exclude 含 engineering-flow 自动移除
+            cfg.write_text(json.dumps({"entries": [{"path": str(plugins_dir)}]}), encoding="utf-8")
+            st5, _, _ = sync.sync_agy_plugin(apply=True, config_path=cfg, plugins_dir=plugins_dir)
+            self.assertEqual("UPDATE", st5)
+            self.assertEqual(["engineering-flow"], json.loads(cfg.read_text(encoding="utf-8"))["entries"][0]["include_only"])
+
+            cfg.write_text(
+                json.dumps({"entries": [{"path": str(plugins_dir), "exclude": ["engineering-flow", "other"]}]}),
+                encoding="utf-8",
+            )
+            st6, _, _ = sync.sync_agy_plugin(apply=True, config_path=cfg, plugins_dir=plugins_dir)
+            self.assertEqual("UPDATE", st6)
+            ent6 = json.loads(cfg.read_text(encoding="utf-8"))["entries"][0]
+            self.assertEqual(["engineering-flow"], ent6["include_only"])
+            self.assertEqual(["other"], ent6["exclude"])
+
+    def test_sync_dir_file_conflict_external_symlink_and_broken_managed_symlink(self):
+        with tempfile.TemporaryDirectory(prefix="sync-edge-") as td:
+            base = Path(td)
+            src = base / "src" / "sk"
+            dst = base / "dst" / "sk"
+            peer = base / "peer" / "sk"
+            ext_secret = base / "outside-secret.txt"
+            zip_dir = base / "zips"
+            src.mkdir(parents=True)
+            peer.mkdir(parents=True)
+            dst.parent.mkdir(parents=True)
+            (src / "SKILL.md").write_text("---\nname: sk\n---\n", encoding="utf-8")
+            (peer / "SKILL.md").write_text("---\nname: sk\n---\n", encoding="utf-8")
+            ext_secret.write_text("TOP_SECRET", encoding="utf-8")
+            (src / "leak.txt").symlink_to(ext_secret)
+
+            # 1) 目标是普通文件时应平滑替换而非崩溃
+            dst.write_text("blocking-file", encoding="utf-8")
+            st_file, _ = sync.sync_dir(src, dst, apply=True)
+            self.assertIn("替换非目录文件", st_file)
+            self.assertTrue((dst / "SKILL.md").is_file())
+            # 有效仓外软链必须被忽略，不复制也不进 zip，二次检测为 SAME
+            self.assertFalse((dst / "leak.txt").exists())
+            sync.build_zip(src, "sk", zip_dir)
+            self.assertNotIn("leak.txt", sync.zip_files(zip_dir / "sk.zip", "sk"))
+            st_same, dst_only = sync.sync_dir(src, dst, apply=False)
+            self.assertEqual("SAME", st_same)
+            self.assertEqual(set(), dst_only)
+
+            # 2) 目标是指向受管路径的坏软链时应清理重建，而非返回 LINK
+            shutil.rmtree(dst)
+            missing_peer = base / "gone-peer"
+            dst.symlink_to(missing_peer)
+            st_broken, _ = sync.sync_dir(src, dst, apply=True, managed_peers={missing_peer.resolve()})
+            self.assertIn("清理坏软链", st_broken)
+            self.assertTrue(dst.is_dir() and not dst.is_symlink())
 
 
 class WorkspaceGuardTests(unittest.TestCase):
@@ -249,6 +303,68 @@ class WorkspaceGuardTests(unittest.TestCase):
             self.assertEqual(0, rc)
             self.assertTrue((root / "docs" / "spec" / "archived" / "2026-11-26-cache.md").is_file())
             self.assertEqual("*\n", (root / "docs" / "spec" / "archived" / ".ignore").read_text(encoding="utf-8"))
+
+    def test_workspace_guard_hardening_slug_archive_trailers_fences_and_boundary(self):
+        with tempfile.TemporaryDirectory(prefix="wg-hard-") as td:
+            root = Path(td)
+            self._init_git_repo(root)
+            (root / "docs" / "spec").mkdir(parents=True)
+            (root / "docs" / "feature").mkdir(parents=True)
+
+            # 1) repo 模式下 record-step 默认 auto 写入 docs/spec/.state/
+            feat = root / "docs" / "feature" / "demo.md"
+            feat.write_text("# Demo\nStatus: decided\n", encoding="utf-8")
+            sha = wg.git_blob_sha1(feat)
+            spec = root / "docs" / "spec" / "demo.md"
+            spec.write_text(
+                f"# Demo Spec\nSource: `docs/feature/demo.md` @ `{sha}`\n\n"
+                "## Steps\n"
+                "1. Top step. After: none. Check: `true`\n"
+                "  1. Indented sub-item should not overwrite step 1.\n"
+                "```markdown\n"
+                "1. Fenced code block item.\n"
+                "```\n",
+                encoding="utf-8",
+            )
+            steps = wg.parse_steps(spec)
+            self.assertEqual(1, len(steps))
+            self.assertIn("Top step", steps[0]["title"])
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                rc_rec = wg.main(["record-step", "--slug", "demo", "--step", "1", "--sha", "abc123", "--root", str(root)])
+            self.assertEqual(0, rc_rec)
+            self.assertTrue((root / "docs" / "spec" / ".state" / "demo.json").is_file())
+
+            # 2) 拒绝 slug/date 路径穿越；重复同日 archive 自动加后缀不覆盖
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertNotEqual(0, wg.main(["record-step", "--slug", "../evil", "--step", "1", "--sha", "x", "--root", str(root)]))
+                self.assertNotEqual(0, wg.main(["archive", "--spec", str(spec), "--date", "2026/11/26", "--root", str(root)]))
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(0, wg.main(["archive", "--spec", str(spec), "--root", str(root), "--date", "2026-11-26"]))
+            spec2 = root / "docs" / "spec" / "demo.md"
+            spec2.write_text("# Demo v2\nSource: none\n## Steps\n1. S2. After: none.\n", encoding="utf-8")
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(0, wg.main(["archive", "--spec", str(spec2), "--root", str(root), "--date", "2026-11-26"]))
+            self.assertIn("# Demo Spec", (root / "docs" / "spec" / "archived" / "2026-11-26-demo.md").read_text(encoding="utf-8"))
+            self.assertTrue((root / "docs" / "spec" / "archived" / "2026-11-26-demo-2.md").is_file())
+
+            # 3) .agent-work 未入库 spec 不误吃历史 Git Spec-Step trailer
+            (root / "hist.txt").write_text("h\n", encoding="utf-8")
+            self._git(root, "add", "hist.txt")
+            self._git(root, "commit", "-m", "old work\n\nSpec-Step: localx#1")
+            wg.main(["init-local", "--root", str(root)])
+            lspec = root / ".agent-work" / "spec" / "localx.md"
+            lspec.write_text("# Local\nSource: none\n\n## Steps\n1. Do local. After: none.\n", encoding="utf-8")
+            with contextlib.redirect_stdout(io.StringIO()) as pbuf:
+                wg.main(["progress", "--spec", str(lspec), "--root", str(root)])
+            self.assertEqual([], json.loads(pbuf.getvalue())["landed"])
+
+            # 4) verify-hash 拒绝仓外路径
+            ext_spec = root / ".agent-work" / "spec" / "ext.md"
+            ext_spec.write_text("# Ext\nSource: /etc/hosts @ deadbeef\n## Steps\n1. S. After: none.\n", encoding="utf-8")
+            with contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(2, wg.main(["verify-hash", "--spec", str(ext_spec), "--root", str(root)]))
 
 
 if __name__ == "__main__":

@@ -132,6 +132,8 @@ cp -R jobyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
 .
 ├── README.md
 ├── README.en.md
+├── plugins/
+│   └── engineering-flow/
 ├── shared/
 └── skills/
     ├── ai-briefing/
