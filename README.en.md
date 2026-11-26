@@ -17,9 +17,7 @@ This repository is not a prompt cheat sheet. Each Skill should be a compact piec
 | [vdd](./skills/vdd/) | Verification-driven development: run a verification pass before claiming "done" or "no problem" — no false optimism, no forced nitpicking, and the confidence to say it's fine. |
 | [haohao-shuohua](./skills/haohao-shuohua/) | Cleans Chinese writing so it sounds like a person wrote it: keeps facts, removes AI flavor, restores Chinese rhythm, and blocks fake profundity. |
 | [haohao-eval](./skills/haohao-eval/) | Evaluates Chinese rewrites with blind judging, daily failure recall, candidate gates, release monitoring, and automatic rollback. |
-| [cuihuo](./skills/cuihuo/) | An opinion-hardening engine: turn an opinion into a plain, restrained essay with one idea per section, or distill it into a short note. |
-| [talk-smith](./skills/talk-smith/) | Technical Talk Smith: crafts technical topics, engineering practice, or project postmortems into engaging articles, talks, or slides. |
-| [tangshan-style](./skills/tangshan-style/) | A writing engine for future-facing speculative essays with historical depth and lines worth chewing on. |
+| [writing-craft](./skills/writing-craft/) | Writing Craft: unified article entry that locks one active branch (`sharing` for practical engineering shares/retros/talks/slides, `opinion` for plain conversational hard-opinion essays & ≤120-char notes, `tangshan` for incentive/cycle analytical essays). |
 | [feynman-explainer](./skills/feynman-explainer/) | Uses the Feynman technique to truly explain hard things: one reasoning chain, derived step by step, so non-experts actually get it. |
 | [content-infographic](./skills/content-infographic/) | Content Infographic: turns key article concepts into clear visual infographics and covers anchored tightly to the prose. |
 | [ai-briefing](./skills/ai-briefing/) | Daily AI Briefing: a 5-minute daily AI/tech digest with facts, judgment, and opportunity scores, plus Friday GitHub Trending recaps. |
@@ -46,7 +44,7 @@ The collection can be read as four capability groups:
 - **Judgment and verification**: VDD, outside-view, haohao-eval, steelman choice, claim check, argument reading, skill-library-keeper, and AI briefing.
 - **Product formation**: opportunity radar, opportunity scorecard, product brief, style compass, reverse teardown, root rethink, and minimum experiment.
 - **Engineering delivery**: engineering docs, PNG compression, video reader, and portable personal context (me-context).
-- **Writing**: haohao-shuohua, cuihuo, talk-smith, tangshan-style, Feynman explainer, sansi-erhouxing, and content infographic.
+- **Writing**: haohao-shuohua, writing-craft (`sharing` / `opinion` / `tangshan`), Feynman explainer, sansi-erhouxing, and content infographic.
 
 Each README explains capabilities, usage, design rationale, evaluation evidence, and boundaries. `SKILL.md` is the execution entry read by the agent. Complex Skills add references, scripts, templates, or runtime assets as needed.
 
@@ -111,7 +109,6 @@ Keep each Skill directory intact. Do not copy only `SKILL.md`, because some Skil
     ├── argument-reading/
     ├── claim-check/
     ├── content-infographic/
-    ├── cuihuo/
     ├── engineering-docs/
     ├── feynman-explainer/
     ├── haohao-eval/
@@ -129,10 +126,9 @@ Keep each Skill directory intact. Do not copy only `SKILL.md`, because some Skil
     ├── skill-library-keeper/
     ├── steelman-choice/
     ├── style-compass/
-    ├── talk-smith/
-    ├── tangshan-style/
     ├── vdd/
-    └── video-reader/
+    ├── video-reader/
+    └── writing-craft/
 ```
 
 Each Skill directory uses `SKILL.md` as its entry point; some also ship `references/`, `scripts/`, or `assets/`.

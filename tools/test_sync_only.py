@@ -6,7 +6,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from sync_skills import select_names  # noqa: E402
 
-MANIFEST = ["engineering-docs", "content-infographic", "haohao-eval", "cuihuo"]
+MANIFEST = ["engineering-docs", "content-infographic", "haohao-eval", "writing-craft"]
 
 
 def expect_eq(actual, want, label):

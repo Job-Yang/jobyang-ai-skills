@@ -46,7 +46,7 @@ Status: ✅ available　⏸ deferred　❌ rejected
 
 ### Cluster C · Chinese writing (input-type vs output-type boundaries)
 
-✅ feynman-explainer (deep concept explanation and standalone internal/external tech research write-ups), haohao-shuohua (de-AI lint), cuihuo (opinion essay or short note), tangshan-style (speculative essay), sansi-erhouxing (read full skeleton before structural edits; light edits bypass), haohao-eval (blind evaluation/recall).
+✅ feynman-explainer (deep concept explanation and standalone internal/external tech research write-ups), writing-craft (unified article & presentation entry routing across three mutually isolated branches: `sharing` tech shares/retrospectives/talks/slides, `opinion` plain conversational hard-opinion essays & ≤120-char notes, and `tangshan` analytical essays on incentives and cycles), haohao-shuohua (de-AI lint), sansi-erhouxing (read full skeleton before structural edits; light edits bypass), haohao-eval (blind evaluation/recall).
 
 ### Cluster D · Data & engineering execution
 
@@ -58,7 +58,7 @@ Status: ✅ available　⏸ deferred　❌ rejected
 
 ### Cluster F · Information & content production
 
-✅ ai-briefing (5-minute AI/tech daily brief, fact/judgment/opportunity cards; channels via config, no internal endpoints in the skill body); content-infographic (deterministic infographics where the image itself makes one point; zero-dependency SVG/PNG renderer); talk-smith (technical talks and slides).
+✅ ai-briefing (5-minute AI/tech daily brief, fact/judgment/opportunity cards; channels via config, no internal endpoints in the skill body); content-infographic (deterministic infographics where the image itself makes one point; zero-dependency SVG/PNG renderer).
 
 ### Cluster G · Library governance
 
@@ -75,8 +75,8 @@ Decision cross-chain (enter when stuck, return to the main chain after):
   claim-check / steelman-choice call outside-view only when external facts are needed;
   experiment results flow back to product-brief or scorecard.
 
-Writing cross-cut: haohao-shuohua (lint); cuihuo / tangshan-style / talk-smith (output);
-  sansi-erhouxing before structural edits (light edits ≤ 3 sentences bypass); feynman-explainer for tech research & deep explanation (standalone research reports and one-way upstream for output skills).
+Writing cross-cut: haohao-shuohua (de-AI base lint); writing-craft (single-branch output for sharing / opinion / tangshan);
+  sansi-erhouxing before structural edits (light edits ≤ 3 sentences bypass); feynman-explainer for tech research & deep explanation (standalone research reports and one-way upstream for writing-craft and engineering-docs).
 
 Verification: vdd for final code verification, engineering review, and multi-turn drift control; runtimes with a completion gate may carry it automatically.
   Compilable engineering hypotheses use the environment's own test/verification flow;
@@ -93,7 +93,7 @@ Key non-overlap contracts:
 - **claim-check vs argument-reading**: one discrete claim vs a whole article rebuilt as a reading map.
 - **reverse-teardown vs style-compass**: learn from external artifacts vs review/design your own pages.
 - **root-rethink vs host root-cause flow**: general solution/process rethinking belongs to the skill; code-patch root-causing belongs to the engineering environment's own flow.
-- **feynman vs output writing skills**: one-way handshake when output skills need upstream research; feynman also delivers standalone internal/external research reports.
+- **feynman-explainer vs writing-craft vs engineering-docs**: clean three-layer split with one-way handoff — `feynman-explainer` owns repo/paper research and objective mechanism write-ups; `engineering-docs` owns reviewable technical specs and engineering diagrams; `writing-craft` owns expressive articles/talks via single-branch loading (`sharing` vs `opinion` vs `tangshan`) to prevent hybrid rule collisions.
 
 ## 4. Add / change checklist
 

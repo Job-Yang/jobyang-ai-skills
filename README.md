@@ -17,9 +17,7 @@ AI 时代最容易被低估的，是那些能反复起作用的工作方式。�
 | [vdd](./skills/vdd/) | 面向验证的开发：在说“做完了/没问题”之前先走一遍验证，不乱报喜、不硬挤问题、敢说没问题。 |
 | [haohao-shuohua](./skills/haohao-shuohua/) | 把中文写得更像人说的：保事实、去 AI 味、加中文味、不许造词充深刻。 |
 | [haohao-eval](./skills/haohao-eval/) | 好好说话评测台：盲评中文改稿，按真实 BadCase 做每日召回、候选门禁、发布监控与自动回滚。 |
-| [cuihuo](./skills/cuihuo/) | 观点淬硬引擎：把一个观点写成平实克制、一节一观点的硬文，或提炼成短思考手记。 |
-| [talk-smith](./skills/talk-smith/) | 面向读者的技术分享锻造：把技术主题、实践或项目复盘做成有叙事弧的文章、演讲稿或 slides。 |
-| [tangshan-style](./skills/tangshan-style/) | 汤山体：把面向未来的想象与推演写成有历史纵深、每句耐嚼的畅想文。 |
+| [writing-craft](./skills/writing-craft/) | 写作工坊：统一文章写作入口，先立唯一主帅，按分支单读写作技术分享/复盘/演讲/slides（`sharing`）、口语直球观点与 `≤120` 字手记（`opinion`）或汤山专栏长评（`tangshan`）。 |
 | [feynman-explainer](./skills/feynman-explainer/) | 用费曼技巧把复杂的东西讲透：一条逻辑链层层推导，让外行也能真正理解。 |
 | [content-infographic](./skills/content-infographic/) | 内容信息图：用零依赖渲染器或文生图把文章关键机制画成直观且与正文咬合的信息图与封面。 |
 | [ai-briefing](./skills/ai-briefing/) | AI 每日早报：一份 5 分钟读完的每日 AI/科技简报，含事实、判断与机会分，周五复盘本周 GitHub Trending。 |
@@ -46,7 +44,7 @@ AI 时代最容易被低估的，是那些能反复起作用的工作方式。�
 - **判断与验证**：VDD、兼听、好好说话评测台、钢人抉择、说法核查、论证精读、技能管家、AI 每日早报。
 - **产品形成**：机会雷达、机会评分卡、产品需求与计划、设计罗盘、反向拆解（成品学习）、归本重推、最小实验。
 - **工程交付**：研发技术文档、PNG 压缩、视频读取、可移植个人档案（me-context）。
-- **写作表达**：好好说话、淬火、技术分享锻造（talk-smith）、汤山体、费曼讲解、三思而后行、内容信息图。
+- **写作表达**：好好说话、写作工坊（`writing-craft`，含分享/直球观点与手记/汤山专栏三分支）、费曼讲解、三思而后行、内容信息图。
 
 每个 Skill 的 README 负责讲清功能、用法、设计理由、实测结果和边界；`SKILL.md` 是 Agent 真正执行时读取的入口。复杂 Skill 还会附带 references、脚本、模板或运行资产，按任务需要加载。
 
@@ -111,7 +109,6 @@ cp -R jobyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
     ├── argument-reading/
     ├── claim-check/
     ├── content-infographic/
-    ├── cuihuo/
     ├── engineering-docs/
     ├── feynman-explainer/
     ├── haohao-eval/
@@ -129,10 +126,9 @@ cp -R jobyang-ai-skills/skills/video-reader ~/.claude/skills/video-reader
     ├── skill-library-keeper/
     ├── steelman-choice/
     ├── style-compass/
-    ├── talk-smith/
-    ├── tangshan-style/
     ├── vdd/
-    └── video-reader/
+    ├── video-reader/
+    └── writing-craft/
 ```
 
 每个技能目录都以 `SKILL.md` 为入口，部分带 `references/`、`scripts/` 或 `assets/`。

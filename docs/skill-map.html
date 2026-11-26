@@ -150,8 +150,8 @@ function n(o){N[o.id]=o;}
  ['brief','产品需求','prod','exist'],['compass','设计罗盘','prod','exist'],
  ['engineering-docs','技术文档','prod','exist'],
  ['feynman','费曼讲透','write','exist'],['sansi','三思改稿','write','exist'],
- ['haohao','去 AI 味','write','exist'],['cuihuo','淬火硬文','write','exist'],
- ['tangshan','汤山体','write','exist'],['talk','技术分享','write','exist'],['haohao-eval','评测台','write','exist'],
+ ['haohao','去 AI 味','write','exist'],['writing-craft','写作工坊','write','exist'],
+ ['haohao-eval','评测台','write','exist'],
  ['png','PNG 压缩','util','exist'],['video','视频解读','util','exist'],
  ['briefing','AI 日报','util','exist'],['infographic','信息图','util','exist'],
  ['me-context','个人档案','util','exist'],['skill-library-keeper','技能管家','util','exist']
@@ -186,7 +186,7 @@ e('t_verify','claim-check',2);e('t_verify','argument-reading',2);
 e('t_try','minimum-experiment',2);
 e('t_learn','reverse-teardown',2);
 e('t_build','brief',2);e('t_build','compass',2);e('t_build','engineering-docs',2);
-e('t_write','feynman');e('t_write','sansi');e('t_write','cuihuo');e('t_write','tangshan');e('t_write','talk');
+e('t_write','feynman');e('t_write','sansi');e('t_write','writing-craft');
 e('t_tool','png');e('t_tool','video');e('t_tool','briefing');e('t_tool','infographic');
 e('t_meta','me-context',2);e('t_meta','skill-library-keeper',2);
 // 产品主干
@@ -204,8 +204,8 @@ e('steelman-choice','hub_brief');
 e('minimum-experiment','o_exp',2);e('minimum-experiment','hub_brief',2);
 e('reverse-teardown','o_rule',2);e('reverse-teardown','hub_design',2);e('reverse-teardown','hub_brief');
 // 写作
-e('talk','feynman');e('feynman','o_write');
-['cuihuo','tangshan','talk','sansi','haohao-eval'].forEach(x=>e(x,'hub_lint'));
+e('writing-craft','feynman');e('feynman','o_write');
+['writing-craft','sansi','haohao-eval'].forEach(x=>e(x,'hub_lint'));
 e('feynman','hub_lint');e('hub_lint','o_write',3);
 // 工具与治理
 ['png','video','briefing','infographic'].forEach(x=>e(x,'o_tool'));
@@ -327,9 +327,7 @@ const DET={
  feynman:['一条逻辑链把复杂概念讲透给自己懂。','任意主题讲明白。','外行也能顺着复述。','要点清单和术语堆砌。'],
  sansi:['改成形文档前先通读全文骨架，防补丁式改稿。','小改有投入闸门。','改完全局一致不补丁摞补丁。','只盯一段改，前后矛盾。'],
  haohao:['中文成稿清洗：保事实去机器腔，支持扩展屏蔽表。','对任意成稿 lint。','读着像人写的，事实没丢。','改完没 AI 味但意思也没了。'],
- cuihuo:['把观点写成一节一观点的硬文，或提炼成短手记。','独立写观点文与锻造手记。','观点立得住、删尽车轱辘话。','气势足但论证空心。'],
- tangshan:['面向未来有历史纵深的技术畅想长文。','独立写畅想文。','推演有路径感不喊口号。','宏大词汇堆砌。'],
- talk:['技术分享中长文/演讲稿/slides。','独立做完一场分享。','听众跟得住、有记忆点。','把技术文档念一遍。'],
+ 'writing-craft':['表达层统一写作入口：按分支单读 sharing（分享/复盘/talk/slides）、opinion（直白口语观点与≤120字手记）或 tangshan（汤山专栏长评）。','任意宿主写文章/分享/观点/长评。','一稿一主帅，复合文体也不互相打架。','同时加载多套文体规则导致自我矛盾。'],
  'haohao-eval':['盲评、每日召回、门禁评测改稿质量。','独立的改稿评测台。','坏改被召回拦截。','评分指导不了怎么改。'],
  png:['本地批量压 PNG，缓存/门禁/回退。','任意本地工程直接用。','体积下来画质可控。','压坏图或污染源码目录。'],
  video:['视频转带时间戳关键帧和运动时间线。','任意环境看懂视频。','能定位"第几秒发生了什么"。','只给截图没有时间线。'],
@@ -361,8 +359,8 @@ const LINE_GUIDE={
    branches:[['brief','收尾：结论/实验结果回流到「产品需求」继续主干'],['compass','收尾：学来的规律回流到「设计」']]},
  write:{title:'写作线 · 对外成文',color:'var(--write)',
    sub:'要把东西写给别人看时才上，独立于产品线；不同文体走不同技能，所有成稿最后统一过一次「去 AI 味」。',
-   when:'讲透一个概念、改已有稿子、写技术观点硬文、写未来畅想、做技术分享。',
-   nodes:[['sansi',1],['feynman',2],['cuihuo',3],['tangshan',3],['talk',3],['haohao-eval',4],['hub_lint',5]],
+   when:'讲透一个概念、改已有稿子、写分享复盘、写口语直球观点与手记、或写汤山专栏长评。',
+   nodes:[['sansi',1],['feynman',2],['writing-craft',3],['haohao-eval',4],['hub_lint',5]],
    branches:[]},
  util:{title:'工具与治理线 · 随取随用',color:'var(--util)',
    sub:'不参与产品主流程的独立工具与个人档案、库级治理技能，需要时直接使用。',
@@ -384,8 +382,8 @@ const LINE_ROLE={
  'minimum-experiment':'用最低成本的可逆实验拿到真实反馈',
  sansi:'改稿前先通读全文骨架，防补丁式改稿',
  feynman:'先把硬概念讲透（也是各文体的讲白助手）',
- cuihuo:'把观点写成一节一观点的硬文，或提炼成短手记',tangshan:'写面向未来的技术畅想长文',
- talk:'做技术分享中长文/演讲稿/slides','haohao-eval':'用盲评和召回给改稿质量把关',
+ 'writing-craft':'统一入口，按分支单读产出分享/口语观点与手记/汤山专栏长评',
+ 'haohao-eval':'用盲评和召回给改稿质量把关',
  hub_lint:'共用枢纽：所有成稿统一去机器腔',
  png:'本地批量压缩工程 PNG',video:'把视频转成带时间戳的关键帧',
  briefing:'生成宁缺毋滥的 AI/科技日报',infographic:'把关键道理做成自解释信息图',

@@ -2,12 +2,13 @@
 """Routing-consistency guard across the technical-writing skill cluster.
 
 These skills are siblings under the same skills root:
-  feynman-explainer / talk-smith / cuihuo / engineering-docs / skill-library-keeper
+  feynman-explainer / writing-craft / engineering-docs / skill-library-keeper
 
 The owner repeatedly hit mis-routing (a research doc that skipped feynman and was
-naked-written by lark-doc; skill-library-keeper firing on external research). This
-test freezes the agreed ownership so a future description edit cannot quietly
-re-open the hole. It only reads SKILL.md front matter / body text; no network.
+naked-written by lark-doc; skill-library-keeper firing on external research; or
+multiple expressive writing skills loading simultaneously and fighting each other).
+This test freezes the consolidated C1 ownership so a future edit cannot quietly
+re-open the hole. It only reads SKILL.md / references text; no network.
 
 These are static contract guards, NOT a prompt router or a host recall benchmark.
 Passing proves the checked wording/order remains present, not that a model loaded it.
@@ -23,12 +24,18 @@ def skill_md(name: str) -> str:
     return (SKILLS_ROOT / name / "SKILL.md").read_text(encoding="utf-8")
 
 
+def ref_md(skill: str, rel: str) -> str:
+    return (SKILLS_ROOT / skill / "references" / rel).read_text(encoding="utf-8")
+
+
 class TechnicalWritingRoutingTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.feynman = skill_md("feynman-explainer")
-        cls.talk = skill_md("talk-smith")
-        cls.cuihuo = skill_md("cuihuo")
+        cls.writing = skill_md("writing-craft")
+        cls.sharing_ref = ref_md("writing-craft", "sharing.md")
+        cls.opinion_ref = ref_md("writing-craft", "opinion.md")
+        cls.tangshan_ref = ref_md("writing-craft", "tangshan.md")
         cls.engdocs = skill_md("engineering-docs")
         cls.keeper = skill_md("skill-library-keeper")
 
@@ -41,19 +48,29 @@ class TechnicalWritingRoutingTests(unittest.TestCase):
         # Researching prompts/agents/a GitHub repo is research, not skill-library management.
         self.assertIn("skill-library-keeper", self.feynman)
 
-    def test_talk_smith_boundary_is_audience_not_internal_external(self):
-        self.assertIn("feynman-explainer", self.talk)
-        self.assertIn("幽默", self.talk)
-        # It must not claim to own plain internal "understand it" research.
-        self.assertIn("研判", self.talk)
-        # Platforms carry the finished draft; they do not drive its content.
-        self.assertIn("平台只承载", self.talk)
-
-    def test_cuihuo_is_opinion_piece_uses_feynman_and_finishes_via_haohao(self):
-        self.assertIn("feynman-explainer", self.cuihuo)
-        self.assertIn("观点", self.cuihuo)
-        self.assertIn("haohao-shuohua", self.cuihuo)
-        self.assertIn("平台", self.cuihuo)
+    def test_writing_craft_unifies_three_branches_with_single_lead(self):
+        for token in (
+            "一稿一主帅",
+            "按选定分支只读取对应的 1 份文件",
+            "feynman-explainer",
+            "haohao-shuohua",
+            "engineering-docs",
+            "平台技能",
+            "references/sharing.md",
+            "references/opinion.md",
+            "references/tangshan.md",
+        ):
+            self.assertIn(token, self.writing)
+        # Sharing branch must allow serious non-humor engineering stories.
+        self.assertIn("不设字数配额凑梗", self.sharing_ref)
+        self.assertIn("严肃事故复盘", self.sharing_ref)
+        # Opinion branch covers conversational direct stances & <=120-char notes.
+        self.assertIn("可被同行反驳", self.opinion_ref)
+        self.assertIn("≤ 120", self.opinion_ref)
+        self.assertIn("口语", self.opinion_ref)
+        # Tangshan branch preserves incentive & cycle lens.
+        self.assertIn("激励", self.tangshan_ref)
+        self.assertIn("周期", self.tangshan_ref)
 
     def test_content_skills_own_content_lark_doc_only_publishes(self):
         # Feynman explicitly demotes lark-doc to a carrier for research write-ups.
@@ -70,7 +87,6 @@ class TechnicalWritingRoutingTests(unittest.TestCase):
         # unless the action object is the user's own installed skill set.
         self.assertIn("研究外部资料", self.keeper)
         self.assertIn("feynman-explainer", self.keeper)
-
 
     def test_short_research_request_has_frontloaded_explicit_example(self):
         # Parse this skill's quoted scalar independently of the body. A body-only
@@ -94,8 +110,10 @@ class TechnicalWritingRoutingTests(unittest.TestCase):
 
     def test_entry_orders_method_evidence_draft_and_publish(self):
         entry = self.feynman.split("## 入口", 1)[1].split("## 0.", 1)[0]
-        steps = [entry.index(token) for token in
-                 ("1. **读方法**", "2. **取证讲透**", "3. **成稿检查**", "4. **写入发布**")]
+        steps = [
+            entry.index(token)
+            for token in ("1. **读方法**", "2. **取证讲透**", "3. **成稿检查**", "4. **写入发布**")
+        ]
         self.assertEqual(steps, sorted(steps))
         self.assertIn("references/style-examples.md", entry)
         self.assertIn("读取原文可在取证阶段调用平台技能", entry)
@@ -104,13 +122,15 @@ class TechnicalWritingRoutingTests(unittest.TestCase):
         self.assertIn("不保证自动召回", entry)
 
     def test_other_writers_keep_research_upstream_and_reuse_evidence(self):
-        for skill in (self.talk, self.cuihuo, self.engdocs):
-            with self.subTest(skill=skill.splitlines()[1]):
-                self.assertIn("feynman-explainer", skill)
-                self.assertIn("范例", skill)
-                self.assertIn("检索与分析前" if skill != self.cuihuo else "再检索分析", skill)
-                self.assertIn("复用", skill)
-        self.assertNotIn("feynman 绝不反向调用本技能", self.talk)
+        self.assertIn("feynman-explainer", self.writing)
+        self.assertIn("前置取证先拆出", self.writing)
+        self.assertIn("拿到「事实与机理结论」原料", self.writing)
+
+        self.assertIn("feynman-explainer", self.engdocs)
+        self.assertIn("范例", self.engdocs)
+        self.assertIn("检索与分析前", self.engdocs)
+        self.assertIn("复用", self.engdocs)
+
         self.assertIn("避免循环调用", self.feynman)
 
     def test_prompt_cases_are_scope_examples_not_runtime_measurements(self):
@@ -122,9 +142,10 @@ class TechnicalWritingRoutingTests(unittest.TestCase):
             ("调研一下，写个飞书文档", "本技能 + 平台技能"),
             ("一句话告诉我", "直接回答"),
             ("文件搬运", "对应技能"),
-            ("可被反驳的观点硬文", "cuihuo"),
+            ("讲给别人听的分享文 / talk / slides", "writing-craft"),
+            ("无花架子的直白口语观点硬文 / 锻造手记", "writing-craft"),
             ("内部技术方案/RFC/ADR", "engineering-docs"),
-            ("分享文 / talk / slides", "talk-smith"),
+            ("汤山风味深度长评与推演", "writing-craft"),
         )
         for token, expected in examples:
             with self.subTest(token=token):

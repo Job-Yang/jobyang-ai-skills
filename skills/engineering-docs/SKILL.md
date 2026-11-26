@@ -24,7 +24,7 @@ license: MIT
 
 判据是图表达的核心语义：工程关系、复合看板、三层脑图与飞轮优先用 `diagram_kit.py render` 声明式 JSON 生成，不手写 mermaid 或临时 SVG 脚本。
 
-**他技能只借图、不抢正文**：`feynman-explainer`、`talk-smith` 与分析复盘稿需画 `architecture-blueprint`／`dashboard`／`panorama-mindmap`／`flywheel` 时，可直接调 `scripts/diagram_kit.py render`（可选 `"preset": "insight"`）独立出图；正文归原技能，**不强制套用 RFC 的 `doc_check.py` 门禁**。需要一页式讲解或速读页时，可用 Explainer 联动图表。
+**他技能只借图、不抢正文**：`feynman-explainer`、`writing-craft` 与分析复盘稿需画 `architecture-blueprint`／`dashboard`／`panorama-mindmap`／`flywheel` 时，可直接调 `scripts/diagram_kit.py render`（可选 `"preset": "insight"`）独立出图；正文归原技能，**不强制套用 RFC 的 `doc_check.py` 门禁**。需要一页式讲解或速读页时，可用 Explainer 联动图表。
 
 ## 绘图边界：内容归本技能，绘制归后端，平台只发布
 
@@ -129,7 +129,7 @@ license: MIT
 
 使用：技术方案、系统设计、RFC、ADR、重构、迁移、性能方案；把代码、接口、运行证据和讨论整理成可评审文档；评审方案是否可信、可实施、可验证、可回退；画各类技术图；映射团队模板。
 
-不用：纯润色、教程、API 手册、未形成工程决定的调研、技术观点文章和非技术文档不用；面向读者的技术分享文/talk/slides（不形成评审决策）走 `talk-smith`，本技能只接需要评审/拍板的方案与配套架构图。
+不用：纯润色、教程、API 手册、未形成工程决定的调研、技术观点文章和非技术文档不用；面向读者的技术分享文/talk/slides 与观点/长评（不形成评审决策）走 `writing-craft`，本技能只接需要评审/拍板的方案与配套架构图。
 
 与 `content-infographic`（缺失可跳过）的分工：本技能出**严谨结构图**（可编辑可评审）；`content-infographic` 出**直观记忆图**（步骤链/对比/比喻）。同一机制可成对不互替。
 

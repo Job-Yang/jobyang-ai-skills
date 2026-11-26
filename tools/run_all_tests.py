@@ -108,7 +108,7 @@ def main() -> int:
         "product-brief",
         "skill-library-keeper",
         "style-compass",
-        "talk-smith",
+        "writing-craft",
     ]
     skill_checks: list[tuple[str, list[str], Path]] = [
         (f"tests:{s}", [sys.executable, "-m", "unittest", "discover", "-s", "tests", "-t", "tests"], SKILLS_ROOT / s)

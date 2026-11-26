@@ -54,8 +54,7 @@
 | --- | --- | --- |
 | ✅ feynman-explainer | 负责对内对外技术调研、机制解读与讲透成稿（逻辑链非清单） | 任意环境完成调研取证并输出报告 |
 | ✅ haohao-shuohua | 清洗 AI 中文文本（保事实去 AI 味） | 任意成稿 lint |
-| ✅ cuihuo | 把一个观点写成平实克制、一节一观点的硬文，或提炼成短手记 | 独立写观点文与锻造手记 |
-| ✅ tangshan-style | 面向未来的技术畅想长文（输出型） | 独立写畅想文 |
+| ✅ writing-craft | 表达层三合一写作入口：按分支单读产出分享/复盘/talk/slides（`sharing`）、口语直球观点硬文与 ≤120 字手记（`opinion`）或汤山专栏长评（`tangshan`），落实「一稿一主帅」防打架 | 任意环境写表达型文章与演讲分镜 |
 | ✅ sansi-erhouxing | 中大型文档结构级改稿前先读全文骨架（前置动作，局部微改直通） | 防止补丁式改稿且不卡轻任务 |
 | ✅ haohao-eval | 用盲评/召回评测中文改稿质量 | 独立评测台，支撑 haohao 迭代 |
 
@@ -78,7 +77,6 @@
 | --- | --- | --- |
 | ✅ ai-briefing | 5 分钟读完的 AI/前沿科技日报（事实+判断+机会分卡片） | 任意环境生成情报简报，渠道与交付走 config 适配，技能本体无内部端点 |
 | ✅ content-infographic | 把文章关键道理做成「图自己讲清一件事」的信息图，不做装饰配图 | 零依赖渲染器出高清 SVG/PNG，图文必须对账 |
-| ✅ talk-smith | 把技术主题做成给别人讲的分享文/演讲稿/slides | 独立完成技术分享，硬概念可反向调 feynman 讲白 |
 
 ### 簇 G · 库级治理（准入、体检与外部技能收录）
 
@@ -101,9 +99,9 @@
   minimum-experiment 的实验结论回流 product-brief 或 scorecard。
 
 输出横切：
-  任何要对外成文 → haohao-shuohua（lint）；观点硬文 cuihuo；
-  畅想 tangshan-style；分享 talk-smith；结构级改稿前先 sansi-erhouxing（≤3 句局部微改直通）；
-  要讲透与做技术调研用 feynman-explainer（直接产研究报告，也被各写作技能单向调用）。
+  文章表达统一从 writing-craft 进入，按分支单读唯一主帅（sharing 分享复盘与 talk/slides / opinion 口语直球观点与手记 / tangshan 专栏长评）；
+  任何要对外成文 → haohao-shuohua（lint 底座）；结构级改稿前先 sansi-erhouxing（≤3 句局部微改直通）；
+  要讲透与做技术调研用 feynman-explainer（直接产研究报告，也被 writing-craft 与 engineering-docs 单向前置调研调用）。
 
 执行与验证：
   代码改动终审、工程诊断复核与多轮防漂移 → vdd；具备工具化验收/完成门禁的宿主可自动承接。
@@ -119,7 +117,8 @@
 - **claim-check vs argument-reading**：离散说法验真 vs 整篇文章论证重建；前者几分钟验一条，后者输出完整阅读地图。
 - **reverse-teardown vs style-compass**：学外部成品 vs 评审/设计自己的页面。
 - **root-rethink vs 宿主根因判据**：通用方案/流程重推归技能；代码补丁根因归工程环境自带流程。
-- **feynman vs 输出型写作技能**：单向握手，分享/观点/方案/畅想可调费曼做前置调研；费曼自己也直接承接对内对外技术调研报告与机制解读成稿。
+- **feynman vs writing-craft vs engineering-docs**：三层拆开、单向握手——`feynman-explainer` 管源码/论文调研与客观机制报告（也为上游提供核实原料）；`engineering-docs` 管要评审拍板的研发方案与严谨工程图；`writing-craft` 管写给人看的表达型文章，并靠「一稿一主帅」隔离内部分支。
+- **writing-craft 内部分支边界**：不按字数或时间线硬切——经验分享/复盘/实录/安利/talk/slides 选 `sharing`；无花架子、自然口语化的同行直白判断与 `≤120` 字手记选 `opinion`；需要汤山专栏风味剖析激励博弈与历史周期选 `tangshan`。
 
 ## 4. 新增 / 修改技能冲突检查清单
 
