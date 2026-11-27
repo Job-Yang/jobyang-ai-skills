@@ -18,7 +18,7 @@
 
 - **只写现在为真**：`feature/`、`spec/` 与 `GLOSSARY.md` 只记录当前有效定义与规格，不写变更日志、辩论史或过程 TODO；历史留在 Git 与归档目录。
 - **归档隔离检索**：`archived/` 目录下放 `.ignore` 文件（内容为单行 `*`），把 `ripgrep` 等搜索工具挡在过期方案之外；任何新开发、盲审与排查均不读取归档 Spec。
-- **Spec 写定后只读**：在执行阶段不得一边写代码一边私改 Spec；遇到步内无法按 Spec 落地时立即停下汇报，回到 Spec 设计环节重算。
+- **Spec 作为执行基线而非教条枷锁**：大方向或接口契约变化时停下重算 Spec；开发期细小实现偏差可在代码里直接修正并在交付时说明，不做教条式卡死。
 
 ## 三、上游漂移熔断（Git Blob 摘要锚点）
 
@@ -35,7 +35,6 @@ python3 scripts/workspace_guard.py verify-hash --spec <spec.md>
 
 - **提交规范自适应**：个人仓推荐 1 步 1 提交并在提交说明末段附加 `Spec-Step: <slug>#<n>` trailer；团队大仓若有严格 Commit 模板或要求 Squash 合并，改用 `workspace_guard.py record-step` 将已完成步号与 SHA 写入 `.agent-work/state/<slug>.json`，遵循团队提交规范而不强行篡改 Commit Message。
 - **统一进度计算**：`workspace_guard.py progress --spec <spec.md>` 会同时合并 Git trailer 与 `state/<slug>.json`，依据 `After:` 依赖图算出当前可并行/可执行的 `ready` 步骤；任意时刻上下文中断，新会话都能无损接续。
-- **自定义验证命令白名单**：仓库使用非主流构建或测试命令时，可在 `.agent-work/verify-patterns.txt` 每行写一条命令前缀或正则，供收口门禁识别。
 
 ## 五、项目阶段、术语表与上游桥接
 

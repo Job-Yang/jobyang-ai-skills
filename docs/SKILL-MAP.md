@@ -145,7 +145,7 @@
 - **唯一权威源**：本仓库 `skills/`。
 - **白名单**：`tools/skills-manifest.json`，只含用户自有、可迁移、可公开的技能；排除公司内部技能、第三方安装技能、强个人化项目技能。
 - **同步命令**：本机路径写在 git 忽略的 `tools/sync.local.json`；`python3 tools/sync_skills.py` 预览，`--apply` 写入。可移植说明见 [SKILL-SYNC](./SKILL-SYNC.md)。
-- **可迁移 `agy` 插件护栏**：仓库 `plugins/engineering-flow/` 提供 Antigravity 生命周期钩子（`PreInvocation` 自动挂接、`PreToolUse` 三条红线、`Stop` 有界收口）与大白话分档规则，与宿主演进零耦合；通过 `python3 tools/sync_skills.py --apply --sync-agy-plugin` 幂等注册到 `~/.gemini/config/plugins.json`，不修改用户 `hooks.json`。
+- **可迁移 `agy` 研发原则插件**：仓库 `plugins/engineering-flow/` 提供 Antigravity 零钩子第一性原则规则插件（`hooks.json` 已禁用、零后台拦截，`rules/AGENTS.md` 引导模型按可逆／不可逆边界自主调技能与 CLI），与宿主演进零耦合；通过 `python3 tools/sync_skills.py --apply --sync-agy-plugin` 幂等注册到 `~/.gemini/config/plugins.json`，不修改用户 `hooks.json`。
 - 同步目标：本机配置的各技能运行目录与发布 zip 目录。目标有源外独有改动时标 ALERT；脚本不做自动备份（唯一备份是 Git），请先回灌 Git 或手动备份后再用 `--apply` 覆盖。
 - 规则：在权威源改技能后默认跑一次同步，不需要再次提醒。
 

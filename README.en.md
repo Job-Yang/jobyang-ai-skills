@@ -72,7 +72,7 @@ This repository is not a prompt cheat sheet. Each Skill should be a compact piec
 | --- | --- |
 | [skill-library-keeper](./skills/skill-library-keeper/) | Skill library keeper: library-level governance—five-question admission gate, health checks (collisions, orphans, hard platform coupling), and use/distill/rebuild decisions for external skills; auto-discovers the library path, zero hard platform coupling. |
 
-Logical groups are declared in `tools/skills-manifest.json` (`python3 tools/sync_skills.py --group engineering --apply`), and shared engineering contracts in `shared/` stay consistent via `--sync-shared`. To enable deterministic coding guardrails in Antigravity (`agy`) without modifying your existing `hooks.json`, run `python3 tools/sync_skills.py --apply --sync-agy-plugin` to register `plugins/engineering-flow/` in `~/.gemini/config/plugins.json`.
+Logical groups are declared in `tools/skills-manifest.json` (`python3 tools/sync_skills.py --group engineering --apply`), and shared engineering contracts in `shared/` stay consistent via `--sync-shared`. To load zero-hook first-principles coding workflow rules (`rules/AGENTS.md`) in Antigravity (`agy`)—letting the model invoke skills and CLI tools on demand without background interception—run `python3 tools/sync_skills.py --apply --sync-agy-plugin` to register `plugins/engineering-flow/` in `~/.gemini/config/plugins.json` without modifying your existing `hooks.json`.
 
 Each README explains capabilities, usage, design rationale, evaluation evidence, and boundaries. `SKILL.md` is the execution entry read by the agent. Complex Skills add references, scripts, templates, or runtime assets as needed.
 

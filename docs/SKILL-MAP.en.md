@@ -120,7 +120,7 @@ Key non-overlap boundaries:
 3. **Same-thing test** — merge procedures solving the same problem.
 4. **Zero environment coupling** — optional host enhancements degrade cleanly.
 5. **Upstream/downstream consumers** — clear inputs and outputs on the map.
-6. **Always-on vs on-demand** — keep domain methods as on-demand skills; promote cross-task guardrails to plugins/hooks (`plugins/engineering-flow/`) when deterministic enforcement is needed.
+6. **Always-on vs on-demand** — keep domain methods as on-demand skills and CLI tools; expose lightweight first-principles guidance (`plugins/engineering-flow/rules/AGENTS.md`, zero hooks) so the model decides when to invoke tools instead of mechanical background blocking.
 7. **No reverse pollution** — one-way references only.
 8. **Portable multi-target sync** — `skills/` is the sole authority; `shared/` distributes common files via `--sync-shared`; run `tools/sync_skills.py --apply` (and `--sync-agy-plugin` when using Antigravity guardrails).
 

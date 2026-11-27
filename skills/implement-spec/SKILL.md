@@ -12,7 +12,7 @@ description: "新功能开发、跨文件改造或代码重构动工前的设计
 1. **自动判定落位**：运行 `python3 scripts/workspace_guard.py detect`（不在目标仓根目录时加 `--root <仓库路径>`；多仓细则与个人仓 `docs/` 规范按需查阅 [工程工作区契约](references/engineering-workspace.md)）：
    - 已有 `docs/spec` 或 `docs/feature` 的个人仓用 `repo`（`docs/spec/<slug>.md`）；
    - 多人协作大仓默认用 `local`（执行 `python3 scripts/workspace_guard.py init-local` 初始化 `.agent-work/` 并仅写入 `.git/info/exclude`，零污染共享仓）；
-   - 单文件几十行极小改动或非 Git 目录走 `ephemeral`，对话内给接口与步骤即可，不强行建重文档。
+   - 开发期范围清晰、可随时 Git 回退的中小改动或非 Git 目录走 `ephemeral`，直接编码验证或在对话内给简短步骤，不强行建重文档。
 2. **上游版本锚定**：有上游文档（PRD、单特性卡片或 RFC）时，在 Spec 前 25 行写 `Source: `<path>` @ `<hash>``（摘要由 `python3 scripts/workspace_guard.py hash <file>` 生成）；纯架构重构写 `Source: none`。
 3. **术语一致**：专有概念与 `GLOSSARY.md` 保持一词一义，不在 Spec 内重新推翻上游产品裁定（要改需求回到 `product-brief`）。
 
@@ -32,4 +32,4 @@ description: "新功能开发、跨文件改造或代码重构动工前的设计
 按需查阅 [实现 Spec 模板](references/spec-template.md) 写出完整 `spec/<slug>.md`（留空无关节）：
 
 - 包含核心节：`Behavior map`、`Modules`（真实语言接口签名、不变量、顺序、错误模式、隐藏实现细节、典型调用例）、`Data`（唯一写者与迁移方式）、`Dependencies`（真实外部依赖与本地替身）、`Steps`（每步含 `After:` 依赖与非空可运行 `Check:`，**并行步绝不碰同一文件**）、`Not this`。
-- **只读与交接**：Spec 落盘后冻结只读；动工前高风险方案可交由 `spec-battle` 盲审挑刺，编码执行交由 `go-work` 分步落地。
+- **定位与交接**：Spec 落盘后作为执行基线；高风险或陌生模块可按需用 `spec-battle` 盲审，跨模块多步任务交给 `go-work` 落地（执行期细小实现偏差可直接修正并说明）。

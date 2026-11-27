@@ -72,7 +72,7 @@ AI 时代最容易被低估的，是那些能反复起作用的工作方式。�
 | --- | --- |
 | [skill-library-keeper](./skills/skill-library-keeper/) | 技能管家：库级治理——准入五问决定要不要建、健康体检查撞车/孤儿/硬绑定、外部技能直接用/炼化/重造决策；库位置自动发现，零平台强绑定。 |
 
-逻辑分组配置在 `tools/skills-manifest.json`，支持按 `python3 tools/sync_skills.py --group engineering --apply` 分组同步；全局公共交接规范保存在 `shared/` 并通过 `--sync-shared` 单源分发防漂移。若需在 Antigravity (`agy`) 上为日常 coding 开启可迁移工作流门禁，可运行 `python3 tools/sync_skills.py --apply --sync-agy-plugin` 将 `plugins/engineering-flow/` 注册到 `~/.gemini/config/plugins.json`（不改动用户既有 `hooks.json`）。
+逻辑分组配置在 `tools/skills-manifest.json`，支持按 `python3 tools/sync_skills.py --group engineering --apply` 分组同步；全局公共交接规范保存在 `shared/` 并通过 `--sync-shared` 单源分发防漂移。若需在 Antigravity (`agy`) 上加载第一性原则研发路由规则（零后台 Hook 拦截，由模型按需自主调工具），可运行 `python3 tools/sync_skills.py --apply --sync-agy-plugin` 将 `plugins/engineering-flow/` 注册到 `~/.gemini/config/plugins.json`（不改动用户既有 `hooks.json`）。
 
 每个 Skill 的 README 负责讲清功能、用法、设计理由、实测结果和边界；`SKILL.md` 是 Agent 真正执行时读取的入口。复杂 Skill 还会附带 references、脚本、模板或运行资产，按任务需要加载。
 

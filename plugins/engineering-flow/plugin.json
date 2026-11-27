@@ -1,5 +1,5 @@
 {
   "name": "engineering-flow",
-  "version": "1.0.0",
-  "description": "Deterministic coding workflow guardrails (PreInvocation routing, PreToolUse red-lines, bounded Stop evidence gate) for Antigravity CLI and ACP."
+  "version": "2.0.0",
+  "description": "First-principles coding workflow rules for Antigravity (zero hooks; model-driven on-demand skills and CLI tools)."
 }

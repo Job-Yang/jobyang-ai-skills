@@ -1,6 +1,6 @@
 # 技能多机同步与插件注册（可移植说明）
 
-所有技能的**唯一权威源是本仓 `skills/`**：在仓里改，提交后单向推送到各技能运行目录与发布 zip，避免旧副本反向覆盖新版本；全局公共契约放在 `shared/`，可迁移 Antigravity 护栏插件放在 `plugins/engineering-flow/`。
+所有技能的**唯一权威源是本仓 `skills/`**：在仓里改，提交后单向推送到各技能运行目录与发布 zip，避免旧副本反向覆盖新版本；全局公共契约放在 `shared/`，可迁移研发原则规则插件（零后台钩子拦截）放在 `plugins/engineering-flow/`。
 
 ## 用法
 
@@ -19,7 +19,7 @@ python3 tools/sync_skills.py --group engineering --apply
 python3 tools/sync_skills.py --sync-shared
 python3 tools/sync_skills.py --check-shared
 
-# 5) 幂等注册可迁移 agy 原生插件（~/.gemini/config/plugins.json，不改 hooks.json）
+# 5) 幂等注册可迁移研发原则规则插件（零后台钩子拦截，写 ~/.gemini/config/plugins.json，不改 hooks.json）
 python3 tools/sync_skills.py --apply --sync-agy-plugin
 ```
 
