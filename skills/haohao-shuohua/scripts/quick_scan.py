@@ -10,13 +10,14 @@ quick_scan.py — 好好说话 · 改前逐字扫的跨平台机械扫描（纯�
   macOS / Linux / Windows(py3) 一份代码通跑，不再依赖 GNU grep 的 PCRE。
 
 扫什么（每条都标明兑现方式，与 references/quick-scan-regex.md 一一对应）：
-  half     中文正文里夹半角标点 , ; : .   —— 唯一真硬闸：默认退出码卡它，必须清零
+  half     中文正文里夹半角标点 , ; : .   —— 唯一默认硬卡点：退出码卡它，必须清零
   dash     破折号串 ——                     —— 提示项（正文可留 1-2 个，滥用才改）
   b2       「不是 X 是 Y」变体族        —— 提示项，机器只报形式、人判意图
   meta     元话语（值得深思/引人深思…） —— 提示项，命中建议删，但默认不卡退出码
   heading  章节机械编号/量词标题        —— 提示项，工具说明书/清单编号豁免（人判）
   disclaim 正文里的免责尾巴（以上仅依据/未核实…）—— 提示项，原文本来就有的照留（人判）
   wall     段落墙：超长段 / 纯段落连排太多    —— 提示项，按 references/reader-layout.md 拆成列表/表格/引用块
+  calque   零歧义英文机翻怪词/表演量词       —— 提示项，仅扫 10 个硬词，默认只报不卡（语境人判）
 
 不误报什么（受保护跨度，扫之前先屏蔽）：
   ``` 围栏代码块整段（含跨行 HTML 注释）、`行内代码`、http(s):// 与 www. 链接、markdown 链接里的 url。
@@ -27,8 +28,8 @@ quick_scan.py — 好好说话 · 改前逐字扫的跨平台机械扫描（纯�
   0 = --fail-on 指定类别（默认 half）零命中
   1 = --fail-on 指定类别有命中
   2 = 用法/文件错误，或输入异常（如未闭合代码围栏）——不静默放行
-  默认只有 half 卡退出码；dash/b2/meta/heading/disclaim 是提示项，默认只报告，
-  需要硬卡时用 --fail-on meta,dash,b2,heading,disclaim 打开。
+  默认只有 half 卡退出码；dash/b2/meta/heading/disclaim/wall/calque 是提示项，默认只报告，
+  需要硬卡时用 --fail-on meta,dash,b2,heading,disclaim,wall,calque 打开。
 """
 
 import argparse
@@ -65,14 +66,15 @@ RE_B2 = re.compile(
 RE_META = re.compile(r"值得深思|值得关注|值得玩味|不禁让人|引人深思|发人深省|令人深思|不禁要问")
 
 # 5) 章节机械编号 / 量词标题（只在 ATX 标题行 # 上判）。
+#    多字词与单字量词分别分组，并要求分隔符或行尾，避免「一关于/二维码/360度/第一方/四条原则」等误报。
 RE_HEADING = re.compile(
     r"^#{1,6}\s*("
     r"[一二三四五六七八九十]+[、.]"
     r"|第[一二三四五六七八九十0-9]+[章节、]"
     r"|[0-9]+[.、）)]"
     r"|其[一二三四五六七八九十]"
-    r"|第[一二三四五六七八九十0-9]+[步刀条个板斧维度方面]"
-    r"|[一二三四五六七八九十0-9]+[刀步条板斧维度]"
+    r"|第[一二三四五六七八九十0-9]+(?:板斧|维度|方面|(?:步|刀|条|个|关)(?=$|[\s：:、，,。·\-]))"
+    r"|[一二三四五六七八九十0-9]+(?:个?(?:板斧|维度|步骤)|(?:刀|步|条|关)(?=$|[\s：:、，,。·\-]))"
     r")"
 )
 
@@ -86,14 +88,24 @@ RE_DISCLAIM = re.compile(
     r"|还(?:得|要|需要)看[^。！？\n]{0,15}(?:什么时候|何时)"
 )
 
-# 受保护跨度：行内代码、链接、HTML 注释（先屏蔽，避免把代码/URL/注释标记里的半角标点当病）。
-RE_INLINE_CODE = re.compile(r"`[^`]*`")
+# 7) 零歧义英文机翻怪词与表演量词弱提示（仅收低歧义硬词，高歧义词留给语义判断）。
+RE_CALQUE = re.compile(
+    r"夹具|硬闸|挽具|套接字|评分量规"
+    r"|第[一二三四五六七八九十0-9]+刀|过[一二三四五六七八九十0-9]+关|三板斧|组合拳"
+)
+
+# 受保护跨度：多反引号与单反引号行内代码、链接（含锚点/相对路径/一层圆括号）、HTML 注释。
+RE_INLINE_CODE = re.compile(r"(?<!`)(`+)(?!`).*?(?<!`)\1(?!`)")
 RE_URL = re.compile(r"https?://\S+|www\.\S+")
-RE_MD_LINK_URL = re.compile(r"(\[[^\]]*\])\(\s*(https?://[^)\s]+|[^)\s]+\.[^)\s]+)\s*\)")
+RE_MD_LINK_URL = re.compile(
+    r"(\[[^\]]*\])\(\s*((?:https?://[^()\s]*|#[^()\s]*|/[^()\s]*|[^()\s]+\.[^()\s]+)"
+    r"(?:\([^)\s]*\)[^()\s]*)*)\s*\)"
+)
 # HTML 注释（含本技能自己的宪法标记 <!-- 底线条款:开始 -->）是结构标记，不是交付正文，剥掉。
 RE_HTML_COMMENT = re.compile(r"<!--.*?-->")
+RE_FENCE = re.compile(r"^\s*(`{3,}|~{3,})(.*)$")
 
-CHECKS = ("half", "dash", "b2", "meta", "heading", "disclaim", "wall")
+CHECKS = ("half", "dash", "b2", "meta", "heading", "disclaim", "wall", "calque")
 CN = {
     "half": "半角标点",
     "dash": "破折号串",
@@ -102,10 +114,20 @@ CN = {
     "heading": "序号标题",
     "disclaim": "免责尾巴（原文有的照留）",
     "wall": "段落墙（拆成列表/表格）",
+    "calque": "机翻怪词/表演量词（语境人判）",
 }
 
 CJK_CHAR = re.compile(r"[\u3400-\u9fff\uf900-\ufaff]")
 STRUCT_START = re.compile(r"^\s*(?:#|\||>|[-*+]\s|\d+[.)、]\s|!\[|<)")
+
+
+def _frontmatter_end(lines) -> int:
+    """若文本以 YAML frontmatter 开头（首行 ---），返回闭合行下标；否则返回 -1。"""
+    if lines and lines[0].strip() == "---":
+        for j in range(1, len(lines)):
+            if lines[j].strip() == "---":
+                return j
+    return -1
 
 
 def scan_walls(text: str, para_max: int, run_max: int):
@@ -148,11 +170,9 @@ def scan_walls(text: str, para_max: int, run_max: int):
         block = []
 
     lines = text.split("\n")
-    if lines and lines[0].strip() == "---":  # YAML frontmatter 不是正文
-        for j in range(1, len(lines)):
-            if lines[j].strip() == "---":
-                lines[:j + 1] = [""] * (j + 1)
-                break
+    fm_end = _frontmatter_end(lines)
+    if fm_end >= 0:  # YAML frontmatter 不是正文
+        lines[:fm_end + 1] = [""] * (fm_end + 1)
     for lineno, raw in enumerate(lines, 1):
         if raw.strip():
             if not block:
@@ -202,6 +222,10 @@ def scan_line(line: str, checks):
         frags = [m.group() for m in re.finditer(RE_DISCLAIM, line)]
         if frags:
             hits["disclaim"] = frags
+    if "calque" in checks:
+        frags = [m.group() for m in re.finditer(RE_CALQUE, line)]
+        if frags:
+            hits["calque"] = frags
     return hits
 
 
@@ -223,24 +247,35 @@ def scan_file(path: str, checks, para_max: int = 150, run_max: int = 3):
     text = re.sub(r"<!--.*?-->", _blank_keep_newlines, text, flags=re.DOTALL)
 
     in_fence = False
-    fence_marker = None
+    fence_char = ""
+    fence_len = 0
     fence_open_line = 0
-    prose_lines = []  # 代码围栏内的行换成空行，供段落墙检查使用
-    for i, raw in enumerate(text.split("\n"), 1):
-        stripped = raw.strip()
-        # 围栏代码块状态机：``` 或 ~~~ 起/止。块内整行不扫。
-        if stripped.startswith("```") or stripped.startswith("~~~"):
-            marker = stripped[:3]
-            if not in_fence:
-                in_fence = True
-                fence_marker = marker
-                fence_open_line = i
-            elif marker == fence_marker:
-                in_fence = False
-                fence_marker = None
+    lines = text.split("\n")
+    fm_end = _frontmatter_end(lines)
+    prose_lines = []  # 代码围栏与 frontmatter 内的行换成空行，供段落墙检查使用
+    for i, raw in enumerate(lines, 1):
+        if i - 1 <= fm_end:
             prose_lines.append("")
             continue
-        if in_fence:
+        m_fence = RE_FENCE.match(raw)
+        if not in_fence:
+            if m_fence:
+                seq, rest = m_fence.groups()
+                # 反引号围栏信息串中若再含反引号，实为同行多反引号行内代码（如 ```foo,bar```）
+                if not (seq[0] == "`" and "`" in rest):
+                    in_fence = True
+                    fence_char = seq[0]
+                    fence_len = len(seq)
+                    fence_open_line = i
+                    prose_lines.append("")
+                    continue
+        else:
+            if m_fence:
+                seq, rest = m_fence.groups()
+                if seq[0] == fence_char and len(seq) >= fence_len and not rest.strip():
+                    in_fence = False
+                    fence_char = ""
+                    fence_len = 0
             prose_lines.append("")
             continue
         prose_lines.append(raw)
@@ -253,7 +288,7 @@ def scan_file(path: str, checks, para_max: int = 150, run_max: int = 3):
         # 奇数个围栏标记 = 未闭合：其后内容被当代码跳过，会让脏稿假绿，必须报错而非静默放行。
         return results, (
             "第 %d 行起出现未闭合的代码围栏（%s），其后内容被当代码块跳过——"
-            "这会让半角标点漏报、脏稿假绿。请先闭合围栏再扫。" % (fence_open_line, fence_marker)
+            "这会让半角标点漏报、脏稿假绿。请先闭合围栏再扫。" % (fence_open_line, fence_char * fence_len)
         )
     if "wall" in checks:
         for ln, desc, frag in scan_walls("\n".join(prose_lines), para_max, run_max):
@@ -271,7 +306,7 @@ def main(argv=None):
     p.add_argument("--checks", default=",".join(CHECKS),
                    help="逗号选择要跑的检查: %s（默认全部）" % ",".join(CHECKS))
     p.add_argument("--fail-on", default="half",
-                   help="哪些类别命中时退出码=1（逗号分隔；默认 half，即硬闸只卡半角标点）")
+                   help="哪些类别命中时退出码=1（逗号分隔；默认 half，即硬卡点只卡半角标点）")
     p.add_argument("--para-max", type=int, default=150, help="wall：单段字数上限（默认 150；技术方案 120、畅想 200）")
     p.add_argument("--run-max", type=int, default=3, help="wall：纯段落最多连排几段（默认 3）")
     p.add_argument("--quiet", action="store_true", help="只输出命中摘要，不打印命中行原文")
@@ -299,7 +334,7 @@ def main(argv=None):
         for lineno, hits, raw in results:
             for c, frags in hits.items():
                 total[c] += 1
-                tag = "硬闸" if c == "half" else "建议/体检"
+                tag = "硬卡点" if c == "half" else "建议/体检"
                 print("  [%s·%s] L%d: %s" % (CN[c], tag, lineno, " | ".join(frags)))
                 if not args.quiet:
                     print("        %s" % raw[:100])

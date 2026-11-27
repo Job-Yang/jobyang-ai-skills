@@ -65,6 +65,13 @@ POSITIVE = {
         "## 一、背景\n"
         "### 1. 概述\n"
         "## 三板斧\n"
+        "## 第一关：准备\n"
+        "## 五个维度\n"
+    ),
+    # 零歧义机翻怪词与表演量词（全角标点，只测 calque，默认不卡退出码）
+    "pos_calque.md": (
+        "我们先用测试夹具和挽具跑一遍，再查套接字与评分量规，最后看硬闸有没有拦下。\n"
+        "推进上先砍第一刀、补第四刀和第5刀，再挥三板斧、靠组合拳连过三关。\n"
     ),
     # 闭引号/闭书名号/闭括号后贴半角逗号（上轮漏报）
     "pos_closing_punct.md": (
@@ -136,6 +143,40 @@ NEGATIVE = {
         "上述方案只按原计划推进。\n"
         "我们目前还没有验证 AI 能否识别这些约束。\n"
     ),
+    # 保护代码、白名单真术语与高歧义词（不许触发 calque 误报）
+    "neg_calque_safe.md": (
+        "我们用 `pytest` 的 `fixture` 和 `夹具` 变量名做验证，参考下面代码。\n"
+        "```\n"
+        "夹具 = '三板斧'\n"
+        "```\n"
+        "这套编排流程和脚手架已经上线，鲁棒性、柯里化与副作用边界都经过蒸馏和冒烟测试验证。\n"
+        "小区门口装了新门禁，房屋契约写清楚了规则，我们按经验做了分诊，算法采用启发式搜索。\n"
+        "独立游戏教程第一关设计得很克制，第二关才引入潜行机制。\n"
+    ),
+    # 对抗保护边界：双反引号行内码、锚点/相对路径/含括号链接、YAML frontmatter、嵌套四反引号、同行多反引号
+    "neg_adversarial_shields.md": (
+        "---\n"
+        "title: 深度复盘——初稿\n"
+        "tags: [中文, 英文]\n"
+        "---\n"
+        "## 一关于发布流程的说明\n"
+        "## 二维码生成说明\n"
+        "## 360度全景图展示\n"
+        "## 二板市场分析\n"
+        "## 第一方依赖清单\n"
+        "## 第二面墙的承重问题\n"
+        "## 三关系模型汇总\n"
+        "## 四条原则（全档共享）\n"
+        "## 第1关试玩笔记\n"
+        "双反引号 ``中文,测试`` 和 `` `夹具` 与 `硬闸` `` 不应漏报。\n"
+        "参考 [章节锚点](#一、背景,细节)、[站内路径](/wiki/中文,说明) 与 [维基](https://zh.wikipedia.org/wiki/Foo_(bar)/中文,测试)。\n"
+        "````markdown\n"
+        "```python\n"
+        "x = \"内部三反引号不应提前闭合,导致后续出错\"\n"
+        "```\n"
+        "````\n"
+        "```inline,code``` 这句同行三反引号不应被当成未闭合围栏。\n"
+    ),
 }
 
 
@@ -178,6 +219,21 @@ class TestQuickScan(unittest.TestCase):
         r = run(["--checks", "heading", self.p["pos_heading.md"]])
         self.assertIn("序号标题", r.stdout)
         self.assertIn("一、背景", r.stdout)
+        self.assertIn("第一关", r.stdout)
+        self.assertIn("五个维度", r.stdout)
+
+    def test_positive_calque_reported_and_advisory_default(self):
+        r = run(["--checks", "calque", self.p["pos_calque.md"]])
+        self.assertEqual(r.returncode, 0, "calque 默认不应驱动退出码\n" + r.stdout)
+        for word in ("夹具", "硬闸", "挽具", "套接字", "评分量规", "第一刀", "第四刀", "第5刀", "过三关", "三板斧", "组合拳"):
+            self.assertIn(word, r.stdout, "漏报 calque 词：%s\n%s" % (word, r.stdout))
+        r2 = run(["--fail-on", "calque", self.p["pos_calque.md"]])
+        self.assertEqual(r2.returncode, 1, "--fail-on calque 应卡退出码\n" + r2.stdout)
+
+    def test_adversarial_shields_and_heading_false_positives_clean(self):
+        r = run([self.p["neg_adversarial_shields.md"]])
+        self.assertEqual(r.returncode, 0, "对抗保护样例失败：\n" + r.stdout + r.stderr)
+        self.assertIn("(clean)", r.stdout, "对抗保护样例存在误报：\n" + r.stdout)
 
     def test_b2_not_default_fail(self):
         # B2 默认只是建议层，不驱动退出码（与技能 L73/L215 一致）

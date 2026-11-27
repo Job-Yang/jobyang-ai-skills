@@ -55,11 +55,68 @@ import re, sys, json, argparse, os
 # ⚠️ 但「零容忍(zero=True)」硬病永不豁免:翻译腔、翻案体「不是X是Y」、半角标点、
 # 元话语——呼应 haohao-shuohua SKILL.md 软硬边界「风格只能盖中性缺省口味,盖不了硬病红线」。
 # 这也解释了为什么「余华」不是好风格档:他的叙事签名恰好压在翻案体这条硬病上,豁免不掉。
+# 中日韩统一表意文字（含扩展 A、兼容表意文字）及常见闭引号/闭书名号/闭括号
+CJK_OR_CLOSE = (
+    r"[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff"
+    r"\u300d\u300f\u300b\u3011\u201d\u2019\uff09]"
+)
+RE_HALF_PUNCT = re.compile(CJK_OR_CLOSE + r"[,;:]|" + CJK_OR_CLOSE + r"\.(?![0-9])")
+
+_RE_HTML_COMMENT = re.compile(r"<!--.*?-->", re.S)
+_RE_FENCE = re.compile(r"^\s*(`{3,}|~{3,})(.*)$")
+_RE_INLINE_CODE = re.compile(r"(?<!`)(`+)(?!`).*?(?<!`)\1(?!`)")
+_RE_MD_LINK_URL = re.compile(
+    r"(\[[^\]]*\])\(\s*((?:https?://[^()\s]*|#[^()\s]*|/[^()\s]*|[^()\s]+\.[^()\s]+)"
+    r"(?:\([^)\s]*\)[^()\s]*)*)\s*\)"
+)
+_RE_URL = re.compile(r"https?://\S+|www\.\S+")
+
+
+def _mask_for_scan(text: str) -> str:
+    """屏蔽 YAML frontmatter、HTML 注释、围栏代码块、行内码与 URL（保留换行以免漂移）。"""
+    if not text:
+        return ""
+    cleaned = _RE_HTML_COMMENT.sub(lambda m: re.sub(r"[^\n]", " ", m.group()), text)
+    lines = cleaned.split("\n")
+    fm_end = -1
+    if lines and lines[0].strip() == "---":
+        for j in range(1, len(lines)):
+            if lines[j].strip() == "---":
+                fm_end = j
+                break
+    out_lines = []
+    in_fence, fence_char, fence_len = False, "", 0
+    for idx, raw in enumerate(lines):
+        if idx <= fm_end:
+            out_lines.append("")
+            continue
+        m_fence = _RE_FENCE.match(raw)
+        if not in_fence:
+            if m_fence:
+                seq, rest = m_fence.groups()
+                if not (seq[0] == "`" and "`" in rest):
+                    in_fence, fence_char, fence_len = True, seq[0], len(seq)
+                    out_lines.append("")
+                    continue
+        else:
+            if m_fence:
+                seq, rest = m_fence.groups()
+                if seq[0] == fence_char and len(seq) >= fence_len and not rest.strip():
+                    in_fence, fence_char, fence_len = False, "", 0
+            out_lines.append("")
+            continue
+        masked = _RE_INLINE_CODE.sub(lambda m: " " * len(m.group()), raw)
+        masked = _RE_MD_LINK_URL.sub(lambda m: m.group(1) + "(" + " " * len(m.group(2)) + ")", masked)
+        masked = _RE_URL.sub(lambda m: " " * len(m.group()), masked)
+        out_lines.append(masked)
+    return "\n".join(out_lines)
+
+
 RESIDUAL_RULES = [
-    ("章节序号/量词标题", re.compile(r'(^|\n)#{0,6}\s*([一二三四五六七八九十]+[、.]|第[一二三四五六七八九十0-9]+[章节、]|其[一二三四五六七八九十]|第[一二三四五六七八九十0-9]+[步刀条个板斧维度方面]|[一二三四五六七八九十0-9]+[刀步条板斧维度])'), 10, True, False),
+    ("章节序号/量词标题", re.compile(r'(^|\n)#{1,6}\s*(?:[一二三四五六七八九十]+[、.]|第[一二三四五六七八九十0-9]+[章节、]|[0-9]+[.、）)]|其[一二三四五六七八九十]|第[一二三四五六七八九十0-9]+(?:板斧|维度|方面|(?:步|刀|条|个|关)(?=$|[\s：:、，,。·\-]))|[一二三四五六七八九十0-9]+(?:个?(?:板斧|维度|步骤)|(?:刀|步|条|关)(?=$|[\s：:、，,。·\-])))'), 10, True, False),
     ("B2不是X是Y/翻案体", re.compile(r'(不是[^，。；\n]{1,30}[，,](而)?是[^，。\n]{1,30}|这不是[^，。\n]{1,30}|管的是[^，。\n]{1,20}不管|不在[^，。\n]{1,15}[，,]?而(在|是)|你以为[^，。\n]{1,30}[，,]?其实|(看似|表面上)[^，。\n]{1,30}[，,]?实则|回头才(发现|明白)|真正[^，。\n]{1,20}的是|不重要[，,]重要的是)'), 8, True, False),
     ("元话语", re.compile(r'(值得深思|值得关注|值得玩味|不禁让人|引人深思|发人深省|令人深思|不禁要问)'), 8, True, False),
-    ("中文夹半角标点", re.compile(r'[一-鿿][,;:]|[一-鿿],(?=[^0-9])|[一-鿿]\.(?=[^0-9])'), 6, True, False),
+    ("中文夹半角标点", RE_HALF_PUNCT, 6, True, False),
     ("破折号——(疑似需人念)", re.compile(r'——'), 5, False, True),
     ("谄媚垫话", re.compile(r'(好问题|很好的问题|很有价值的观点|您说得对|说得太对|希望[^，。\n]{0,10}(有所帮助|帮到你|对(您|你))|期待您的|非常感谢您)'), 6, False, False),
     ("段末拔高/口号", re.compile(r'(综上所述|由此可见|不难看出|永远在路上|未来可期|书写[^，。\n]{0,8}篇章|受益终身|方能致远|砥砺前行|再创辉煌|保驾护航|谱写|新的篇章)'), 5, False, False),
@@ -88,15 +145,18 @@ CEREMONIAL_RULES = {
     "谄媚/寒暄", "段末拔高/口号", "强调副词堆", "文言公文腔",
     "分号排比句", "四字成语堆", "排比连接词",
 }
+BUSINESS_RULES = {"谄媚/寒暄"}
 CEREMONIAL_REGISTERS = {"敬语", "官方对外", "要气势"}
 CEREMONIAL_GENRE_REGISTER = {
     "培训": "官方对外", "培训材料": "官方对外",
     "公关": "官方对外", "危机公关": "官方对外", "发布公告": "官方对外", "对外故障说明": "官方对外",
-    "招聘": "官方对外", "招聘文案": "官方对外", "活动宣传": "官方对外", "落地页": "官方对外", "产品落地页": "官方对外",
-    "感谢信": "敬语", "邀请函": "敬语", "客服回复": "敬语", "给客户的邮件": "敬语",
-    "致歉信": "敬语", "答复邮件": "敬语", "自我介绍": "敬语",
+    "感谢信": "敬语", "邀请函": "敬语", "致歉信": "敬语",
     "内部信": "要气势", "年会致辞": "要气势", "开工寄语": "要气势", "团队口号": "要气势",
     "slogan": "要气势", "项目启动动员": "要气势",
+}
+BUSINESS_GENRES = {
+    "产品介绍", "招聘", "招聘文案", "招聘JD", "招聘 JD", "活动宣传", "落地页", "产品落地页",
+    "客服回复", "客服话术", "给客户的邮件", "答复邮件", "自我介绍", "新人自我介绍", "同行评审",
 }
 
 
@@ -104,23 +164,29 @@ def score_residual(text, style=None, register=None):
     """style: 指定名家风格名(如 '鲁迅'/'王小波')时,豁免「疑似(maybe=True)」类的
     节奏信号扣分——破折号、三连、分号排比这些本就是名家的签名笔法,机器判不了
     前后通不通,原本就只标「疑似,需人念」。
-    register: 指定礼仪/宣传场合(敬语/官方对外/要气势，或对应 12 类特殊文体)时，
-    豁免官腔、敬语与排比气势等礼仪修辞规则。
-    **硬病(零容忍)永不豁免**:翻译腔、翻案体「不是X是Y」这类,呼应 SKILL.md
-    软硬边界——风格与场合都只能盖中性口味，盖不了「硬病红线」。"""
-    reg_key = register if register in CEREMONIAL_REGISTERS else CEREMONIAL_GENRE_REGISTER.get((register or "").strip(), "")
+    register: 区分「仪式与品牌宣示」（全量豁免 CEREMONIAL_RULES）与「商务答复/商业宣传」
+    （仅豁免 谄媚/寒暄，照常清去虚词堆砌与公文腔），对齐 SKILL.md 与 judge-protocol.md。
+    **硬病(零容忍)永不豁免**:翻译腔、翻案体「不是X是Y」这类。"""
+    reg_raw = (register or "").strip()
+    if register in CEREMONIAL_REGISTERS or reg_raw in CEREMONIAL_GENRE_REGISTER:
+        exempt_rules = CEREMONIAL_RULES
+    elif reg_raw in BUSINESS_GENRES:
+        exempt_rules = BUSINESS_RULES
+    else:
+        exempt_rules = set()
+    scan_text = _mask_for_scan(text)
     total, detail = 0, []
     for name, rx, per, zero, maybe in RESIDUAL_RULES:
-        n = len(rx.findall(text))
+        n = len(rx.findall(scan_text))
         if n:
             # 风格签名/特殊场合豁免:仅豁免对应非零容忍项,硬病红线照扣
             style_exempt = bool(style) and maybe and not zero
-            reg_exempt = bool(reg_key) and (name in CEREMONIAL_RULES) and not zero
+            reg_exempt = (name in exempt_rules) and not zero
             exempt = style_exempt or reg_exempt
             pen = 0 if exempt else n * per
             total += pen
             samples = []
-            for m in rx.finditer(text):
+            for m in rx.finditer(scan_text):
                 s = m.group(0).strip()
                 if s and s not in samples: samples.append(s)
                 if len(samples) >= 3: break
@@ -128,13 +194,13 @@ def score_residual(text, style=None, register=None):
                            "零容忍": zero, "疑似": maybe, "样本": samples,
                            "风格豁免": style_exempt, "场合豁免": reg_exempt})
     # 被字句阶梯:≥3个才扣,每个4分
-    nb = len(RX_BEI.findall(text))
+    nb = len(RX_BEI.findall(scan_text))
     if nb >= 3:
         pen = nb * 4
         total += pen
         detail.append({"类别": "被字句滥用(≥3)", "命中数": nb, "小计": pen,
                        "零容忍": False, "疑似": False,
-                       "样本": [m.group(0) for m in list(RX_BEI.finditer(text))[:3]]})
+                       "样本": [m.group(0) for m in list(RX_BEI.finditer(scan_text))[:3]]})
     # 密度惩罚:全文命中总数 >5,超出部分每处 +3(呼应"某段命中超5处整段重写"红线)
     # 已豁免的命中不计入密度(否则名家签名笔法或礼仪套语会把密度顶穿,等于没豁免干净)
     total_hits = sum(d["命中数"] for d in detail if not (d.get("风格豁免") or d.get("场合豁免")))

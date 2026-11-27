@@ -1,6 +1,6 @@
 # 技能管家
 
-> 站在整个技能库的视角回答四件事：要不要加新技能、加了放哪跟谁配合、现有集合健不健康、既有规范有没有变成强模型阻力或互相打架。
+> 站在整个技能库的视角回答五件事：要不要加新技能、加了放哪跟谁配合、现有集合健不健康、既有规范有没有变成强模型阻力或互相打架、中立路由下会不会漏触或互抢。
 
 ## 它是怎么成为一个技能的
 
@@ -8,7 +8,7 @@
 
 ![技能管家：把技能集合当成系统治理](assets/readme/pipeline.png)
 
-## 三条主线
+## 五条主线
 
 - **A. 准入五问**（全过才建，任一问答否就不做，并给出已有的正确承接方）：
   1. 需求成立吗：高频反复的痛，或低频高重要且长期解决不了，要能举出真实场景；「看着不错」「以后用得上」「听起来高级」是灵感不是需求，不建。
@@ -19,6 +19,7 @@
 - **B. 健康体检**：静态项由脚本带规则 ID 扫：frontmatter/命名、description 路由信号、broken reference、围栏闭合、正文平台硬绑定、超长/孤儿/空壳/疑似密钥，外加 C003 覆盖真空、C001 悬空交接；语义项（退出条件、有限重试、可观察触发、选项默认、规则矛盾、真实撞车、覆盖真空是否成立）不写正则，靠人工用真实 query 判断；动态项（真实触发率、漏触、读取顺序、端到端成功率）归 Harness，本技能不做。产出「问题 → 证据（文件：字段）→ 建议动作」，只报告不改文件。
 - **C. 外部技能收录**：三档都要记录理由。直接用：质量够、无绑定、不撞，登记或引用，不复制；炼化：内核好但有平台绑定或风格不合，保留方法、剥掉宿主专属引用、改成中性降级，炼完再过第 4、5 问；重造：评测证实硬伤才重造，先写清根因再自建。
 - **D. 减负与冲突治理（0.2.0 新增）**：`library_doctor.py` 补充 `B001–B005`（description 总预算、隐形必读行数、强模型拐杖密度、维护信息泄露）与 `X001–X004`（多跳串联与单向豁免、跨技能规则极性打架、内部矛盾、全域触发风险），配套 `references/dual-model-design.md` 提供 L1–L4 四层分层与强弱双模验证法，清理旧宿主专名白名单硬编码并支持 `--external-skills`、`--max-desc-total`、`--strict`。
+- **E. 活卷路由盲测与真实翻车回归**：配套 `scripts/route_eval.py` 与 `references/routing-eval.md`。坚持「只存考纲、现出活卷、改后换卷、静态只收真坑」：只把 `name + description` 抽成随机乱序中立目录，经 `audit` 防泄题与盲测导出后交给强/弱双模子代理盲选，`score` 只输出漏触、边界互抢、轻任务误触与 `pass^k` 抖动雷达而不打总分。
 
 ## 体检工具自己先被修过一次
 
@@ -55,6 +56,8 @@ python3 scripts/library_doctor.py <技能库目录> --baseline baseline.json
 python3 scripts/library_doctor.py <技能库目录>                 # 全量静态扫描
 python3 scripts/library_doctor.py <目录> --baseline baseline.json   # 只报基线外新增
 python3 scripts/test_doctor.py                                # 先验证体检本身有效
+python3 scripts/test_route_eval.py                            # 先验证活卷路由评测有效
+python3 scripts/route_eval.py blueprint <技能库目录> --shuffle --out-catalog /tmp/cat.json --out-blueprint /tmp/bp.json
 ```
 
 作为技能使用时直接说「我要不要为这个做个新技能」「给技能库做个体检」「这个外部技能要不要收进来」。完整判据见 `references/admission-gate.md` 和 `references/health-check.md`。

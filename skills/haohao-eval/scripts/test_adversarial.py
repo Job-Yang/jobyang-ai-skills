@@ -328,6 +328,53 @@ class AdversarialTest(unittest.TestCase):
         self.assertGreater(by_reg["B2不是X是Y/翻案体"]["小计"], 0)
         self.assertFalse(by_reg["B2不是X是Y/翻案体"]["场合豁免"])
 
+    def test_score_residual_heading_code_shields_and_business_register(self):
+        import scorer
+
+        # 1) 无 # 的普通正文与多字词误报标题绝不触发 章节序号/量词标题；真序号/量词标题正常命中
+        clean_prose = (
+            "第一步先查日志，第二步核对配置。二维码生成耗时正常。另一方面，目前进展顺利。\n"
+            "## 一关于发布流程的说明\n## 第一方依赖清单\n## 二维码生成说明\n"
+        )
+        _, det_clean = scorer.score_residual(clean_prose)
+        self.assertNotIn("章节序号/量词标题", {d["类别"] for d in det_clean})
+
+        bad_headings = "## 1. 概述\n## 第一关：准备\n## 五个维度\n"
+        _, det_bad = scorer.score_residual(bad_headings)
+        by_bad = {d["类别"]: d for d in det_bad}
+        self.assertEqual(by_bad["章节序号/量词标题"]["命中数"], 3)
+
+        # 2) 代码块、双反引号、Markdown 链接与 YAML frontmatter 内的半角标点不误报；闭引号与文末句号正常命中
+        shielded = (
+            "---\n"
+            "tags: [中文, 英文]\n"
+            "---\n"
+            "参考 ``双反引号,样本`` 和 [锚点](#节,细节) 与\n"
+            "```\n"
+            "中文,代码块.不报错;\n"
+            "```\n"
+            "他说「明白」,这就结束."
+        )
+        _, det_half = scorer.score_residual(shielded)
+        by_half = {d["类别"]: d for d in det_half}
+        self.assertEqual(by_half["中文夹半角标点"]["命中数"], 2)
+        self.assertEqual(by_half["中文夹半角标点"]["样本"], ["」,", "束."])
+
+        # 3) 两档分流：商务实用文体只豁免谄媚/寒暄，不豁免强调副词堆与文言公文腔；感谢信全豁免礼仪项
+        biz_txt = "请您放心，祝您工作顺利！请务必极其重视，该方案旨在提升性能。"
+        _, det_biz = scorer.score_residual(biz_txt, register="答复邮件")
+        by_biz = {d["类别"]: d for d in det_biz}
+        self.assertTrue(by_biz["谄媚/寒暄"]["场合豁免"])
+        self.assertGreater(by_biz["强调副词堆"]["小计"], 0)
+        self.assertFalse(by_biz["强调副词堆"]["场合豁免"])
+        self.assertGreater(by_biz["文言公文腔"]["小计"], 0)
+
+        _, det_cer = scorer.score_residual(biz_txt, register="感谢信")
+        by_cer = {d["类别"]: d for d in det_cer}
+        self.assertTrue(by_cer["谄媚/寒暄"]["场合豁免"])
+        self.assertTrue(by_cer["强调副词堆"]["场合豁免"])
+        self.assertEqual(by_cer["强调副词堆"]["小计"], 0)
+
 
 def glob_any(pattern):
     import glob

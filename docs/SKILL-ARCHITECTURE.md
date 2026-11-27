@@ -37,4 +37,4 @@
 - **静态零冲突：** `library_doctor.py --strict` 检出的 `F / D / R / P / C / X` 阻断项与冲突线索清零，全库 `description` 总字符控制在 `≤ 4500` 字符预算内，避免宿主截断丢技能。
 - **强模型不降分且超裸跑：** 用相同真实难例与对抗用例盲评 `bare`、`old` 与 `new`，要求 `new ≥ bare` 且 `new ≥ old`（防过度脚手架负增益）。
 - **弱模型守住底线：** 较弱模型加载 `new` 后，五维均分不明显回退（`≥ old - 0.2`）且单项最低分 `≥ 8` 分；若掉底线，优先补 `L1` 脚本或 `L3` 按需短范例，不回退到重度过程微操。
-- **中立路由零撞车：** 更新后全库中立路由盲测正例召回达标且边界误抢为零。
+- **中立路由零撞车：** 更新后通过 `skill-library-keeper/scripts/route_eval.py` 对全库纯中立 `name + description` 做强弱双模活卷盲测并回归 `evals/real-badcases.jsonl`，确认无系统性漏触、轻任务误触与边界 `forbidden` 误抢；每次改动 `description` 后必须换全新随机序与新活卷复验（防刷分背题）。

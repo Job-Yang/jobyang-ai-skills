@@ -1,0 +1,1 @@
+{"id": "RB001", "category": "real-badcase", "query": "帮我把这个新接手的开源项目源码摸清楚，整理成一份给组内同学看的机制研读文档", "expected": "feynman-explainer", "forbidden": ["engineering-docs", "writing-craft"], "source": "real-history-ponytail-vacuum", "note": "历史真实翻车（ponytail）：对内源码调研落成文档曾被多技能互推导致覆盖真空"}

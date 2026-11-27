@@ -129,7 +129,7 @@ def mechanical_check(item, output_text):
     dash_new = body.count("——") - src.count("——")
     if dash_new > 0:
         hints.append(f"破折号比原文多 {dash_new} 个")
-    half = re.findall(r"[\u4e00-\u9fff][,;:](?=[\u4e00-\u9fff])", body)
+    half = scorer.RE_HALF_PUNCT.findall(scorer._mask_for_scan(body))
     if half:
         hints.append(f"中文里夹了半角标点 {len(half)} 处")
     res, detail = scorer.score_residual(body, register=item.get("场合") or item.get("文体"))
