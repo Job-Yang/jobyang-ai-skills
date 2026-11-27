@@ -21,6 +21,7 @@ class EngineeringFlowPluginTests(unittest.TestCase):
         for event in ("PreInvocation", "PreToolUse", "PostToolUse", "Stop"):
             self.assertNotIn(event, hooks_cfg)
 
+        self.assertFalse((PLUGIN_DIR / "hooks").exists())
         self.assertFalse((PLUGIN_DIR / "hooks" / "flow_hook.py").exists())
         self.assertFalse((PLUGIN_DIR / "tests" / "test_flow_hook.py").exists())
 

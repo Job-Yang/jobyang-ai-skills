@@ -2,18 +2,27 @@
 """pr-prep 离线 HTML 视觉导览与防仓内污染回归测试（零外部依赖）。"""
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 SKILL_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(SKILL_ROOT / "scripts"))
 import pr_visual_report as pvr  # noqa: E402
 
+ISOLATED_GIT_ENV = {"GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
+
 
 class PrVisualReportTests(unittest.TestCase):
+    def setUp(self):
+        env_patch = patch.dict(os.environ, ISOLATED_GIT_ENV)
+        env_patch.start()
+        self.addCleanup(env_patch.stop)
+
     def _git(self, cwd: Path, *args: str) -> str:
         r = subprocess.run(["git", *args], cwd=str(cwd), capture_output=True, text=True, check=True)
         return r.stdout.strip()
@@ -117,6 +126,66 @@ class PrVisualReportTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 pvr.collect_pr_data(root, f"--output={victim}")
             self.assertFalse(victim.exists())
+
+    def test_backtick_url_mixed_quote_redaction_cjk_quotepath_and_risk_total(self):
+        with tempfile.TemporaryDirectory(prefix="pr-adv-") as td, \
+             tempfile.TemporaryDirectory(prefix="pr-adv-out-") as out_td:
+            root = Path(td)
+            self._git(root, "init", "-b", "main")
+            self._git(root, "config", "user.email", "local-test")
+            self._git(root, "config", "user.name", "T")
+            self._git(root, "config", "core.quotePath", "true")
+            (root / "中文删库").mkdir()
+            del_py = root / "中文删库" / "旧脚本.py"
+            del_py.write_text("def old():\n    return 1\n", encoding="utf-8")
+            self._git(root, "add", "中文删库/旧脚本.py")
+            self._git(root, "commit", "-m", "init cn")
+
+            self._git(root, "checkout", "-b", "feat/adv-security")
+            self._git(root, "rm", "中文删库/旧脚本.py")
+
+            bt_secret = "demoBt" + "Key1234567890"
+            url_pass = "demoUrl" + "Pass9876"
+            mixed_dbg = "mixedInner" + "DebugVal"
+            bt_dbg = "tplSecret" + "DebugVal"
+            raw_tok = "rawTok" + "Unquoted99"
+
+            (root / "billing").mkdir()
+            cn_billing = root / "billing" / "退款回调.py"
+            cn_billing.write_text(
+                f"k1 = `api_key={bt_secret}`\n"
+                f'u = "https://dev:{url_pass}@staging.example.invalid/api"\n'
+                f'console.log("it\'s {mixed_dbg}");\n'
+                f"console.log(`tpl={bt_dbg}`);\n"
+                f"console.log(token={raw_tok});\n",
+                encoding="utf-8",
+            )
+            (root / "auth").mkdir()
+            for idx in range(8):
+                (root / "auth" / f"guard_{idx}.py").write_text(f"v = {idx}\n", encoding="utf-8")
+
+            self._git(root, "add", "billing", "auth")
+            self._git(root, "commit", "-m", "adv redaction and cn paths")
+
+            data = pvr.collect_pr_data(root, "main")
+            self.assertIn("billing", data["risk_tags"])
+            self.assertIn("billing/退款回调.py", data["risk_tags"]["billing"])
+            self.assertIn("delete", data["risk_tags"])
+            self.assertIn("中文删库/旧脚本.py", data["risk_tags"]["delete"])
+            self.assertEqual(8, len(data["risk_tags"]["auth"]))
+
+            html_path, md_path = pvr.write_reports(data, Path(out_td))
+            md_txt = md_path.read_text(encoding="utf-8")
+            html_txt = html_path.read_text(encoding="utf-8")
+
+            self.assertIn("等共 8 个文件", md_txt)
+            self.assertIn("等共 8 个文件", html_txt)
+            self.assertIn("billing/退款回调.py", md_txt)
+            for text in (md_txt, html_txt):
+                for leaked in (bt_secret, url_pass, mixed_dbg, bt_dbg, raw_tok):
+                    self.assertNotIn(leaked, text)
+                self.assertIn("已脱敏", text)
+                self.assertIn("REDACTED", text)
 
 
 if __name__ == "__main__":

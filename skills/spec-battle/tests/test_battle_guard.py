@@ -5,16 +5,24 @@ from __future__ import annotations
 import contextlib
 import io
 import json
+import os
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 SKILL_ROOT = Path(__file__).resolve().parent.parent
+ISOLATED_GIT_ENV = {"GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
 
 
 class SpecBattleContractTests(unittest.TestCase):
+    def setUp(self):
+        env_patch = patch.dict(os.environ, ISOLATED_GIT_ENV)
+        env_patch.start()
+        self.addCleanup(env_patch.stop)
+
     def test_references_and_protocol_markers(self):
         skill_md = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8")
         for rel in ("references/engineering-workspace.md", "references/prosecution.md", "scripts/workspace_guard.py"):

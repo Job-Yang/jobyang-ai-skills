@@ -12,7 +12,7 @@
 | `local` | **多人公司大仓默认**（常规 Git 仓且无 `docs/spec`） | `.agent-work/feature/<slug>.md`、`.agent-work/spec/<slug>.md`、`.agent-work/GLOSSARY.md` | 把 `.agent-work/` 仅追加进本机私有 `.git/info/exclude`（用 `git rev-parse --git-path info/exclude` 兼容 worktree）；进度记于 `.agent-work/state/<slug>.json` 或按步提交；完工归档至 `.agent-work/spec/archived/<YYYY-MM-DD>-<slug>.md` 配 `.ignore` | **零污染**：不改共享 `.gitignore`，不混入 PR diff |
 | `ephemeral` | 非 Git 目录、一次性提问或极小单文件修改 | 对话内直接交付，不建持久化工作目录 | 对话内完成即止 | 无磁盘残留 |
 
-可用内置的 `workspace_guard.py detect` 自动识别模式，用 `init-local` 初始化零污染隐藏工作区（携带该脚本的技能位于其 `scripts/` 目录；跨目录执行时显式传 `--root <仓库路径>`）。
+可用配套 `workspace_guard.py detect` 自动识别模式，用 `init-local` 初始化零污染隐藏工作区（携带该脚本的技能位于其 `<skill_dir>/scripts/workspace_guard.py`，跨目录执行时加 `--root <目标仓路径>`）。
 
 ## 二、当前态原则与防污染纪律
 
@@ -27,9 +27,9 @@
   - 无上游文档的纯重构或直起 Spec：`Source: none`。
 - 盲审开工前与分步实现开工/续跑前，先运行 `verify-hash` 校验上游摘要：
 ```bash
-python3 scripts/workspace_guard.py verify-hash --spec <spec.md>
+python3 <skill_dir>/scripts/workspace_guard.py verify-hash --spec <spec.md> --root <目标仓路径>
 ```
-若摘要失配（退出码 `2`），说明上游需求或方案已变更，立即熔断并退回更新 Spec。
+若摘要失配（退出码 `2`），说明上游需求或方案已变更，停下提醒用户确认是否先更新 Spec 再继续。
 
 ## 四、双轨进度与跨会话无损续跑
 

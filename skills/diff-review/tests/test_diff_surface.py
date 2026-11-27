@@ -2,18 +2,27 @@
 """diff-review 表面分析脚本与契约回归测试（零外部依赖）。"""
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 SKILL_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(SKILL_ROOT / "scripts"))
 import diff_surface as ds  # noqa: E402
 
+ISOLATED_GIT_ENV = {"GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
+
 
 class DiffSurfaceTests(unittest.TestCase):
+    def setUp(self):
+        env_patch = patch.dict(os.environ, ISOLATED_GIT_ENV)
+        env_patch.start()
+        self.addCleanup(env_patch.stop)
+
     def _git(self, cwd: Path, *args: str) -> str:
         r = subprocess.run(["git", *args], cwd=str(cwd), capture_output=True, text=True, check=True)
         return r.stdout.strip()
@@ -116,6 +125,44 @@ class DiffSurfaceTests(unittest.TestCase):
             self.assertIn("auth/helper.py", res["risk_tags"]["auth"])
             self.assertIn("delete", res["risk_tags"])
             self.assertIn("schema.sql", res["risk_tags"]["delete"])
+
+    def test_cjk_quotepath_delete_stays_quick_with_badge_and_single_ref_working_tree(self):
+        with tempfile.TemporaryDirectory(prefix="diff-cjk-") as td:
+            root = Path(td)
+            self._git(root, "init", "-b", "main")
+            self._git(root, "config", "user.email", "local-test")
+            self._git(root, "config", "user.name", "Test")
+            self._git(root, "config", "core.quotePath", "true")
+            (root / "中文模块").mkdir()
+            old_py = root / "中文模块" / "待删脚本.py"
+            old_py.write_text("def dead():\n    return 1\n", encoding="utf-8")
+            self._git(root, "add", "中文模块/待删脚本.py")
+            self._git(root, "commit", "-m", "init cjk")
+
+            # 1) 中文未跟踪文件在 core.quotePath=true 下仍能正确读出行数与路径
+            new_py = root / "中文模块" / "新脚本.py"
+            new_py.write_text("a = 1\nb = 2\nc = 3\n", encoding="utf-8")
+            res_untracked = ds.analyze_surface(root)
+            self.assertEqual(1, res_untracked["untracked_count"])
+            self.assertEqual(3, res_untracked["added"])
+            self.assertEqual("中文模块/新脚本.py", res_untracked["files"][0]["path"])
+
+            # 2) 单 ref (--range main) 视为对比工作区，必须计入未跟踪新文件
+            res_single_ref = ds.analyze_surface(root, "main")
+            self.assertEqual(1, res_single_ref["untracked_count"])
+            self.assertEqual(3, res_single_ref["added"])
+            new_py.unlink()
+
+            # 3) 小规模 .py 删除触发 delete 人工必审红标，但保持 Quick 档不强升 Deep
+            self._git(root, "checkout", "-b", "feat/drop-dead")
+            self._git(root, "rm", "中文模块/待删脚本.py")
+            self._git(root, "commit", "-m", "drop dead cn py")
+
+            res_del = ds.analyze_surface(root, "main...HEAD")
+            self.assertEqual("Quick", res_del["depth"])
+            self.assertTrue(res_del["human_review_needed"])
+            self.assertIn("delete", res_del["human_review_tags"])
+            self.assertIn("中文模块/待删脚本.py", res_del["risk_tags"]["delete"])
 
 
 if __name__ == "__main__":

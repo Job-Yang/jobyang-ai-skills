@@ -118,6 +118,7 @@ def main() -> int:
         "skill-library-keeper",
         "spec-battle",
         "style-compass",
+        "vdd",
         "writing-craft",
     ]
     skill_checks: list[tuple[str, list[str], Path]] = [

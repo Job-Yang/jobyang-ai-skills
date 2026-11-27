@@ -5,16 +5,24 @@ from __future__ import annotations
 import contextlib
 import io
 import json
+import os
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 SKILL_ROOT = Path(__file__).resolve().parent.parent
+ISOLATED_GIT_ENV = {"GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
 
 
 class GoWorkFlowTests(unittest.TestCase):
+    def setUp(self):
+        env_patch = patch.dict(os.environ, ISOLATED_GIT_ENV)
+        env_patch.start()
+        self.addCleanup(env_patch.stop)
+
     def _git(self, cwd: Path, *args: str) -> str:
         r = subprocess.run(["git", *args], cwd=str(cwd), capture_output=True, text=True, check=True)
         return r.stdout.strip()

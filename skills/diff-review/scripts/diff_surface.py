@@ -57,7 +57,12 @@ def expand_numstat_path(raw_path: str) -> tuple[str, list[str]]:
 
 
 def run_git(args: list[str], cwd: Path) -> tuple[int, str, str]:
-    r = subprocess.run(["git", *args], cwd=str(cwd), capture_output=True, text=True)
+    r = subprocess.run(
+        ["git", "-c", "core.quotePath=false", *args],
+        cwd=str(cwd),
+        capture_output=True,
+        text=True,
+    )
     return r.returncode, r.stdout, r.stderr.strip()
 
 
@@ -91,16 +96,16 @@ def analyze_surface(root: Path, rev_range: str | None = None) -> dict:
 
     target_range = rev_range or "HEAD"
     validate_rev_range(target_range, repo)
-    is_working_tree = rev_range is None or rev_range == "HEAD"
+    is_working_tree = rev_range is None or ".." not in target_range
 
     if target_range == "HEAD":
         rc_head, _, _ = run_git(["rev-parse", "--verify", "HEAD"], repo)
         if rc_head != 0:
-            diff_args = ["diff", "--numstat", "--"]
+            diff_args = ["diff", "--no-ext-diff", "--numstat", "--"]
         else:
-            diff_args = ["diff", "--numstat", "HEAD", "--"]
+            diff_args = ["diff", "--no-ext-diff", "--numstat", "HEAD", "--"]
     else:
-        diff_args = ["diff", "--numstat", target_range, "--"]
+        diff_args = ["diff", "--no-ext-diff", "--numstat", target_range, "--"]
 
     rc_d, numstat_out, err_d = run_git(diff_args, repo)
     if rc_d != 0:

@@ -5,6 +5,7 @@ from __future__ import annotations
 import contextlib
 import io
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -20,6 +21,8 @@ sys.path.insert(0, str(REPO_ROOT / "shared" / "scripts"))
 
 import sync_skills as sync  # noqa: E402
 import workspace_guard as wg  # noqa: E402
+
+ISOLATED_GIT_ENV = {"GIT_CONFIG_GLOBAL": os.devnull, "GIT_CONFIG_NOSYSTEM": "1"}
 
 
 class SyncExtensionsTests(unittest.TestCase):
@@ -183,8 +186,54 @@ class SyncExtensionsTests(unittest.TestCase):
             self.assertIn("清理坏软链", st_broken)
             self.assertTrue(dst.is_dir() and not dst.is_symlink())
 
+    def test_sync_same_dir_guard_and_standalone_sync_agy_plugin(self):
+        with tempfile.TemporaryDirectory(prefix="sync-agy-only-") as td:
+            base = Path(td)
+            shared = base / "shared"
+            source = base / "skills"
+            plugins = base / "plugins"
+            (shared / "references").mkdir(parents=True)
+            (shared / "references" / "common.md").write_text("# C\n", encoding="utf-8")
+            (source / "alpha").mkdir(parents=True)
+            (source / "alpha" / "SKILL.md").write_text("---\nname: alpha\n---\n", encoding="utf-8")
+            plugins.mkdir()
+
+            manifest = base / "manifest.json"
+            manifest.write_text(json.dumps({
+                "groups": [],
+                "shared": [{"path": "references/common.md", "skills": ["alpha"]}],
+                "skills": [{"name": "alpha"}],
+            }), encoding="utf-8")
+            missing_local_cfg = base / "missing.sync.local.json"
+            agy_cfg = base / "agy" / "plugins.json"
+
+            # 1) 同目录 sync_dir 返回 SAME(同目录) 且不删源目录
+            st_self, dst_only = sync.sync_dir(source / "alpha", source / "alpha", apply=True)
+            self.assertEqual("SAME(同目录)", st_self)
+            self.assertEqual(set(), dst_only)
+            self.assertTrue((source / "alpha" / "SKILL.md").is_file())
+
+            with patch.object(sync, "MANIFEST", manifest), \
+                 patch.object(sync, "LOCAL_CONFIG", missing_local_cfg), \
+                 patch.object(sync, "REPO_SKILLS", source), \
+                 patch.object(sync, "SHARED_DIR", shared), \
+                 patch.object(sync, "REPO_PLUGINS", plugins), \
+                 patch.object(sync, "AGY_PLUGINS_CONFIG", agy_cfg):
+                # 2) --sync-shared 与 --sync-agy-plugin --apply 连用时不短路，且无 sync.local.json 也能注册插件
+                with patch.object(sys, "argv", ["sync_skills.py", "--sync-shared", "--sync-agy-plugin", "--apply"]), \
+                     contextlib.redirect_stdout(io.StringIO()) as buf:
+                    sync.main()
+                self.assertIn("[AGY-PLUGIN] status=CREATE", buf.getvalue())
+                self.assertTrue(agy_cfg.is_file())
+                self.assertTrue((source / "alpha" / "references" / "common.md").is_file())
+
 
 class WorkspaceGuardTests(unittest.TestCase):
+    def setUp(self):
+        env_patch = patch.dict(os.environ, ISOLATED_GIT_ENV)
+        env_patch.start()
+        self.addCleanup(env_patch.stop)
+
     def _git(self, cwd: Path, *args: str) -> str:
         r = subprocess.run(["git", *args], cwd=str(cwd), capture_output=True, text=True, check=True)
         return r.stdout.strip()
@@ -365,6 +414,115 @@ class WorkspaceGuardTests(unittest.TestCase):
             ext_spec.write_text("# Ext\nSource: /etc/hosts @ deadbeef\n## Steps\n1. S. After: none.\n", encoding="utf-8")
             with contextlib.redirect_stderr(io.StringIO()):
                 self.assertEqual(2, wg.main(["verify-hash", "--spec", str(ext_spec), "--root", str(root)]))
+
+    def test_scope_source_cross_repo_cwd_uncommitted_repo_spec_null_landed_and_ephemeral_archive(self):
+        guard = REPO_ROOT / "shared" / "scripts" / "workspace_guard.py"
+        with tempfile.TemporaryDirectory(prefix="wg-edge-") as td:
+            base = Path(td)
+            other_repo = base / "other-git-repo"
+            other_repo.mkdir()
+            self._init_git_repo(other_repo)
+
+            repo = base / "target-repo"
+            repo.mkdir()
+            self._init_git_repo(repo)
+            (repo / "docs" / "spec").mkdir(parents=True)
+            (repo / "packages" / "@acme" / "auth").mkdir(parents=True)
+
+            rfc = repo / "packages" / "@acme" / "auth" / "RFC.md"
+            rfc.write_text("# Auth RFC\n", encoding="utf-8")
+            rfc_sha = wg.git_blob_sha1(rfc)
+
+            # 1) @scope 路径 + 反引号 none + 从另一 Git 仓目录不传 --root 也能命中 target-repo
+            spec_scope = repo / "docs" / "spec" / "scope-auth.md"
+            spec_scope.write_text(
+                f"# Scope Auth\nSource: `packages/@acme/auth/RFC.md` @ `{rfc_sha}`\n\n"
+                "## Steps\n1. Impl. After: none. Check: `true`\n2. Wire. After: 1. Check: `true`\n",
+                encoding="utf-8",
+            )
+            spec_bt_none = repo / "docs" / "spec" / "bt-none.md"
+            spec_bt_none.write_text(
+                "# BT None\nSource: `none`\n\n## Steps\n1. Only. After: none. Check: `true`\n",
+                encoding="utf-8",
+            )
+            env = {**os.environ, **ISOLATED_GIT_ENV}
+            vr1 = subprocess.run(
+                [sys.executable, str(guard), "verify-hash", "--spec", str(spec_scope)],
+                cwd=str(other_repo), env=env, capture_output=True, text=True,
+            )
+            self.assertEqual(0, vr1.returncode, vr1.stdout + vr1.stderr)
+            vr2 = subprocess.run(
+                [sys.executable, str(guard), "verify-hash", "--spec", str(spec_bt_none)],
+                cwd=str(other_repo), env=env, capture_output=True, text=True,
+            )
+            self.assertEqual(0, vr2.returncode, vr2.stdout + vr2.stderr)
+            self.assertIn("skipped", vr2.stdout)
+
+            # 2) repo 模式下尚未 commit spec 时提交 Spec-Step 也能被 progress 统计；归档前若含同 slug 旧归档不串味
+            (repo / "step1.txt").write_text("s1\n", encoding="utf-8")
+            self._git(repo, "add", "step1.txt")
+            self._git(repo, "commit", "-m", "step1 before spec commit\n\nSpec-Step: scope-auth#1")
+
+            pr_uncommitted = subprocess.run(
+                [sys.executable, str(guard), "progress", "--spec", str(spec_scope)],
+                cwd=str(other_repo), env=env, capture_output=True, text=True,
+            )
+            self.assertEqual(0, pr_uncommitted.returncode, pr_uncommitted.stderr)
+            prog1 = json.loads(pr_uncommitted.stdout)
+            self.assertEqual([1], prog1["landed"])
+            self.assertEqual([2], prog1["ready"])
+
+            # 3) base 提交本身带 Spec-Step 也不应丢失，且 repo 归档自动暂存 archived/.ignore
+            self._git(repo, "add", "docs/spec/scope-auth.md")
+            self._git(repo, "commit", "-m", "Add scope spec with step 2\n\nSpec-Step: scope-auth#2")
+            with contextlib.redirect_stdout(io.StringIO()) as pbuf:
+                wg.main(["progress", "--spec", str(spec_scope), "--root", str(repo)])
+            self.assertEqual([1, 2], json.loads(pbuf.getvalue())["landed"])
+
+            ar = subprocess.run(
+                [sys.executable, str(guard), "archive", "--spec", str(spec_scope), "--date", "2026-11-27"],
+                cwd=str(other_repo), env=env, capture_output=True, text=True,
+            )
+            self.assertEqual(0, ar.returncode, ar.stdout + ar.stderr)
+            staged = self._git(repo, "diff", "--cached", "--name-only").splitlines()
+            self.assertIn("docs/spec/archived/.ignore", staged)
+            self.assertIn("docs/spec/archived/2026-11-27-scope-auth.md", staged)
+            self._git(repo, "commit", "-m", "Archive cycle 1 scope-auth")
+
+            # 第二轮同名 slug（未提交）不继承上一轮归档前 trailer
+            spec_cycle2 = repo / "docs" / "spec" / "scope-auth.md"
+            spec_cycle2.write_text("# Scope Cycle2\nSource: none\n\n## Steps\n1. C2. After: none.\n", encoding="utf-8")
+            with contextlib.redirect_stdout(io.StringIO()) as pbuf2:
+                wg.main(["progress", "--spec", str(spec_cycle2), "--root", str(repo)])
+            self.assertEqual([], json.loads(pbuf2.getvalue())["landed"])
+
+            # 4) landed: null 容错恢复，且传 --spec 时从 other_repo 也不越界写到 other_repo
+            state_dir = repo / "docs" / "spec" / ".state"
+            state_dir.mkdir(parents=True, exist_ok=True)
+            (state_dir / "bt-none.json").write_text('{"slug": "bt-none", "landed": null}', encoding="utf-8")
+            rec = subprocess.run(
+                [
+                    sys.executable, str(guard), "record-step",
+                    "--slug", "bt-none", "--step", "1", "--sha", "abc123",
+                    "--spec", str(spec_bt_none),
+                ],
+                cwd=str(other_repo), env=env, capture_output=True, text=True,
+            )
+            self.assertEqual(0, rec.returncode, rec.stderr)
+            self.assertEqual({"1": "abc123"}, json.loads((state_dir / "bt-none.json").read_text(encoding="utf-8"))["landed"])
+            self.assertFalse((other_repo / ".agent-work").exists())
+
+            # 5) ephemeral 非 Git 目录禁止 archive 并返回非 0（即使 cwd 在 Git 仓内）
+            ephem_dir = base / "non-git-dir"
+            ephem_dir.mkdir()
+            ephem_spec = ephem_dir / "quick.md"
+            ephem_spec.write_text("# Quick\nSource: none\n", encoding="utf-8")
+            bad_arc = subprocess.run(
+                [sys.executable, str(guard), "archive", "--spec", str(ephem_spec)],
+                cwd=str(other_repo), env=env, capture_output=True, text=True,
+            )
+            self.assertNotEqual(0, bad_arc.returncode)
+            self.assertIn("ephemeral", bad_arc.stderr)
 
 
 if __name__ == "__main__":

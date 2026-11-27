@@ -4,7 +4,7 @@
 
 ## 1. 固定基点与两条独立轴线
 
-1. 用 `git rev-parse <fixed-point>` 确认基点有效且 `git diff <fixed-point>...HEAD` 非空；基点无效或 diff 为空立即停下汇报。
+1. 用 `git rev-parse <fixed-point>` 确认基点有效；若审阅已提交分支，确认 `git diff <fixed-point>...HEAD` 非空，若审阅本地未提交改动（含未跟踪文件）则直接对比 `<fixed-point>` 与当前工作区，仅当对比面完全为空时停下汇报。
 2. 两条轴线各自独立评判、独立成节，**不合并、不跨轴重排优先级**（一次改动完全可能「合乎 Spec 但代码质量不达标」，或「代码写得很干净但偏离需求」）：
    - **规范与坏味道轴（Standards）**：核对项目已记录规范（如 `AGENTS.md` / `CODING_STANDARDS.md` / `CONTRIBUTING.md`），辅以第 3 节代码坏味道基线。项目显式记录的取舍永远压过通用坏味道直觉；已被 Linter/Formatter 自动检查项不重复报。
    - **需求与 Spec 符合轴（Spec）**：对照原始需求、Issue 或开放/随分支归档的 Spec（查找顺序：Commit 中的 Issue 引用 → 用户传入路径 → `feature/` 与 `spec/`（或本次随分支归档的那份 Spec）→ 询问用户）。逐项核对遗漏实现、未请求的多余改动（Drift）、实现与原文冲突之处，每条必须引用 Spec 原句。

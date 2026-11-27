@@ -9,7 +9,7 @@ description: "改完代码准备提 PR/MR 的合入前备料：卫生检查、�
 
 ## 1. 合入前卫生与拆分检查
 
-1. **防本地工作区与隐私泄漏**：核查待提交与已提交变更是否误包含 `.agent-work/`、调试残留（`console.log`、`pdb`、`dbg!`）、硬编码密钥或未同步的锁文件/生成物；按需查阅 [工程工作区契约](references/engineering-workspace.md)。
+1. **防本地工作区与隐私泄漏**：先用 `git status` 检查工作区未提交/未跟踪泄露（脚本仅扫描已提交 `base...HEAD`），再核查是否误包含 `.agent-work/`、调试残留（`console.log`、`pdb`、`dbg!`）、硬编码密钥或未同步的锁文件/生成物；按需查阅 [工程工作区契约](references/engineering-workspace.md)。
 2. **过大 PR 拆分判据**：当改动超过 `600` 行或横跨多个独立业务主题时，主动建议按「基础设施/重构 → 核心逻辑 → 接线/清理」拆成多个可独立合入的小 PR，降低审阅疲劳与回滚半径；详细拆分与大仓规范按需查阅 [PR 拆分与合入前检清单](references/pr-checklist.md)。
 
 ## 2. 审阅者友好 PR 说明（Markdown）
@@ -24,10 +24,10 @@ description: "改完代码准备提 PR/MR 的合入前备料：卫生检查、�
 
 ## 3. 大改动离线 HTML 视觉导览页（Visual PR）
 
-当变更 `≥ 150` 行或跨 `≥ 5` 个文件（或用户主动要求「可视化 PR 导览」）时，运行脚本在系统临时目录生成自包含离线 HTML（**绝不写入业务代码仓污染 Git**；用户只要简短 MR 文案时不必强跑脚本）：
+当变更 `≥ 150` 行或跨 `≥ 5` 个文件（或用户主动要求「可视化 PR 导览」）时，运行配套 [pr_visual_report.py](scripts/pr_visual_report.py) 在系统临时目录生成自包含离线 HTML（扫描已提交的 `<base>...HEAD`，**绝不写入业务代码仓污染 Git**；用户只要简短 MR 文案时不必强跑脚本）：
 
 ```bash
-python3 scripts/pr_visual_report.py --root . --base <base-ref>
+python3 <skill_dir>/scripts/pr_visual_report.py --root <目标仓路径> --base <base-ref>
 ```
 
 脚本会同步输出 Markdown PR 骨架与临时目录下的 HTML 路径，包含总览卡片、模块影响分布、风险路径徽章、提交时间线、逐文件走查清单与回滚核对表，零外链可直接离线打开。

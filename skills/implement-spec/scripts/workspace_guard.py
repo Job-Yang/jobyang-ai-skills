@@ -18,7 +18,10 @@ from __future__ import annotations
 import argparse
 import contextlib
 import datetime as dt
-import fcntl
+try:
+    import fcntl
+except ImportError:
+    fcntl = None
 import hashlib
 import json
 import os
@@ -29,8 +32,8 @@ import sys
 import tempfile
 from pathlib import Path
 
-SOURCE_RE = re.compile(r"^(?:Source|Feature):\s*`?([^`\n@]+?)`?\s*@\s*`?([0-9a-fA-F]{7,40})`?\s*$")
-SOURCE_NONE_RE = re.compile(r"^(?:Source|Feature):\s*none\b", re.I)
+SOURCE_RE = re.compile(r"^(?:Source|Feature):\s*(?:`([^`\n]+)`|([^\n]+?))\s*@\s*`?([0-9a-fA-F]{7,40})`?\s*$")
+SOURCE_NONE_RE = re.compile(r"^(?:Source|Feature):\s*`?none\b`?", re.I)
 STEP_RE = re.compile(r"^(\d+)\.\s+(.*)$")
 AFTER_RE = re.compile(r"\bAfter:\s*([^\n.;。；]+)", re.I)
 SLUG_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
@@ -60,6 +63,25 @@ def run_git(args: list[str], cwd: Path) -> tuple[int, str, str]:
 def git_root(start: Path) -> Path | None:
     rc, out, _ = run_git(["rev-parse", "--show-toplevel"], start)
     return Path(out).resolve() if rc == 0 and out else None
+
+
+def resolve_repo_root(root_arg: str | None, spec_path: Path | None = None) -> Path | None:
+    """解析目标仓库根目录：未显式指定 --root 时优先跟随 Spec 所在仓库，避免跨仓误判。"""
+    explicit_root = Path(root_arg).resolve() if root_arg else None
+    spec_root = git_root(spec_path.parent) if spec_path is not None else None
+    if root_arg and root_arg != ".":
+        return (git_root(explicit_root) if explicit_root is not None else None) or spec_root
+    if spec_root is not None:
+        return spec_root
+    if explicit_root is None:
+        return None
+    er = git_root(explicit_root)
+    if er is not None and spec_path is not None:
+        try:
+            spec_path.resolve().relative_to(er)
+        except ValueError:
+            return None
+    return er
 
 
 def git_blob_sha1(path: Path) -> str:
@@ -186,7 +208,8 @@ def resolve_source_ref(spec_path: Path, root: Path | None) -> tuple[str | None, 
         s = ln.strip()
         m = SOURCE_RE.match(s)
         if m:
-            return m.group(1).strip(), m.group(2).lower()
+            path_part = (m.group(1) or m.group(2) or "").strip()
+            return path_part, m.group(3).lower()
         if SOURCE_NONE_RE.match(s):
             saw_none = True
     if saw_none:
@@ -199,7 +222,7 @@ def cmd_verify_hash(args: argparse.Namespace) -> int:
     if not spec_path.is_file():
         print(f"错误：Spec 不存在：{spec_path}", file=sys.stderr)
         return 1
-    root = git_root(Path(args.root).resolve()) or git_root(spec_path.parent) or Path(args.root).resolve()
+    root = resolve_repo_root(args.root, spec_path) or Path(args.root).resolve()
     rel_src, want_sha = resolve_source_ref(spec_path, root)
     if rel_src is None and want_sha is None:
         print(json.dumps({"status": "skipped", "reason": "Source: none"}, ensure_ascii=False))
@@ -306,8 +329,11 @@ def read_state_steps(state_path: Path) -> dict[int, str]:
         return {}
     try:
         data = json.loads(state_path.read_text(encoding="utf-8"))
+        raw_landed = data.get("landed") if isinstance(data, dict) else None
+        if not isinstance(raw_landed, dict):
+            return {}
         out = {}
-        for k, v in (data.get("landed") or {}).items():
+        for k, v in raw_landed.items():
             out[int(k)] = str(v)
         return out
     except (OSError, ValueError):
@@ -321,12 +347,25 @@ def read_git_trailer_steps(root: Path, spec_path: Path, slug: str) -> set[int]:
         return set()
     if ".agent-work" in rel_spec_path.parts:
         return set()
-    rel_spec = str(rel_spec_path)
-    rc, base, _ = run_git(["log", "-1", "--diff-filter=A", "--format=%H", "--", rel_spec], root)
-    if rc != 0 or not base:
+    rc_h, _, _ = run_git(["rev-parse", "--verify", "HEAD"], root)
+    if rc_h != 0:
         return set()
-    rev_range = f"{base}..HEAD"
-    rc, out, _ = run_git(["log", "--format=%(trailers:key=Spec-Step,valueonly)", rev_range], root)
+
+    rel_spec = str(rel_spec_path)
+    cutoffs: list[str] = []
+    rc_a, last_arch, _ = run_git(
+        ["log", "-1", "--format=%H", "--", f":(glob)docs/spec/archived/*-{slug}.md"], root
+    )
+    if rc_a == 0 and last_arch:
+        cutoffs.append(last_arch)
+    rc_d, last_del, _ = run_git(
+        ["log", "-1", "--diff-filter=D", "--format=%H", "--", rel_spec], root
+    )
+    if rc_d == 0 and last_del and last_del not in cutoffs:
+        cutoffs.append(last_del)
+
+    rev_args = ["HEAD", *(f"^{c}" for c in cutoffs)]
+    rc, out, _ = run_git(["log", "--format=%(trailers:key=Spec-Step,valueonly)", *rev_args], root)
     if rc != 0 or not out:
         return set()
     landed = set()
@@ -345,7 +384,7 @@ def cmd_progress(args: argparse.Namespace) -> int:
     if not spec_path.is_file():
         print(f"错误：Spec 不存在：{spec_path}", file=sys.stderr)
         return 1
-    root = git_root(Path(args.root).resolve()) or git_root(spec_path.parent)
+    root = resolve_repo_root(args.root, spec_path)
     try:
         slug = validate_slug(infer_slug(spec_path, args.slug))
     except ValueError as e:
@@ -401,10 +440,11 @@ def cmd_record_step(args: argparse.Namespace) -> int:
     except ValueError as e:
         print(f"错误：{e}", file=sys.stderr)
         return 1
-    root = git_root(Path(args.root).resolve()) or Path(args.root).resolve()
     spec_arg = getattr(args, "spec", None)
-    if spec_arg and args.mode == "auto":
-        sf = state_file_for(root, Path(spec_arg).resolve(), slug)
+    spec_path = Path(spec_arg).resolve() if spec_arg else None
+    root = resolve_repo_root(args.root, spec_path) or Path(args.root).resolve()
+    if spec_path is not None and args.mode == "auto":
+        sf = state_file_for(root, spec_path, slug)
         state_dir = sf.parent
     else:
         info = detect_mode(root, args.mode)
@@ -419,7 +459,8 @@ def cmd_record_step(args: argparse.Namespace) -> int:
 
     lock_path = state_dir / f".{slug}.lock"
     with lock_path.open("a+", encoding="utf-8") as lfh:
-        fcntl.flock(lfh.fileno(), fcntl.LOCK_EX)
+        if fcntl is not None:
+            fcntl.flock(lfh.fileno(), fcntl.LOCK_EX)
         try:
             data = {"slug": slug, "landed": {}}
             if sf.is_file():
@@ -429,11 +470,15 @@ def cmd_record_step(args: argparse.Namespace) -> int:
                         data = loaded
                 except ValueError:
                     pass
-            landed = data.setdefault("landed", {})
+            landed = data.get("landed")
+            if not isinstance(landed, dict):
+                landed = {}
+                data["landed"] = landed
             landed[str(args.step)] = args.sha
             _atomic_write_json(sf, data)
         finally:
-            fcntl.flock(lfh.fileno(), fcntl.LOCK_UN)
+            if fcntl is not None:
+                fcntl.flock(lfh.fileno(), fcntl.LOCK_UN)
     print(json.dumps({"state_file": str(sf), "slug": slug, "landed": landed}, ensure_ascii=False))
     return 0
 
@@ -443,10 +488,13 @@ def cmd_archive(args: argparse.Namespace) -> int:
     if not spec_path.is_file():
         print(f"错误：Spec 不存在：{spec_path}", file=sys.stderr)
         return 1
-    root = git_root(Path(args.root).resolve()) or git_root(spec_path.parent) or spec_path.parent
+    root = resolve_repo_root(args.root, spec_path) or spec_path.parent
     mode = args.mode
     if mode == "auto":
         mode = "local" if ".agent-work" in spec_path.parts else detect_mode(root, "auto")["mode"]
+    if mode == "ephemeral":
+        print("错误：ephemeral（非 Git 目录）模式不支持持久化 archive 归档", file=sys.stderr)
+        return 1
     try:
         slug = validate_slug(infer_slug(spec_path, args.slug))
         date_str = validate_date(args.date or dt.date.today().isoformat())
@@ -478,6 +526,7 @@ def cmd_archive(args: argparse.Namespace) -> int:
                     print(f"错误：git mv 失败：{err}", file=sys.stderr)
                     return 1
                 used_git_mv = True
+                run_git(["add", str(ignore_file.relative_to(root.resolve()))], root)
         except ValueError:
             pass
 

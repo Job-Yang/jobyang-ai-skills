@@ -7,9 +7,9 @@
 ````markdown
 # <特性或重构标题>：implement spec
 
-Source: `<上游文档路径或 none>` @ `<git-blob-sha>`
+Source: `<上游文档路径>` @ `<git-blob-sha>`（纯重构无上游文档直接写 Source: none）
 
-本 Spec 写定后保持只读，交由 `go-work` 分步落地。开工及续跑前用 `workspace_guard.py verify-hash` 核对上游摘要；若上游变更则先重新生成本文件。个人仓每步附加 `Spec-Step: <slug>#<n>` trailer，大仓兼容记录于 `.agent-work/state/<slug>.json`，完工后归档至 `archived/<YYYY-MM-DD>-<slug>.md`。
+本 Spec 作为执行基线，写定后原则上由 `go-work` 分步落地；细小实现偏差可在代码直接修正并在交付说明，大方向或接口契约变化时先更新本文件。开工及续跑前用 `workspace_guard.py verify-hash` 核对上游摘要；若上游变更先确认是否重算。个人仓每步附加 `Spec-Step: <slug>#<n>` trailer，大仓兼容记录于 `.agent-work/state/<slug>.json`，完工后归档至 `archived/<YYYY-MM-DD>-<slug>.md`。
 
 <一两句说清整体代码交付思路。>
 
@@ -71,4 +71,4 @@ Call site:
 
 - 头部写 `Source: none`，无需上游哈希检查，完工仅归档 Spec。
 - `Behavior map` 改为映射「保留的既有外部不变量 → 目标模块 → 表征测试名」。
-- **`Steps` 第 1 步固定用于补齐表征测试（Characterization Tests）**并验证全绿，第 2 步起才拆模块、换实现与清理旧代码，最后一步再做等价测试迁移或清理旧冗余入口。
+- **`Steps` 第 1 步固定用于核验或补齐表征测试（Characterization Tests）**（既有测试已充分覆盖时直接复用验证全绿，有缺口则先补齐），第 2 步起才拆模块、换实现与清理旧代码，最后一步再做等价测试迁移或清理旧冗余入口。

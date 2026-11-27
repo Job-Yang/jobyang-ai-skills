@@ -128,4 +128,4 @@ Key non-overlap boundaries:
 
 - **Authority**: `skills/` (skills) and `shared/` (common contracts/scripts).
 - **Manifest**: `tools/skills-manifest.json` defines the 30-skill whitelist and 6 logical groups (`--group engineering --apply`).
-- **Antigravity plugin**: `plugins/engineering-flow/` packages lifecycle hooks (`PreInvocation`, `PreToolUse`, `PostToolUse`, `Stop`) and plain-language routing rules using relative paths only, registered via `tools/sync_skills.py --apply --sync-agy-plugin` without altering `hooks.json`.
+- **Antigravity plugin**: `plugins/engineering-flow/` ships plain-language first-principles rules (`rules/AGENTS.md`, zero background hooks with `hooks.json` disabled) using relative paths only, registered via `tools/sync_skills.py --apply --sync-agy-plugin` without altering `hooks.json`.

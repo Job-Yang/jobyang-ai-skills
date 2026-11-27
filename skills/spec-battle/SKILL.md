@@ -13,14 +13,14 @@ description: "写代码前对方案、需求或实现计划做干净上下文盲
 
 1. **选定对象与工作区**：按 [工程工作区契约](references/engineering-workspace.md) 定位开放文档（归档 Spec 只做记录不再对抗）。
 2. **版本钉死与漂移熔断**：
-   - 运行 `python3 scripts/workspace_guard.py hash <doc>` 记录本次对抗基线短摘要（不在目标仓根目录时加 `--root <仓库路径>`）；
-   - 若审阅对象是实现 Spec，先运行 `python3 scripts/workspace_guard.py verify-hash --spec <spec.md>`；**上游需求已漂移直接报 1 条 `blocker` 停下，提示先回 `implement-spec` 同步**；
-   - 运行 `python3 scripts/workspace_guard.py progress --spec <spec.md>`：已落盘步骤属既有代码（若要审改交给 `diff-review`），本轮只审尚未落地步骤及其接口契约。
+   - 用配套 [workspace_guard.py](scripts/workspace_guard.py) 运行 `python3 <skill_dir>/scripts/workspace_guard.py hash <doc>` 记录本次对抗基线短摘要；
+   - 若审阅对象是实现 Spec，先运行 `python3 <skill_dir>/scripts/workspace_guard.py verify-hash --spec <spec.md> --root <目标仓路径>`；**上游需求已漂移报 1 条 `blocker` 并提醒用户确认是否先回 `implement-spec` 同步**；
+   - 运行 `python3 <skill_dir>/scripts/workspace_guard.py progress --spec <spec.md> --root <目标仓路径>`：已落盘步骤属既有代码（若要审改交给 `diff-review`），本轮只审尚未落地步骤及其接口契约。
 
 ## 2. 选定独立检察视角（防自我确认偏误）
 
 - **当前会话写了这份文档，且宿主支持子代理**：启动**全新只读子代理**充当检察方（绝不 `fork` 当前对话！不传前期讨论总结与意图说明，若用户指定跨模型如 Codex 更佳）；仅向子代理提供文档路径与 [检察四镜与证据门槛](references/prosecution.md)。
-- **当前会话写了文档，但无子代理**：先声明存在作者锚定风险（推荐新会话再审），若用户确认继续，则严格按字面文本（而非记忆意图）逐条起诉。
+- **当前会话写了文档，但无子代理**：在汇报顶部注明「当前会话自审，存在作者锚定风险」，直接严格按字面文本（而非记忆意图）逐条起诉，不额外多卡一轮确认。
 - **新会话启动**：直接以只读检察方身份读源码与文档起诉，由用户或原文作者答辩。
 
 ## 3. 四步对抗协议（只查真伤，限一轮追问）
@@ -34,4 +34,4 @@ description: "写代码前对方案、需求或实现计划做干净上下文盲
 3. **Press（限追问一轮）**：检察方对 `Refute / Out of scope / Fix` 逐条回应 `accept` 或 `press`（给出反证场景或修复仍漏的边界），**每条至多追问 1 轮**防止拉锯死循环；`Open` 项不追问直接上交。
 4. **Rule & Apply（人工终裁与写入隔离）**：
    - 一次性向用户呈现「待裁决争议（含正反陈述）」「已拟妥待确认修改」「已化解项」，`overruled` 项保留风险记录；
-   - **写入隔离硬边界**：PRD / 单特性需求 / RFC 在用户拍板后原地更新；**本技能不直接修改开放 Spec 正文**——对 Spec 的全部已裁决修改，输出逐条 `Hand-off` 清单回流给 `implement-spec` 按深模块设计重算落地。
+   - **分层写入策略**：PRD / 单特性需求 / RFC 与轻微措辞修正可在用户拍板后原地更新；涉及模块接口或步骤结构变更的开放 Spec，输出逐条 `Hand-off` 清单回流给 `implement-spec` 按深模块设计重算落地。

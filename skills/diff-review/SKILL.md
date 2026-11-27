@@ -16,7 +16,7 @@ description: "只读深度代码审查：审同事 PR/MR、分支或提交前本
   - 本地改动：`git diff HEAD` 配合 `git ls-files -o --exclude-standard` 读全每个未跟踪新文件；
   - 分支或范围：`git diff <base>...HEAD`（若需 PR 元数据，可选用 `gh` / `glab` 等宿主 CLI，缺失时直接读本地分支/patch）；
   - 需要「代码规范/坏味道轴 vs 需求/Spec 符合轴」分开评估时，按需查阅 [双轴审查指南](references/two-axis.md)。
-- **冻结快照**：记录 `<base>..<head>` 与待审文件清单；运行 `python3 scripts/diff_surface.py` 统计改动规模与高危路径标签（若工具不可用则手动 `git diff --shortstat`）。
+- **冻结快照**：记录 `<base>..<head>` 与待审文件清单；用配套 [diff_surface.py](scripts/diff_surface.py) 运行 `python3 <skill_dir>/scripts/diff_surface.py --root <目标仓路径>` 统计改动规模与高危路径标签（若工具不可用则手动 `git diff --shortstat`）。
 
 ## 2. 按规模与路径风险定档
 
@@ -24,14 +24,14 @@ description: "只读深度代码审查：审同事 PR/MR、分支或提交前本
 | --- | --- | --- |
 | `Quick` | `< 100` 行且 `1–5` 文件（或纯静态文案/版本号） | 主审读通全 diff 与直接调用方 |
 | `Standard` | `100–500` 行或 `6–10` 文件 | 主审 + 按触发条件启用安全/架构专家视角 |
-| `Deep` | `> 500` 行、`> 10` 文件，或涉及鉴权/资金/数据变更/删除 | 主审 + 全专家视角 + 四角度对抗攻击 |
+| `Deep` | `> 500` 行、`> 10` 文件，或涉及鉴权/资金/数据迁移（`auth/billing/migration`） | 主审 + 全专家视角 + 四角度对抗攻击 |
 
 无论改动多少行，只要触碰 CI 工作流、发布签名、权限鉴权、计费校验、安装脚本或删除路径，均在报告中标红「**需人类维护者人工必审**」。
 
 ## 3. 先审范围漂移，再逐 hunk 追查
 
 1. **范围判定（`on target / drift / incomplete`）**：每处改动都要一句话对上目标；顺手重构、无真实分流依据的新开关或抽象层，跑一次「删掉它功能是否仍成立」检验，可删项单列为 `removable`。
-2. **读全上下文与同类清扫**：不仅看 diff 片段，追读上游调用方与下游消费方；修了一处模式缺陷时，用 `rg` 搜全仓同类兄弟点（Sibling Sweep），未清理的高危兄弟点标为阻塞。
+2. **读全上下文与同类清扫**：不仅看 diff 片段，追读上游调用方与下游消费方；修了一处模式缺陷时，用 `rg` 搜全仓同类兄弟点（Sibling Sweep），未清理的同源新隐患标为阻塞，跨模块且属本次变更前已存在的低风险兄弟点单列为后续跟进、不强卡当前 PR。
 3. **按需加载模式与大仓清单**：
    - 遇到非原子写文件、`sleep` 假同步、删除逻辑、重复派生规则、空心测试或锁文件变更时，按需查阅 [常见高危审查模式](references/review-patterns.md)；
    - 多人协作大仓涉及协议/DB 兼容、锁表迁移、并发热点、灰度回滚与工作区隔离时，按需查阅 [多人大仓生产安全清单](references/big-repo-safety.md) 与 [工程工作区契约](references/engineering-workspace.md)。

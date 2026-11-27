@@ -202,6 +202,8 @@ def tree_diff(src: Path, dst: Path) -> tuple[set[str], set[str]]:
 
 def sync_dir(src: Path, dst: Path, apply: bool, managed_peers: set[Path] | None = None) -> tuple[str, set[str]]:
     """返回 (状态, 目标独有的源外文件)。apply 时统一"删除后按源重建"，不留备份；遇到符号链接若指向受管同源目标则保留软链，否则仅 unlink 后重建。"""
+    if dst.exists() and not dst.is_symlink() and src.resolve() == dst.resolve():
+        return "SAME(同目录)", set()
     if dst.is_symlink():
         if not dst.exists():
             if apply:
@@ -502,7 +504,7 @@ def main() -> None:
             for e in errors:
                 print(f"ERROR: {e}", file=sys.stderr)
             sys.exit(1)
-        if not args.apply and not args.only and not args.group:
+        if not args.apply and not args.only and not args.group and not args.sync_agy_plugin:
             return
 
     shared_issues = check_shared(manifest_data)
@@ -510,6 +512,11 @@ def main() -> None:
         for item in shared_issues:
             print(item, file=sys.stderr)
         sys.exit("检测到 shared/ 副本缺失或漂移，请先运行 `python3 tools/sync_skills.py --sync-shared`。")
+
+    if args.sync_agy_plugin and not LOCAL_CONFIG.is_file() and not args.only and not args.group:
+        p_status, p_cfg, p_dir = sync_agy_plugin(args.apply)
+        print(f"[AGY-PLUGIN] status={p_status} | config={p_cfg} | entry={p_dir}")
+        return
 
     cfg = load_config()
     all_names = [s["name"] for s in manifest_data["skills"]]

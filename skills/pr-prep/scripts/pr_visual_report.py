@@ -44,14 +44,34 @@ MAX_COMMITS = 100
 DEBUG_LINE_RE = re.compile(r"^\+.*(?:pdb\.set_trace\(|breakpoint\(|dbg!\(|console\.log\()")
 SECRET_LINE_RE = re.compile(
     r"(?:"
-    r"(?:api[_-]?key|secret|access[_-]?token|auth[_-]?token|private[_-]?key|password|passwd|client[_-]?secret|bearer)\s*[:=]\s*[\"'][A-Za-z0-9_\-./+=]{12,}[\"']"
+    r"(?:api[_-]?key|secret|access[_-]?token|auth[_-]?token|private[_-]?key|password|passwd|client[_-]?secret|bearer)\s*[:=]\s*[\"'`][A-Za-z0-9_\-./+=]{12,}[\"'`]"
+    r"|bearer\s+[A-Za-z0-9_\-./+=]{12,}"
+    r"|[a-z][a-z0-9+.-]*://[^\s/@\"'`]*:[^\s/@\"'`]{4,}@"
     r"|eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"
     r"|-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----"
     r"|(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}|sk_(?:live|test)_[A-Za-z0-9]{16,}|sk-[A-Za-z0-9_-]{16,}|AKIA[0-9A-Z]{16}"
     r")",
     re.I,
 )
-QUOTED_LITERAL_RE = re.compile(r"(['\"])[^'\"]{8,}\1")
+DEBUG_LITERAL_RE = re.compile(
+    r'"(?:\\.|[^"\\]){4,}"|\'(?:\\.|[^\'\\]){4,}\'|`(?:\\.|[^`\\]){4,}`'
+)
+URL_CRED_RE = re.compile(r"([a-z][a-z0-9+.-]*://)[^\s/@\"'`<>]*:[^\s/@\"'`<>]+@", re.I)
+KV_TOKEN_RE = re.compile(
+    r"(\b(?:api[_-]?key|secret|access[_-]?token|auth[_-]?token|private[_-]?key|password|passwd|client[_-]?secret|token|bearer)\s*[:=]\s*)([^\s,;)\]}]+)",
+    re.I,
+)
+
+
+def sanitize_debug_snippet(line_body: str) -> str:
+    """对调试残留行做字面量、URL 凭据与 key=val 兜底脱敏，并截断到安全摘要长度。"""
+    s = DEBUG_LITERAL_RE.sub(lambda m: f"{m.group(0)[0]}<REDACTED>{m.group(0)[0]}", line_body.strip())
+    s = URL_CRED_RE.sub(r"\1<REDACTED>@", s)
+    s = KV_TOKEN_RE.sub(
+        lambda m: m.group(0) if "<REDACTED>" in m.group(2) else f"{m.group(1)}<REDACTED>",
+        s,
+    )
+    return s[:80]
 
 
 def _clean_rel_path(p: str) -> str:
@@ -78,7 +98,12 @@ def expand_numstat_path(raw_path: str) -> tuple[str, list[str]]:
 
 
 def run_git(args: list[str], cwd: Path) -> tuple[int, str, str]:
-    r = subprocess.run(["git", *args], cwd=str(cwd), capture_output=True, text=True)
+    r = subprocess.run(
+        ["git", "-c", "core.quotePath=false", *args],
+        cwd=str(cwd),
+        capture_output=True,
+        text=True,
+    )
     return r.returncode, r.stdout, r.stderr.strip()
 
 
@@ -112,7 +137,7 @@ def collect_pr_data(root: Path, explicit_base: str | None = None) -> dict:
     base = resolve_base(repo, explicit_base, branch)
 
     diff_spec = f"{base}...HEAD" if base != "HEAD" else "HEAD"
-    rc_n, numstat, err_n = run_git(["diff", "--numstat", diff_spec, "--"], repo)
+    rc_n, numstat, err_n = run_git(["diff", "--no-ext-diff", "--numstat", diff_spec, "--"], repo)
     if rc_n != 0:
         raise RuntimeError(f"git diff 失败：{err_n}")
 
@@ -157,7 +182,17 @@ def collect_pr_data(root: Path, explicit_base: str | None = None) -> dict:
     total_bytes = 0
     patch_truncated = False
     proc = subprocess.Popen(
-        ["git", "diff", diff_spec, "--"],
+        [
+            "git",
+            "-c",
+            "core.quotePath=false",
+            "diff",
+            "--no-ext-diff",
+            "--src-prefix=a/",
+            "--dst-prefix=b/",
+            diff_spec,
+            "--",
+        ],
         cwd=str(repo),
         stdout=subprocess.PIPE,
         stderr=subprocess.DEVNULL,
@@ -203,7 +238,7 @@ def collect_pr_data(root: Path, explicit_base: str | None = None) -> dict:
                 if SECRET_LINE_RE.search(body):
                     hygiene_warnings.append(f"疑似硬编码凭证 ({cur_file}): <已脱敏>")
                 elif DEBUG_LINE_RE.match(ln):
-                    safe_snippet = QUOTED_LITERAL_RE.sub(r"\1<REDACTED>\1", body.strip())[:80]
+                    safe_snippet = sanitize_debug_snippet(body)
                     hygiene_warnings.append(f"疑似调试残留 ({cur_file}): {safe_snippet}")
 
     commits: list[dict] = []
@@ -261,7 +296,8 @@ def render_markdown(data: dict) -> str:
     lines.extend(["", "### 重点人工审阅风险"])
     if data["risk_tags"]:
         for tag, paths in data["risk_tags"].items():
-            lines.append(f"- **{tag}**：{', '.join(f'`{p}`' for p in paths[:6])}")
+            more = f" 等共 {len(paths)} 个文件" if len(paths) > 6 else ""
+            lines.append(f"- **{tag}**：{', '.join(f'`{p}`' for p in paths[:6])}{more}")
     else:
         lines.append("- 无特定高危路径标记")
 
@@ -303,9 +339,10 @@ def render_html(data: dict) -> str:
 
     risk_badges = []
     for tag, paths in data["risk_tags"].items():
+        more = f" 等共 {len(paths)} 个文件" if len(paths) > 6 else ""
         risk_badges.append(
             f"<div class='risk-card'><span class='badge warn'>{esc(tag)}</span> "
-            f"{', '.join(f'<code>{esc(p)}</code>' for p in paths[:6])}</div>"
+            f"{', '.join(f'<code>{esc(p)}</code>' for p in paths[:6])}{esc(more)}</div>"
         )
     if data["hygiene_warnings"]:
         for w in data["hygiene_warnings"][:MAX_HYGIENE_WARNINGS]:
